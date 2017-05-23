@@ -3,4 +3,21 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="text_color_white">#ffffff</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- 常用文字颜色 -->
+    <color name="text_blue">#7b64a8</color>
+    <color name="text_gray_1">#a09da7</color>
+    <color name="text_gray_2">#554d5a</color>
+
+    <!--  -->
+    <color name="view_bg">#ede8f0</color>
+    <color name="select">#f2e4fa</color>
+    <color name="purple_button">#7b64a8</color>
+    <color name="pink_color">#ff3a71</color>
+    <color name="percent_50_white">#7fffffff</color>
+    <color name="percent_40_text_gray_3">#66c9c2d3</color>
+    <color name="percent_70_pink_color">#B2ff3a71</color>
 </resources>
