@@ -10,7 +10,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setcontentLayout(R.layout.activity_main);
+        setContentLayout(R.layout.activity_main);
         showProgress();
 
     }
