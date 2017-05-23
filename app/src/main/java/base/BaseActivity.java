@@ -55,7 +55,7 @@ public class BaseActivity extends Activity {
     /**
      * 设置Activity的内容布局，取代setContentView（）方法
      */
-    public void setView(int layoutResID) {
+    public void setcontentLayout(int layoutResID) {
         LinearLayout content_linear = (LinearLayout) this.findViewById(R.id.content_view);
         content_linear.addView(View.inflate(this, layoutResID, null), new LinearLayout.LayoutParams(-1, -1));
     }
