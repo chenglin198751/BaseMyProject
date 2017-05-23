@@ -1,10 +1,11 @@
-package cheerly.mybaseproject;
+package main;
 
-import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends Activity {
+import base.BaseActivity;
+import cheerly.mybaseproject.R;
+
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
