@@ -6,13 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
-import utils.Value;
+import utils.MyAction;
 import widget.LoadingView;
 
 /**
@@ -34,7 +35,7 @@ public class BaseActivity extends Activity {
     }
 
     /**
-     * 设置Activity的内容布局，取代setContentView（）方法
+     * 设置Activity的内容布局，取代setContentView() 方法
      */
     public void setContentLayout(int layoutResID) {
         LinearLayout content_linear = (LinearLayout) this.findViewById(R.id.content_view);
@@ -59,8 +60,11 @@ public class BaseActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         if (mBroadcastReceiver != null) {
-            unregisterReceiver(mBroadcastReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         }
+    }
+
+    public void onMyBroadcastReceive(Context context, Intent intent) {
     }
 
     /**
@@ -116,6 +120,11 @@ public class BaseActivity extends Activity {
         }
     }
 
+    public void sendMyBroadcast(Intent intent) {
+        intent.setAction(MyAction.ACTION_BASE_BROADCAST);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     private void addLoadView() {
         if (mLoadingView == null) {
             mLoadingView = new LoadingView(this);
@@ -126,20 +135,17 @@ public class BaseActivity extends Activity {
     }
 
     private void registerBroadcastReceiver() {
-        IntentFilter myIntentFilter = new IntentFilter();
-        myIntentFilter.addAction(Value.ACTION_FINISH_ACTIVITY);
-        registerReceiver(mBroadcastReceiver, myIntentFilter);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyAction.ACTION_BASE_BROADCAST);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Value.ACTION_FINISH_ACTIVITY)) {
-                boolean isClose = intent.getBooleanExtra("isClose", false);
-                if (isClose) {
-                    BaseActivity.this.finish();
-                }
+            if (action.equals(MyAction.ACTION_BASE_BROADCAST)) {
+                onMyBroadcastReceive(context, intent);
             }
         }
     };

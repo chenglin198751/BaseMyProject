@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">MyBaseProject</string>
+    <string name="app_name">安卓App</string>
     <string name="data_loading">正在加载数据</string>
 </resources>
