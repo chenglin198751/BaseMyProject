@@ -37,7 +37,7 @@ public class BitmapUtils {
         }
         int[] size = getBitmapSize(path);
         int targetHeight = targetWidth * size[1] / size[0];
-        Picasso.with(context).load(new File(path)).resize(targetWidth, targetHeight).centerCrop().into(target);
+        Picasso.with(context).load(new File(path)).resize(targetWidth, targetHeight).into(target);
     }
 
     /**
@@ -50,7 +50,7 @@ public class BitmapUtils {
         }
         int[] size = getBitmapSize(path);
         int targetHeight = targetWidth * size[1] / size[0];
-        Picasso.with(context).load(uri).resize(targetWidth, targetHeight).centerCrop().into(target);
+        Picasso.with(context).load(uri).resize(targetWidth, targetHeight).into(target);
     }
 
     /**
