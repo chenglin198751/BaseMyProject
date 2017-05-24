@@ -1,13 +1,4 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
     <!-- 对话框 -->
     <style name="dialog">
         <item name="android:windowFrame">@null</item>
@@ -18,6 +9,23 @@
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <!-- <item name="android:backgroundDimEnabled">false</item> -->
+    </style>
+
+
+    <!-- 没有标题的Activity -->
+    <style name="Theme.NoTitle" parent="@android:style/Theme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@style/AnimationActivity</item>
+    </style>
+
+    <!--  Activity的切换动画 ，OpenEnter是被打开的Activity进来，CloseExit是被打开的Activity退出；
+    CloseEnter是被覆盖的Activity不被覆盖，OpenExit是被覆盖的Activity被覆盖    -->
+    <style name="AnimationActivity" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_right</item>
     </style>
 
 </resources>
