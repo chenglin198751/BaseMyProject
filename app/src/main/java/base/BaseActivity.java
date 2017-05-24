@@ -42,7 +42,7 @@ public class BaseActivity extends Activity {
         content_linear.addView(View.inflate(this, layoutResID, null), new LinearLayout.LayoutParams(-1, -1));
     }
 
-    private MainTitleHelper getTitleHelper() {
+    public MainTitleHelper getTitleHelper() {
         return mTitleHelper;
     }
 
