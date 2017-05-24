@@ -16,6 +16,7 @@ import com.squareup.picasso.Target;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import listener.SaveBitmapCallback;
 import utils.BitmapUtils;
 import utils.MyLog;
 
@@ -52,7 +53,22 @@ public class MainActivity extends BaseActivity {
                     ImageView imageView = (ImageView) findViewById(R.id.image);
                     imageView.setImageBitmap(bitmap);
 
-                    Log.v("tag_2", "1");
+                    BitmapUtils.saveBitmap(bitmap, new SaveBitmapCallback() {
+                        @Override
+                        public void onPrepare() {
+
+                        }
+
+                        @Override
+                        public void onSucceed(String path) {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
                 }
 
                 @Override

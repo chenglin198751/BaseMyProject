@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -15,6 +16,11 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import listener.SaveBitmapCallback;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -89,5 +95,43 @@ public class BitmapUtils {
             path = uri.getPath();
         }
         return path;
+    }
+
+    public static void saveBitmap(final Bitmap bmp, final SaveBitmapCallback callback) {
+        if (callback != null) {
+            callback.onPrepare();
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String fileName = System.currentTimeMillis() + ".jpg";
+                File file = new File(SDCardUtils.SDCARD_PATH, fileName);
+                try {
+                    FileOutputStream fos = new FileOutputStream(file);
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+
+                    if (callback != null) {
+                        callback.onError();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    if (callback != null) {
+                        callback.onError();
+                    }
+                }
+                String path = file.getAbsolutePath();
+
+                if (callback != null) {
+                    callback.onSucceed(path);
+                }
+
+            }
+        }).start();
+
     }
 }
