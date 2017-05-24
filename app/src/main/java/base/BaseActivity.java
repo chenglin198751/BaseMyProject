@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
+
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
 import widget.LoadingView;
@@ -22,6 +24,7 @@ import widget.LoadingView;
  */
 public class BaseActivity extends Activity {
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
+    private final static Gson gson = new Gson();
     private MainTitleHelper mTitleHelper;
     private LoadingView mLoadingView = null;
 
@@ -37,7 +40,7 @@ public class BaseActivity extends Activity {
     /**
      * 设置Activity的内容布局，取代setContentView() 方法
      */
-    public void setContentLayout(int layoutResID) {
+    public final void setContentLayout(int layoutResID) {
         LinearLayout content_linear = (LinearLayout) this.findViewById(R.id.content_view);
         content_linear.addView(View.inflate(this, layoutResID, null), new LinearLayout.LayoutParams(-1, -1));
     }
@@ -67,7 +70,7 @@ public class BaseActivity extends Activity {
     public void onMyBroadcastReceive(String action, Bundle bundle) {
     }
 
-    public void sendMyBroadcast(String action, Bundle bundle) {
+    public final void sendMyBroadcast(String action, Bundle bundle) {
         Intent intent = new Intent(ACTION_BASE_BROADCAST);
         intent.putExtra("action", action);
         intent.putExtra("bundle", bundle);
@@ -77,7 +80,7 @@ public class BaseActivity extends Activity {
     /**
      * 显示嵌入式进度条
      */
-    public void showProgress() {
+    public final void showProgress() {
         removeProgress();
         addLoadView();
     }
@@ -85,14 +88,14 @@ public class BaseActivity extends Activity {
     /**
      * 设置进度要要显示的文字提示
      */
-    public void setProgressText(String text) {
+    public final void setProgressText(String text) {
         mLoadingView.setText(text);
     }
 
     /**
      * 清除contentView里面的加载进度
      */
-    public void removeProgress() {
+    public final void removeProgress() {
         if (mLoadingView != null) {
             LinearLayout contentView = (LinearLayout) this.findViewById(R.id.content_view);
             contentView.removeView(mLoadingView.getLoadingView());
@@ -103,7 +106,7 @@ public class BaseActivity extends Activity {
     /**
      * 显示没有网络的界面
      */
-    public void showNoNetView() {
+    public final void showNoNetView() {
         addLoadView();
         mLoadingView.showNoNetView();
     }
@@ -111,7 +114,7 @@ public class BaseActivity extends Activity {
     /**
      * 显示没有网络的界面
      */
-    public void showNoNetView(View.OnClickListener listener, String text) {
+    public final void showNoNetView(View.OnClickListener listener, String text) {
         addLoadView();
         mLoadingView.showNoNetView(listener, text);
     }
@@ -119,7 +122,7 @@ public class BaseActivity extends Activity {
     /**
      * 显示空数据的界面
      */
-    public void showEmptyView(String text) {
+    public final void showEmptyView(String text) {
         addLoadView();
         mLoadingView.showEmptyView();
         if (!TextUtils.isEmpty(text)) {
