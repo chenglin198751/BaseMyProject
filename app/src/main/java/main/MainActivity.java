@@ -1,13 +1,12 @@
 package main;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import widget.MyDialog;
 
 public class MainActivity extends BaseActivity {
 
@@ -21,9 +20,23 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString("key", "200");
-                sendMyBroadcast("2", bundle);
+                MyDialog myDialog = new MyDialog(MainActivity.this);
+                myDialog.setMessage("我是内容");
+                myDialog.setTitle("我是标题");
+                myDialog.setLeftButton("删除",new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+
+                myDialog.setRightButton("确定", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+                myDialog.show();
             }
         });
 
