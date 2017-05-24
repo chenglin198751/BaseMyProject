@@ -7,6 +7,7 @@ import android.view.View;
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
 import widget.MyDialog;
+import widget.MyProgress;
 
 public class MainActivity extends BaseActivity {
 
@@ -16,27 +17,12 @@ public class MainActivity extends BaseActivity {
         setContentLayout(R.layout.activity_main);
 
         getTitleHelper().setTitle("测试");
+        MyProgress.showProgress(this);
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDialog myDialog = new MyDialog(MainActivity.this);
-                myDialog.setMessage("我是内容");
-                myDialog.setTitle("我是标题");
-                myDialog.setLeftButton("删除",new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-
-                myDialog.setRightButton("确定", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-                myDialog.show();
+                MyProgress.dismiss();
             }
         });
 

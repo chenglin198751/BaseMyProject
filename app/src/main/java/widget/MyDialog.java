@@ -101,8 +101,7 @@ public class MyDialog extends Dialog {
         this.OnlySetAView = true;
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         int width = wm.getDefaultDisplay().getWidth();
-        int padding = (int) MyUtils.dip2px(mContext, 20);
-        this.setContentView(view, new LinearLayout.LayoutParams(width - (padding * 2), LayoutParams.WRAP_CONTENT));
+        this.setContentView(view, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
     }
 
 
