@@ -28,4 +28,9 @@
         <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
     </style>
 
+    <!-- 弹出的pop的动画 -->
+    <style name="PopupAnimationDown" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_enter_down</item>
+        <item name="android:windowExitAnimation">@anim/popup_exit_down</item>
+    </style>
 </resources>
