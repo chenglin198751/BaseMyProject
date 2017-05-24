@@ -5,12 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -20,7 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import listener.SaveBitmapCallback;
+import listener.MyCallback;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -97,7 +94,10 @@ public class BitmapUtils {
         return path;
     }
 
-    public static void saveBitmap(final Bitmap bmp, final SaveBitmapCallback callback) {
+    /**
+     * 保存图片到sdcard
+     */
+    public static void saveBitmap(final Bitmap bmp, final MyCallback callback) {
         if (callback != null) {
             callback.onPrepare();
         }

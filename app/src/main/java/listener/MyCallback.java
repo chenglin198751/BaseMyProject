@@ -3,11 +3,10 @@ package listener;
 /**
  * Created by chenglin on 2017-5-24.
  */
-
-public interface SaveBitmapCallback {
+public interface MyCallback {
     void onPrepare();
 
-    void onSucceed(String path);
+    void onSucceed(Object object);
 
     void onError();
 }

@@ -1,12 +1,10 @@
 package main;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,9 +14,8 @@ import com.squareup.picasso.Target;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
-import listener.SaveBitmapCallback;
+import listener.MyCallback;
 import utils.BitmapUtils;
-import utils.MyLog;
 
 public class MainActivity extends BaseActivity {
 
@@ -53,15 +50,15 @@ public class MainActivity extends BaseActivity {
                     ImageView imageView = (ImageView) findViewById(R.id.image);
                     imageView.setImageBitmap(bitmap);
 
-                    BitmapUtils.saveBitmap(bitmap, new SaveBitmapCallback() {
+                    BitmapUtils.saveBitmap(bitmap, new MyCallback() {
                         @Override
                         public void onPrepare() {
 
                         }
 
                         @Override
-                        public void onSucceed(String path) {
-
+                        public void onSucceed(Object object) {
+                            String path = (String) object;
                         }
 
                         @Override
