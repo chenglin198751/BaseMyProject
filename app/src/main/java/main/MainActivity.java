@@ -1,6 +1,5 @@
 package main;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,7 +7,6 @@ import android.view.View;
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
 import utils.MyLog;
-import utils.SDCardUtils;
 
 public class MainActivity extends BaseActivity {
 

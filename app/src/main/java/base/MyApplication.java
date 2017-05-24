@@ -5,10 +5,12 @@ import android.content.Context;
 import android.view.Display;
 import android.view.WindowManager;
 
+import helper.ApplicationHelper;
 import utils.Constants;
 
 public class MyApplication extends Application {
     private static MyApplication application = null;
+    private ApplicationHelper mAppHelper;
 
     public static MyApplication getApplication() {
         return application;
@@ -18,7 +20,13 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
-        getDisplayMetrics();
+        mAppHelper = new ApplicationHelper();
+
+        //只在应用主进程执行
+        if (mAppHelper.isAppMainProcess()) {
+            getDisplayMetrics();
+        }
+
     }
 
     @Override
