@@ -1,13 +1,39 @@
 package utils;
 
+import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
-public class MyLog {
+import java.io.File;
 
-    private static boolean isDebug = true;
+public class MyLog {
+    private static boolean isDebug = false;
+
+    static {
+        String sdcardPath = getSDCardPath();
+        if (!TextUtils.isEmpty(sdcardPath)) {
+            String debugFilePath = sdcardPath + File.separator + "debug_file_log";
+            File file = new File(debugFilePath);
+            if (file != null && file.exists()) {
+                isDebug = true;
+            }
+        }
+    }
 
     public static boolean isDebug() {
         return isDebug;
+    }
+
+    private static String getSDCardPath() {
+        File sdDir = null;
+        boolean sdCardExist = Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED); //判断sd卡是否存在
+        if (sdCardExist) {
+            sdDir = Environment.getExternalStorageDirectory();//获取跟目录
+        }
+        if (sdDir != null) {
+            return sdDir.getAbsolutePath();
+        }
+        return null;
     }
 
     public static void d(String tag, String msg) {

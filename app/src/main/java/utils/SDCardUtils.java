@@ -7,8 +7,7 @@ import java.io.File;
 import base.MyApplication;
 
 public class SDCardUtils {
-    public final static String SDCARD_DIR = getDataPath();
-
+    public final static String SDCARD_PATH = getDataPath();
 
     /**
      * 现在的Android应用将文件放到SD卡上时总是随便创建一个目录，那这样有个问题就是卸载应用时，
