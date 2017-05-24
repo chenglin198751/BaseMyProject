@@ -62,9 +62,7 @@ public class MyUtils {
      * 将dip转化为px *
      */
     public static float dip2px(Context context, float dipValue) {
-        float value = 0;
-        value = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, context.getResources().getDisplayMetrics());
-        return value;
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, context.getResources().getDisplayMetrics());
     }
 
     /**
@@ -80,22 +78,6 @@ public class MyUtils {
             cursor.close();
         }
         return exist;
-    }
-
-    /**
-     * 将格林时间转换为标准DATE时间（比如新浪微博返回的那个格林时间）
-     */
-    public static Date convertTime(String GMT_time) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-        Date myDate = null;
-        try {
-            myDate = sdf.parse(GMT_time);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return myDate;
     }
 
     /**
