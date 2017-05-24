@@ -7,6 +7,7 @@ import android.view.View;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import utils.SDCardUtils;
 
 public class MainActivity extends BaseActivity {
 
@@ -20,7 +21,7 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,SecondActivity.class));
+                Log.v("tag_2", "SDCardUtils.SDCARD_DIR = " + SDCardUtils.SDCARD_DIR);
             }
         });
 
