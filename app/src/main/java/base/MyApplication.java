@@ -21,10 +21,11 @@ public class MyApplication extends Application {
         super.onCreate();
         application = this;
         mAppHelper = new ApplicationHelper();
+        getDisplayMetrics();
 
         //只在应用主进程执行
         if (mAppHelper.isAppMainProcess()) {
-            getDisplayMetrics();
+
         }
 
     }

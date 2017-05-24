@@ -11,13 +11,19 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -26,10 +32,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import base.MyApplication;
 import bean.ApkItem;
 
 public class MyUtils {
-    public static final String TAG = MyUtils.class.getSimpleName();
+    private static Handler mHandler;
 
     /**
      * 判断手机是否联网
@@ -89,38 +96,6 @@ public class MyUtils {
             e.printStackTrace();
         }
         return myDate;
-    }
-
-    /**
-     * 校验是否是正确的手机号码格式
-     */
-    public static boolean checkPhoneNumber(String phone) {
-        if (!TextUtils.isDigitsOnly(phone)) {
-            return false;
-        } else if (phone.length() == 11) {
-            if (phone.startsWith("13") || phone.startsWith("14") || phone.startsWith("15") || phone.startsWith("18")) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public static final int SIZE_30 = 30, SIZE_60 = 60, SIZE_160 = 160;
-
-    /**
-     * 转换从网络要下载的图片的尺寸
-     */
-    public static String changeImageSize(String url, int sizeType) {
-        if (!url.endsWith(".jpg")) {
-            return null;
-        }
-        String imageUrl = url;
-        imageUrl = imageUrl.substring(0, imageUrl.length() - ".jpg".length());
-        imageUrl = imageUrl + sizeType + ".jpg";
-        return imageUrl;
     }
 
     /**
@@ -338,4 +313,123 @@ public class MyUtils {
         return apkItem;
     }
 
+    /**
+     * 创建一个全局Handler，可以用来执行一些post任务等
+     */
+    public static Handler getHandler() {
+        if (mHandler == null) {
+            synchronized (MyUtils.class) {
+                if (mHandler == null) {
+                    mHandler = new Handler(Looper.getMainLooper());
+                }
+            }
+        }
+        return mHandler;
+    }
+
+    //利用BigDecimal做除法
+    public static double divide(double value1, double value2, int scale) {
+        if (value2 == 0) {
+            return 0;
+        }
+        BigDecimal b1 = new BigDecimal(value1);
+        BigDecimal b2 = new BigDecimal(value2);
+        return b1.divide(b2, scale, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+    }
+
+    /**
+     * 四舍五入保留指定位数的小数
+     */
+    public static double formatDouble(double d, int scale) {
+        BigDecimal b = new BigDecimal(d);
+        double myNum3 = b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return myNum3;
+    }
+
+
+    /**
+     * 根据关键字来把字符串标记为不同颜色
+     *
+     * @param myStr   传入的字符串
+     * @param keyword 要被标记的关键字
+     * @param color   要被标记的颜色
+     * @return SpannableString
+     */
+    public static SpannableString getSpanByKeyword(final String myStr, final String keyword, final int color) {
+        int redColor = MyApplication.getApplication().getResources().getColor(color);
+        SpannableString textSpan = new SpannableString(myStr);
+        if (TextUtils.isEmpty(keyword)) {
+            return textSpan;
+        }
+
+        int index = myStr.indexOf(keyword);
+        while (index >= 0) {
+            textSpan.setSpan(new ForegroundColorSpan(redColor), index, index + keyword.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            int nextIndex = index + keyword.length();
+
+            if (nextIndex <= myStr.length()) {
+                index = myStr.indexOf(keyword, nextIndex);
+            }
+
+        }
+        return textSpan;
+    }
+
+    /**
+     * 得到数组中的最小值
+     */
+    public static long getMinNum(long[] numbers) {
+        if (numbers == null || numbers.length <= 0) {
+            return 0;
+        }
+
+        int i;
+        long min, max;
+        min = max = numbers[0];
+        for (i = 0; i < numbers.length; i++) {
+            if (numbers[i] > max) {
+                max = numbers[i];
+            }
+            if (numbers[i] < min) {
+                min = numbers[i];
+            }
+        }
+        return min;
+    }
+
+    /**
+     * 得到数组中的最大值
+     */
+    public static long getMaxNum(long[] numbers) {
+        if (numbers == null || numbers.length <= 0) {
+            return 0;
+        }
+
+        int i;
+        long min, max;
+        min = max = numbers[0];
+        for (i = 0; i < numbers.length; i++) {
+            if (numbers[i] > max) {
+                max = numbers[i];
+            }
+            if (numbers[i] < min) {
+                min = numbers[i];
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 只能输入数字。字母和汉字
+     */
+    public static String LetterAndChinese(String text) {
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char letter = text.charAt(i);
+            if (!((letter >= 'a' && letter <= 'z') || (letter >= 'A' && letter <= 'Z') || (letter >= '0' && letter <= '9') || letter > 128)) {
+                str.append(letter + "");
+            }
+        }
+        return str.toString();
+    }
 }
