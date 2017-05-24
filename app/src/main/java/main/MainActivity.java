@@ -19,17 +19,19 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMyBroadcast(new Intent().putExtra("a", "b"));
+                Bundle bundle = new Bundle();
+                bundle.putString("key", "value");
+                sendMyBroadcast("action_2", bundle);
             }
         });
 
     }
 
     @Override
-    public void onMyBroadcastReceive(Context context, Intent intent) {
-        super.onMyBroadcastReceive(context, intent);
-        Log.v("tag_2", intent.getAction());
-        Log.v("tag_2", intent.getStringExtra("a"));
+    public void onMyBroadcastReceive(String myAction, Bundle bundle) {
+        super.onMyBroadcastReceive(myAction, bundle);
+        Log.v("tag_2", myAction);
+        Log.v("tag_2", bundle.getString("key"));
 
     }
 }

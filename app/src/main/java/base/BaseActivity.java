@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
-import utils.MyAction;
 import widget.LoadingView;
 
 /**
@@ -22,6 +21,7 @@ import widget.LoadingView;
  * @author weiChengLin 2013-06-20
  */
 public class BaseActivity extends Activity {
+    private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     private MainTitleHelper mTitleHelper;
     private LoadingView mLoadingView = null;
 
@@ -64,7 +64,14 @@ public class BaseActivity extends Activity {
         }
     }
 
-    public void onMyBroadcastReceive(Context context, Intent intent) {
+    public void onMyBroadcastReceive(String action, Bundle bundle) {
+    }
+
+    public void sendMyBroadcast(String action, Bundle bundle) {
+        Intent intent = new Intent(ACTION_BASE_BROADCAST);
+        intent.putExtra("action", action);
+        intent.putExtra("bundle", bundle);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     /**
@@ -120,11 +127,6 @@ public class BaseActivity extends Activity {
         }
     }
 
-    public void sendMyBroadcast(Intent intent) {
-        intent.setAction(MyAction.ACTION_BASE_BROADCAST);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
-
     private void addLoadView() {
         if (mLoadingView == null) {
             mLoadingView = new LoadingView(this);
@@ -136,16 +138,16 @@ public class BaseActivity extends Activity {
 
     private void registerBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MyAction.ACTION_BASE_BROADCAST);
+        intentFilter.addAction(ACTION_BASE_BROADCAST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(MyAction.ACTION_BASE_BROADCAST)) {
-                onMyBroadcastReceive(context, intent);
+            if (intent.getAction().equals(ACTION_BASE_BROADCAST)) {
+                String myAction = intent.getStringExtra("action");
+                onMyBroadcastReceive(myAction, intent.getBundleExtra("bundle"));
             }
         }
     };
