@@ -9,13 +9,28 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import junit.framework.Test;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import httpwork.BaseModel;
+import httpwork.HttpCallback;
+import httpwork.HttpUtils;
 import listener.MyCallback;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 import utils.BitmapUtils;
+import utils.Constants;
 
 public class MainActivity extends BaseActivity {
 
@@ -29,56 +44,28 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, 100);
+
+                String url = "http://restapi.amap.com/v3/place/around";
+
+
+                HttpUtils.get(MainActivity.this, url, new HttpCallback() {
+                    @Override
+                    public void onFailure(IOException e) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String result) {
+                        TestModel model = gson.fromJson(result, new TypeToken<TestModel>() {
+                        }.getType());
+
+                        Log.v("tag_2", model.status);
+                    }
+                });
+
             }
         });
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 100 && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-
-
-            BitmapUtils.compressBitmap(MainActivity.this, selectedImage, 500, new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    ImageView imageView = (ImageView) findViewById(R.id.image);
-                    imageView.setImageBitmap(bitmap);
-
-                    BitmapUtils.saveBitmap(bitmap, new MyCallback() {
-                        @Override
-                        public void onPrepare() {
-
-                        }
-
-                        @Override
-                        public void onSucceed(Object object) {
-                            String path = (String) object;
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    Log.v("tag_2", "2");
-                }
-
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    Log.v("tag_2", "3");
-                }
-            });
-        }
     }
 
     @Override
@@ -92,4 +79,7 @@ public class MainActivity extends BaseActivity {
 
 
     }
+
+
+
 }

@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
+import utils.Constants;
 import widget.LoadingView;
 
 /**
@@ -24,7 +25,7 @@ import widget.LoadingView;
  */
 public class BaseActivity extends Activity {
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
-    private final static Gson gson = new Gson();
+    protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
     private LoadingView mLoadingView = null;
 
