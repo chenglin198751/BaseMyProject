@@ -1,29 +1,23 @@
 package httpwork;
 
 import android.app.Activity;
-import android.util.Log;
+import android.text.TextUtils;
 
-import com.google.gson.reflect.TypeToken;
-
+import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import utils.Constants;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -31,6 +25,7 @@ import utils.Constants;
 
 public class HttpUtils {
     public static final OkHttpClient client = new OkHttpClient();
+    private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
     /**
      * 通用的post请求，当Activity finish后，不会再返回请求结果
@@ -99,6 +94,52 @@ public class HttpUtils {
                 }
             }
         });
+    }
+
+
+    /**
+     * 通用的上传图片
+     */
+    public void uploadImage(String reqUrl, Map<String, String> params, String picKey, String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
+            return;
+        }
+        File file = new File(filePath);
+        if (file == null || !file.exists()) {
+            return;
+        }
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder();
+        multipartBodyBuilder.setType(MultipartBody.FORM);
+
+        //遍历map中所有参数到builder
+        if (params != null) {
+            for (String key : params.keySet()) {
+                multipartBodyBuilder.addFormDataPart(key, params.get(key));
+            }
+        }
+
+        //遍历paths中所有图片绝对路径到builder，并约定key如“upload”作为后台接受多张图片的key
+        multipartBodyBuilder.addFormDataPart(picKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
+
+        //构建请求体
+        RequestBody requestBody = multipartBodyBuilder.build();
+        Request.Builder RequestBuilder = new Request.Builder();
+        RequestBuilder.url(reqUrl);
+        RequestBuilder.post(requestBody);
+        Request request = RequestBuilder.build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String str = response.body().string();
+                call.cancel();
+            }
+        });
+
     }
 
     /**
