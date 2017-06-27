@@ -32,77 +32,43 @@ public class HttpUtils {
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
     public static final OkHttpClient client = new OkHttpClient();
 
+    public static void post(final Activity activity, String url, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
+        FormBody.Builder FormBuilder = new FormBody.Builder();
 
-    //http://www.jianshu.com/p/1873287eed87
-    public static void dd() {
-        String url = "https://www.baidu.com/";
-        OkHttpClient okHttpClient = new OkHttpClient();
-
-        RequestBody body = new FormBody.Builder()
-                .add("键", "值")
-                .add("键", "值").build();
-
+        if (hashMap.size() > 0) {
+            Iterator iter = hashMap.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                Object key = entry.getKey();
+                Object value = entry.getValue();
+                FormBuilder.add(key + "", value + "");
+            }
+        }
+        RequestBody body = FormBuilder.build();
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
 
-        Call call = okHttpClient.newCall(request);
-        try {
-            Response response = call.execute();
-            System.out.println(response.body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                if (activity != null && !activity.isFinishing()) {
+                    httpCallback.onFailure(e);
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                if (activity != null && !activity.isFinishing()) {
+                    httpCallback.onSuccess(result);
+                }
+            }
+        });
     }
-
-
-    public static String post(String url, String json) {
-        try {
-            RequestBody body = RequestBody.create(MEDIA_TYPE, json);
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static String post(String url, String json, Callback callback) {
-        try {
-            RequestBody body = RequestBody.create(MEDIA_TYPE, json);
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-            Response response = client.newCall(request).execute();
-
-            Call call = client.newCall(request);
-            call.enqueue(callback);
-
-            return response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static String bowlingJson(String player1, String player2) {
-        return "{'winCondition':'HIGH_SCORE',"
-                + "'name':'Bowling',"
-                + "'round':4,"
-                + "'lastSaved':1367702411696,"
-                + "'dateStarted':1367702378785,"
-                + "'players':["
-                + "{'name':'" + player1 + "','history':[10,8,6,7,8],'color':-13388315,'total':39},"
-                + "{'name':'" + player2 + "','history':[6,10,5,10,10],'color':-48060,'total':41}"
-                + "]}";
-    }
-
 
     public static void get(final Activity activity, final String url, final HttpCallback httpCallback) {
         Request request = new Request.Builder()

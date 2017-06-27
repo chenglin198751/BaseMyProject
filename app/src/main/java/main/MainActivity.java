@@ -44,11 +44,14 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("key", "7bc922a36370604b885df9eb15a7b147");
+                map.put("location", "116.481488,39.990464");
+                map.put("keywords", "超市");
 
                 String url = "http://restapi.amap.com/v3/place/around";
 
-
-                HttpUtils.get(MainActivity.this, url, new HttpCallback() {
+                HttpUtils.post(MainActivity.this, url, map, new HttpCallback() {
                     @Override
                     public void onFailure(IOException e) {
 
@@ -56,12 +59,10 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onSuccess(String result) {
-                        TestModel model = gson.fromJson(result, new TypeToken<TestModel>() {
-                        }.getType());
-
-                        Log.v("tag_2", model.status);
+                        Log.v("tag_2", result);
                     }
                 });
+
 
             }
         });
@@ -79,7 +80,6 @@ public class MainActivity extends BaseActivity {
 
 
     }
-
 
 
 }
