@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.Call;
@@ -29,9 +30,11 @@ import utils.Constants;
  */
 
 public class HttpUtils {
-    public static final MediaType MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
     public static final OkHttpClient client = new OkHttpClient();
 
+    /**
+     * 通用的post请求，当Activity finish后，不会再返回请求结果
+     */
     public static void post(final Activity activity, String url, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
 
@@ -70,6 +73,9 @@ public class HttpUtils {
         });
     }
 
+    /**
+     * 通用的get请求，当Activity finish后，不会再返回请求结果
+     */
     public static void get(final Activity activity, final String url, final HttpCallback httpCallback) {
         Request request = new Request.Builder()
                 .url(url)
@@ -95,6 +101,9 @@ public class HttpUtils {
         });
     }
 
+    /**
+     * 构建get请求参数
+     */
     public static String buildGetParams(HashMap<String, Object> hashMap) {
         StringBuilder params = new StringBuilder();
         if (hashMap.size() > 0) {
