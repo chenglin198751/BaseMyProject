@@ -1,6 +1,7 @@
 package httpwork;
 
 import android.app.Activity;
+import android.os.Build;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import utils.MyUtils;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -33,14 +35,17 @@ public class HttpUtils {
     public static void post(final Activity activity, String url, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
 
-        if (hashMap.size() > 0) {
-            Iterator iter = hashMap.entrySet().iterator();
-            while (iter.hasNext()) {
-                Map.Entry entry = (Map.Entry) iter.next();
-                Object key = entry.getKey();
-                Object value = entry.getValue();
-                FormBuilder.add(key + "", value + "");
-            }
+        if (hashMap == null) {
+            hashMap = new HashMap<>();
+        }
+        addCommonData(hashMap);
+
+        Iterator iter = hashMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            FormBuilder.add(key + "", value + "");
         }
         RequestBody body = FormBuilder.build();
         Request request = new Request.Builder()
@@ -100,7 +105,7 @@ public class HttpUtils {
     /**
      * 通用的上传图片
      */
-    public void uploadImage(String reqUrl, Map<String, String> params, String picKey, String filePath) {
+    public void uploadImage(String reqUrl, HashMap<String, Object> params, String picKey, String filePath) {
         if (TextUtils.isEmpty(filePath)) {
             return;
         }
@@ -108,13 +113,19 @@ public class HttpUtils {
         if (file == null || !file.exists()) {
             return;
         }
+
+        if (params == null) {
+            params = new HashMap<>();
+        }
+        addCommonData(params);
+
         MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder();
         multipartBodyBuilder.setType(MultipartBody.FORM);
 
         //遍历map中所有参数到builder
         if (params != null) {
             for (String key : params.keySet()) {
-                multipartBodyBuilder.addFormDataPart(key, params.get(key));
+                multipartBodyBuilder.addFormDataPart(key, params.get(key) + "");
             }
         }
 
@@ -143,23 +154,42 @@ public class HttpUtils {
     }
 
     /**
+     * 通用字段
+     */
+    private static void addCommonData(HashMap<String, Object> params) {
+        params.put("IMEI", MyUtils.getDeviceId());
+        params.put("product", Build.MODEL);
+        params.put("sdkVer", Build.VERSION.SDK_INT);
+        params.put("appVer", MyUtils.getVerCode());
+        params.put("appVerName", MyUtils.getVerName());
+        params.put("phone", "android");
+        params.put("channel", MyUtils.getChannel());
+        params.put("packageName", MyUtils.getPackageName());
+    }
+
+
+    /**
      * 构建get请求参数
      */
     public static String buildGetParams(HashMap<String, Object> hashMap) {
+        if (hashMap == null) {
+            hashMap = new HashMap<>();
+        }
+        addCommonData(hashMap);
+
         StringBuilder params = new StringBuilder();
-        if (hashMap.size() > 0) {
-            Iterator iter = hashMap.entrySet().iterator();
-            while (iter.hasNext()) {
-                Map.Entry entry = (Map.Entry) iter.next();
-                Object key = entry.getKey();
-                Object value = entry.getValue();
-                if (params.length() <= 0) {
-                    params.append("?" + key + "=" + value);
-                } else {
-                    params.append("&" + key + "=" + value);
-                }
+        Iterator iter = hashMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            if (params.length() <= 0) {
+                params.append("?" + key + "=" + value);
+            } else {
+                params.append("&" + key + "=" + value);
             }
         }
+
         return params.toString();
     }
 }

@@ -19,9 +19,9 @@ public class SDCardUtils {
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
-            cachePath = MyApplication.getApplication().getExternalCacheDir().getAbsolutePath();
+            cachePath = MyApplication.getApp().getExternalCacheDir().getAbsolutePath();
         } else {
-            cachePath = MyApplication.getApplication().getFilesDir().getAbsolutePath();
+            cachePath = MyApplication.getApp().getFilesDir().getAbsolutePath();
         }
         return cachePath;
     }

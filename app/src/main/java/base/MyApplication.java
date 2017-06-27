@@ -12,7 +12,7 @@ public class MyApplication extends Application {
     private static MyApplication application = null;
     private ApplicationHelper mAppHelper;
 
-    public static MyApplication getApplication() {
+    public static MyApplication getApp() {
         return application;
     }
 

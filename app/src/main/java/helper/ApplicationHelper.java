@@ -18,7 +18,7 @@ public class ApplicationHelper {
     public static boolean isAppMainProcess() {
         try {
             int pid = android.os.Process.myPid();
-            String process = getAppNameByPID(MyApplication.getApplication(), pid);
+            String process = getAppNameByPID(MyApplication.getApp(), pid);
             if (TextUtils.isEmpty(process)) {
                 return true;
             } else if (PROCESS_NAME.equalsIgnoreCase(process)) {

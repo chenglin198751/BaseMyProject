@@ -13,10 +13,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Spannable;
-import android.text.SpannableString;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -29,14 +28,15 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import base.MyApplication;
 import bean.ApkItem;
 
 public class MyUtils {
     private static Handler mHandler;
+    private static String mStrImei = null;
+    private static String mVerCode = null;
+    private static String mVerName = null;
 
     /**
      * 判断手机是否联网
@@ -330,34 +330,6 @@ public class MyUtils {
 
 
     /**
-     * 根据关键字来把字符串标记为不同颜色
-     *
-     * @param myStr   传入的字符串
-     * @param keyword 要被标记的关键字
-     * @param color   要被标记的颜色
-     * @return SpannableString
-     */
-    public static SpannableString getSpanByKeyword(final String myStr, final String keyword, final int color) {
-        int redColor = MyApplication.getApplication().getResources().getColor(color);
-        SpannableString textSpan = new SpannableString(myStr);
-        if (TextUtils.isEmpty(keyword)) {
-            return textSpan;
-        }
-
-        int index = myStr.indexOf(keyword);
-        while (index >= 0) {
-            textSpan.setSpan(new ForegroundColorSpan(redColor), index, index + keyword.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            int nextIndex = index + keyword.length();
-
-            if (nextIndex <= myStr.length()) {
-                index = myStr.indexOf(keyword, nextIndex);
-            }
-
-        }
-        return textSpan;
-    }
-
-    /**
      * 得到数组中的最小值
      */
     public static long getMinNum(long[] numbers) {
@@ -413,5 +385,59 @@ public class MyUtils {
             }
         }
         return str.toString();
+    }
+
+    /**
+     * 得到自身的versionCode
+     */
+    public static String getVerCode() {
+        if (mVerCode == null) {
+            try {
+                mVerCode = MyApplication.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return mVerCode;
+    }
+
+    /**
+     * 得到自身的versionName
+     */
+    public static String getVerName() {
+        if (mVerName == null) {
+            try {
+                mVerName = MyApplication.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return mVerName;
+    }
+
+    /**
+     * 得到设备的串号
+     */
+    public static String getDeviceId() {
+        if (mStrImei == null) {
+            try {
+                TelephonyManager telephonyManager = (TelephonyManager) MyApplication.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+                mStrImei = telephonyManager.getDeviceId();
+                if (mStrImei == null || mStrImei.length() <= 0) {
+                    mStrImei = Settings.Secure.getString(MyApplication.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return mStrImei;
+    }
+
+    public static String getChannel() {
+        return "";
+    }
+
+    public static String getPackageName() {
+        return MyApplication.getApp().getPackageName();
     }
 }
