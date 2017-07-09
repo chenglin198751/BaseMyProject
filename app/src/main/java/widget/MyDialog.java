@@ -112,7 +112,7 @@ public class MyDialog extends Dialog {
         LinearLayout myView = (LinearLayout) mDialogView.findViewById(R.id.my_custom);
         myView.removeAllViews();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-        int _PX_10 = (int) MyUtils.dip2px(mContext, 10);
+        int _PX_10 = (int) MyUtils.dip2px(10f);
         params.gravity = Gravity.CENTER;
         params.setMargins(_PX_10 * 2, _PX_10, _PX_10 * 2, 0);
         myView.addView(view, params);

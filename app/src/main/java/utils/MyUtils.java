@@ -61,8 +61,8 @@ public class MyUtils {
     /**
      * 将dip转化为px *
      */
-    public static float dip2px(Context context, float dipValue) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, context.getResources().getDisplayMetrics());
+    public static float dip2px(float dipValue) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, MyApplication.getApp().getResources().getDisplayMetrics());
     }
 
     /**
