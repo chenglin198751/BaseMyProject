@@ -6,6 +6,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import cheerly.mybaseproject.R;
 import in.srain.cube.views.ptr.PtrFrameLayout;
@@ -20,11 +21,13 @@ public class CustomRefreshHeader implements PtrUIHandler {
     private Context mContext;
     private View mView;
     private ImageView mLoadingView;
+    private TextView mLoadingTextView;
 
     public CustomRefreshHeader(Context context) {
         mContext = context;
         mView = View.inflate(mContext, R.layout.pull_to_refresh_header, null);
         mLoadingView = (ImageView) mView.findViewById(R.id.image_view);
+        mLoadingTextView = (TextView) mView.findViewById(R.id.text_view);
     }
 
     public View getView() {
@@ -34,6 +37,7 @@ public class CustomRefreshHeader implements PtrUIHandler {
     @Override
     public void onUIReset(PtrFrameLayout frame) {
         stopRotate();
+        mLoadingTextView.setText(R.string.cube_ptr_pull_down_to_refresh);
     }
 
     @Override
@@ -44,17 +48,29 @@ public class CustomRefreshHeader implements PtrUIHandler {
     @Override
     public void onUIRefreshBegin(PtrFrameLayout frame) {
         startRotate();
+        mLoadingTextView.setText(R.string.cube_ptr_refreshing);
     }
 
     @Override
     public void onUIRefreshComplete(PtrFrameLayout frame, boolean isHeader) {
         stopRotate();
+        mLoadingTextView.setText(R.string.cube_ptr_refresh_complete);
     }
 
     @Override
     public void onUIPositionChange(PtrFrameLayout frame, boolean isUnderTouch, byte status, PtrIndicator ptrIndicator) {
         float currentPercent = Math.min(1f, ptrIndicator.getCurrentPercent());
         mLoadingView.setRotation(currentPercent * 360f);
+
+        final int mOffsetToRefresh = frame.getOffsetToRefresh();
+        final int currentPos = ptrIndicator.getCurrentPosY();
+        final int lastPos = ptrIndicator.getLastPosY();
+
+        if (currentPos > mOffsetToRefresh && lastPos <= mOffsetToRefresh) {
+            if (isUnderTouch && status == PtrFrameLayout.PTR_STATUS_PREPARE) {
+                mLoadingTextView.setText(R.string.cube_ptr_release_to_refresh);
+            }
+        }
     }
 
     private void startRotate() {

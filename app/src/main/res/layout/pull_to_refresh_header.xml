@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="20dp"
-    android:paddingTop="20dp">
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingBottom="12dp"
+    android:paddingTop="12dp">
 
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:src="@mipmap/loading_icon" />
-</RelativeLayout>
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="@string/cube_ptr_pull_down_to_refresh"
+        android:textColor="@color/fc_2" />
+</LinearLayout>
