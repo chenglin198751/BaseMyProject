@@ -43,6 +43,8 @@ public class CustomRefreshFooter implements PtrUIHandler {
 
     @Override
     public void onUIRefreshPrepare(PtrFrameLayout frame) {
+        stopRotate();
+        mLoadingTextView.setText(R.string.cube_ptr_pull_up_to_load);
     }
 
     @Override
@@ -66,7 +68,11 @@ public class CustomRefreshFooter implements PtrUIHandler {
         final int currentPos = ptrIndicator.getCurrentPosY();
         final int lastPos = ptrIndicator.getLastPosY();
 
-        if (currentPos > mOffsetToRefresh && lastPos <= mOffsetToRefresh) {
+        if (currentPos < mOffsetToRefresh && lastPos >= mOffsetToRefresh) {
+            if (isUnderTouch && status == PtrFrameLayout.PTR_STATUS_PREPARE) {
+                mLoadingTextView.setText(R.string.cube_ptr_pull_up_to_load);
+            }
+        } else if (currentPos > mOffsetToRefresh && lastPos <= mOffsetToRefresh) {
             if (isUnderTouch && status == PtrFrameLayout.PTR_STATUS_PREPARE) {
                 mLoadingTextView.setText(R.string.cube_ptr_release_to_refresh);
             }

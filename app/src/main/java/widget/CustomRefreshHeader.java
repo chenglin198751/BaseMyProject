@@ -42,7 +42,8 @@ public class CustomRefreshHeader implements PtrUIHandler {
 
     @Override
     public void onUIRefreshPrepare(PtrFrameLayout frame) {
-
+        stopRotate();
+        mLoadingTextView.setText(R.string.cube_ptr_pull_down_to_refresh);
     }
 
     @Override
@@ -66,7 +67,11 @@ public class CustomRefreshHeader implements PtrUIHandler {
         final int currentPos = ptrIndicator.getCurrentPosY();
         final int lastPos = ptrIndicator.getLastPosY();
 
-        if (currentPos > mOffsetToRefresh && lastPos <= mOffsetToRefresh) {
+        if (currentPos < mOffsetToRefresh && lastPos >= mOffsetToRefresh) {
+            if (isUnderTouch && status == PtrFrameLayout.PTR_STATUS_PREPARE) {
+                mLoadingTextView.setText(R.string.cube_ptr_pull_down_to_refresh);
+            }
+        } else if (currentPos > mOffsetToRefresh && lastPos <= mOffsetToRefresh) {
             if (isUnderTouch && status == PtrFrameLayout.PTR_STATUS_PREPARE) {
                 mLoadingTextView.setText(R.string.cube_ptr_release_to_refresh);
             }
