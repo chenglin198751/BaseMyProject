@@ -37,6 +37,8 @@ public class PullDownRefreshActivity extends BaseActivity {
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        mAdapter.clear();
+                        setData(15, true);
                         mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
@@ -44,10 +46,10 @@ public class PullDownRefreshActivity extends BaseActivity {
 
             @Override
             public void onLoadMore() {
-                Log.v("tag_3", "onLoadMoreBegin");
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        setData(5, false);
                         mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
@@ -57,13 +59,21 @@ public class PullDownRefreshActivity extends BaseActivity {
 
         mAdapter = new MyAdapter(this);
         mListView.setAdapter(mAdapter);
+        setData(15, true);
+    }
 
+    private void setData(int count, boolean isRefresh) {
         List<String> list = new ArrayList<String>();
-        for (int i = 0; i < 20; i++) {
-            list.add("" + i);
+        for (int i = 0; i < count; i++) {
+            list.add("" + (mAdapter.getCount() + i));
         }
-        mAdapter.setDataList(list);
-        mAdapter.notifyDataSetChanged();
+
+        if (isRefresh) {
+            mAdapter.setDataList(list);
+        } else {
+            mAdapter.appendDataList(list);
+        }
+
     }
 
     private class MyAdapter extends MyBaseAdapter<String> {
