@@ -26,4 +26,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.squareup.okio:okio:1.13.0'
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'in.srain.cube:ptr-load-more:1.0.6'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
 }

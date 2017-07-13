@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:padding="5dip"
+        android:text="标题"
+        android:textColor="@color/text_gray_2"
+        android:textSize="@dimen/ur_text_size_5.5" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:padding="5dip"
+        android:text="北风卷地白草折，胡天八月即飞雪"
+        android:textColor="@color/text_gray_2"
+        android:textSize="@dimen/ur_text_size_4_5" />
+</LinearLayout>
