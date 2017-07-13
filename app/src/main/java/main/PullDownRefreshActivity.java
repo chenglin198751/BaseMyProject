@@ -14,10 +14,6 @@ import java.util.List;
 import base.BaseActivity;
 import base.MyBaseAdapter;
 import cheerly.mybaseproject.R;
-import in.srain.cube.views.ptr.PtrDefaultHandler;
-import in.srain.cube.views.ptr.PtrDefaultHandler2;
-import in.srain.cube.views.ptr.PtrFrameLayout;
-import in.srain.cube.views.ptr.PtrHandler2;
 import widget.PullToRefresh;
 
 public class PullDownRefreshActivity extends BaseActivity {
@@ -41,7 +37,6 @@ public class PullDownRefreshActivity extends BaseActivity {
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.v("tag_3","refreshComplete");
                         mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
@@ -49,11 +44,11 @@ public class PullDownRefreshActivity extends BaseActivity {
 
             @Override
             public void onLoadMore() {
+                Log.v("tag_3", "onLoadMoreBegin");
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.v("tag_3","onLoadMoreBegin");
-//                        mPullToRefresh.refreshComplete();
+                        mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
             }

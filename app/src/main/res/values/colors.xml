@@ -11,6 +11,9 @@
     <color name="text_blue">#7b64a8</color>
     <color name="text_gray_1">#a09da7</color>
     <color name="text_gray_2">#554d5a</color>
+    <color name="fc_1">#333333</color>
+    <color name="fc_2">#666666</color>
+    <color name="fc_3">#999999</color>
 
     <!--  -->
     <color name="view_bg">#ede8f0</color>

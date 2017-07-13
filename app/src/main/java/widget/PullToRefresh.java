@@ -68,7 +68,7 @@ public class PullToRefresh extends PtrFrameLayout {
         setResistance(1.5f);
 
         //触发刷新时移动的位置比例 --默认，1.2f，移动达到头部高度1.2倍时可触发刷新操作。
-        setRatioOfHeaderHeightToRefresh(1.1f);
+        setRatioOfHeaderHeightToRefresh(1.2f);
 
         //回弹延时 --默认 200ms，回弹到刷新高度所用时间
         setDurationToClose(200);
@@ -91,11 +91,8 @@ public class PullToRefresh extends PtrFrameLayout {
         setHeaderView(header.getView());
         addPtrUIHandler(header);
 
-        StoreHouseHeader footer = new StoreHouseHeader(getContext());
-        footer.setPadding(0, (int) MyUtils.dip2px(20f), 0, (int) MyUtils.dip2px(20f));
-        footer.initWithString("Ultra Footer");
-        footer.setTextColor(Color.RED);
-        setFooterView(footer);
+        CustomRefreshFooter footer = new CustomRefreshFooter(getContext());
+        setFooterView(footer.getView());
         addPtrUIHandler(footer);
     }
 
