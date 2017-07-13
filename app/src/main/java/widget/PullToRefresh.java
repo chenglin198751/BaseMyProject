@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 
-import cheerly.mybaseproject.R;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrDefaultHandler2;
 import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler2;
 import in.srain.cube.views.ptr.header.StoreHouseHeader;
 import utils.MyUtils;
 
@@ -17,6 +19,7 @@ import utils.MyUtils;
  */
 
 public class PullToRefresh extends PtrFrameLayout {
+
     public PullToRefresh(Context context) {
         super(context);
         init();
@@ -32,6 +35,34 @@ public class PullToRefresh extends PtrFrameLayout {
         init();
     }
 
+    public void setListener(final onListener listener) {
+        setPtrHandler(new PtrHandler2() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
+            }
+
+            @Override
+            public boolean checkCanDoLoadMore(PtrFrameLayout frame, View content, View footer) {
+                return PtrDefaultHandler2.checkContentCanBePulledUp(frame, content, footer);
+            }
+
+            @Override
+            public void onLoadMoreBegin(PtrFrameLayout frame) {
+                if (listener != null) {
+                    listener.onLoadMore();
+                }
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                if (listener != null) {
+                    listener.onRefresh();
+                }
+            }
+        });
+    }
+
     private void init() {
         //阻尼系数 --默认: 1.7f，越大，感觉下拉时越吃力。
         setResistance(1.5f);
@@ -42,8 +73,8 @@ public class PullToRefresh extends PtrFrameLayout {
         //回弹延时 --默认 200ms，回弹到刷新高度所用时间
         setDurationToClose(200);
 
-        //头部回弹时间 --默认1000ms
-        setDurationToCloseHeader(800);
+        //头部回弹时间 --默认1000ms--千万不能设置的超过500，否则会出现立刻下拉不刷新的bug
+        setDurationToCloseHeader(500);
 
         //下拉刷新-- true为距离触发刷新；false为释放刷新
         setPullToRefresh(false);
@@ -56,20 +87,6 @@ public class PullToRefresh extends PtrFrameLayout {
     }
 
     private void addHeaderFooter() {
-//        StoreHouseHeader header = new StoreHouseHeader(getContext());
-//        header.setPadding(0, (int) MyUtils.dip2px(20f), 0, (int) MyUtils.dip2px(20f));
-//        header.initWithString("Pull Down Refresh");
-//        header.setTextColor(Color.RED);
-//        setHeaderView(header);
-//        addPtrUIHandler(header);
-//
-//        StoreHouseHeader footer = new StoreHouseHeader(getContext());
-//        footer.setPadding(0, (int) MyUtils.dip2px(20f), 0, (int) MyUtils.dip2px(20f));
-//        footer.initWithString("Ultra Footer");
-//        footer.setTextColor(Color.RED);
-//        setFooterView(footer);
-//        addPtrUIHandler(footer);
-
         CustomRefreshHeader header = new CustomRefreshHeader(getContext());
         setHeaderView(header.getView());
         addPtrUIHandler(header);
@@ -80,5 +97,11 @@ public class PullToRefresh extends PtrFrameLayout {
         footer.setTextColor(Color.RED);
         setFooterView(footer);
         addPtrUIHandler(footer);
+    }
+
+    public interface onListener {
+        void onRefresh();
+
+        void onLoadMore();
     }
 }

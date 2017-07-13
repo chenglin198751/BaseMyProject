@@ -35,39 +35,30 @@ public class PullDownRefreshActivity extends BaseActivity {
 
         mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
 
-        mPullToRefresh.setPtrHandler(new PtrHandler2() {
+        mPullToRefresh.setListener(new PullToRefresh.onListener() {
             @Override
-            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
-                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
-            }
-
-            @Override
-            public boolean checkCanDoLoadMore(PtrFrameLayout frame, View content, View footer) {
-                return PtrDefaultHandler2.checkContentCanBePulledUp(frame, content, footer);
-            }
-
-            @Override
-            public void onLoadMoreBegin(PtrFrameLayout frame) {
-                Log.v("tag_2","onLoadMoreBegin");
+            public void onRefresh() {
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        Log.v("tag_3","refreshComplete");
                         mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
             }
 
             @Override
-            public void onRefreshBegin(PtrFrameLayout frame) {
-                Log.d("tag_2","onRefreshBegin");
+            public void onLoadMore() {
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mPullToRefresh.refreshComplete();
+                        Log.v("tag_3","onLoadMoreBegin");
+//                        mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
             }
         });
+
 
         mAdapter = new MyAdapter(this);
         mListView.setAdapter(mAdapter);
