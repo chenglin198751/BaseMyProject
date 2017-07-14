@@ -2,7 +2,6 @@ package main;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -14,7 +13,7 @@ import java.util.List;
 import base.BaseActivity;
 import base.MyBaseAdapter;
 import cheerly.mybaseproject.R;
-import widget.PullToRefresh;
+import view.PullToRefresh;
 
 public class PullDownRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;

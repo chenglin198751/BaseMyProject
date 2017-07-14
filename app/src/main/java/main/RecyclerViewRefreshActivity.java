@@ -4,21 +4,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import base.BaseActivity;
-import base.MyBaseAdapter;
 import cheerly.mybaseproject.R;
-import widget.PullToRefresh;
+import view.PullToRefresh;
 
 public class RecyclerViewRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <widget.PullToRefresh
+    <view.PullToRefresh
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -17,5 +17,5 @@
             android:layout_height="match_parent"
             android:background="#ffffff" />
 
-    </widget.PullToRefresh>
+    </view.PullToRefresh>
 </LinearLayout>

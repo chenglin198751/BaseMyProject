@@ -1,7 +1,6 @@
-package widget;
+package view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -9,8 +8,6 @@ import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrDefaultHandler2;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler2;
-import in.srain.cube.views.ptr.header.StoreHouseHeader;
-import utils.MyUtils;
 
 /**
  * 地址：https://github.com/captainbupt/android-Ultra-Pull-To-Refresh-With-Load-More

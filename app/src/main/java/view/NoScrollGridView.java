@@ -1,4 +1,4 @@
-package widget;
+package view;
 
 import android.widget.GridView;
 
