@@ -61,8 +61,8 @@ public class CustomRefreshFooter implements PtrUIHandler {
 
     @Override
     public void onUIPositionChange(PtrFrameLayout frame, boolean isUnderTouch, byte status, PtrIndicator ptrIndicator) {
-        float currentPercent = Math.min(1f, ptrIndicator.getCurrentPercent());
-        mLoadingView.setRotation(currentPercent * 360f);
+//        float currentPercent = Math.min(1f, ptrIndicator.getCurrentPercent());
+        mLoadingView.setRotation(ptrIndicator.getCurrentPercent() * 240f);
 
         final int mOffsetToRefresh = frame.getOffsetToRefresh();
         final int currentPos = ptrIndicator.getCurrentPosY();
