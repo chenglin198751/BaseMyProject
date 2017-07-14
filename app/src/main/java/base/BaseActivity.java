@@ -36,6 +36,10 @@ public class BaseActivity extends Activity {
 
         setContentView(R.layout.base_activity_layout);
         mTitleHelper = new MainTitleHelper(this);
+
+        if (getTitle() != null){
+            mTitleHelper.setTitle(getTitle().toString());
+        }
     }
 
     /**

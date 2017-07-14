@@ -16,7 +16,7 @@ public class MainActivity extends BaseActivity {
 
         getTitleHelper().setTitle("测试");
 
-        startActivity(new Intent(this, PullDownRefreshActivity.class));
+        startActivity(new Intent(this, RecyclerViewRefreshActivity.class));
         finish();
     }
 
