@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,7 +14,9 @@ import java.util.List;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import utils.MyUtils;
 import view.PullToRefresh;
+import view.WebImageView;
 
 public class RecyclerViewRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;
@@ -66,7 +69,7 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
     private void setData(int count, boolean isRefresh) {
         List<String> list = new ArrayList<String>();
         for (int i = 0; i < count; i++) {
-            list.add("" + (mAdapter.getItemCount() + i));
+            list.add("http://imgsrc.baidu.com/image/c0%3Dshijue%2C0%2C0%2C245%2C40/sign=b61c57bf06f431ada8df4b7a235fc6da/b58f8c5494eef01f3e82aae8eafe9925bc317d0c.jpg");
         }
 
         if (isRefresh) {
@@ -125,15 +128,18 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
         class ListHolder extends RecyclerView.ViewHolder {
             TextView title;
             TextView content;
+            WebImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
                 title = (TextView) itemView.findViewById(R.id.title);
                 content = (TextView) itemView.findViewById(R.id.content);
+                imageView= (WebImageView) itemView.findViewById(R.id.image_view);
             }
 
             public void setData(int position) {
                 title.setText("标题 " + position);
+                imageView.load(dataList.get(position), MyUtils.dip2px(100f),MyUtils.dip2px(100f));
             }
 
 
