@@ -1,18 +1,3 @@
-/**
- * Copyright (c) 2012-2013, Michael Yang 杨福海 (www.yangfuhai.com).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package utils;
 
 import java.io.BufferedReader;
@@ -20,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -48,38 +34,48 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 /**
- * @author Michael Yang（www.yangfuhai.com） update at 2013.08.07
+ * @see* https://github.com/yangfuhai/ASimpleCache
+ * @<code> 存储：
+ * EasyCache mCache = EasyCache.get(this);
+ * mCache.put("test_key1", "test value");
+ * mCache.put("test_key2", "test value", 10);//保存10秒，如果超过10秒去获取这个key，将为null
+ * mCache.put("test_key3", "test value", 2 * EasyCache.TIME_DAY);//保存两天，如果超过两天去获取这个key，将为null
+ * <p>
+ * 获取：
+ * EasyCache mCache = EasyCache.get(this);
+ * String value = mCache.getAsString("test_key1");
+ * </code>
  */
-public class ACache {
+public class EasyCache {
 	public static final int TIME_HOUR = 60 * 60;
 	public static final int TIME_DAY = TIME_HOUR * 24;
 	private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb
 	private static final int MAX_COUNT = Integer.MAX_VALUE; // 不限制存放数据的数量
-	private static Map<String, ACache> mInstanceMap = new HashMap<String, ACache>();
+	private static Map<String, EasyCache> mInstanceMap = new HashMap<String, EasyCache>();
 	private ACacheManager mCache;
 
-	public static ACache get(Context ctx) {
+	public static EasyCache get(Context ctx) {
 		return get(ctx, "ACache");
 	}
 
-	public static ACache get(Context ctx, String cacheName) {
+	public static EasyCache get(Context ctx, String cacheName) {
 		File f = new File(ctx.getCacheDir(), cacheName);
 		return get(f, MAX_SIZE, MAX_COUNT);
 	}
 
-	public static ACache get(File cacheDir) {
+	public static EasyCache get(File cacheDir) {
 		return get(cacheDir, MAX_SIZE, MAX_COUNT);
 	}
 
-	public static ACache get(Context ctx, long max_zise, int max_count) {
+	public static EasyCache get(Context ctx, long max_zise, int max_count) {
 		File f = new File(ctx.getCacheDir(), "ACache");
 		return get(f, max_zise, max_count);
 	}
 
-	public static ACache get(File cacheDir, long max_zise, int max_count) {
-		ACache manager = mInstanceMap.get(cacheDir.getAbsoluteFile() + myPid());
+	public static EasyCache get(File cacheDir, long max_zise, int max_count) {
+		EasyCache manager = mInstanceMap.get(cacheDir.getAbsoluteFile() + myPid());
 		if (manager == null) {
-			manager = new ACache(cacheDir, max_zise, max_count);
+			manager = new EasyCache(cacheDir, max_zise, max_count);
 			mInstanceMap.put(cacheDir.getAbsolutePath() + myPid(), manager);
 		}
 		return manager;
@@ -89,7 +85,7 @@ public class ACache {
 		return "_" + android.os.Process.myPid();
 	}
 
-	private ACache(File cacheDir, long max_size, int max_count) {
+	private EasyCache(File cacheDir, long max_size, int max_count) {
 		if (!cacheDir.exists() && !cacheDir.mkdirs()) {
 			throw new RuntimeException("can't make dirs in "
 					+ cacheDir.getAbsolutePath());
