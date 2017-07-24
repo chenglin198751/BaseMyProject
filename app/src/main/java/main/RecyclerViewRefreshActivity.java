@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -140,6 +141,14 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
             public void setData(int position) {
                 title.setText("标题 " + position);
                 imageView.load(dataList.get(position), MyUtils.dip2px(100f),MyUtils.dip2px(100f));
+
+                imageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.v("tag_2","imageView.getWidth() = " + imageView.getWidth());
+                        Log.v("tag_2","imageView.getHeight() = " + imageView.getHeight());
+                    }
+                });
             }
 
 

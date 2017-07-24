@@ -4,22 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/store_house_ptr_image_content"
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="300dp"
+        android:layout_height="300dp" />
+
+    <Button
+        android:id="@+id/button"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffcccc"
-        android:clickable="true"
-        android:orientation="vertical"
-        android:padding="10dp">
-
-        <ImageView
-            android:id="@+id/store_house_ptr_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#ffaaaa" />
-
-    </LinearLayout>
-
+        android:layout_height="60dp" />
 
 </LinearLayout>
