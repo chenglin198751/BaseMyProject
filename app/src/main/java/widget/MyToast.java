@@ -16,6 +16,10 @@ import cheerly.mybaseproject.R;
 public class MyToast {
     private static Toast mToast;
 
+    public static void show(int resId) {
+        show(MyApplication.getApp().getString(resId));
+    }
+
     public static void show(String text) {
         TextView msgTv = null;
         if (mToast == null) {
