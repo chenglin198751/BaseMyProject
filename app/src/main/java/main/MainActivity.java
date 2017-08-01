@@ -3,6 +3,9 @@ package main;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.util.DiffUtil;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -20,24 +23,33 @@ import cheerly.mybaseproject.R;
 import httpwork.HttpUtils;
 import pl.droidsonroids.gif.GifDrawable;
 import utils.EasyCache;
+import utils.MyUtils;
 import widget.MyToast;
 
 public class MainActivity extends BaseActivity {
     private EditText mEdit;
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Log.v("tag_2","aa");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.activity_main);
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyToast.show("今天天气很好啊");
+        finish();
+        startActivity(new Intent(this,FlexBoxTestActivity.class));
+    }
 
-//                MyToast.showToast(MainActivity.this,"今天天气很好啊");
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
