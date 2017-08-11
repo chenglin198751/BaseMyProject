@@ -39,8 +39,8 @@ public class FastBlurUtil {
 
     /**
      * @param view   要被高斯模糊的View 生成的图片
-     * @param scale  对原图的缩放比例：从0.1到1取值，值越小速度越快，值越大速度越慢。大图建议值0.1，小图建议值0.2
-     * @param radius 高斯模糊的程度：从1到100取值。值越小越清晰(速度快)，越大越模糊(速度慢)，建议值10
+     * @param scale  对原图的缩放比例：从0.1到1取值，值越小速度越快，值越大速度越慢。大图建议值0.1~0.2，小图建议值0.2~0.4
+     * @param radius 高斯模糊的程度：从1到100取值。值越小越清晰(速度快)，越大越模糊(速度慢)，建议值10~20
      * @return
      */
     public static void doBlur(final View view, final float scale, final int radius, final OnFinishListener listener) {
