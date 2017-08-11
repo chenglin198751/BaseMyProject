@@ -440,4 +440,32 @@ public class MyUtils {
     public static String getPackageName() {
         return MyApplication.getApp().getPackageName();
     }
+
+    /**
+     * 把View 生成bitmap
+     */
+    public static Bitmap createBitmapByView(View view) {
+        //打开图像缓存
+        view.setDrawingCacheEnabled(true);
+        //必须调用measure和layout方法才能成功保存可视组件的截图到png图像文件
+        //测量View大小
+        if (view.getHeight() <= 0) {
+            view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        } else if (view.getHeight() > 0) {
+            view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
+        }
+        //发送位置和尺寸到View及其所有的子View
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        Bitmap bitmap = null;
+        try {
+            //获得可视组件的截图
+            bitmap = view.getDrawingCache();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
 }

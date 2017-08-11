@@ -2,6 +2,7 @@ package main;
 
 import android.app.DownloadManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,35 +22,32 @@ import java.io.IOException;
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
 import httpwork.HttpUtils;
+import listener.OnFinishListener;
 import pl.droidsonroids.gif.GifDrawable;
 import utils.EasyCache;
+import utils.FastBlurUtil;
 import utils.MyUtils;
 import widget.MyToast;
 
 public class MainActivity extends BaseActivity {
-    private EditText mEdit;
-
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Log.v("tag_2","aa");
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.activity_main);
+        getTitleHelper().hideTitle();
 
-        finish();
-        startActivity(new Intent(this,FlexBoxTestActivity.class));
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override

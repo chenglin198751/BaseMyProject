@@ -4,14 +4,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="300dp"
-        android:layout_height="300dp" />
-
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
-        android:layout_height="60dp" />
+        android:layout_height="20dp"
+        android:background="#ffcccc" />
+
+
+    <ImageView
+        android:id="@+id/image_2"
+        android:layout_width="240dp"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop" />
+
 
 </LinearLayout>
