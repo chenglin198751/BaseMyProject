@@ -38,9 +38,36 @@ public class MyWebViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         getWindow().setFormat(PixelFormat.TRANSLUCENT); //防止网页中的视频闪烁的设置
-        getTitleHelper().hideTitle();
         setContentLayout(R.layout.my_webview_layout);
         init();
+
+        getTitleHelper().setReturnListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mWebView != null && mWebView.canGoBack()) {
+            mWebView.goBack();
+        }else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mWebView != null) {
+            mWebView.destroy();
+        }
+        super.onDestroy();
     }
 
     private void init() {
@@ -143,8 +170,7 @@ public class MyWebViewActivity extends BaseActivity {
         webSetting.setUserAgentString(webSetting.getUserAgentString() + APP_NAME_UA);
 
 
-//        String mIntentUrl = "http://3gqq.qq.com/";
-        String mIntentUrl = "http://w.fengnian.cn/Wallet/download/smallYellowOTest.html";
+        String mIntentUrl = "http://3gqq.qq.com/";
         mWebView.loadUrl(mIntentUrl);
 
 

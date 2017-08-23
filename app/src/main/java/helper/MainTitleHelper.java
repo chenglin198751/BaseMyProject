@@ -61,7 +61,7 @@ public class MainTitleHelper {
     /**
      * 设置左上角返回图片的点击监听事件
      */
-    public void setRuturnListener(View.OnClickListener listener) {
+    public void setReturnListener(View.OnClickListener listener) {
         View image = mTitleView.findViewById(R.id.back_icon);
         image.setOnClickListener(listener);
     }
@@ -69,7 +69,7 @@ public class MainTitleHelper {
     /**
      * 设置左上角的图片
      */
-    public void setRuturnImage(int res) {
+    public void setReturnImage(int res) {
         ImageView image = (ImageView) mTitleView.findViewById(R.id.back_icon);
         image.setImageResource(res);
     }
