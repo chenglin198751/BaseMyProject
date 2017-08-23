@@ -42,6 +42,10 @@ public class BaseActivity extends Activity {
         }
     }
 
+    public Context getContext() {
+        return this;
+    }
+
     /**
      * 设置Activity的内容布局，取代setContentView() 方法
      */
