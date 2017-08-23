@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.tencent.smtt.sdk.QbSdk;
+
 import helper.ApplicationHelper;
 import utils.Constants;
 
@@ -25,7 +27,7 @@ public class MyApplication extends Application {
 
         //只在应用主进程执行
         if (mAppHelper.isAppMainProcess()) {
-
+            QbSdk.initX5Environment(getApplicationContext(), null);
         }
 
     }

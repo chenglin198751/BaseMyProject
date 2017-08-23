@@ -16,7 +16,7 @@
         <RelativeLayout
             android:id="@+id/title_template"
             android:layout_width="fill_parent"
-            android:layout_height="60dip">
+            android:layout_height="45dip">
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -31,9 +31,9 @@
                     android:ellipsize="end"
                     android:gravity="left"
                     android:singleLine="true"
-                    android:text="@string/app_name"
+                    android:text="提示"
                     android:textColor="@color/text_gray_2"
-                    android:textSize="@dimen/ur_text_size_6" />
+                    android:textSize="@dimen/ur_text_size_5.5" />
             </LinearLayout>
 
             <View
@@ -42,7 +42,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="20dip"
                 android:layout_marginRight="20dip"
-                android:background="@color/text_gray_1" />
+                android:background="@color/fc_3" />
         </RelativeLayout>
 
         <LinearLayout
@@ -64,7 +64,10 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="left"
-                    android:padding="5dip"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="10dp"
                     android:textColor="@color/text_gray_2"
                     android:textSize="@dimen/ur_text_size_5.5" />
             </ScrollView>
@@ -90,7 +93,7 @@
                 android:singleLine="true"
                 android:text="@string/ok"
                 android:textColor="@color/text_gray_2"
-                android:textSize="@dimen/ur_text_size_6" />
+                android:textSize="@dimen/ur_text_size_5.5" />
 
             <Button
                 android:id="@+id/button_cancel"
@@ -104,7 +107,7 @@
                 android:singleLine="true"
                 android:text="@string/cancel"
                 android:textColor="@color/text_color_white"
-                android:textSize="@dimen/ur_text_size_6" />
+                android:textSize="@dimen/ur_text_size_5.5" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
