@@ -27,7 +27,7 @@
         android:padding="5dip"
         android:text="标题"
         android:textColor="@color/text_gray_2"
-        android:textSize="@dimen/ur_text_size_5.5" />
+        android:textSize="@dimen/font_size_6" />
 
     <TextView
         android:id="@+id/content"
@@ -39,5 +39,5 @@
         android:padding="5dip"
         android:text="北风卷地白草折，胡天八月即飞雪"
         android:textColor="@color/text_gray_2"
-        android:textSize="@dimen/ur_text_size_4_5" />
+        android:textSize="@dimen/font_size_3" />
 </RelativeLayout>

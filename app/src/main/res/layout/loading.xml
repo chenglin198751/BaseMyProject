@@ -63,7 +63,7 @@
             android:background="@drawable/purple_button"
             android:text="网络设置"
             android:textColor="@color/text_color_white"
-            android:textSize="@dimen/ur_text_size_6" >
+            android:textSize="@dimen/font_size_8" >
         </Button>
     </LinearLayout>
 

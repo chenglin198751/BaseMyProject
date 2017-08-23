@@ -6,27 +6,24 @@
     <dimen name="button_height">45dip</dimen>
     <dimen name="two_lin_item_height">60dip</dimen>
     <dimen name="dialog_selected_item_height">40dip</dimen>
-
     <!-- 这里是为不同分辨率定义不同的dimens到此结束 -->
 
 
     <!-- 自己定义的字号，ur_text_size_4 为四号字 -->
-    <dimen name="ur_text_size_3">10dip</dimen>
-    <dimen name="ur_text_size_4">12dip</dimen>
-    <dimen name="ur_text_size_4_5">13dip</dimen>
-    <dimen name="ur_text_size_5">14dip</dimen>
-    <dimen name="ur_text_size_5.5">16dip</dimen>
-    <dimen name="ur_text_size_6">18dip</dimen>
-    <dimen name="ur_text_size_7">20dip</dimen>
-    <dimen name="ur_text_size_8">22.5dip</dimen>
-    <dimen name="ur_text_size_9">24dip</dimen>
-    <dimen name="ur_text_size_10">26dip</dimen>
-    <dimen name="ur_text_size_11">30dip</dimen>
-    <dimen name="ur_text_size_11_5">32.5dip</dimen>
-    <dimen name="ur_text_size_14">33dip</dimen>
+    <dimen name="font_size_1">10dip</dimen>
+    <dimen name="font_size_2">12dip</dimen>
+    <dimen name="font_size_3">13dip</dimen>
+    <dimen name="font_size_4">14dip</dimen>
+    <dimen name="font_size_5">15dip</dimen>
+    <dimen name="font_size_6">16dip</dimen>
+    <dimen name="font_size_7">17dip</dimen>
+    <dimen name="font_size_8">18dip</dimen>
+    <dimen name="font_size_9">19dip</dimen>
+    <dimen name="font_size_10">20dip</dimen>
+    <!-- 自定义字号到此结束 -->
+
     <dimen name="item_divide_height">0.6dip</dimen>
     <dimen name="return_image_size">23dip</dimen>
-    <!-- 自定义字号到此结束 -->
     <dimen name="view_page_space">10dip</dimen>
     <dimen name="on_off_width">65dip</dimen>
     <dimen name="text_title_padding_left">15dip</dimen>
