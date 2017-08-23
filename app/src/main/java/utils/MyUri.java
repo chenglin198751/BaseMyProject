@@ -23,7 +23,7 @@ public class MyUri {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             context.startActivity(intent);
         } else if (uri.toLowerCase().startsWith("http://") || uri.toLowerCase().startsWith("https://")) {
-            Uri webUri = Uri.parse("mls://webview?url=" + uri);
+            Uri webUri = Uri.parse(URI_WEBVIEW + "?url=" + uri);
             Intent intent = new Intent(Intent.ACTION_VIEW, webUri);
             context.startActivity(intent);
         }
