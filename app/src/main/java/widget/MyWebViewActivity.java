@@ -1,16 +1,12 @@
 package widget;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
 import com.tencent.smtt.export.external.interfaces.JsResult;
@@ -32,6 +28,7 @@ import cheerly.mybaseproject.R;
 public class MyWebViewActivity extends BaseActivity {
     private WebView mWebView;
     private ProgressBar mPageLoadingProgressBar = null;
+    private String mUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +36,7 @@ public class MyWebViewActivity extends BaseActivity {
 
         getWindow().setFormat(PixelFormat.TRANSLUCENT); //防止网页中的视频闪烁的设置
         setContentLayout(R.layout.my_webview_layout);
+        parseSchema();
         init();
 
         getTitleHelper().setReturnListener(new View.OnClickListener() {
@@ -49,11 +47,18 @@ public class MyWebViewActivity extends BaseActivity {
         });
     }
 
+    private void parseSchema() {
+        Uri uri = getIntent().getData();
+        if (uri != null) {
+            mUrl = uri.getQueryParameter("url");
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if (mWebView != null && mWebView.canGoBack()) {
             mWebView.goBack();
-        }else {
+        } else {
             super.onBackPressed();
         }
     }
@@ -168,11 +173,7 @@ public class MyWebViewActivity extends BaseActivity {
         webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
         String APP_NAME_UA = "";//自定义UA
         webSetting.setUserAgentString(webSetting.getUserAgentString() + APP_NAME_UA);
-
-
-        String mIntentUrl = "http://3gqq.qq.com/";
-        mWebView.loadUrl(mIntentUrl);
-
+        mWebView.loadUrl(mUrl);
 
         CookieSyncManager.createInstance(this);
         CookieSyncManager.getInstance().sync();

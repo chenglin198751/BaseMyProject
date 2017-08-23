@@ -1,12 +1,14 @@
 package main;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import utils.MyUri;
 import widget.MyWebViewActivity;
 
 public class MainActivity extends BaseActivity {
@@ -20,7 +22,11 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, MyWebViewActivity.class));
+//                Uri uri = Uri.parse("mls://webview?url=" + "http://qq.com");
+//                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//                startActivity(intent);
+
+                MyUri.start(MainActivity.this,"mls://webview");
             }
         });
     }
