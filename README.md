@@ -11,7 +11,7 @@
 。还有，这里面有一句话叫做mAppHelper.isAppMainProcess() ，是判断的主UI 进程的。因为Application的onCreate()有多少个进程就会执行多少次，而有些代码我们只需要在UI 进程执行，所以这里可以用上述
 方法判断。
 
-**5、MyBaseAdapter 类 **：对BaseAdapter简单的封装了下，统一了增加数据，删除数据的方法。不用大家每个adapter都要写增删数据的方法，使用也很简单。为了以后的维护方便，建议大家都使用这个作为
+**5、MyBaseAdapter 类**：对BaseAdapter简单的封装了下，统一了增加数据，删除数据的方法。不用大家每个adapter都要写增删数据的方法，使用也很简单。为了以后的维护方便，建议大家都使用这个作为
 baseAdapter 。
 
 **6、HttpUtils 类**：Http请求类，是基于OKHttp3封装的，让使用起来变的很简单，一眼就知道怎么用。
