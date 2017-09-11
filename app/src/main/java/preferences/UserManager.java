@@ -3,24 +3,26 @@ package preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import base.MyApplication;
+
 public class UserManager {
 
 	private static SharedPreferences getPreferences(final Context context) {
 		return context.getSharedPreferences("user_manager", Context.MODE_PRIVATE);
 	}
 
-	/** 最后的登录人ID */
-	private static final String lastLoginId = "lastLoginId";
+	/** 登录ID */
+	private static final String uid = "uid";
 
-	public static void setLastLoginId(final Context context, String lastLogin) {
-		SharedPreferences prefs = getPreferences(context);
+	public static void setUid(String lastLogin) {
+		SharedPreferences prefs = getPreferences(MyApplication.getApp());
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(lastLoginId, lastLogin);
+		editor.putString(uid, lastLogin);
 		editor.commit();
 	}
 
-	public static String getLastLoginId(final Context context) {
-		return getPreferences(context).getString(lastLoginId, "");
+	public static String getUid() {
+		return getPreferences(MyApplication.getApp()).getString(uid, "");
 	}
 
 }

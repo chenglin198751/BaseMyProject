@@ -3,24 +3,28 @@ package preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import base.MyApplication;
+
 public class PreferencesData {
 
-	private static SharedPreferences getPreferences(final Context context) {
-		return context.getSharedPreferences("preference_1", Context.MODE_PRIVATE);
-	}
+    private static SharedPreferences getPreferences(final Context context) {
+        return context.getSharedPreferences("preference_1", Context.MODE_PRIVATE);
+    }
 
-	/** 最后的登录人ID */
-	private static final String lastLoginId = "lastLoginId";
+    /**
+     * 测试key
+     */
+    private static final String testKey = "testKey";
 
-	public static void setLastLoginId(final Context context, String lastLogin) {
-		SharedPreferences prefs = getPreferences(context);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(lastLoginId, lastLogin);
-		editor.commit();
-	}
+    public static void setTest(String value) {
+        SharedPreferences prefs = getPreferences(MyApplication.getApp());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(testKey, value);
+        editor.commit();
+    }
 
-	public static String getLastLoginId(final Context context) {
-		return getPreferences(context).getString(lastLoginId, "");
-	}
+    public static String getTest() {
+        return getPreferences(MyApplication.getApp()).getString(testKey, "");
+    }
 
 }
