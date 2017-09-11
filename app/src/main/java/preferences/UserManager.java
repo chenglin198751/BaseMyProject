@@ -11,6 +11,10 @@ public class UserManager {
 		return context.getSharedPreferences("user_manager", Context.MODE_PRIVATE);
 	}
 
+	public static void clear(){
+		getPreferences(MyApplication.getApp()).edit().clear().commit();
+	}
+
 	/** 登录ID */
 	private static final String uid = "uid";
 

@@ -11,6 +11,10 @@ public class PreferencesData {
         return context.getSharedPreferences("preference_1", Context.MODE_PRIVATE);
     }
 
+    public static void clear(){
+        getPreferences(MyApplication.getApp()).edit().clear().commit();
+    }
+
     /**
      * 测试key
      */
