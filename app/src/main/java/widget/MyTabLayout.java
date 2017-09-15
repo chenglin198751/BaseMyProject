@@ -29,6 +29,10 @@ public class MyTabLayout extends TabLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    /**
+     * 手动初始化自定义的TabItem，如果你自定义你自己的TabItem，
+     * 那么不需要调用我的这个方法，你只需要仿照我的这个方法再写一个方法实现即可
+     */
     public void initCustomTabItem(ViewPager viewPager) {
         mViewPager = viewPager;
         for (int index = 0; index < getTabCount(); index++) {
@@ -38,8 +42,21 @@ public class MyTabLayout extends TabLayout {
                 tab.setCustomView(itemView);
                 TextView textView = (TextView) itemView.findViewById(R.id.text);
                 textView.setText(mViewPager.getAdapter().getPageTitle(index));
-                ((ViewGroup)itemView.getParent()).setBackgroundResource(0);
+                ((ViewGroup) itemView.getParent()).setBackgroundResource(0);
             }
         }
+    }
+
+    /**
+     * 返回自定义的TabItem
+     */
+    public View getCustomTabItem(final int currentIndex) {
+        for (int index = 0; index < getTabCount(); index++) {
+            TabLayout.Tab tab = getTabAt(index);
+            if (tab != null && index == currentIndex) {
+                return tab.getCustomView();
+            }
+        }
+        return null;
     }
 }
