@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -23,7 +25,7 @@ import widget.LoadingView;
  *
  * @author weiChengLin 2013-06-20
  */
-public class BaseActivity extends Activity {
+public class BaseActivity extends AppCompatActivity {
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;

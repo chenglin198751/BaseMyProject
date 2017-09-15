@@ -196,14 +196,14 @@ public class MyDialog extends Dialog {
         Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
         if (lightBtn == LEFT_LIGHT) {
             leftButton.setBackgroundResource(R.drawable.purple_button);
-            leftButton.setTextColor(mContext.getResources().getColor(R.color.text_color_white));
+            leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
             rightButton.setBackgroundResource(R.drawable.gray_button);
             rightButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
         } else if (lightBtn == RIGHT_LIGHT) {
             leftButton.setBackgroundResource(R.drawable.gray_button);
             leftButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
             rightButton.setBackgroundResource(R.drawable.purple_button);
-            rightButton.setTextColor(mContext.getResources().getColor(R.color.text_color_white));
+            rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
         }
     }
 
@@ -214,9 +214,9 @@ public class MyDialog extends Dialog {
         Button leftButton = (Button) mDialogView.findViewById(R.id.button_ok);
         Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
         leftButton.setBackgroundResource(R.drawable.purple_button);
-        leftButton.setTextColor(mContext.getResources().getColor(R.color.text_color_white));
+        leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
         rightButton.setBackgroundResource(R.drawable.purple_button);
-        rightButton.setTextColor(mContext.getResources().getColor(R.color.text_color_white));
+        rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
     }
 
 }

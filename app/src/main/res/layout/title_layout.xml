@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/main_title_height"
-    android:background="@color/text_color_white" >
+    android:background="@color/white" >
 
     <LinearLayout
         android:id="@+id/back_linear"

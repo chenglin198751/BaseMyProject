@@ -106,7 +106,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="@string/cancel"
-                android:textColor="@color/text_color_white"
+                android:textColor="@color/white"
                 android:textSize="@dimen/font_size_6" />
         </LinearLayout>
     </LinearLayout>

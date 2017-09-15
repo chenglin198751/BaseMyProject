@@ -15,7 +15,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:textColor="@color/text_color_white"
+        android:textColor="@color/white"
         android:textSize="15dp"
         tools:text="我是自定义Toast" />
 

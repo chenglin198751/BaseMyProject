@@ -73,7 +73,11 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="flexbox"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name="main.TabLayoutActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="tabLayout"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

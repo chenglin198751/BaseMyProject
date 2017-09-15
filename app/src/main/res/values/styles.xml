@@ -14,7 +14,7 @@
 
 
     <!-- 没有标题的Activity -->
-    <style name="Theme.NoTitle" parent="@android:style/Theme">
+    <style name="Theme.NoTitle" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowAnimationStyle">@style/AnimationActivity</item>
@@ -33,5 +33,22 @@
     <style name="PopupAnimationDown" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_enter_down</item>
         <item name="android:windowExitAnimation">@anim/popup_exit_down</item>
+    </style>
+
+    <!-- TabLayout的文字style -->
+    <style name="TabLayoutTextStyle">
+        <item name="android:textSize">@dimen/font_size_5</item>
+    </style>
+
+    <!-- TabLayout的通用style -->
+    <style name="TabLayoutCommonStyle">
+        <item name="android:background">@color/white</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabIndicatorColor">@color/holo_orange_dark</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabSelectedTextColor">@color/holo_red_light</item>
+        <item name="tabTextAppearance">@style/TabLayoutTextStyle</item>
+        <item name="tabTextColor">@color/percent_70_pink_color</item>
     </style>
 </resources>
