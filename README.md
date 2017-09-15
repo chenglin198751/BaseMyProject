@@ -58,3 +58,8 @@ ImageView的宽和高，以便最大限度的节约内存空间，让滑动更�
 
 **25、BitmapUtils 类**：压缩图片 以及得到图片宽高的类，具体使用看注释。
 
+**26、MyTabLayout 类**：根据谷歌官方的TabLayout自己封装的ViewPager标题指示器，实现了自定义View。
+
+**27、NoScrollGridView 类**：不可滚动的GridView ，适用于放在ListView ，RecyclerView中。
+
+**28、NoScrollViewPager 类**：不可滚动的ViewPager，具体使用场景自己发挥。
