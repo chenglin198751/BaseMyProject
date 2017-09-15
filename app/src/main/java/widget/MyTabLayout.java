@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import cheerly.mybaseproject.R;
@@ -37,6 +38,7 @@ public class MyTabLayout extends TabLayout {
                 tab.setCustomView(itemView);
                 TextView textView = (TextView) itemView.findViewById(R.id.text);
                 textView.setText(mViewPager.getAdapter().getPageTitle(index));
+                ((ViewGroup)itemView.getParent()).setBackgroundResource(0);
             }
         }
     }
