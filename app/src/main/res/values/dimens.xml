@@ -22,6 +22,7 @@
     <dimen name="font_size_10">20dip</dimen>
     <!-- 自定义字号到此结束 -->
 
+    <dimen name="main_bottom_tab_height">50dip</dimen>
     <dimen name="item_divide_height">0.6dip</dimen>
     <dimen name="return_image_size">23dip</dimen>
     <dimen name="view_page_space">10dip</dimen>

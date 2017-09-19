@@ -1,21 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/white">
 
-    <Button
-        android:id="@+id/button"
+    <FrameLayout
+        android:id="@+id/fragment_base_id"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="#ffcccc" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_tab"
+        android:layout_alignParentTop="true" />
 
+    <LinearLayout
+        android:id="@+id/bottom_tab"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_bottom_tab_height"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
 
-    <ImageView
-        android:id="@+id/image_2"
-        android:layout_width="240dp"
-        android:layout_height="300dp"
-        android:scaleType="centerCrop" />
+        <include
+            android:id="@+id/tab_first"
+            layout="@layout/activity_main_tab_item"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
+        <include
+            android:id="@+id/tab_second"
+            layout="@layout/activity_main_tab_item"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
-</LinearLayout>
+        <include
+            android:id="@+id/tab_third"
+            layout="@layout/activity_main_tab_item"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/tab_fourth"
+            layout="@layout/activity_main_tab_item"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+</RelativeLayout>
