@@ -56,18 +56,28 @@ public class HttpUtils {
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
                 if (activity != null && !activity.isFinishing()) {
-                    httpCallback.onFailure(e);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            httpCallback.onFailure(e);
+                        }
+                    });
                 }
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
+                final String result = response.body().string();
                 if (activity != null && !activity.isFinishing()) {
-                    httpCallback.onSuccess(result);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            httpCallback.onSuccess(result);
+                        }
+                    });
                 }
             }
         });
@@ -84,18 +94,28 @@ public class HttpUtils {
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
                 if (activity != null && !activity.isFinishing()) {
-                    httpCallback.onFailure(e);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            httpCallback.onFailure(e);
+                        }
+                    });
                 }
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
+                final String result = response.body().string();
                 if (activity != null && !activity.isFinishing()) {
-                    httpCallback.onSuccess(result);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            httpCallback.onSuccess(result);
+                        }
+                    });
                 }
             }
         });
