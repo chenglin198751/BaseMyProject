@@ -68,6 +68,8 @@ public class HttpUtils {
                             httpCallback.onFailure(e);
                         }
                     });
+                }else {
+                    call.cancel();
                 }
             }
 
@@ -81,6 +83,8 @@ public class HttpUtils {
                             httpCallback.onSuccess(result);
                         }
                     });
+                }else {
+                    call.cancel();
                 }
             }
         });
@@ -106,6 +110,8 @@ public class HttpUtils {
                             httpCallback.onFailure(e);
                         }
                     });
+                }else {
+                    call.cancel();
                 }
             }
 
@@ -119,13 +125,15 @@ public class HttpUtils {
                             httpCallback.onSuccess(result);
                         }
                     });
+                }else {
+                    call.cancel();
                 }
             }
         });
     }
 
     /**
-     * 通用的上传图片
+     * 通用的上传图片 注：此方法暂时不可用，因为还没测试
      */
     public void uploadImage(String reqUrl, HashMap<String, Object> params, String picKey, String filePath) {
         if (TextUtils.isEmpty(filePath)) {
@@ -191,11 +199,17 @@ public class HttpUtils {
                             downloadCallback.onFailure(e);
                         }
                     });
+                }else {
+                    call.cancel();
                 }
             }
 
             @Override
             public void onResponse(Call call, Response response) {
+                if (activity == null || activity.isFinishing()){
+                    call.cancel();
+                    return;
+                }
                 if (downloadCallback != null) {
                     downloadCallback.onStart();
                 }
@@ -210,6 +224,9 @@ public class HttpUtils {
                     long sum = 0;
                     int tempProgress = 0;
                     while ((len = inputStream.read(buffer)) != -1) {
+                        if (activity == null || activity.isFinishing()){
+                            call.cancel();
+                        }
                         fileOutputStream.write(buffer, 0, len);
                         sum += len;
                         int progress = (int) (sum * 1.0f / total * 100f);
