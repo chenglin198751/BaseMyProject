@@ -5,13 +5,14 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -20,9 +21,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import utils.MyUtils;
+import utils.SDCardUtils;
 
 /**
  * Created by chenglin on 2017-5-24.
+ * 资料：http://liuwangshu.cn/application/network/6-okhttp3.html
  */
 
 public class HttpUtils {
@@ -54,7 +57,7 @@ public class HttpUtils {
                 .build();
 
         Call call = client.newCall(request);
-        call.enqueue(new Callback() {
+        call.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
@@ -92,7 +95,7 @@ public class HttpUtils {
                 .build();
 
         Call call = client.newCall(request);
-        call.enqueue(new Callback() {
+        call.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
@@ -120,7 +123,6 @@ public class HttpUtils {
             }
         });
     }
-
 
     /**
      * 通用的上传图片
@@ -158,7 +160,7 @@ public class HttpUtils {
         RequestBuilder.url(reqUrl);
         RequestBuilder.post(requestBody);
         Request request = RequestBuilder.build();
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
@@ -171,6 +173,64 @@ public class HttpUtils {
             }
         });
 
+    }
+
+    /**
+     * 通用的下载文件的方法，返回文件下载成功之后的所在路径
+     */
+    public static void downloadFile(final Activity activity, final String fileUrl, final HttpDownloadCallback downloadCallback) {
+        Request request = new Request.Builder().url(fileUrl).build();
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                e.printStackTrace();
+                if (activity != null && !activity.isFinishing()) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadCallback.onFailure(e);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (downloadCallback != null) {
+                    downloadCallback.onStart();
+                }
+                InputStream inputStream = response.body().byteStream();
+                FileOutputStream fileOutputStream = null;
+                String filePath = SDCardUtils.SDCARD_PATH + System.currentTimeMillis();
+                try {
+                    fileOutputStream = new FileOutputStream(new File(filePath));
+                    long total = response.body().contentLength();
+                    byte[] buffer = new byte[2048];
+                    int len;
+                    long sum = 0;
+                    int tempProgress = 0;
+                    while ((len = inputStream.read(buffer)) != -1) {
+                        fileOutputStream.write(buffer, 0, len);
+                        sum += len;
+                        int progress = (int) (sum * 1.0f / total * 100f);
+                        if (downloadCallback != null) {
+                            if (tempProgress != progress) {
+                                downloadCallback.onProgress(total, sum, progress);
+                                tempProgress = progress;
+                            }
+                        }
+                    }
+                    fileOutputStream.flush();
+                    inputStream.close();
+                    fileOutputStream.close();
+                    if (downloadCallback != null) {
+                        downloadCallback.onSuccess();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
