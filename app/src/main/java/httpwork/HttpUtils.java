@@ -184,7 +184,7 @@ public class HttpUtils {
     }
 
     /**
-     * 通用的下载文件的方法，返回文件下载成功之后的所在路径
+     * 通用的下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      */
     public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {

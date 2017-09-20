@@ -23,7 +23,7 @@ public class SDCardUtils {
         } else {
             cachePath = MyApplication.getApp().getFilesDir().getAbsolutePath();
         }
-        return cachePath;
+        return cachePath + File.separator;
     }
 
     /**
