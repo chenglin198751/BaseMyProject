@@ -184,10 +184,18 @@ public class HttpUtils {
     }
 
     /**
-     * 通用的下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 可以自定义下载路径的通用的下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      */
     public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
+        downloadFile(fileUrl, null, downloadCallback);
+    }
+
+    /**
+     * 默认的下载路径的通用的下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
+     */
+    public static void downloadFile(final String fileUrl, final String fileDownloadPath, final HttpDownloadCallback downloadCallback) {
         Request request = new Request.Builder().url(fileUrl).build();
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
@@ -203,7 +211,9 @@ public class HttpUtils {
 
             @Override
             public void onResponse(final Call call, Response response) {
-                final String filePath = SDCardUtils.SDCARD_PATH + System.currentTimeMillis() + getSuffixNameByHttpUrl(fileUrl);
+                final String defaultFilePath = SDCardUtils.SDCARD_PATH + System.currentTimeMillis() + getSuffixNameByHttpUrl(fileUrl);
+                final String filePath = TextUtils.isEmpty(fileDownloadPath) ? defaultFilePath : fileDownloadPath;
+
                 if (downloadCallback != null) {
                     MyUtils.getHandler().post(new Runnable() {
                         @Override
