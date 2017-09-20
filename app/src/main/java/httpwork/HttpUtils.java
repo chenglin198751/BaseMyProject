@@ -68,7 +68,7 @@ public class HttpUtils {
                             httpCallback.onFailure(e);
                         }
                     });
-                }else {
+                } else {
                     call.cancel();
                 }
             }
@@ -83,7 +83,7 @@ public class HttpUtils {
                             httpCallback.onSuccess(result);
                         }
                     });
-                }else {
+                } else {
                     call.cancel();
                 }
             }
@@ -110,7 +110,7 @@ public class HttpUtils {
                             httpCallback.onFailure(e);
                         }
                     });
-                }else {
+                } else {
                     call.cancel();
                 }
             }
@@ -125,7 +125,7 @@ public class HttpUtils {
                             httpCallback.onSuccess(result);
                         }
                     });
-                }else {
+                } else {
                     call.cancel();
                 }
             }
@@ -185,55 +185,61 @@ public class HttpUtils {
 
     /**
      * 通用的下载文件的方法，返回文件下载成功之后的所在路径
+     * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      */
-    public static void downloadFile(final Activity activity, final String fileUrl, final HttpDownloadCallback downloadCallback) {
+    public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
         Request request = new Request.Builder().url(fileUrl).build();
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
-                if (activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadCallback.onFailure(e);
-                        }
-                    });
-                }else {
-                    call.cancel();
-                }
+                MyUtils.getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        downloadCallback.onFailure(e);
+                    }
+                });
             }
 
             @Override
-            public void onResponse(Call call, Response response) {
-                if (activity == null || activity.isFinishing()){
-                    call.cancel();
-                    return;
-                }
+            public void onResponse(final Call call, Response response) {
+                final String filePath = SDCardUtils.SDCARD_PATH + System.currentTimeMillis() + getSuffixNameByHttpUrl(fileUrl);
                 if (downloadCallback != null) {
-                    downloadCallback.onStart();
+                    MyUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadCallback.onStart(filePath);
+                        }
+                    });
                 }
+
                 InputStream inputStream = response.body().byteStream();
                 FileOutputStream fileOutputStream = null;
-                String filePath = SDCardUtils.SDCARD_PATH + System.currentTimeMillis();
+
                 try {
                     fileOutputStream = new FileOutputStream(new File(filePath));
                     long total = response.body().contentLength();
                     byte[] buffer = new byte[2048];
                     int len;
                     long sum = 0;
-                    int tempProgress = 0;
+                    int lastProgress = 0;
                     while ((len = inputStream.read(buffer)) != -1) {
-                        if (activity == null || activity.isFinishing()){
-                            call.cancel();
-                        }
                         fileOutputStream.write(buffer, 0, len);
                         sum += len;
                         int progress = (int) (sum * 1.0f / total * 100f);
                         if (downloadCallback != null) {
-                            if (tempProgress != progress) {
-                                downloadCallback.onProgress(total, sum, progress);
-                                tempProgress = progress;
+                            if (lastProgress != progress) {
+                                lastProgress = progress;
+
+                                final long tempTotal = total;
+                                final long tempSum = sum;
+                                final int tempProgress = progress;
+                                MyUtils.getHandler().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        downloadCallback.onProgress(call, tempTotal, tempSum, tempProgress);
+                                    }
+                                });
                             }
                         }
                     }
@@ -241,7 +247,12 @@ public class HttpUtils {
                     inputStream.close();
                     fileOutputStream.close();
                     if (downloadCallback != null) {
-                        downloadCallback.onSuccess();
+                        MyUtils.getHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                downloadCallback.onSuccess(filePath);
+                            }
+                        });
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -288,5 +299,16 @@ public class HttpUtils {
         }
 
         return params.toString();
+    }
+
+    /**
+     * 根据下载文件地址得到文件的后缀名
+     */
+    private static String getSuffixNameByHttpUrl(final String url) {
+        int index = url.lastIndexOf(".");
+        if (index < url.length()) {
+            return url.substring(index, url.length());
+        }
+        return "";
     }
 }

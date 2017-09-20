@@ -468,4 +468,10 @@ public class MyUtils {
         return bitmap;
     }
 
+    /**
+     * 判断当前线程是不是主线程
+     */
+    public static boolean isMainThread() {
+        return Looper.getMainLooper() == Looper.myLooper();
+    }
 }
