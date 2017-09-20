@@ -33,7 +33,7 @@ public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
     /**
-     * 通用的post请求，当Activity finish后，不会再返回请求结果
+     * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
     public static void post(final Activity activity, String url, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
@@ -91,7 +91,7 @@ public class HttpUtils {
     }
 
     /**
-     * 通用的get请求，当Activity finish后，不会再返回请求结果
+     * 通用的异步get请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
     public static void get(final Activity activity, final String url, final HttpCallback httpCallback) {
         Request request = new Request.Builder()
@@ -184,7 +184,7 @@ public class HttpUtils {
     }
 
     /**
-     * 可以自定义下载路径的通用的下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 可以自定义下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      */
     public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
@@ -192,7 +192,7 @@ public class HttpUtils {
     }
 
     /**
-     * 默认的下载路径的通用的下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 默认的下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      */
     public static void downloadFile(final String fileUrl, final String fileDownloadPath, final HttpDownloadCallback downloadCallback) {
