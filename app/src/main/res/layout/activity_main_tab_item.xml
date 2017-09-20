@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/main_bottom_tab_height"
     android:gravity="center">
@@ -9,8 +10,8 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/main_first_icon_selector"
-        android:duplicateParentState="true" />
+        android:duplicateParentState="true"
+        tools:src="@drawable/main_second_icon_selector" />
 
     <TextView
         android:id="@+id/text_view"
@@ -20,7 +21,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="1dp"
         android:duplicateParentState="true"
-        android:text="@string/host_first_tab"
         android:textColor="@color/fc_1"
-        android:textSize="@dimen/font_size_2" />
+        android:textSize="@dimen/font_size_2"
+        tools:text="@string/host_first_tab" />
 </RelativeLayout>
