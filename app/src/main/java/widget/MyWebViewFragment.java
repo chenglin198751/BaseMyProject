@@ -31,6 +31,17 @@ public class MyWebViewFragment extends BaseFragment {
     private ProgressBar mPageLoadingProgressBar = null;
     private String mUrl;
 
+    /**
+     * @return 构建一个MyWebViewFragment实例
+     */
+    public static MyWebViewFragment newInstance(String url) {
+        MyWebViewFragment webViewFragment = new MyWebViewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        webViewFragment.setArguments(bundle);
+        return webViewFragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

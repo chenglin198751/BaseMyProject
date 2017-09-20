@@ -65,10 +65,7 @@ public class MyWebViewActivity extends BaseActivity {
     private void init() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        mWebViewFragment = new MyWebViewFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("url", mUrl);
-        mWebViewFragment.setArguments(bundle);
+        mWebViewFragment = MyWebViewFragment.newInstance(mUrl);
         ft.add(R.id.fragment_base_id, mWebViewFragment);
         ft.commitAllowingStateLoss();
     }
