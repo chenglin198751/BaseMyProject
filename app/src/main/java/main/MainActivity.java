@@ -72,25 +72,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
-        if (index == 0) {
+        if (index == TAB_FIRST) {
             if (mMainFirstFragment == null) {
                 mMainFirstFragment = new MainFirstFragment();
                 mFragArray[index] = mMainFirstFragment;
             }
             addFragment(ft, mMainFirstFragment, index);
-        } else if (index == 1) {
+        } else if (index == TAB_SECOND) {
             if (mMainSecondFragment == null) {
                 mMainSecondFragment = new MainSecondFragment();
                 mFragArray[index] = mMainSecondFragment;
             }
             addFragment(ft, mMainSecondFragment, index);
-        } else if (index == 2) {
+        } else if (index == TAB_THIRD) {
             if (mMainThirdFragment == null) {
                 mMainThirdFragment = new MainThirdFragment();
                 mFragArray[index] = mMainThirdFragment;
             }
             addFragment(ft, mMainThirdFragment, index);
-        } else if (index == 3) {
+        } else if (index == TAB_FOURTH) {
             if (mMainFourthFragment == null) {
                 mMainFourthFragment = new MainFourthFragment();
                 mFragArray[index] = mMainFourthFragment;
