@@ -142,7 +142,7 @@ public class HttpUtils {
     /**
      * 通用的上传图片 注：此方法暂时不可用，因为还没测试
      */
-    public void uploadImage(String reqUrl, HashMap<String, Object> params, String picKey, String filePath) {
+    public static void uploadImage(String reqUrl, HashMap<String, Object> params, String picKey, String filePath) {
         if (TextUtils.isEmpty(filePath)) {
             return;
         }
