@@ -13,11 +13,18 @@
     </style>
 
 
-    <!-- 没有标题的Activity -->
-    <style name="Theme.NoTitle" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <!-- 通用的基础的没有标题的Activity -->
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowAnimationStyle">@style/AnimationActivity</item>
+    </style>
+
+    <!-- 第一个启动的Activity，为了消除白屏或黑屏，设置了windowBackground -->
+    <style name="FirstActivityTheme" parent="@style/AppBaseTheme">
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@mipmap/splash_bg</item>
     </style>
 
     <!--  Activity的切换动画 ，OpenEnter是被打开的Activity进来，CloseExit是被打开的Activity退出；
