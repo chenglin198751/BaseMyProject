@@ -31,11 +31,12 @@ import utils.SDCardUtils;
 
 public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+    private static final int TIME_OUT = 30;
 
     private static final OkHttpClient.Builder builder = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS);
+            .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .readTimeout(TIME_OUT, TimeUnit.SECONDS);
     private static final OkHttpClient client = builder.build();
 
     /**
