@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -473,5 +474,27 @@ public class MyUtils {
      */
     public static boolean isMainThread() {
         return Looper.getMainLooper() == Looper.myLooper();
+    }
+
+    /**
+     * 将String 编码为base64
+     */
+    public static String toBase64(String text) {
+        if (!TextUtils.isEmpty(text)) {
+            return Base64.encodeToString(text.getBytes(), Base64.DEFAULT);
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * 将String 解码为base64
+     */
+    public static String fromBase64(String strBase64) {
+        if (!TextUtils.isEmpty(strBase64)) {
+            return new String(Base64.decode(strBase64.getBytes(), Base64.DEFAULT));
+        } else {
+            return "";
+        }
     }
 }
