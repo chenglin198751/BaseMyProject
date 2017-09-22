@@ -22,8 +22,7 @@ import utils.MyUtils;
  */
 
 public class WebImageView extends AppCompatImageView {
-    private static PicassoRoundTransform mPicassoRoundTransform = null;
-    private static PicassoCircleTransform mPicassoCircleTransform = null;
+    private final static PicassoCircleTransform mPicassoCircleTransform = new PicassoCircleTransform();
 
     public WebImageView(Context context) {
         super(context);
@@ -49,32 +48,21 @@ public class WebImageView extends AppCompatImageView {
      * 加载图片使其变为圆角或者圆形，radius单位是dp. 如果 radius <=0 ,那么就是圆形的图片，否则是圆角
      */
     public void loadRound(String url, int imageWidth, int imageHeight, int radius) {
-        if (radius > 0) {
-            if (mPicassoRoundTransform == null) {
-                mPicassoRoundTransform = new PicassoRoundTransform();
-            }
-            mPicassoRoundTransform.setRadius(radius, radius);
-        } else {
-            if (mPicassoCircleTransform == null) {
-                mPicassoCircleTransform = new PicassoCircleTransform();
-            }
-        }
-
         Picasso.with(getContext())
                 .load(url)
                 .centerCrop()
                 .resize(imageWidth, imageHeight)
-                .transform(radius <= 0 ? mPicassoCircleTransform : mPicassoRoundTransform)
+                .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
                 .into(this);
     }
 
     /**
      * picasso 的圆角图片转换器
      */
-    private static class PicassoRoundTransform implements Transformation {
+    private static final class PicassoRoundTransform implements Transformation {
         private int mRadiusX = 0, mRadiusY = 0;
 
-        public void setRadius(int radiusX, int radiusY) {
+        public PicassoRoundTransform(int radiusX, int radiusY) {
             mRadiusX = MyUtils.dip2px(radiusX);
             mRadiusY = MyUtils.dip2px(radiusY);
         }
@@ -111,7 +99,7 @@ public class WebImageView extends AppCompatImageView {
     /**
      * picasso 的圆形图片转换器
      */
-    private class PicassoCircleTransform implements Transformation {
+    private static final class PicassoCircleTransform implements Transformation {
         @Override
         public Bitmap transform(Bitmap source) {
             int size = Math.min(source.getWidth(), source.getHeight());
