@@ -36,6 +36,9 @@ public class WebImageView extends AppCompatImageView {
         super(context, attrs, defStyleAttr);
     }
 
+    /**
+     * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
+     */
     public void load(String url, int imageWidth, int imageHeight) {
         Picasso.with(getContext())
                 .load(url)
