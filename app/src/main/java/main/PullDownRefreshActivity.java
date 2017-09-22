@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import base.BaseActivity;
-import base.MyBaseAdapter;
+import base.BaseListViewAdapter;
 import cheerly.mybaseproject.R;
 import view.PullToRefresh;
 
@@ -75,7 +75,7 @@ public class PullDownRefreshActivity extends BaseActivity {
 
     }
 
-    private class MyAdapter extends MyBaseAdapter<String> {
+    private class MyAdapter extends BaseListViewAdapter<String> {
         private Context mContext;
 
         public MyAdapter(Context context) {

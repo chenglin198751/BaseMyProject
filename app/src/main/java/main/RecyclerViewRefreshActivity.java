@@ -4,16 +4,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import base.BaseActivity;
+import base.BaseRecyclerViewHolder;
+import base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.R;
 import utils.MyUtils;
 import view.PullToRefresh;
@@ -23,6 +23,20 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
+
+
+    public static final String[] PIC_ARRAY = {"http://d.hiphotos.baidu.com/zhidao/pic/item/b8389b504fc2d5621e910222e31190ef77c66c60.jpg"
+            , "http://img1.szhk.com/Image/2016/05/31/1464664339487.png"
+            , "http://img3.duitang.com/uploads/item/201605/26/20160526235927_ZHh5A.jpeg"
+            , "http://c.hiphotos.baidu.com/zhidao/pic/item/1e30e924b899a901e63b00dd18950a7b0308f5cb.jpg"
+            , "http://img.weixinyidu.com/150603/05d6e52d.jpg"
+            , "http://img.mp.itc.cn/upload/20161225/aba0f4945c2341b4942b79005c37e489_th.jpg"
+            , "http://n.sinaimg.cn/translate/20170911/a1gc-fykuffc5152614.jpg"
+            , "http://media.teeqee.com/game/img/214/184511b1760bc9476170f405d978bdb6.jpg"
+            , "http://aliimg.changba.com/cache/photo/4310970_640_640.jpg"
+            , "http://img2.niutuku.com/desk/1207/1658/bizhi-1658-15519.jpg"};
+
+    public static final int[] RADIUS_ARRAY = {10, 20, 30, 40, 50, 60, 9, 14, 0, 5};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +53,7 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         mAdapter.clear();
-                        setData(15, true);
+                        setData(10, true);
                         mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
@@ -50,7 +64,7 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        setData(5, false);
+                        setData(10, false);
                         mPullToRefresh.refreshComplete();
                     }
                 }, 1500);
@@ -68,9 +82,12 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
     }
 
     private void setData(int count, boolean isRefresh) {
-        List<String> list = new ArrayList<String>();
+        List<ModelData> list = new ArrayList<ModelData>();
         for (int i = 0; i < count; i++) {
-            list.add("http://imgsrc.baidu.com/image/c0%3Dshijue%2C0%2C0%2C245%2C40/sign=b61c57bf06f431ada8df4b7a235fc6da/b58f8c5494eef01f3e82aae8eafe9925bc317d0c.jpg");
+            ModelData modelData = new ModelData();
+            modelData.url = PIC_ARRAY[i];
+            modelData.radius = RADIUS_ARRAY[i];
+            list.add(modelData);
         }
 
         if (isRefresh) {
@@ -80,34 +97,13 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
         }
     }
 
-    public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.ListHolder> {
+    public static class MyAdapter extends BaseRecyclerViewAdapter<ModelData> {
         private Context mContext;
-        List<String> dataList = new ArrayList<String>();
 
         public MyAdapter(Context context) {
             this.mContext = context;
         }
 
-        public void setDataList(List<String> list) {
-            if (null != list) {
-                dataList.clear();
-                dataList.addAll(list);
-                notifyDataSetChanged();
-            }
-        }
-
-
-        public void appendDataList(List<String> list) {
-            if (null != list) {
-                dataList.addAll(list);
-                notifyDataSetChanged();
-            }
-        }
-
-        public void clear() {
-            dataList.clear();
-            notifyDataSetChanged();
-        }
 
         @Override
         public ListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -116,17 +112,16 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
         }
 
         @Override
-        public void onBindViewHolder(ListHolder holder, int position) {
-            holder.setData(position);
+        public void onBindViewHolder(BaseRecyclerViewHolder holder, int position) {
+            if (holder instanceof ListHolder) {
+                ListHolder listHolder = (ListHolder) holder;
+                listHolder.setData(position);
+            }
+
         }
 
-        @Override
-        public int getItemCount() {
-            return dataList.size();
-        }
 
-
-        class ListHolder extends RecyclerView.ViewHolder {
+        class ListHolder extends BaseRecyclerViewHolder {
             TextView title;
             TextView content;
             WebImageView imageView;
@@ -135,24 +130,21 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
                 super(itemView);
                 title = (TextView) itemView.findViewById(R.id.title);
                 content = (TextView) itemView.findViewById(R.id.content);
-                imageView= (WebImageView) itemView.findViewById(R.id.image_view);
+                imageView = (WebImageView) itemView.findViewById(R.id.image_view);
             }
 
             public void setData(int position) {
                 title.setText("标题 " + position);
-                imageView.load(dataList.get(position), MyUtils.dip2px(100f),MyUtils.dip2px(100f));
-
-                imageView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.v("tag_2","imageView.getWidth() = " + imageView.getWidth());
-                        Log.v("tag_2","imageView.getHeight() = " + imageView.getHeight());
-                    }
-                });
+                imageView.loadRound(getData().get(position).url, MyUtils.dip2px(100f), MyUtils.dip2px(100f), getData().get(position).radius);
             }
 
 
         }
+    }
+
+    public static final class ModelData {
+        public String url;
+        public int radius;
     }
 
 }
