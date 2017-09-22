@@ -1,10 +1,6 @@
 package base;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,37 +9,12 @@ import java.util.List;
 /**
  * weichenglin create in 15/9/17
  */
-public abstract class ListViewBaseAdapter<T> extends BaseAdapter {
+public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
     protected List<T> list = new ArrayList<T>();
-    protected LayoutInflater inflater;
-
-    public ListViewBaseAdapter(Context context) {
-        super();
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-    }
 
     @Override
-    public int getCount() {
-        return list == null ? 0 : list.size();
-    }
-
-    @Override
-    public T getItem(int arg0) {
-        if (arg0 >= list.size()) {
-            return null;
-        }
-        return list.get(arg0);
-    }
-
-    @Override
-    public long getItemId(int arg0) {
-        return arg0;
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        return null;
+    public int getItemCount() {
+        return list.size();
     }
 
     public void add(T t) {
