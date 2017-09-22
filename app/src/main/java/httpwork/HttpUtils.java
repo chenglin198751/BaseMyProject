@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -61,10 +62,12 @@ public class HttpUtils {
             FormBuilder.add(key + "", value + "");
         }
         RequestBody body = FormBuilder.build();
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+
+        final CacheControl.Builder builder = new CacheControl.Builder();
+        builder.noCache();//不使用缓存，全部走网络
+        builder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = builder.build();
+        Request request = new Request.Builder().cacheControl(cache).url(url).post(body).build();
 
         Call call = client.newCall(request);
         call.enqueue(new okhttp3.Callback() {
@@ -104,9 +107,11 @@ public class HttpUtils {
      * 通用的异步get请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
     public static void get(final Activity activity, final String url, final HttpCallback httpCallback) {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        final CacheControl.Builder builder = new CacheControl.Builder();
+        builder.noCache();//不使用缓存，全部走网络
+        builder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = builder.build();
+        Request request = new Request.Builder().cacheControl(cache).url(url).get().build();
 
         Call call = client.newCall(request);
         call.enqueue(new okhttp3.Callback() {
@@ -206,7 +211,12 @@ public class HttpUtils {
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      */
     public static void downloadFile(final String fileUrl, final String fileDownloadPath, final HttpDownloadCallback downloadCallback) {
-        Request request = new Request.Builder().url(fileUrl).build();
+        final CacheControl.Builder builder = new CacheControl.Builder();
+        builder.noCache();//不使用缓存，全部走网络
+        builder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = builder.build();
+        Request request = new Request.Builder().cacheControl(cache).url(fileUrl).get().build();
+
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
