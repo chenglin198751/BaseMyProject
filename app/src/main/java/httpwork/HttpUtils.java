@@ -177,12 +177,18 @@ public class HttpUtils {
         //遍历paths中所有图片绝对路径到builder，并约定key如“upload”作为后台接受多张图片的key
         multipartBodyBuilder.addFormDataPart(picKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
 
-        //构建请求体
+        final CacheControl.Builder builder = new CacheControl.Builder();
+        builder.noCache();//不使用缓存，全部走网络
+        builder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = builder.build();
+
         RequestBody requestBody = multipartBodyBuilder.build();
         Request.Builder RequestBuilder = new Request.Builder();
         RequestBuilder.url(reqUrl);
+        RequestBuilder.cacheControl(cache);
         RequestBuilder.post(requestBody);
         Request request = RequestBuilder.build();
+
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
