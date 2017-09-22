@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
+import base.MyApplication;
 import utils.MyUtils;
 
 /**
@@ -40,7 +41,7 @@ public class WebImageView extends AppCompatImageView {
      * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
      */
     public void load(String url, int imageWidth, int imageHeight) {
-        Picasso.with(getContext())
+        Picasso.with(MyApplication.getApp())
                 .load(url)
                 .centerCrop()
                 .resize(imageWidth, imageHeight)
@@ -51,7 +52,7 @@ public class WebImageView extends AppCompatImageView {
      * 加载图片使其变为圆角或者圆形，radius单位是dp. 如果 radius <=0 ,那么就是圆形的图片，否则是圆角
      */
     public void loadRound(String url, int imageWidth, int imageHeight, int radius) {
-        Picasso.with(getContext())
+        Picasso.with(MyApplication.getApp())
                 .load(url)
                 .centerCrop()
                 .resize(imageWidth, imageHeight)

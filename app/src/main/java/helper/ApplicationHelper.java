@@ -3,8 +3,15 @@ package helper;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.Display;
+import android.view.WindowManager;
+
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
 
 import base.MyApplication;
+import httpwork.HttpUtils;
+import utils.Constants;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -12,6 +19,7 @@ import base.MyApplication;
 
 public class ApplicationHelper {
     private final static String PROCESS_NAME = "cheerly.mybaseproject";
+
     /**
      * 判断是不是UI主进程，因为有些东西只能在UI主进程初始化
      */
@@ -43,5 +51,22 @@ public class ApplicationHelper {
             }
         }
         return "";
+    }
+
+    /**
+     * 自定义Picasso的Downloader，用的是Picasso的作者JakeWharton写的用OkHttp3作为下载器的Downloader.
+     * 下载路径用的是OkHttp3设置的cache路径。Picasso内部没有实现硬盘缓存，用的是下载器自身带的缓存策略。
+     */
+    public static void initPicasso() {
+        Picasso picasso = new Picasso.Builder(MyApplication.getApp())
+                .downloader(new OkHttp3Downloader(HttpUtils.client))
+                .build();
+        Picasso.setSingletonInstance(picasso);
+    }
+
+    public static void initGetDisplayMetrics(Context context){
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Constants.screenWidth = display.getWidth();
+        Constants.screenHeight = display.getHeight();
     }
 }

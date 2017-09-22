@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -32,12 +33,14 @@ import utils.SDCardUtils;
 public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 30;
+    private static final String HTTP_CACHE_PATH = SDCardUtils.SDCARD_PATH + "httpCache" + File.separator;
 
     private static final OkHttpClient.Builder builder = new OkHttpClient.Builder()
             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
             .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
-            .readTimeout(TIME_OUT, TimeUnit.SECONDS);
-    private static final OkHttpClient client = builder.build();
+            .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .cache(new Cache(new File(HTTP_CACHE_PATH), 50 * 1024 * 1024));
+    public static final OkHttpClient client = builder.build();
 
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
