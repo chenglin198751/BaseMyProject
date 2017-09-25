@@ -240,15 +240,6 @@ public class HttpUtils {
                 final String defaultFilePath = SDCardUtils.SDCARD_PATH + System.currentTimeMillis() + getSuffixNameByHttpUrl(fileUrl);
                 final String filePath = TextUtils.isEmpty(fileDownloadPath) ? defaultFilePath : fileDownloadPath;
 
-                if (downloadCallback != null) {
-                    MyUtils.getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadCallback.onStart(filePath);
-                        }
-                    });
-                }
-
                 InputStream inputStream = response.body().byteStream();
                 FileOutputStream fileOutputStream = null;
 

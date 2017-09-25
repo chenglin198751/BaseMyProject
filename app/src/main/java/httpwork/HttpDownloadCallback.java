@@ -12,8 +12,6 @@ public interface HttpDownloadCallback {
 
     void onSuccess(String filePath);
 
-    void onStart(String filePath);
-
     /**
      * @param call            A call is a request that has been prepared for execution. A call can be canceled
      * @param fileTotalSize   文件总大小

@@ -80,7 +80,7 @@ public class PullToRefresh extends PtrFrameLayout {
         setKeepHeaderWhenRefresh(true);
 
         //底部footer回弹时间
-        setDurationToCloseFooter(800);
+        setDurationToCloseFooter(300);
 
         //初始化头部、尾部
         addHeaderFooter();
