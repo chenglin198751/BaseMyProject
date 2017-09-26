@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.youth.banner.Banner xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/convenientBanner"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:delay_time="1500"
+    app:indicator_height="5dp"
+    app:indicator_margin="3dp"
+    app:indicator_width="5dp"
+    app:is_auto_play="true" />
