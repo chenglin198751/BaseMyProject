@@ -4,8 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.youth.banner.Banner;
+import com.youth.banner.BannerConfig;
+import com.youth.banner.Transformer;
+import com.youth.banner.loader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +21,41 @@ import base.BaseActivity;
 import base.BaseListViewAdapter;
 import cheerly.mybaseproject.R;
 import pullrefresh.PullToRefresh;
+import utils.Constants;
+import utils.MyUtils;
+import view.WebImageView;
 
 public class PullDownRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;
     private ListView mListView;
     private MyAdapter mAdapter;
 
+    private List<String> imagesList = new ArrayList<>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.pull_down_refresh_layout);
 
+        imagesList.add("http://img.zcool.cn/community/0166c756e1427432f875520f7cc838.jpg");
+        imagesList.add("http://img.zcool.cn/community/018fdb56e1428632f875520f7b67cb.jpg");
+        imagesList.add("http://img.zcool.cn/community/01c8dc56e1428e6ac72531cbaa5f2c.jpg");
+        imagesList.add("http://img.zcool.cn/community/01fd2756e142716ac72531cbf8bbbf.jpg");
+        imagesList.add("http://pic31.nipic.com/20130727/6949918_163332595163_2.jpg");
+
         getTitleHelper().setTitle("测试");
         mListView = (ListView) findViewById(R.id.list_view);
+        Banner banner = (Banner) View.inflate(this, R.layout.banner_layout, null);
+        banner.setBannerAnimation(Transformer.ZoomOutSlide);
+        banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
+        banner.setImageLoader(new GlideImageLoader());
+        banner.setImages(imagesList);
+        banner.start();
+
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, Constants.screenWidth / 2);
+        banner.setLayoutParams(params);
+        mListView.addHeaderView(banner);
 
         mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
 
@@ -78,11 +107,26 @@ public class PullDownRefreshActivity extends BaseActivity {
     }
 
     private static class MyAdapter extends BaseListViewAdapter<String> {
+        private List<String> imagesList = new ArrayList<>();
         private Context mContext;
 
         public MyAdapter(Context context) {
             super(context);
             mContext = context;
+
+
+            imagesList.add("http://img.zcool.cn/community/0166c756e1427432f875520f7cc838.jpg");
+            imagesList.add("http://img.zcool.cn/community/018fdb56e1428632f875520f7b67cb.jpg");
+            imagesList.add("http://img.zcool.cn/community/01c8dc56e1428e6ac72531cbaa5f2c.jpg");
+            imagesList.add("http://img.zcool.cn/community/01fd2756e142716ac72531cbf8bbbf.jpg");
+            imagesList.add("http://pic31.nipic.com/20130727/6949918_163332595163_2.jpg");
+
+            imagesList.addAll(imagesList);
+            imagesList.addAll(imagesList);
+            imagesList.addAll(imagesList);
+            imagesList.addAll(imagesList);
+            imagesList.addAll(imagesList);
+            imagesList.addAll(imagesList);
         }
 
 
@@ -93,9 +137,26 @@ public class PullDownRefreshActivity extends BaseActivity {
             }
 
             TextView title = (TextView) convertView.findViewById(R.id.title);
+            WebImageView webImageView = (WebImageView) convertView.findViewById(R.id.image_view);
             title.setText("标题 - " + position);
+            webImageView.load(imagesList.get(position), MyUtils.dip2px(100f), MyUtils.dip2px(100f));
 
             return convertView;
+        }
+    }
+
+    public static class GlideImageLoader extends ImageLoader {
+        @Override
+        public void displayImage(Context context, Object path, ImageView imageView) {
+            if (imageView instanceof WebImageView) {
+                WebImageView webImageView = (WebImageView) imageView;
+                webImageView.load((String) path, Constants.screenWidth, Constants.screenWidth / 2);
+            }
+        }
+
+        @Override
+        public ImageView createImageView(Context context) {
+            return new WebImageView(context);
         }
     }
 
