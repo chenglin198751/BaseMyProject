@@ -17,7 +17,7 @@
     <color name="fc_3">#999999</color>
 
     <!-- 自定义个颜色 -->
-    <color name="view_bg">#ede8f0</color>
+    <color name="view_bg">#f3f3f3</color>
     <color name="select">#f2e4fa</color>
     <color name="purple_button">#7b64a8</color>
     <color name="pink_color">#ff3a71</color>
