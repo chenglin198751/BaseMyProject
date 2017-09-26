@@ -38,6 +38,15 @@ public class WebImageView extends AppCompatImageView {
     }
 
     /**
+     * 加载原图，不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
+     */
+    public void load(String url) {
+        Picasso.with(MyApplication.getApp())
+                .load(url)
+                .into(this);
+    }
+
+    /**
      * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
      */
     public void load(String url, int imageWidth, int imageHeight) {
