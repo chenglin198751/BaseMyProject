@@ -39,6 +39,7 @@ public class PullDownRefreshActivity extends BaseActivity {
                         mAdapter.clear();
                         setData(15, true);
                         mPullToRefresh.finishRefresh();
+                        mPullToRefresh.setLoadmoreFinished(false);
                     }
                 }, 1500);
             }
@@ -50,6 +51,7 @@ public class PullDownRefreshActivity extends BaseActivity {
                     public void run() {
                         setData(5, false);
                         mPullToRefresh.finishLoadmore();
+                        mPullToRefresh.setLoadmoreFinished(true);
                     }
                 }, 1500);
             }

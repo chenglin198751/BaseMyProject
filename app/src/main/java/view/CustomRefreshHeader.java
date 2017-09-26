@@ -82,7 +82,7 @@ public class CustomRefreshHeader implements RefreshHeader {
 
     @Override
     public void onPullingDown(float percent, int offset, int headerHeight, int extendHeight) {
-        mLoadingView.setRotation(percent * 240f);
+        mLoadingView.setRotation(percent * 360f);
     }
 
     @Override

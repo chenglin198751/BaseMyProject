@@ -83,7 +83,7 @@ public class CustomRefreshFooter implements RefreshFooter {
 
     @Override
     public void onPullingUp(float percent, int offset, int footerHeight, int extendHeight) {
-        mLoadingView.setRotation(percent * 240f);
+        mLoadingView.setRotation(percent * 360f);
     }
 
     @Override
@@ -99,6 +99,7 @@ public class CustomRefreshFooter implements RefreshFooter {
         if (mLoadmoreFinished != finished) {
             mLoadmoreFinished = finished;
             if (finished) {
+                stopRotate();
                 mLoadingView.setVisibility(View.GONE);
                 mLoadingTextView.setText(R.string.cube_ptr_all_load_complete);
             } else {
