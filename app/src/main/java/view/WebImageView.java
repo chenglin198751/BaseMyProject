@@ -43,8 +43,8 @@ public class WebImageView extends AppCompatImageView {
     public void load(String url, int imageWidth, int imageHeight) {
         Picasso.with(MyApplication.getApp())
                 .load(url)
-                .centerCrop()
                 .resize(imageWidth, imageHeight)
+                .centerCrop()
                 .into(this);
     }
 
@@ -54,8 +54,8 @@ public class WebImageView extends AppCompatImageView {
     public void loadRound(String url, int imageWidth, int imageHeight, int radius) {
         Picasso.with(MyApplication.getApp())
                 .load(url)
-                .centerCrop()
                 .resize(imageWidth, imageHeight)
+                .centerCrop()
                 .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
                 .into(this);
     }
