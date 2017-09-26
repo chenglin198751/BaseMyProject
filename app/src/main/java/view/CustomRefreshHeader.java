@@ -1,12 +1,20 @@
 package view;
 
 import android.content.Context;
+import android.support.annotation.ColorInt;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.scwang.smartrefresh.layout.api.RefreshHeader;
+import com.scwang.smartrefresh.layout.api.RefreshKernel;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.constant.RefreshState;
+import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 
 import cheerly.mybaseproject.R;
 import in.srain.cube.views.ptr.PtrFrameLayout;
@@ -17,7 +25,7 @@ import in.srain.cube.views.ptr.indicator.PtrIndicator;
  * Created by chenglin on 2017-7-12.
  */
 
-public class CustomRefreshHeader implements PtrUIHandler {
+public class CustomRefreshHeader implements RefreshHeader {
     private Context mContext;
     private View mView;
     private ImageView mLoadingView;
@@ -30,51 +38,72 @@ public class CustomRefreshHeader implements PtrUIHandler {
         mLoadingTextView = (TextView) mView.findViewById(R.id.text_view);
     }
 
+    @Override
     public View getView() {
         return mView;
     }
 
     @Override
-    public void onUIReset(PtrFrameLayout frame) {
-        stopRotate();
-        mLoadingTextView.setText(R.string.cube_ptr_pull_down_to_refresh);
+    public SpinnerStyle getSpinnerStyle() {
+        return SpinnerStyle.Translate;
     }
 
     @Override
-    public void onUIRefreshPrepare(PtrFrameLayout frame) {
-        stopRotate();
-        mLoadingTextView.setText(R.string.cube_ptr_pull_down_to_refresh);
+    public void setPrimaryColors(@ColorInt int... colors) {
+
     }
 
     @Override
-    public void onUIRefreshBegin(PtrFrameLayout frame) {
+    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+
+    }
+
+    @Override
+    public void onHorizontalDrag(float percentX, int offsetX, int offsetMax) {
+
+    }
+
+    @Override
+    public void onStartAnimator(RefreshLayout layout, int height, int extendHeight) {
         startRotate();
-        mLoadingTextView.setText(R.string.cube_ptr_refreshing);
     }
 
     @Override
-    public void onUIRefreshComplete(PtrFrameLayout frame, boolean isHeader) {
+    public int onFinish(RefreshLayout layout, boolean success) {
         stopRotate();
         mLoadingTextView.setText(R.string.cube_ptr_refresh_complete);
+        return 300;
     }
 
     @Override
-    public void onUIPositionChange(PtrFrameLayout frame, boolean isUnderTouch, byte status, PtrIndicator ptrIndicator) {
-//        float currentPercent = Math.min(1f, ptrIndicator.getCurrentPercent());
-        mLoadingView.setRotation(ptrIndicator.getCurrentPercent() * 240f);
+    public boolean isSupportHorizontalDrag() {
+        return false;
+    }
 
-        final int mOffsetToRefresh = frame.getOffsetToRefresh();
-        final int currentPos = ptrIndicator.getCurrentPosY();
-        final int lastPos = ptrIndicator.getLastPosY();
+    @Override
+    public void onPullingDown(float percent, int offset, int headerHeight, int extendHeight) {
+        mLoadingView.setRotation(percent * 240f);
+    }
 
-        if (currentPos < mOffsetToRefresh && lastPos >= mOffsetToRefresh) {
-            if (isUnderTouch && status == PtrFrameLayout.PTR_STATUS_PREPARE) {
+    @Override
+    public void onReleasing(float percent, int offset, int headerHeight, int extendHeight) {
+
+    }
+
+    @Override
+    public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
+        switch (newState) {
+            case None:
+                break;
+            case PullDownToRefresh:
                 mLoadingTextView.setText(R.string.cube_ptr_pull_down_to_refresh);
-            }
-        } else if (currentPos > mOffsetToRefresh && lastPos <= mOffsetToRefresh) {
-            if (isUnderTouch && status == PtrFrameLayout.PTR_STATUS_PREPARE) {
+                break;
+            case Refreshing:
+                mLoadingTextView.setText(R.string.cube_ptr_refreshing);
+                break;
+            case ReleaseToRefresh:
                 mLoadingTextView.setText(R.string.cube_ptr_release_to_refresh);
-            }
+                break;
         }
     }
 
@@ -90,4 +119,5 @@ public class CustomRefreshHeader implements PtrUIHandler {
     private void stopRotate() {
         mLoadingView.clearAnimation();
     }
+
 }

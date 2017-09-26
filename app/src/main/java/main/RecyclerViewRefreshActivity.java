@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -15,10 +16,14 @@ import base.BaseActivity;
 import base.BaseRecyclerViewHolder;
 import base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.R;
+import utils.Constants;
 import utils.MyUtils;
 import view.PullToRefresh;
 import view.WebImageView;
 
+/**
+ * 资料：https://github.com/scwang90/SmartRefreshLayout
+ */
 public class RecyclerViewRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;
     private RecyclerView mRecyclerView;
@@ -43,6 +48,7 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.recyclerview_refresh_layout);
 
+        getTitleHelper().hideTitle();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
 
@@ -54,7 +60,7 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
                     public void run() {
                         mAdapter.clear();
                         setData(10, true);
-                        mPullToRefresh.refreshComplete();
+                        mPullToRefresh.finishRefresh();
                     }
                 }, 1500);
             }
@@ -65,7 +71,7 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         setData(10, false);
-                        mPullToRefresh.refreshComplete();
+                        mPullToRefresh.finishLoadmore();
                     }
                 }, 1500);
             }
@@ -128,14 +134,19 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
 
             public ListHolder(View itemView) {
                 super(itemView);
-                title = (TextView) itemView.findViewById(R.id.title);
-                content = (TextView) itemView.findViewById(R.id.content);
+//                title = (TextView) itemView.findViewById(R.id.title);
+//                content = (TextView) itemView.findViewById(R.id.content);
                 imageView = (WebImageView) itemView.findViewById(R.id.image_view);
+
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
+                params.width = Constants.screenWidth;
+                params.height = params.width;
+                imageView.setLayoutParams(params);
             }
 
             public void setData(int position) {
-                title.setText("标题 " + position);
-                imageView.loadRound(getData().get(position).url, MyUtils.dip2px(100f), MyUtils.dip2px(100f), getData().get(position).radius);
+//                title.setText("标题 " + position);
+                imageView.load(getData().get(position).url, Constants.screenWidth, Constants.screenWidth);
             }
 
 

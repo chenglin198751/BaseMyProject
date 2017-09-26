@@ -38,7 +38,7 @@ public class PullDownRefreshActivity extends BaseActivity {
                     public void run() {
                         mAdapter.clear();
                         setData(15, true);
-                        mPullToRefresh.refreshComplete();
+                        mPullToRefresh.finishRefresh();
                     }
                 }, 1500);
             }
@@ -49,7 +49,7 @@ public class PullDownRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         setData(5, false);
-                        mPullToRefresh.refreshComplete();
+                        mPullToRefresh.finishLoadmore();
                     }
                 }, 1500);
             }
@@ -75,7 +75,7 @@ public class PullDownRefreshActivity extends BaseActivity {
 
     }
 
-    private class MyAdapter extends BaseListViewAdapter<String> {
+    private static class MyAdapter extends BaseListViewAdapter<String> {
         private Context mContext;
 
         public MyAdapter(Context context) {
@@ -87,7 +87,7 @@ public class PullDownRefreshActivity extends BaseActivity {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = View.inflate(mContext, R.layout.test_item, null);
+                convertView = View.inflate(mContext, R.layout.test_item_2, null);
             }
 
             TextView title = (TextView) convertView.findViewById(R.id.title);

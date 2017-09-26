@@ -11,6 +11,7 @@
     <string name="cube_ptr_refresh_complete">刷新完成</string>
     <string name="cube_ptr_loading">正在加载</string>
     <string name="cube_ptr_load_complete">加载完成</string>
+    <string name="cube_ptr_all_load_complete">已全部加载完成</string>
 
     <string name="cube_ptr_last_update">上次更新:&#160;</string>
     <string name="cube_ptr_seconds_ago">&#160;秒之前</string>

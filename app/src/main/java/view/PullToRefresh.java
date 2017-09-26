@@ -2,20 +2,20 @@ package view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 
-import in.srain.cube.views.ptr.PtrDefaultHandler;
-import in.srain.cube.views.ptr.PtrDefaultHandler2;
-import in.srain.cube.views.ptr.PtrFrameLayout;
-import in.srain.cube.views.ptr.PtrHandler2;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
 
 /**
- * 地址：https://github.com/captainbupt/android-Ultra-Pull-To-Refresh-With-Load-More
+ * 地址：https://github.com/scwang90/SmartRefreshLayout
  * Created by chenglin on 2017-7-12.
  * 支持下拉刷新和上拉加载更多
  */
 
-public class PullToRefresh extends PtrFrameLayout {
+public class PullToRefresh extends SmartRefreshLayout {
 
     public PullToRefresh(Context context) {
         super(context);
@@ -33,54 +33,31 @@ public class PullToRefresh extends PtrFrameLayout {
     }
 
     public void setListener(final onListener listener) {
-        setPtrHandler(new PtrHandler2() {
+        setOnRefreshListener(new OnRefreshListener() {
             @Override
-            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
-                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
-            }
-
-            @Override
-            public boolean checkCanDoLoadMore(PtrFrameLayout frame, View content, View footer) {
-                return PtrDefaultHandler2.checkContentCanBePulledUp(frame, content, footer);
-            }
-
-            @Override
-            public void onLoadMoreBegin(PtrFrameLayout frame) {
-                if (listener != null) {
-                    listener.onLoadMore();
-                }
-            }
-
-            @Override
-            public void onRefreshBegin(PtrFrameLayout frame) {
+            public void onRefresh(RefreshLayout refreshlayout) {
                 if (listener != null) {
                     listener.onRefresh();
                 }
             }
         });
+        setOnLoadmoreListener(new OnLoadmoreListener() {
+            @Override
+            public void onLoadmore(RefreshLayout refreshlayout) {
+                if (listener != null) {
+                    listener.onLoadMore();
+                }
+            }
+        });
     }
 
+
+    /**
+     * https://github.com/scwang90/SmartRefreshLayout/blob/master/art/md_property.md
+     */
     private void init() {
-        //阻尼系数 --默认: 1.7f，越大，感觉下拉时越吃力。
-        setResistance(1.5f);
-
-        //触发刷新时移动的位置比例 --默认，1.2f，移动达到头部高度1.2倍时可触发刷新操作。
-        setRatioOfHeaderHeightToRefresh(1.2f);
-
-        //回弹延时 --默认 200ms，回弹到刷新高度所用时间
-        setDurationToClose(200);
-
-        //头部回弹时间 --默认1000ms--千万不能设置的超过500，否则会出现立刻下拉不刷新的bug
-        setDurationToCloseHeader(500);
-
-        //下拉刷新-- true为距离触发刷新；false为释放刷新
-        setPullToRefresh(false);
-
-        //刷新是保持头部 --默认值 true
-        setKeepHeaderWhenRefresh(true);
-
-        //底部footer回弹时间
-        setDurationToCloseFooter(300);
+        setDragRate(0.6f);//显示下拉高度/手指真实下拉高度=阻尼效果（摩擦系数）
+        setEnableOverScrollBounce(false);//是否启用越界回弹，就是回到顶部时回弹一下
 
         //初始化头部、尾部
         addHeaderFooter();
@@ -88,12 +65,10 @@ public class PullToRefresh extends PtrFrameLayout {
 
     private void addHeaderFooter() {
         CustomRefreshHeader header = new CustomRefreshHeader(getContext());
-        setHeaderView(header.getView());
-        addPtrUIHandler(header);
+        setRefreshHeader(header);
 
         CustomRefreshFooter footer = new CustomRefreshFooter(getContext());
-        setFooterView(footer.getView());
-        addPtrUIHandler(footer);
+        setRefreshFooter(footer);
     }
 
     public interface onListener {
