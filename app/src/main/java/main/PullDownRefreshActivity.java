@@ -13,7 +13,7 @@ import java.util.List;
 import base.BaseActivity;
 import base.BaseListViewAdapter;
 import cheerly.mybaseproject.R;
-import view.PullToRefresh;
+import pullrefresh.PullToRefresh;
 
 public class PullDownRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;

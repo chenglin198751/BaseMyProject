@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <view.PullToRefresh
+    <pullrefresh.PullToRefresh
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -19,5 +19,5 @@
             android:cacheColorHint="@android:color/transparent"
             android:listSelector="@android:color/transparent" />
 
-    </view.PullToRefresh>
+    </pullrefresh.PullToRefresh>
 </LinearLayout>

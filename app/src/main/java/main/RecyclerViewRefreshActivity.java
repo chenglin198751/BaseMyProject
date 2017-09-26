@@ -17,8 +17,7 @@ import base.BaseRecyclerViewHolder;
 import base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.R;
 import utils.Constants;
-import utils.MyUtils;
-import view.PullToRefresh;
+import pullrefresh.PullToRefresh;
 import view.WebImageView;
 
 /**
