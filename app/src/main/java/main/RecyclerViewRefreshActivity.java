@@ -6,6 +6,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,6 +48,8 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.recyclerview_refresh_layout);
+
+
 
         getTitleHelper().hideTitle();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
