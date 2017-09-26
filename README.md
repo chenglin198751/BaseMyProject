@@ -19,9 +19,7 @@ baseAdapter 。
 **7、WebImageView 类**：图片加载类。使用的是square 公司出品的picasso ，并做了简单的封装，封装的目的是以后可以方便的换其他的图片加载工具。封装为：WebImageView ，具体用法是一定要传入当前
 ImageView的宽和高，以便最大限度的节约内存空间，让滑动更流畅，并且避免OOM。
 
-**8、PullToRefresh 类**：实现了上拉加载更多，下拉刷新。封装自android-Ultra-Pull-To-Refresh-With-Load-More ，它可以包裹任意的View ，还可以很随意的定制自己的header 和footer 。目前发现的唯一的缺
-点是：上拉加载更多时尾部会回弹回去。这个缺点暂时能忍受，如果以后想换别的下拉刷新工具，也可以随时换，因为PullToRefresh 是我封装过的，只需要实现我封装的这几个方法就可以。这也是设计模式中包装
-者模式的好处。
+**8、PullToRefresh 类**：实现了上拉加载更多，下拉刷新。封装自https://github.com/scwang90/SmartRefreshLayout ，它可以很随意的定制自己的header 和footer ，并有很多属性可以设置，极为好用。
 
 **9、ReplaceViewHelper 类**：一个封装的工具类，可以很方便的替换任意的View 为另一个View 。
 
