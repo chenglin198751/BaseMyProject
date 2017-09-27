@@ -5,6 +5,7 @@ import android.widget.ImageView;
 
 import com.youth.banner.loader.ImageLoader;
 
+import utils.Constants;
 import view.WebImageView;
 
 /**
@@ -16,6 +17,7 @@ public class BannerImageLoader extends ImageLoader {
     public void displayImage(Context context, Object path, ImageView imageView) {
         if (imageView instanceof WebImageView) {
             WebImageView webImageView = (WebImageView) imageView;
+            webImageView.load((String) path, Constants.screenWidth, Constants.screenWidth / 2);
         }
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import java.util.List;
 import base.BaseActivity;
 import base.BaseListViewAdapter;
 import cheerly.mybaseproject.R;
+import helper.BannerImageLoader;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
 import utils.MyUtils;
@@ -47,15 +49,14 @@ public class PullDownRefreshActivity extends BaseActivity {
         getTitleHelper().setTitle("测试");
         mListView = (ListView) findViewById(R.id.list_view);
         Banner banner = (Banner) View.inflate(this, R.layout.banner_layout, null);
-        banner.setBannerAnimation(Transformer.ZoomOutSlide);
-        banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
-        banner.setImageLoader(new GlideImageLoader());
+        banner.setImageLoader(new BannerImageLoader());
         banner.setImages(imagesList);
         banner.start();
 
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, Constants.screenWidth / 2);
         banner.setLayoutParams(params);
         mListView.addHeaderView(banner);
+
 
         mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
 
@@ -66,9 +67,8 @@ public class PullDownRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         mAdapter.clear();
-                        setData(15, true);
+                        setData(10, true);
                         mPullToRefresh.finishRefresh();
-                        mPullToRefresh.setLoadmoreFinished(false);
                     }
                 }, 1500);
             }
@@ -80,7 +80,6 @@ public class PullDownRefreshActivity extends BaseActivity {
                     public void run() {
                         setData(5, false);
                         mPullToRefresh.finishLoadmore();
-                        mPullToRefresh.setLoadmoreFinished(true);
                     }
                 }, 1500);
             }
@@ -89,7 +88,7 @@ public class PullDownRefreshActivity extends BaseActivity {
 
         mAdapter = new MyAdapter(this);
         mListView.setAdapter(mAdapter);
-        setData(15, true);
+        setData(10, true);
     }
 
     private void setData(int count, boolean isRefresh) {
@@ -134,6 +133,7 @@ public class PullDownRefreshActivity extends BaseActivity {
         public View getView(final int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = View.inflate(mContext, R.layout.test_item_2, null);
+                convertView.setClickable(true);
             }
 
             TextView title = (TextView) convertView.findViewById(R.id.title);
@@ -145,19 +145,5 @@ public class PullDownRefreshActivity extends BaseActivity {
         }
     }
 
-    public static class GlideImageLoader extends ImageLoader {
-        @Override
-        public void displayImage(Context context, Object path, ImageView imageView) {
-            if (imageView instanceof WebImageView) {
-                WebImageView webImageView = (WebImageView) imageView;
-                webImageView.load((String) path, Constants.screenWidth, Constants.screenWidth / 2);
-            }
-        }
-
-        @Override
-        public ImageView createImageView(Context context) {
-            return new WebImageView(context);
-        }
-    }
 
 }

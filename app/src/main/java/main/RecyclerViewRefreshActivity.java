@@ -6,21 +6,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import base.BaseActivity;
-import base.BaseRecyclerViewHolder;
 import base.BaseRecyclerViewAdapter;
+import base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
-import utils.Constants;
 import pullrefresh.PullToRefresh;
-import view.WebImageView;
+import utils.Constants;
+import view.KeepScaleImageView;
 
 /**
  * 资料：https://github.com/scwang90/SmartRefreshLayout
@@ -32,23 +29,24 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
 
 
     public static final String[] PIC_ARRAY = {"http://d.hiphotos.baidu.com/zhidao/pic/item/b8389b504fc2d5621e910222e31190ef77c66c60.jpg"
-            , "http://img1.szhk.com/Image/2016/05/31/1464664339487.png"
+            , "http://n.sinaimg.cn/translate/20170921/9hhr-fymesmq7657269.jpg"
             , "http://img3.duitang.com/uploads/item/201605/26/20160526235927_ZHh5A.jpeg"
             , "http://c.hiphotos.baidu.com/zhidao/pic/item/1e30e924b899a901e63b00dd18950a7b0308f5cb.jpg"
-            , "http://img.weixinyidu.com/150603/05d6e52d.jpg"
+            , "https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/d4628535e5dde71198f40978a5efce1b9d16611d.jpg"
             , "http://img.mp.itc.cn/upload/20161225/aba0f4945c2341b4942b79005c37e489_th.jpg"
             , "http://n.sinaimg.cn/translate/20170911/a1gc-fykuffc5152614.jpg"
             , "http://media.teeqee.com/game/img/214/184511b1760bc9476170f405d978bdb6.jpg"
             , "http://aliimg.changba.com/cache/photo/4310970_640_640.jpg"
-            , "http://img2.niutuku.com/desk/1207/1658/bizhi-1658-15519.jpg"};
+            , "http://img2.niutuku.com/desk/1207/1658/bizhi-1658-15519.jpg"
+            , "https://gss0.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D600%2C800/sign=380914ddf4246b607b5bba72dbc83674/4b90f603738da977bf12cca5b251f8198618e37b.jpg"
+            , "http://img1.ali213.net/picfile/News/2015/03/03/584_2015030320455693.jpg",
+            "http://img1.ali213.net/picfile/News/2015/03/03/584_2015030320504264.jpg"};
 
-    public static final int[] RADIUS_ARRAY = {10, 20, 30, 40, 50, 60, 9, 14, 0, 5};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.recyclerview_refresh_layout);
-
 
 
         getTitleHelper().hideTitle();
@@ -95,7 +93,6 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
         for (int i = 0; i < count; i++) {
             ModelData modelData = new ModelData();
             modelData.url = PIC_ARRAY[i];
-            modelData.radius = RADIUS_ARRAY[i];
             list.add(modelData);
         }
 
@@ -133,23 +130,19 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
         class ListHolder extends BaseRecyclerViewHolder {
             TextView title;
             TextView content;
-            WebImageView imageView;
+            KeepScaleImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
 //                title = (TextView) itemView.findViewById(R.id.title);
 //                content = (TextView) itemView.findViewById(R.id.content);
-                imageView = (WebImageView) itemView.findViewById(R.id.image_view);
-
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
-                params.width = Constants.screenWidth;
-                params.height = params.width;
-                imageView.setLayoutParams(params);
+                imageView = (KeepScaleImageView) itemView.findViewById(R.id.image_view);
             }
 
             public void setData(int position) {
 //                title.setText("标题 " + position);
-                imageView.load(getData().get(position).url, Constants.screenWidth, Constants.screenWidth);
+                imageView.setWidth(Constants.screenWidth);
+                imageView.load(getData().get(position).url);
             }
 
 

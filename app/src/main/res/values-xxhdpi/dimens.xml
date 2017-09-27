@@ -1,0 +1,4 @@
+<resources>
+    <!--此文件夹适配的大于等于(包含)1080P分辨率之间-->
+    <dimen name="item_divide_height">2px</dimen>
+</resources>

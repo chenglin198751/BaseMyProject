@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:cube_ptr="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<pullrefresh.PullToRefresh xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_refresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <pullrefresh.PullToRefresh
-        android:id="@+id/swipe_refresh"
+    <ListView
+        android:id="@+id/list_view"
+        style="@style/ListViewCommonStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#ffffff" />
 
-        <ListView
-            android:id="@+id/list_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#ffffff"
-            android:cacheColorHint="@android:color/transparent"
-            android:listSelector="@android:color/transparent" />
+</pullrefresh.PullToRefresh>
 
-    </pullrefresh.PullToRefresh>
-</LinearLayout>
