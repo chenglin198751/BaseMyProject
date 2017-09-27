@@ -10,18 +10,18 @@ import android.util.AttributeSet;
  * <p>
  * 可以显示维持图片bitmap宽高的ImageView
  */
-public class KeepBitmapSizeImageView extends WebImageView {
+public class KeepScaleImageView extends WebImageView {
     private int mWidth = 0;
 
-    public KeepBitmapSizeImageView(Context context) {
+    public KeepScaleImageView(Context context) {
         super(context);
     }
 
-    public KeepBitmapSizeImageView(Context context, AttributeSet attrs) {
+    public KeepScaleImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public KeepBitmapSizeImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public KeepScaleImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
