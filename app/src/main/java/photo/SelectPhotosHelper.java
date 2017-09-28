@@ -143,6 +143,10 @@ public class SelectPhotosHelper {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (mActivity == null || mActivity.isFinishing()) {
+                            return;
+                        }
+
                         PhotoAlbum takePhotoItem = new PhotoAlbum();
                         mPhotoAlbumList.add(0, takePhotoItem);
                         mActivity.mAdapter.setData(mPhotoAlbumList);
