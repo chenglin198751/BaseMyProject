@@ -1,14 +1,8 @@
 package photo;
 
-import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -17,26 +11,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cheerly.mybaseproject.R;
 import preferences.PreferencesData;
-import utils.Constants;
 import utils.MyUtils;
-import utils.SDCardUtils;
-import widget.MyToast;
 
 /**
  * weichenglin create in 16/4/11
@@ -259,43 +241,16 @@ public class SelectPhotosHelper {
     }
 
 
-    public void returnMultipleSelect() {
-        Intent intent = new Intent();
-//        intent.putExtra(IPublishPhotoService.DataKey.MULTIPLE_PHOTO_LIST, mActivity.mAdapter.mSelectedList);
-        mActivity.setResult(Activity.RESULT_OK, intent);
-        mActivity.finish();
-    }
-
     public boolean isBackPressed() {
         if (isAnimationing) {
             return true;
         }
-
         // 如果下拉列表显示这，先隐藏
         if (isOpenedList) {
             startHideAnimation();
             return true;
         } else {
             return false;
-        }
-    }
-
-    private void saveImageToSdcards(final String path, final Bitmap bitmap) {
-//        final MLSImage.OnPictureSavedListener mListener
-        if (bitmap == null || TextUtils.isEmpty(path)) {
-            return;
-        }
-
-        File file = new File(path);
-        if (file.exists()) {
-            file.delete();
-        }
-
-        try {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
-//            mListener.onPictureSaved(uri);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
