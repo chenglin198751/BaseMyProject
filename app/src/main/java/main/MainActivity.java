@@ -4,12 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import base.BaseActivity;
+import base.BaseFragment;
 import cheerly.mybaseproject.R;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
@@ -24,7 +24,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final int[] TAB_BOTTOM_NAME_ARRAY = {R.string.host_first_tab, R.string.host_second_tab,
             R.string.host_third_tab, R.string.host_fourth_tab};
     private static final int TAB_SIZE = 4;
-    private Fragment[] mFragArray = new Fragment[TAB_SIZE];
+    private BaseFragment[] mFragArray = new BaseFragment[TAB_SIZE];
 
     private int mCurrentTab;
     private MainFirstFragment mMainFirstFragment;
@@ -135,10 +135,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onMyBroadcastReceive(String myAction, Bundle bundle) {
         super.onMyBroadcastReceive(myAction, bundle);
-        if (myAction.equals("1")) {
-            Log.v("tag_2", bundle.getString("key"));
-        } else if (myAction.equals("2")) {
-            Log.v("tag_2", bundle.getString("key"));
+        for (int i = 0; i < mFragArray.length; i++) {
+            if (mFragArray[i] != null) {
+                mFragArray[i].onMyBroadcastReceive(myAction, bundle);
+            }
         }
     }
 

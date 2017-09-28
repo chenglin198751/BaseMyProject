@@ -1,6 +1,7 @@
 package photo;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -13,21 +14,42 @@ import android.util.Log;
 import android.view.View;
 
 
+import java.util.ArrayList;
+
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import utils.Constants;
 import widget.MyToast;
 
 /**
  * weichenglin create in 16/4/11
  */
 public class SelectPhotosActivity extends BaseActivity implements View.OnClickListener {
-    public static final int PERMISSION_REQUEST_CODE = 100;
+    private static final int PERMISSION_REQUEST_CODE = 100;
     public static final int GRID_COLUMN = 3;
     public RecyclerView mRecyclerView;
     public SelectPhotosAdapter mAdapter;
     public SelectPhotosHelper mHelper;
 
-    public int mMaxCount = -1;
+    public int mCount = -1;
+    public boolean isSingleType = true;//单选还是多选
+
+    /**
+     * 单选照片
+     */
+    public static void startForSingle(Context context) {
+        Intent intent = new Intent(context, SelectPhotosActivity.class);
+        context.startActivity(intent);
+    }
+
+    /**
+     * 多选照片
+     */
+    public static void startForMultiple(Context context, int count) {
+        Intent intent = new Intent(context, SelectPhotosActivity.class);
+        intent.putExtra("count", count);
+        context.startActivity(intent);
+    }
 
 
     private void requestReadExternalPermission() {
@@ -57,6 +79,13 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
         setContentLayout(R.layout.publish_select_photos);
         getTitleHelper().hideTitle();
         requestReadExternalPermission();
+
+        if (getIntent().hasExtra("count")) {
+            mCount = getIntent().getIntExtra("count", -1);
+            isSingleType = false;
+        } else {
+            isSingleType = true;
+        }
     }
 
     @Override
@@ -97,6 +126,14 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
         } else if (i == R.id.title) {
             mHelper.clickTitleView();
         } else if (i == R.id.next_btn) {
+            if (mAdapter.getSelectedPhotoList() != null && mAdapter.getSelectedPhotoList().size() > 0){
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, mAdapter.getSelectedPhotoList());
+                sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
+                finish();
+            }else {
+                MyToast.show(R.string.publish_selected_single_photo);
+            }
         }
     }
 

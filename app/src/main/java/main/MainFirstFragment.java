@@ -2,15 +2,19 @@ package main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import photo.SelectPhotosActivity;
+import utils.Constants;
 import utils.EasyCache;
 
 /**
@@ -23,8 +27,6 @@ public class MainFirstFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        startActivity(new Intent(getActivity(), SelectPhotosActivity.class));
     }
 
     @Override
@@ -54,5 +56,10 @@ public class MainFirstFragment extends BaseFragment {
                 mEditText.setText(value);
             }
         });
+    }
+
+    @Override
+    public void onMyBroadcastReceive(String action, Bundle bundle) {
+        super.onMyBroadcastReceive(action, bundle);
     }
 }

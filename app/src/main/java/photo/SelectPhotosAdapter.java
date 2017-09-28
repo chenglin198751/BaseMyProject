@@ -1,18 +1,21 @@
 package photo;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
-
 
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import base.MyApplication;
@@ -27,7 +30,6 @@ import widget.MyToast;
  * weichenglin create in 16/4/11
  */
 public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapter.ViewHolder> {
-    public static final int REQUEST_TAKE_PICTURE = 2;
     private static final int TAKE_PHOTO = 0;
     private static final int ALBUM_LIST = 1;
     private SelectPhotosActivity mActivity;
@@ -38,25 +40,25 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
     private View.OnClickListener imgClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (view.getTag(R.id.publish_picture_id) != null) {
+            if (view.getTag(R.id.take_photo) != null) {
+                mPicPath = openCamera();
+            } else if (view.getTag(R.id.publish_picture_id) != null) {
                 int position = (int) view.getTag(R.id.publish_picture_id);
-//                if (mActivity.isMultipleSelect){
-//                    String path = mPhotoAlbumList.get(position).getPath();
-//                    if (!mSelectedList.contains(path)){
-//                        if (mActivity.mMaxCount > 0 && mSelectedList.size() == mActivity.mMaxCount ){
-//                            String maxLimit = mActivity.getString(R.string.publish_max_selected_photo_limit);
-//                            maxLimit = maxLimit.replace("X",mActivity.mMaxCount + "");
-//                            MyToast.show(maxLimit);
-//                            return;
-//                        }
-//                        mSelectedList.add(path);
-//                    }else {
-//                        mSelectedList.remove(path);
-//                    }
-//                    notifyDataSetChanged();
-//                }else
-
-                if (mSelectedPhotoItem == null || mSelectedPhotoItem != mPhotoAlbumList.get(position)) {
+                if (!mActivity.isSingleType) {
+                    String path = mPhotoAlbumList.get(position).getPath();
+                    if (!mSelectedList.contains(path)) {
+                        if (mActivity.mCount > 0 && mSelectedList.size() == mActivity.mCount) {
+                            String maxLimit = mActivity.getString(R.string.publish_max_selected_photo_limit);
+                            maxLimit = maxLimit.replace("X", mActivity.mCount + "");
+                            MyToast.show(maxLimit);
+                            return;
+                        }
+                        mSelectedList.add(path);
+                    } else {
+                        mSelectedList.remove(path);
+                    }
+                    notifyDataSetChanged();
+                } else if (mSelectedPhotoItem == null || mSelectedPhotoItem != mPhotoAlbumList.get(position)) {
                     mSelectedPhotoItem = mPhotoAlbumList.get(position);
                     notifyDataSetChanged();
                 }
@@ -75,6 +77,20 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
 
     public void setSelectedPhotoItem(PhotoAlbum item) {
         mSelectedPhotoItem = item;
+    }
+
+    public ArrayList<String> getSelectedPhotoList() {
+        if (mActivity.isSingleType) {
+            if (mSelectedPhotoItem != null) {
+                ArrayList<String> list = new ArrayList<>();
+                list.add(mSelectedPhotoItem.getPath());
+                return list;
+            } else {
+                return null;
+            }
+        } else {
+            return mSelectedList;
+        }
     }
 
     @Override
@@ -119,18 +135,18 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
                     .centerCrop()
                     .into(viewHolder.photoImg);
 
-//            if (mActivity.isMultipleSelect){
-//                if (mSelectedList.contains(photoItem.getPath())){
-//                    viewHolder.checkBox.setVisibility(View.VISIBLE);
-//                }else {
-//                    viewHolder.checkBox.setVisibility(View.GONE);
-//                }
-//            }else
-
-            if (mSelectedPhotoItem != null && photoItem == mSelectedPhotoItem) {
-                viewHolder.checkBox.setVisibility(View.VISIBLE);
+            if (!mActivity.isSingleType) {
+                if (mSelectedList.contains(photoItem.getPath())) {
+                    viewHolder.checkBox.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.checkBox.setVisibility(View.GONE);
+                }
             } else {
-                viewHolder.checkBox.setVisibility(View.GONE);
+                if (mSelectedPhotoItem != null && photoItem == mSelectedPhotoItem) {
+                    viewHolder.checkBox.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.checkBox.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -140,39 +156,30 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
         return mPhotoAlbumList.size();
     }
 
-    public void goCameraPick() {
-//        try {
-//            mPicPath = getImagePath();
-//            Intent intent = new Intent(mActivity, CameraNewActivity.class);
-//            intent.putExtra("path", mPicPath);
-//            intent.putExtra("isFromPhoto", true);
-//            intent.putExtra("isNotCropAndFilter", true);
-//            mActivity.startActivityForResult(intent, REQUEST_TAKE_PICTURE);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    public String openCamera() {
+        String photoPath = getImagePath();
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(photoPath)));
+        mActivity.startActivityForResult(cameraIntent, TAKE_PHOTO);
+        return photoPath;
     }
 
     private String getImagePath() {
         String path = SDCardUtils.SDCARD_PATH;
-        return path + System.currentTimeMillis() + ".jpeg";
+        return path + System.currentTimeMillis() + ".jpg";
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (mActivity.RESULT_OK == resultCode && REQUEST_TAKE_PICTURE == requestCode) {
-//            PublishPhotosPreviewAct.startForTakePhotoPreview(mActivity, mPicPath);
-//        } else if (mActivity.RESULT_OK == resultCode && PublishPhotosPreviewAct.OPEN_TAKE_PHOTO_PREVIEW == requestCode) {
-//            mPicPath = data.getStringExtra("photo_path");
-//            if (mActivity.isMultipleSelect){
-//                mSelectedList.add(mPicPath);
-//                mActivity.mHelper.returnMultipleSelect();
-//            }else {
-//                mSelectedPhotoItem.setPath(mPicPath);
-//                mActivity.setShowSelectedPhoto(mSelectedPhotoItem);
-//                mActivity.setSelectedPhotoAlbumIsNull();
-//                notifyDataSetChanged();
-//            }
-//        }
+        if (Activity.RESULT_OK == resultCode && TAKE_PHOTO == requestCode) {
+            if (!TextUtils.isEmpty(mPicPath)) {
+                ArrayList<String> list = new ArrayList<>();
+                list.add(mPicPath);
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, list);
+                mActivity.sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
+                mActivity.finish();
+            }
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

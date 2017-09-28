@@ -43,7 +43,8 @@
             android:paddingLeft="@dimen/padding_middle"
             android:paddingRight="@dimen/padding_middle"
             android:paddingTop="6dip"
-            android:text="发布"
+            android:text="完成"
+            android:textColor="@color/fc_1"
             android:textSize="@dimen/font_size_4" />
     </RelativeLayout>
 
