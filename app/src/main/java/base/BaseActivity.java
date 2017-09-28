@@ -44,7 +44,7 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public Context getContext() {
+    public BaseActivity getContext() {
         return this;
     }
 

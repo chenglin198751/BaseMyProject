@@ -1,5 +1,6 @@
 package base;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,6 +15,10 @@ import widget.LoadingView;
 
 public class BaseFragment extends Fragment {
     private LoadingView mLoadingView = null;
+
+    public Activity getContext() {
+        return getActivity();
+    }
 
     /**
      * 显示嵌入式进度条
