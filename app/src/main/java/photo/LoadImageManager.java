@@ -17,8 +17,6 @@ import java.util.List;
  * @title: LoadImageManager.java
  * @description: 图片数据库部分操作
  * @company: 美丽说（北京）网络科技有限公司
- * @author: 于庭龙
- * @version: 6.5.0
  * @created：2015年6月12日
  */
 public class LoadImageManager {
