@@ -15,11 +15,13 @@ import android.view.View;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
+import widget.MyToast;
 
 /**
  * weichenglin create in 16/4/11
  */
 public class SelectPhotosActivity extends BaseActivity implements View.OnClickListener {
+    public static final int PERMISSION_REQUEST_CODE = 100;
     public static final int GRID_COLUMN = 3;
     public RecyclerView mRecyclerView;
     public SelectPhotosAdapter mAdapter;
@@ -29,62 +31,45 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
 
 
     private void requestReadExternalPermission() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-            } else {
-                // 0 是自己定义的请求coude
-                ActivityCompat.requestPermissions(getContext(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-            }
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getContext(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         } else {
-//            Log.d(TAG, "READ permission is granted...");
+            //已经获取权限
+            init();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 0: {
-
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted
-                    // request successfully, handle you transactions
-
-                } else {
-
-                    // permission denied
-                    // request failed
-                }
-
-                return;
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {//获取权限成功
+                init();
+            } else {//用户拒绝授予权限
+                MyToast.show("请开启访问权限");
             }
-            default:
-                break;
-
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestReadExternalPermission();
+
         setContentLayout(R.layout.publish_select_photos);
         getTitleHelper().hideTitle();
-
-        initView();
-        initAlbum();
-
-        mHelper = new SelectPhotosHelper(this);
-        mHelper.initImageData();
+        requestReadExternalPermission();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void init() {
+        initView();
+        initAlbum();
+
+        mHelper = new SelectPhotosHelper(this);
+        mHelper.initImageData();
     }
 
     private void initView() {
@@ -131,8 +116,12 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        if (!mHelper.isBackPressed()) {
+        if (mHelper == null) {
             super.onBackPressed();
+        } else {
+            if (!mHelper.isBackPressed()) {
+                super.onBackPressed();
+            }
         }
     }
 
