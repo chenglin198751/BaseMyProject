@@ -65,3 +65,5 @@ ImageView的宽和高，以便最大限度的节约内存空间，让滑动更�
 **29、com.youth.banner.Banner 类**：一个很优秀的实现自动滚动banner的库。另外，里面有WeakHandler这个防止内存泄露的Handler类使用，还有各种的ViewPager Transformer可以使用。
 
 **30、KeepScaleImageView 类**：按照Bitmap的宽高比，保持ImageView宽高比。需要在设置图片源之前调用setWidth()方法设置控件宽度
+
+**31、SelectPhotosActivity 类**：一个通用的相册图片选择类，支持单选和多选，用法看代码。

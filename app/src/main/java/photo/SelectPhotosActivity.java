@@ -4,17 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-
-
-import java.util.ArrayList;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
@@ -126,12 +120,12 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
         } else if (i == R.id.title) {
             mHelper.clickTitleView();
         } else if (i == R.id.next_btn) {
-            if (mAdapter.getSelectedPhotoList() != null && mAdapter.getSelectedPhotoList().size() > 0){
+            if (mAdapter.getSelectedPhotoList() != null && mAdapter.getSelectedPhotoList().size() > 0) {
                 Bundle bundle = new Bundle();
                 bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, mAdapter.getSelectedPhotoList());
                 sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
                 finish();
-            }else {
+            } else {
                 MyToast.show(R.string.publish_selected_single_photo);
             }
         }
