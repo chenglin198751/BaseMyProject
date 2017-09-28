@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/item_selector"
+    android:paddingBottom="@dimen/padding_small"
+    android:paddingLeft="@dimen/padding_small"
+    android:paddingTop="@dimen/padding_small">
+
+    <view.WebImageView
+        android:id="@+id/photo_img_view"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:scaleType="centerCrop"
+        android:src="@color/view_bg" />
+
+    <TextView
+        android:id="@+id/photo_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/photo_img_view"
+        android:layout_marginLeft="@dimen/padding_middle"
+        android:layout_marginTop="14dip"
+        android:layout_toRightOf="@id/photo_img_view"
+        android:gravity="center_vertical"
+        android:text="Camera"
+        android:textColor="@color/fc_1"
+        android:textSize="@dimen/font_size_5"
+        tools:text="相册" />
+
+    <TextView
+        android:id="@+id/photo_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/photo_name"
+        android:layout_marginLeft="@dimen/padding_middle"
+        android:layout_marginTop="7dip"
+        android:layout_toRightOf="@id/photo_img_view"
+        android:gravity="center_vertical"
+        android:textColor="@color/fc_2"
+        android:textSize="@dimen/font_size_4"
+        tools:text="23" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/padding_big"
+        android:src="@mipmap/publish_circle_info_arrow" />
+</RelativeLayout>

@@ -11,24 +11,24 @@ public class PreferencesData {
         return context.getSharedPreferences("preference_1", Context.MODE_PRIVATE);
     }
 
-    public static void clear(){
+    public static void clear() {
         getPreferences(MyApplication.getApp()).edit().clear().commit();
     }
 
     /**
-     * 测试key
+     * 最后选择的相册ID
      */
-    private static final String testKey = "testKey";
+    private static final String LAST_ALBUM_ID = "LAST_ALBUM_ID";
 
-    public static void setTest(String value) {
+    public static void setLastAlbumId(String value) {
         SharedPreferences prefs = getPreferences(MyApplication.getApp());
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(testKey, value);
+        editor.putString(LAST_ALBUM_ID, value);
         editor.commit();
     }
 
-    public static String getTest() {
-        return getPreferences(MyApplication.getApp()).getString(testKey, "");
+    public static String getLastAlbumId() {
+        return getPreferences(MyApplication.getApp()).getString(LAST_ALBUM_ID, "");
     }
 
 }

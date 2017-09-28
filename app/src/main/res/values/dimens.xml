@@ -29,5 +29,8 @@
     <dimen name="on_off_width">65dip</dimen>
     <dimen name="text_title_padding_left">15dip</dimen>
     <dimen name="slide_height">70dip</dimen>
+    <dimen name="padding_small">10dip</dimen>
+    <dimen name="padding_middle">15dip</dimen>
+    <dimen name="padding_big">20dip</dimen>
 
 </resources>

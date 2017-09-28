@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <view.WebImageView
+        android:id="@+id/photo_img"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/check_box"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:layout_centerInParent="true"
+        android:background="#4C000000"
+        android:scaleType="centerInside"
+        android:src="@mipmap/publish_album_photo_checked" />
+</RelativeLayout>

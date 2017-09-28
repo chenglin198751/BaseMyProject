@@ -34,4 +34,5 @@
     <color name="holo_orange_light">#ffffbb33</color>
     <color name="holo_orange_dark">#ffff8800</color>
     <color name="holo_blue_bright">#ff00ddff</color>
+    <color name="percent_black_60">#99000000</color>
 </resources>

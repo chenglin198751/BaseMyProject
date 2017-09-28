@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="Life_CropImage">
+        <attr name="life_Crop_ratio" format="float" />
+        <attr name="life_Crop_scale_type" format="enum">
+            <enum name="life_center_crop" value="0" />
+            <enum name="life_center_inside" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

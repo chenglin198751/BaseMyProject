@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
+import photo.SelectPhotosActivity;
 import utils.EasyCache;
 
 /**
@@ -23,7 +24,7 @@ public class MainFirstFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        startActivity(new Intent(getActivity(), RecyclerViewRefreshActivity.class));
+        startActivity(new Intent(getActivity(), SelectPhotosActivity.class));
     }
 
     @Override
