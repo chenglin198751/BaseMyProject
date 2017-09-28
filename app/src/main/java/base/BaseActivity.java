@@ -1,17 +1,16 @@
 package base;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -19,6 +18,7 @@ import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
 import utils.Constants;
 import widget.LoadingView;
+import widget.MyDialog;
 
 /**
  * Activity的基类
@@ -30,6 +30,7 @@ public class BaseActivity extends AppCompatActivity {
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
     private LoadingView mLoadingView = null;
+    private MyDialog mWaitDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class BaseActivity extends AppCompatActivity {
         setContentView(R.layout.base_activity_layout);
         mTitleHelper = new MainTitleHelper(this);
 
-        if (getTitle() != null){
+        if (getTitle() != null) {
             mTitleHelper.setTitle(getTitle().toString());
         }
     }
@@ -86,6 +87,33 @@ public class BaseActivity extends AppCompatActivity {
         intent.putExtra("action", action);
         intent.putExtra("bundle", bundle);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    /**
+     * 显示等待的对话框
+     */
+    public MyDialog showWaitDialog(String text) {
+        if (mWaitDialog == null) {
+            mWaitDialog = new MyDialog(getContext());
+            View dialogView = View.inflate(getContext(), R.layout.progress_layout, null);
+            mWaitDialog.setFullScreenView(dialogView);
+        }
+
+        if (!TextUtils.isEmpty(text)) {
+            TextView textView = (TextView) mWaitDialog.findViewById(R.id.text);
+            textView.setText(text);
+        }
+        mWaitDialog.show();
+        return mWaitDialog;
+    }
+
+    /**
+     * 取消等待的对话框
+     */
+    public void dismissWaitDialog() {
+        if (mWaitDialog != null) {
+            mWaitDialog.dismiss();
+        }
     }
 
     /**

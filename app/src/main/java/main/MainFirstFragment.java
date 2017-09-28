@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
+import base.BaseActivity;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import photo.SelectPhotosActivity;
@@ -22,7 +23,6 @@ import utils.EasyCache;
  */
 
 public class MainFirstFragment extends BaseFragment {
-    EditText mEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,23 +37,20 @@ public class MainFirstFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mEditText = (EditText) view.findViewById(R.id.edit_text);
 
         final Button button = (Button) view.findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EasyCache mCache = EasyCache.get(getContext());
-                mCache.put("test_key1", mEditText.getText().toString());
+                BaseActivity baseActivity = (BaseActivity) getActivity();
+                baseActivity.showWaitDialog("测试测试测试测试测试").setCanceledOnTouchOutside(true);
             }
         });
 
         view.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EasyCache mCache = EasyCache.get(getContext());
-                String value = mCache.getAsString("test_key1");
-                mEditText.setText(value);
+
             }
         });
     }
