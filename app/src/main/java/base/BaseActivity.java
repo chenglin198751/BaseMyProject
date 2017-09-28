@@ -119,16 +119,12 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 显示嵌入式进度条
      */
-    public final void showProgress() {
+    public final void showProgress(String text) {
         removeProgress();
         addLoadView();
-    }
-
-    /**
-     * 设置进度要要显示的文字提示
-     */
-    public final void setProgressText(String text) {
-        mLoadingView.setText(text);
+        if (text != null) {
+            mLoadingView.setText(text);
+        }
     }
 
     /**

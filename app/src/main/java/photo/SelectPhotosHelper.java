@@ -94,7 +94,7 @@ public class SelectPhotosHelper {
     }
 
     public void initImageData() {
-        mActivity.showProgress();
+        mActivity.showProgress(null);
         new Thread(new Runnable() {
             @Override
             public void run() {

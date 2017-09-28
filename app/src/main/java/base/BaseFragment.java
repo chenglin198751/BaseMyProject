@@ -27,18 +27,13 @@ public class BaseFragment extends Fragment {
     /**
      * 显示嵌入式进度条
      */
-    public void showProgress() {
+    public void showProgress(String text) {
         removeProgress();
         addLoadView();
+        if (text != null) {
+            mLoadingView.setText(text);
+        }
     }
-
-    /**
-     * 设置进度要要显示的文字提示
-     */
-    public void setProgressText(String text) {
-        mLoadingView.setText(text);
-    }
-
 
     /**
      * 清除contentView里面的加载进度
