@@ -2,7 +2,6 @@ package base;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
@@ -27,9 +26,9 @@ public class BaseFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mContentView = (RelativeLayout) view.findViewById(R.id.content_view);
+        mContentView = (RelativeLayout) view.findViewById(R.id.base_frag_id);
     }
 
     /**
@@ -83,7 +82,6 @@ public class BaseFragment extends Fragment {
     private void addLoadView() {
         if (mLoadingViewHelper == null && getView() != null) {
             mLoadingViewHelper = new LoadingViewHelper(getActivity());
-//            mLoadingView.getLoadingView().setBackgroundColor(getResources().getColor(R.color.view_bg));
             mLoadingViewHelper.getLoadingView().setClickable(true);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
             mContentView.addView(mLoadingViewHelper.getLoadingView(), params);
