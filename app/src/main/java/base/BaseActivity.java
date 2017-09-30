@@ -31,6 +31,7 @@ public class BaseActivity extends AppCompatActivity {
     private MainTitleHelper mTitleHelper;
     private LoadingViewHelper mLoadingViewHelper = null;
     private MyDialog mWaitDialog;
+    private RelativeLayout mContentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class BaseActivity extends AppCompatActivity {
         registerBroadcastReceiver();
 
         setContentView(R.layout.base_activity_layout);
+        mContentView = (RelativeLayout) this.findViewById(R.id.content_view);
         mTitleHelper = new MainTitleHelper(this);
 
         if (getTitle() != null) {
@@ -53,8 +55,7 @@ public class BaseActivity extends AppCompatActivity {
      * 设置Activity的内容布局，取代setContentView() 方法
      */
     public final void setContentLayout(int layoutResID) {
-        RelativeLayout contentView = (RelativeLayout) this.findViewById(R.id.content_view);
-        contentView.addView(View.inflate(this, layoutResID, null), new RelativeLayout.LayoutParams(-1, -1));
+        mContentView.addView(View.inflate(this, layoutResID, null), new RelativeLayout.LayoutParams(-1, -1));
     }
 
     public MainTitleHelper getTitleHelper() {
@@ -132,8 +133,7 @@ public class BaseActivity extends AppCompatActivity {
      */
     public final void removeProgress() {
         if (mLoadingViewHelper != null) {
-            RelativeLayout contentView = (RelativeLayout) this.findViewById(R.id.content_view);
-            contentView.removeView(mLoadingViewHelper.getLoadingView());
+            mContentView.removeView(mLoadingViewHelper.getLoadingView());
             mLoadingViewHelper = null;
         }
     }
@@ -169,9 +169,8 @@ public class BaseActivity extends AppCompatActivity {
         if (mLoadingViewHelper == null) {
             mLoadingViewHelper = new LoadingViewHelper(this);
             mLoadingViewHelper.getLoadingView().setClickable(true);
-            RelativeLayout contentView = (RelativeLayout) this.findViewById(R.id.content_view);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            contentView.addView(mLoadingViewHelper.getLoadingView(), params);
+            mContentView.addView(mLoadingViewHelper.getLoadingView(), params);
         }
     }
 

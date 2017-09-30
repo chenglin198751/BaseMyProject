@@ -2,6 +2,7 @@ package base;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,12 +17,19 @@ import widget.LoadingViewHelper;
 
 public class BaseFragment extends Fragment {
     private LoadingViewHelper mLoadingViewHelper = null;
+    private RelativeLayout mContentView;
 
     public Activity getContext() {
         return getActivity();
     }
 
     public void onMyBroadcastReceive(String action, Bundle bundle) {
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mContentView = (RelativeLayout) view.findViewById(R.id.content_view);
     }
 
     /**
@@ -40,8 +48,7 @@ public class BaseFragment extends Fragment {
      */
     public void removeProgress() {
         if (mLoadingViewHelper != null && getView() != null) {
-            RelativeLayout contentView = (RelativeLayout) getView().findViewById(R.id.root_view);
-            contentView.removeView(mLoadingViewHelper.getLoadingView());
+            mContentView.removeView(mLoadingViewHelper.getLoadingView());
             mLoadingViewHelper = null;
         }
     }
@@ -78,9 +85,8 @@ public class BaseFragment extends Fragment {
             mLoadingViewHelper = new LoadingViewHelper(getActivity());
 //            mLoadingView.getLoadingView().setBackgroundColor(getResources().getColor(R.color.view_bg));
             mLoadingViewHelper.getLoadingView().setClickable(true);
-            RelativeLayout contentView = (RelativeLayout) getView().findViewById(R.id.root_view);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            contentView.addView(mLoadingViewHelper.getLoadingView(), params);
+            mContentView.addView(mLoadingViewHelper.getLoadingView(), params);
         }
     }
 }
