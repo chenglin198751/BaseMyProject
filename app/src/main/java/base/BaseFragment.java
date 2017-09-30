@@ -15,7 +15,7 @@ import widget.LoadingViewHelper;
  */
 
 public class BaseFragment extends Fragment {
-    private LoadingViewHelper mLoadingView = null;
+    private LoadingViewHelper mLoadingViewHelper = null;
 
     public Activity getContext() {
         return getActivity();
@@ -31,7 +31,7 @@ public class BaseFragment extends Fragment {
         removeProgress();
         addLoadView();
         if (text != null) {
-            mLoadingView.setText(text);
+            mLoadingViewHelper.setText(text);
         }
     }
 
@@ -39,10 +39,10 @@ public class BaseFragment extends Fragment {
      * 清除contentView里面的加载进度
      */
     public void removeProgress() {
-        if (mLoadingView != null && getView() != null) {
+        if (mLoadingViewHelper != null && getView() != null) {
             RelativeLayout contentView = (RelativeLayout) getView().findViewById(R.id.root_view);
-            contentView.removeView(mLoadingView.getLoadingView());
-            mLoadingView = null;
+            contentView.removeView(mLoadingViewHelper.getLoadingView());
+            mLoadingViewHelper = null;
         }
     }
 
@@ -51,7 +51,7 @@ public class BaseFragment extends Fragment {
      */
     public void showNoNetView() {
         addLoadView();
-        mLoadingView.showNoNetView();
+        mLoadingViewHelper.showNoNetView();
     }
 
     /**
@@ -59,7 +59,7 @@ public class BaseFragment extends Fragment {
      */
     public void showNoNetView(View.OnClickListener listener, String text) {
         addLoadView();
-        mLoadingView.showNoNetView(listener, text);
+        mLoadingViewHelper.showNoNetView(listener, text);
     }
 
     /**
@@ -67,20 +67,20 @@ public class BaseFragment extends Fragment {
      */
     public void showEmptyView(String text) {
         addLoadView();
-        mLoadingView.showEmptyView();
+        mLoadingViewHelper.showEmptyView();
         if (!TextUtils.isEmpty(text)) {
-            mLoadingView.setEmptyText(text);
+            mLoadingViewHelper.setEmptyText(text);
         }
     }
 
     private void addLoadView() {
-        if (mLoadingView == null && getView() != null) {
-            mLoadingView = new LoadingViewHelper(getActivity());
-            mLoadingView.getLoadingView().setBackgroundColor(getResources().getColor(R.color.view_bg));
-            mLoadingView.getLoadingView().setClickable(true);
+        if (mLoadingViewHelper == null && getView() != null) {
+            mLoadingViewHelper = new LoadingViewHelper(getActivity());
+//            mLoadingView.getLoadingView().setBackgroundColor(getResources().getColor(R.color.view_bg));
+            mLoadingViewHelper.getLoadingView().setClickable(true);
             RelativeLayout contentView = (RelativeLayout) getView().findViewById(R.id.root_view);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            contentView.addView(mLoadingView.getLoadingView(), params);
+            contentView.addView(mLoadingViewHelper.getLoadingView(), params);
         }
     }
 }

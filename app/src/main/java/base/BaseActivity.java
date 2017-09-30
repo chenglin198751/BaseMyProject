@@ -9,7 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -53,8 +53,8 @@ public class BaseActivity extends AppCompatActivity {
      * 设置Activity的内容布局，取代setContentView() 方法
      */
     public final void setContentLayout(int layoutResID) {
-        LinearLayout content_linear = (LinearLayout) this.findViewById(R.id.content_view);
-        content_linear.addView(View.inflate(this, layoutResID, null), new LinearLayout.LayoutParams(-1, -1));
+        RelativeLayout contentView = (RelativeLayout) this.findViewById(R.id.content_view);
+        contentView.addView(View.inflate(this, layoutResID, null), new RelativeLayout.LayoutParams(-1, -1));
     }
 
     public MainTitleHelper getTitleHelper() {
@@ -132,7 +132,7 @@ public class BaseActivity extends AppCompatActivity {
      */
     public final void removeProgress() {
         if (mLoadingViewHelper != null) {
-            LinearLayout contentView = (LinearLayout) this.findViewById(R.id.content_view);
+            RelativeLayout contentView = (RelativeLayout) this.findViewById(R.id.content_view);
             contentView.removeView(mLoadingViewHelper.getLoadingView());
             mLoadingViewHelper = null;
         }
@@ -168,9 +168,10 @@ public class BaseActivity extends AppCompatActivity {
     private void addLoadView() {
         if (mLoadingViewHelper == null) {
             mLoadingViewHelper = new LoadingViewHelper(this);
-            LinearLayout contentView = (LinearLayout) this.findViewById(R.id.content_view);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -1);
-            contentView.addView(mLoadingViewHelper.getLoadingView(), 0, params);
+            mLoadingViewHelper.getLoadingView().setClickable(true);
+            RelativeLayout contentView = (RelativeLayout) this.findViewById(R.id.content_view);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+            contentView.addView(mLoadingViewHelper.getLoadingView(), params);
         }
     }
 

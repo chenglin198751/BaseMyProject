@@ -11,11 +11,10 @@
         android:layout_height="@dimen/main_title_height"
         android:layout_alignParentTop="true" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/main_title"
-        android:orientation="vertical" />
+        android:layout_below="@+id/main_title" />
 
 </RelativeLayout>
