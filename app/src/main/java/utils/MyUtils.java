@@ -1,5 +1,6 @@
 package utils;
 
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -11,9 +12,11 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -23,6 +26,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.text.NumberFormat;
@@ -496,5 +501,33 @@ public class MyUtils {
         } else {
             return "";
         }
+    }
+
+    /**
+     * 判断用户是否开启了应用通知栏，如果开启返回true ，禁用返回false
+     */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static boolean isNotificationEnabled(Context context) {
+        String CHECK_OP_NO_THROW = "checkOpNoThrow";
+        String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION";
+
+        AppOpsManager mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        ApplicationInfo appInfo = context.getApplicationInfo();
+        String pkg = context.getApplicationContext().getPackageName();
+        int uid = appInfo.uid;
+
+        try {
+            Class appOpsClass = Class.forName(AppOpsManager.class.getName());
+            Method checkOpNoThrowMethod = appOpsClass.getMethod(CHECK_OP_NO_THROW, Integer.TYPE, Integer.TYPE,
+                    String.class);
+            Field opPostNotificationValue = appOpsClass.getDeclaredField(OP_POST_NOTIFICATION);
+
+            int value = (Integer) opPostNotificationValue.get(Integer.class);
+            return ((Integer) checkOpNoThrowMethod.invoke(mAppOps, value, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
