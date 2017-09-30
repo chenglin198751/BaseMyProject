@@ -134,6 +134,8 @@ public class BaseActivity extends AppCompatActivity {
     public final void hideProgress() {
         if (mLoadingViewHelper != null) {
             mContentView.removeView(mLoadingViewHelper.getLoadingView());
+            RelativeLayout baseRootView = (RelativeLayout) findViewById(R.id.base_root);
+            mLoadingViewHelper.removeShadowView(baseRootView);
             mLoadingViewHelper = null;
         }
     }
@@ -168,6 +170,8 @@ public class BaseActivity extends AppCompatActivity {
     private void addLoadView() {
         if (mLoadingViewHelper == null) {
             mLoadingViewHelper = new LoadingViewHelper(this);
+            RelativeLayout baseRootView = (RelativeLayout) findViewById(R.id.base_root);
+            mLoadingViewHelper.addShadowView(baseRootView);
             mLoadingViewHelper.getLoadingView().setClickable(true);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
             mContentView.addView(mLoadingViewHelper.getLoadingView(), params);

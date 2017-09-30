@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import cheerly.mybaseproject.R;
@@ -14,6 +15,7 @@ import cheerly.mybaseproject.R;
 public class LoadingViewHelper {
     private Context mContext;
     private View loadView;
+    private View mShadowView;
 
     public LoadingViewHelper(Context context) {
         mContext = context;
@@ -97,5 +99,28 @@ public class LoadingViewHelper {
     public void setEmptyText(String text) {
         TextView empty_text = (TextView) loadView.findViewById(R.id.empty_text);
         empty_text.setText(text);
+    }
+
+    /**
+     * 增加加载框的阴影效果
+     */
+    public void addShadowView(RelativeLayout attachView) {
+        removeShadowView(attachView);
+        if (mShadowView == null) {
+            RelativeLayout.LayoutParams shadowParams = new RelativeLayout.LayoutParams(-1, -1);
+            mShadowView = new View(mContext);
+            mShadowView.setBackgroundColor(attachView.getResources().getColor(R.color.shadow_bg));
+            attachView.addView(mShadowView, shadowParams);
+        }
+    }
+
+    /**
+     * 移除加载框的阴影效果
+     */
+    public void removeShadowView(RelativeLayout attachView) {
+        if (mShadowView != null) {
+            attachView.removeView(mShadowView);
+            mShadowView = null;
+        }
     }
 }
