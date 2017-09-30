@@ -29,7 +29,7 @@ public class BaseActivity extends AppCompatActivity {
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
-    private LoadingViewHelper mLoadingView = null;
+    private LoadingViewHelper mLoadingViewHelper = null;
     private MyDialog mWaitDialog;
 
     @Override
@@ -123,7 +123,7 @@ public class BaseActivity extends AppCompatActivity {
         removeProgress();
         addLoadView();
         if (text != null) {
-            mLoadingView.setText(text);
+            mLoadingViewHelper.setText(text);
         }
     }
 
@@ -131,10 +131,10 @@ public class BaseActivity extends AppCompatActivity {
      * 清除contentView里面的加载进度
      */
     public final void removeProgress() {
-        if (mLoadingView != null) {
+        if (mLoadingViewHelper != null) {
             LinearLayout contentView = (LinearLayout) this.findViewById(R.id.content_view);
-            contentView.removeView(mLoadingView.getLoadingView());
-            mLoadingView = null;
+            contentView.removeView(mLoadingViewHelper.getLoadingView());
+            mLoadingViewHelper = null;
         }
     }
 
@@ -143,7 +143,7 @@ public class BaseActivity extends AppCompatActivity {
      */
     public final void showNoNetView() {
         addLoadView();
-        mLoadingView.showNoNetView();
+        mLoadingViewHelper.showNoNetView();
     }
 
     /**
@@ -151,7 +151,7 @@ public class BaseActivity extends AppCompatActivity {
      */
     public final void showNoNetView(View.OnClickListener listener, String text) {
         addLoadView();
-        mLoadingView.showNoNetView(listener, text);
+        mLoadingViewHelper.showNoNetView(listener, text);
     }
 
     /**
@@ -159,18 +159,18 @@ public class BaseActivity extends AppCompatActivity {
      */
     public final void showEmptyView(String text) {
         addLoadView();
-        mLoadingView.showEmptyView();
+        mLoadingViewHelper.showEmptyView();
         if (!TextUtils.isEmpty(text)) {
-            mLoadingView.setEmptyText(text);
+            mLoadingViewHelper.setEmptyText(text);
         }
     }
 
     private void addLoadView() {
-        if (mLoadingView == null) {
-            mLoadingView = new LoadingViewHelper(this);
+        if (mLoadingViewHelper == null) {
+            mLoadingViewHelper = new LoadingViewHelper(this);
             LinearLayout contentView = (LinearLayout) this.findViewById(R.id.content_view);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -1);
-            contentView.addView(mLoadingView.getLoadingView(), 0, params);
+            contentView.addView(mLoadingViewHelper.getLoadingView(), 0, params);
         }
     }
 
