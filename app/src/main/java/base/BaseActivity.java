@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
 import utils.Constants;
-import widget.LoadingView;
+import widget.LoadingViewHelper;
 import widget.MyDialog;
 
 /**
@@ -29,7 +29,7 @@ public class BaseActivity extends AppCompatActivity {
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
-    private LoadingView mLoadingView = null;
+    private LoadingViewHelper mLoadingView = null;
     private MyDialog mWaitDialog;
 
     @Override
@@ -167,7 +167,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private void addLoadView() {
         if (mLoadingView == null) {
-            mLoadingView = new LoadingView(this);
+            mLoadingView = new LoadingViewHelper(this);
             LinearLayout contentView = (LinearLayout) this.findViewById(R.id.content_view);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -1);
             contentView.addView(mLoadingView.getLoadingView(), 0, params);

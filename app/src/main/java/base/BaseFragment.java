@@ -8,14 +8,14 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import cheerly.mybaseproject.R;
-import widget.LoadingView;
+import widget.LoadingViewHelper;
 
 /**
  * Created by chenglin on 2017-9-14.
  */
 
 public class BaseFragment extends Fragment {
-    private LoadingView mLoadingView = null;
+    private LoadingViewHelper mLoadingView = null;
 
     public Activity getContext() {
         return getActivity();
@@ -75,7 +75,7 @@ public class BaseFragment extends Fragment {
 
     private void addLoadView() {
         if (mLoadingView == null && getView() != null) {
-            mLoadingView = new LoadingView(getActivity());
+            mLoadingView = new LoadingViewHelper(getActivity());
             mLoadingView.getLoadingView().setBackgroundColor(getResources().getColor(R.color.view_bg));
             mLoadingView.getLoadingView().setClickable(true);
             RelativeLayout contentView = (RelativeLayout) getView().findViewById(R.id.root_view);
