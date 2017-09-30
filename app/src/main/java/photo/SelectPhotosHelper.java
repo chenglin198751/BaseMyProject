@@ -147,7 +147,7 @@ public class SelectPhotosHelper {
                             imgDrawable.setBounds(0, 0, imgDrawable.getMinimumWidth(), imgDrawable.getMinimumHeight());
                             mTitleTextView.setCompoundDrawables(null, null, imgDrawable, null);
                         }
-                        mActivity.removeProgress();
+                        mActivity.hideProgress();
                     }
                 });
             }

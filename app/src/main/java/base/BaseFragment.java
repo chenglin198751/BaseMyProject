@@ -36,7 +36,7 @@ public class BaseFragment extends Fragment {
      * 显示嵌入式进度条
      */
     public void showProgress(String text) {
-        removeProgress();
+        hideProgress();
         addLoadView();
         if (text != null) {
             mLoadingViewHelper.setText(text);
@@ -46,7 +46,7 @@ public class BaseFragment extends Fragment {
     /**
      * 清除contentView里面的加载进度
      */
-    public void removeProgress() {
+    public void hideProgress() {
         if (mLoadingViewHelper != null && getView() != null) {
             mContentView.removeView(mLoadingViewHelper.getLoadingView());
             mLoadingViewHelper = null;

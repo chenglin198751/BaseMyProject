@@ -121,7 +121,7 @@ public class BaseActivity extends AppCompatActivity {
      * 显示嵌入式进度条
      */
     public final void showProgress(String text) {
-        removeProgress();
+        hideProgress();
         addLoadView();
         if (text != null) {
             mLoadingViewHelper.setText(text);
@@ -131,7 +131,7 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 清除contentView里面的加载进度
      */
-    public final void removeProgress() {
+    public final void hideProgress() {
         if (mLoadingViewHelper != null) {
             mContentView.removeView(mLoadingViewHelper.getLoadingView());
             mLoadingViewHelper = null;

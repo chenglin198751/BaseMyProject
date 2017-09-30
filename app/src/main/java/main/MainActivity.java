@@ -11,6 +11,8 @@ import android.widget.TextView;
 import base.BaseActivity;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
+import utils.MyUri;
+import utils.MyUtils;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final int TAB_FIRST = 0;
@@ -41,6 +43,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         showTab(TAB_FIRST);
+
+        showProgress("等啊等啊等啊等啊");
+        MyUtils.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideProgress();
+            }
+        },3000);
     }
 
     private void initView() {
