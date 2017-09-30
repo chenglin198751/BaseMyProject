@@ -14,8 +14,8 @@
 
         <ProgressBar
             style="@android:style/Widget.ProgressBar"
-            android:layout_width="40dip"
-            android:layout_height="40dip"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
             android:indeterminateDrawable="@drawable/small_loading"
             android:max="100" />
 

@@ -43,14 +43,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         showTab(TAB_FIRST);
-
-        showProgress("等啊等啊等啊等啊");
-        MyUtils.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                hideProgress();
-            }
-        },3000);
     }
 
     private void initView() {

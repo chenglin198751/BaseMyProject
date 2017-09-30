@@ -43,7 +43,7 @@ public class MainFirstFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 BaseActivity baseActivity = (BaseActivity) getActivity();
-                baseActivity.showWaitDialog("测试测试测试测试测试").setCanceledOnTouchOutside(true);
+                baseActivity.showWaitDialog(null).setCanceledOnTouchOutside(true);
             }
         });
 

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">安卓App</string>
-    <string name="data_loading">正在加载数据…</string>
+    <string name="data_loading">加载中…</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="dialog_download_file_message">你确定要下载此文件吗？</string>
