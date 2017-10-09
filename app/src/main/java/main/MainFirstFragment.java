@@ -27,11 +27,7 @@ public class MainFirstFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.main_first_frag_layout, container, false);
+        setContentLayout(R.layout.main_first_frag_layout);
     }
 
     @Override

@@ -4,10 +4,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.google.gson.Gson;
+
 import cheerly.mybaseproject.R;
+import utils.Constants;
 import widget.LoadingViewHelper;
 
 /**
@@ -15,8 +20,10 @@ import widget.LoadingViewHelper;
  */
 
 public class BaseFragment extends Fragment {
+    protected final static Gson gson = Constants.gson;
     private LoadingViewHelper mLoadingViewHelper = null;
     private RelativeLayout mContentView;
+    private int mFragLayoutId = 0;
 
     public Activity getContext() {
         return getActivity();
@@ -26,10 +33,23 @@ public class BaseFragment extends Fragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.base_fragment_layout, container, false);
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mContentView = (RelativeLayout) view.findViewById(R.id.base_frag_id);
+        if (mFragLayoutId > 0) {
+            mContentView.addView(View.inflate(getContext(), mFragLayoutId, null), new RelativeLayout.LayoutParams(-1, -1));
+        }
     }
+
+    public void setContentLayout(int layoutId) {
+        mFragLayoutId = layoutId;
+    }
+
 
     /**
      * 显示嵌入式进度条
