@@ -31,22 +31,19 @@ public class MainFirstFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    public void onViewCreated(View view) {
         final Button button = (Button) view.findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaseActivity baseActivity = (BaseActivity) getActivity();
-                baseActivity.showWaitDialog(null).setCanceledOnTouchOutside(true);
+                showProgress(null);
             }
         });
 
         view.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                hideProgress();
             }
         });
     }

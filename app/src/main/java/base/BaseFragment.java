@@ -33,23 +33,27 @@ public class BaseFragment extends Fragment {
 
     @Deprecated
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.base_fragment_layout, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public final void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mContentView = (RelativeLayout) view.findViewById(R.id.base_frag_id);
         if (mFragLayoutId > 0) {
             mContentView.addView(View.inflate(getContext(), mFragLayoutId, null), new RelativeLayout.LayoutParams(-1, -1));
         }
+        onViewCreated(view);
     }
 
     public void setContentLayout(int layoutId) {
         mFragLayoutId = layoutId;
     }
 
+    public void onViewCreated(View view) {
+
+    }
 
     /**
      * 显示嵌入式进度条
