@@ -1,22 +1,12 @@
 package main;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
-import java.util.ArrayList;
-
-import base.BaseActivity;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
-import photo.SelectPhotosActivity;
-import utils.Constants;
-import utils.EasyCache;
+import utils.MyUri;
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -36,7 +26,7 @@ public class MainFirstFragment extends BaseFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showProgress(null);
+                MyUri.start(getContext(), "mls://webview?title=测试&url=http://news.qq.com/");
             }
         });
 
