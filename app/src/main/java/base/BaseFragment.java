@@ -57,7 +57,7 @@ public class BaseFragment extends Fragment {
     /**
      * 显示嵌入式进度条
      */
-    public void showProgress(String text) {
+    public final void showProgress(String text) {
         hideProgress();
         addLoadView();
         if (text != null) {
@@ -68,7 +68,7 @@ public class BaseFragment extends Fragment {
     /**
      * 清除contentView里面的加载进度
      */
-    public void hideProgress() {
+    public final void hideProgress() {
         if (mLoadingViewHelper != null && getView() != null) {
             mContentView.removeView(mLoadingViewHelper.getLoadingView());
             mLoadingViewHelper = null;
@@ -78,7 +78,7 @@ public class BaseFragment extends Fragment {
     /**
      * 显示没有网络的界面
      */
-    public void showNoNetView() {
+    public final void showNoNetView() {
         addLoadView();
         mLoadingViewHelper.showNoNetView();
     }
@@ -86,7 +86,7 @@ public class BaseFragment extends Fragment {
     /**
      * 显示没有网络的界面
      */
-    public void showNoNetView(View.OnClickListener listener, String text) {
+    public final void showNoNetView(View.OnClickListener listener, String text) {
         addLoadView();
         mLoadingViewHelper.showNoNetView(listener, text);
     }
@@ -94,7 +94,7 @@ public class BaseFragment extends Fragment {
     /**
      * 显示空数据的界面
      */
-    public void showEmptyView(String text) {
+    public final void showEmptyView(String text) {
         addLoadView();
         mLoadingViewHelper.showEmptyView();
         if (!TextUtils.isEmpty(text)) {

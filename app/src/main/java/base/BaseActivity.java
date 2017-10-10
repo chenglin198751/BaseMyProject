@@ -58,18 +58,8 @@ public class BaseActivity extends AppCompatActivity {
         mContentView.addView(View.inflate(this, layoutResID, null), new RelativeLayout.LayoutParams(-1, -1));
     }
 
-    public MainTitleHelper getTitleHelper() {
+    public final MainTitleHelper getTitleHelper() {
         return mTitleHelper;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -93,7 +83,7 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 显示等待的对话框
      */
-    public MyDialog showWaitDialog(String text) {
+    public final MyDialog showWaitDialog(String text) {
         if (mWaitDialog == null) {
             mWaitDialog = new MyDialog(getContext());
             View dialogView = View.inflate(getContext(), R.layout.progress_layout, null);
@@ -111,7 +101,7 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 取消等待的对话框
      */
-    public void dismissWaitDialog() {
+    public final void dismissWaitDialog() {
         if (mWaitDialog != null) {
             mWaitDialog.dismiss();
         }
