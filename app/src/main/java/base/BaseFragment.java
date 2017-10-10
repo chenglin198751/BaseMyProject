@@ -1,6 +1,5 @@
 package base;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -25,13 +24,14 @@ public class BaseFragment extends Fragment {
     private RelativeLayout mContentView;
     private int mFragLayoutId = 0;
 
-    public Activity getContext() {
-        return getActivity();
+    public BaseActivity getContext() {
+        return (BaseActivity) getActivity();
     }
 
     public void onMyBroadcastReceive(String action, Bundle bundle) {
     }
 
+    @Deprecated
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.base_fragment_layout, container, false);
