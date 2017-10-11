@@ -29,8 +29,8 @@ public class ReplaceViewHelper {
      * @param replaceViewResId 要替换进去的布局LayoutId
      * @return
      */
-    public ReplaceViewHelper toReplaceView(View targetView, final int replaceViewResId) {
-        toReplaceView(targetView, View.inflate(mContext, replaceViewResId, null));
+    public ReplaceViewHelper replaceView(View targetView, final int replaceViewResId) {
+        replaceView(targetView, View.inflate(mContext, replaceViewResId, null));
         return this;
     }
 
@@ -41,7 +41,7 @@ public class ReplaceViewHelper {
      * @param replaceView 要替换进去的那个View
      * @return
      */
-    public ReplaceViewHelper toReplaceView(View targetView, final View replaceView) {
+    public ReplaceViewHelper replaceView(View targetView, final View replaceView) {
         mTargetView = targetView;
         if (mTargetView == null) {
             return this;
