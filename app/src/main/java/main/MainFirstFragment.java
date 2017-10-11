@@ -1,5 +1,6 @@
 package main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -26,7 +27,7 @@ public class MainFirstFragment extends BaseFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyUri.start(getContext(), "mls://webview?title=测试&url=http://news.qq.com/");
+                startActivity(new Intent(getContext(),PullDownRefreshActivity.class));
             }
         });
 

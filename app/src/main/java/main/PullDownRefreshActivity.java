@@ -51,6 +51,7 @@ public class PullDownRefreshActivity extends BaseActivity {
         Banner banner = (Banner) View.inflate(this, R.layout.banner_layout, null);
         banner.setImageLoader(new BannerImageLoader());
         banner.setImages(imagesList);
+        banner.setBannerAnimation(Transformer.ZoomOutSlide);
         banner.start();
 
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, Constants.screenWidth / 2);
