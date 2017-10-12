@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">安卓App</string>
+    <string name="app_name">基础安卓工程</string>
     <string name="data_loading">加载中…</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
