@@ -27,14 +27,14 @@ public class MainFirstFragment extends BaseFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(),PullDownRefreshActivity.class));
+                sendMyBroadcast("action",new Bundle());
             }
         });
 
         view.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideProgress();
+
             }
         });
     }

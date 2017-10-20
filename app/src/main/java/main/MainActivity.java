@@ -137,11 +137,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onMyBroadcastReceive(String myAction, Bundle bundle) {
         super.onMyBroadcastReceive(myAction, bundle);
-        for (int i = 0; i < mFragArray.length; i++) {
-            if (mFragArray[i] != null) {
-                mFragArray[i].onMyBroadcastReceive(myAction, bundle);
-            }
-        }
     }
 
     @Override

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -13,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+
+import java.util.List;
 
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
@@ -70,7 +74,16 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @CallSuper
     public void onMyBroadcastReceive(String action, Bundle bundle) {
+        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+        if (fragmentList != null && fragmentList.size() > 0) {
+            for (Fragment fragment : fragmentList) {
+                if (fragment instanceof BaseFragment) {
+                    ((BaseFragment) fragment).onMyBroadcastReceive(action, bundle);
+                }
+            }
+        }
     }
 
     public final void sendMyBroadcast(String action, Bundle bundle) {

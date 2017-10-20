@@ -28,6 +28,12 @@ public class BaseFragment extends Fragment {
         return (BaseActivity) getActivity();
     }
 
+    public final void sendMyBroadcast(String action, Bundle bundle) {
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).sendMyBroadcast(action, bundle);
+        }
+    }
+
     public void onMyBroadcastReceive(String action, Bundle bundle) {
     }
 
