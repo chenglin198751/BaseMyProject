@@ -10,6 +10,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v7.widget.AppCompatImageView;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import com.squareup.picasso.Picasso;
@@ -40,33 +41,40 @@ public class WebImageView extends AppCompatImageView {
     /**
      * 加载原图，不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      */
+    @Deprecated
     public void load(String url) {
-        Picasso.with(MyApplication.getApp())
-                .load(url)
-                .into(this);
+        if (!TextUtils.isEmpty(url)) {
+            Picasso.with(MyApplication.getApp())
+                    .load(url.trim())
+                    .into(this);
+        }
     }
 
     /**
      * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
      */
     public void load(String url, int imageWidth, int imageHeight) {
-        Picasso.with(MyApplication.getApp())
-                .load(url)
-                .resize(imageWidth, imageHeight)
-                .centerCrop()
-                .into(this);
+        if (!TextUtils.isEmpty(url)) {
+            Picasso.with(MyApplication.getApp())
+                    .load(url)
+                    .resize(imageWidth, imageHeight)
+                    .centerCrop()
+                    .into(this);
+        }
     }
 
     /**
      * 加载图片使其变为圆角或者圆形，radius单位是dp. 如果 radius <=0 ,那么就是圆形的图片，否则是圆角
      */
     public void loadRound(String url, int imageWidth, int imageHeight, int radius) {
-        Picasso.with(MyApplication.getApp())
-                .load(url)
-                .resize(imageWidth, imageHeight)
-                .centerCrop()
-                .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
-                .into(this);
+        if (!TextUtils.isEmpty(url)) {
+            Picasso.with(MyApplication.getApp())
+                    .load(url.trim())
+                    .resize(imageWidth, imageHeight)
+                    .centerCrop()
+                    .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
+                    .into(this);
+        }
     }
 
     /**

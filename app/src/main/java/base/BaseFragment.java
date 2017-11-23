@@ -53,11 +53,14 @@ public class BaseFragment extends Fragment {
         onViewCreated(view);
     }
 
-    public void setContentLayout(int layoutId) {
+    protected void setContentLayout(int layoutId) {
         mFragLayoutId = layoutId;
     }
 
-    public void onViewCreated(View view) {
+    /**
+     * 所有的业务逻辑在这里写
+     */
+    protected void onViewCreated(View view) {
     }
 
     /**
