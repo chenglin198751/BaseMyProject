@@ -1,6 +1,7 @@
 package base;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -53,7 +54,7 @@ public class BaseFragment extends Fragment {
         onViewCreated(view);
     }
 
-    protected void setContentLayout(int layoutId) {
+    protected void setContentLayout(@LayoutRes int layoutId) {
         mFragLayoutId = layoutId;
     }
 

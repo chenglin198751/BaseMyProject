@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -58,7 +59,7 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 设置Activity的内容布局，取代setContentView() 方法
      */
-    public final void setContentLayout(int layoutResID) {
+    public final void setContentLayout(@LayoutRes int layoutResID) {
         mContentView.addView(View.inflate(this, layoutResID, null), new RelativeLayout.LayoutParams(-1, -1));
     }
 
