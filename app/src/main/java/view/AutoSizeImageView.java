@@ -18,7 +18,7 @@ import android.view.ViewGroup;
  * Created by chenglin on 2017-10-27.
  */
 
-public class AutoSizeImageView extends AppCompatImageView {
+public class AutoSizeImageView extends WebImageView {
     public AutoSizeImageView(Context context) {
         super(context);
     }
