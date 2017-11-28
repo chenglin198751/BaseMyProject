@@ -87,13 +87,17 @@ public class HttpUtils {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String result = response.body().string();
+            public void onResponse(Call call, final Response response) throws IOException {
                 if (activity != null && !activity.isFinishing()) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onSuccess(result);
+                            try {
+                                String result = response.body().string();
+                                httpCallback.onSuccess(result);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 } else {
@@ -131,13 +135,17 @@ public class HttpUtils {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String result = response.body().string();
+            public void onResponse(Call call, final Response response) throws IOException {
                 if (activity != null && !activity.isFinishing()) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onSuccess(result);
+                            try {
+                                String result = response.body().string();
+                                httpCallback.onSuccess(result);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 } else {
