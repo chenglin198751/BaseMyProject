@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
-    public int getSelectedTabIndex() {
+    public int getSelectedTab() {
         return mFragHelper.mSelectedTab;
     }
 
