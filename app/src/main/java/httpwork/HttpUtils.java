@@ -17,6 +17,7 @@ import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -46,7 +47,14 @@ public class HttpUtils {
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void post(final Activity activity, String url, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
+    public static void post(final Activity activity, String url, HashMap<String, Object> paramsHashMap, final HttpCallback httpCallback) {
+        postWithHeader(activity, url, null, paramsHashMap, httpCallback);
+    }
+
+    /**
+     * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
+     */
+    public static void postWithHeader(final Activity activity, String url, HashMap<String, String> headersMap,HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
 
         if (hashMap == null) {
@@ -67,7 +75,15 @@ public class HttpUtils {
         builder.noCache();//不使用缓存，全部走网络
         builder.noStore();//不使用缓存，也不存储缓存
         CacheControl cache = builder.build();
-        Request request = new Request.Builder().cacheControl(cache).url(url).post(body).build();
+
+        Request.Builder requestBuilder = new Request.Builder()
+                .cacheControl(cache)
+                .url(url)
+                .post(body);
+        if (headersMap != null && headersMap.size() > 0) {
+            requestBuilder.headers(Headers.of(headersMap));
+        }
+        Request request = requestBuilder.build();
 
         Call call = client.newCall(request);
         call.enqueue(new okhttp3.Callback() {
