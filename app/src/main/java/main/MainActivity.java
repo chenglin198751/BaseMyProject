@@ -33,7 +33,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.activity_main);
         getTitleHelper().hideTitle();
-        mFragHelper = new ShowFragmentHelper(this, FRAGMENTS);
+        mFragHelper = new ShowFragmentHelper(getSupportFragmentManager(), FRAGMENTS);
 
         initView();
         showTab(TAB_FIRST);

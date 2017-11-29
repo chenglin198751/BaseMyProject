@@ -1,9 +1,9 @@
 package helper;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import base.BaseActivity;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 
@@ -13,17 +13,22 @@ import cheerly.mybaseproject.R;
 
 public class ShowFragmentHelper {
     private BaseFragment[] mFragArray;
-    private FragmentTransaction mFragmentTransaction;
-    private BaseActivity mActivity;
+    private FragmentManager mFragmentManager;
     private Class[] FRAGMENTS;
     public int mSelectedTab;
 
-    public ShowFragmentHelper(BaseActivity activity, Class[] fragments) {
+    /**
+     * fragmentManager 必须特别注意：
+     * 如果是在Activity里需要传入的是getSupportFragmentManager();
+     * 如果是在嵌套的fragment里面需要调用getChildFragmentManager();
+     * 否则会出问题。
+     */
+    public ShowFragmentHelper(FragmentManager fragmentManager, Class[] fragments) {
         if (fragments == null || fragments.length <= 0) {
             throw new IllegalArgumentException("FRAGMENTS.length must >0");
         }
 
-        this.mActivity = activity;
+        this.mFragmentManager = fragmentManager;
         this.FRAGMENTS = fragments;
         mFragArray = new BaseFragment[fragments.length];
     }
@@ -38,8 +43,8 @@ public class ShowFragmentHelper {
         if (index < 0 || index >= FRAGMENTS.length) {
             throw new IllegalArgumentException("index must >0 And index must < FRAGMENTS.length");
         }
+        FragmentTransaction ft = mFragmentManager.beginTransaction();
 
-        mFragmentTransaction = mActivity.getSupportFragmentManager().beginTransaction();
         if (mFragArray[index] == null) {
             try {
                 mFragArray[index] = (BaseFragment) FRAGMENTS[index].newInstance();
@@ -48,28 +53,28 @@ public class ShowFragmentHelper {
             }
         }
 
-        addFragment(mFragArray[index], index);
-        showFragment(index);
-        mFragmentTransaction.commitAllowingStateLoss();
+        addFragment(mFragArray[index], ft, index);
+        showFragment(ft, index);
+        ft.commitAllowingStateLoss();
         mSelectedTab = index;
         return mFragArray[index];
     }
 
-    private void showFragment(final int index) {
+    private void showFragment(FragmentTransaction ft, final int index) {
         for (int i = 0; i < mFragArray.length; i++) {
             if (mFragArray[i] != null) {
                 if (i == index) {
-                    mFragmentTransaction.show(mFragArray[i]);
+                    ft.show(mFragArray[i]);
                 } else {
-                    mFragmentTransaction.hide(mFragArray[i]);
+                    ft.hide(mFragArray[i]);
                 }
             }
         }
     }
 
-    private void addFragment(Fragment fragment, int fragmentTag) {
+    private void addFragment(Fragment fragment, FragmentTransaction ft, int fragmentTag) {
         if (!fragment.isAdded() && fragment.getTag() == null) {
-            mFragmentTransaction.add(R.id.fragment_base_id, fragment, fragmentTag + "");
+            ft.add(R.id.fragment_base_id, fragment, fragmentTag + "");
         }
     }
 }
