@@ -54,7 +54,7 @@ public class HttpUtils {
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void postWithHeader(final Activity activity, String url, HashMap<String, String> headersMap,HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
+    public static void postWithHeader(final Activity activity, String url, HashMap<String, String> headersMap, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
 
         if (hashMap == null) {
@@ -104,12 +104,12 @@ public class HttpUtils {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
+                final String result = response.body().string();
                 if (activity != null && !activity.isFinishing()) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                String result = response.body().string();
                                 httpCallback.onSuccess(result);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -152,12 +152,12 @@ public class HttpUtils {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
+                final String result = response.body().string();
                 if (activity != null && !activity.isFinishing()) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                String result = response.body().string();
                                 httpCallback.onSuccess(result);
                             } catch (Exception e) {
                                 e.printStackTrace();
