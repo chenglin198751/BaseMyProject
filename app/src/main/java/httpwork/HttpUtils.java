@@ -112,6 +112,7 @@ public class HttpUtils {
                             try {
                                 httpCallback.onSuccess(result);
                             } catch (Exception e) {
+                                httpCallback.onFailure(e);
                                 e.printStackTrace();
                             }
                         }
@@ -160,6 +161,7 @@ public class HttpUtils {
                             try {
                                 httpCallback.onSuccess(result);
                             } catch (Exception e) {
+                                httpCallback.onFailure(e);
                                 e.printStackTrace();
                             }
                         }
