@@ -37,6 +37,7 @@ public class BaseActivity extends AppCompatActivity {
     private LoadingViewHelper mLoadingViewHelper = null;
     private MyDialog mWaitDialog;
     private RelativeLayout mContentView;
+    private RelativeLayout mBaseRootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class BaseActivity extends AppCompatActivity {
 
         setContentView(R.layout.base_activity_layout);
         mContentView = (RelativeLayout) this.findViewById(R.id.content_view);
+        mBaseRootView = (RelativeLayout) findViewById(R.id.base_root);
         mTitleHelper = new MainTitleHelper(this);
 
         if (getTitle() != null) {
@@ -127,6 +129,7 @@ public class BaseActivity extends AppCompatActivity {
     public final void showProgress(String text) {
         hideProgress();
         addLoadView();
+        mLoadingViewHelper.addShadowView(mBaseRootView);
         if (text != null) {
             mLoadingViewHelper.setText(text);
         }
@@ -138,8 +141,7 @@ public class BaseActivity extends AppCompatActivity {
     public final void hideProgress() {
         if (mLoadingViewHelper != null) {
             mContentView.removeView(mLoadingViewHelper.getLoadingView());
-            RelativeLayout baseRootView = (RelativeLayout) findViewById(R.id.base_root);
-            mLoadingViewHelper.removeShadowView(baseRootView);
+            mLoadingViewHelper.removeShadowView(mBaseRootView);
             mLoadingViewHelper = null;
         }
     }
@@ -174,8 +176,6 @@ public class BaseActivity extends AppCompatActivity {
     private void addLoadView() {
         if (mLoadingViewHelper == null) {
             mLoadingViewHelper = new LoadingViewHelper(this);
-            RelativeLayout baseRootView = (RelativeLayout) findViewById(R.id.base_root);
-            mLoadingViewHelper.addShadowView(baseRootView);
             mLoadingViewHelper.getLoadingView().setClickable(true);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
             mContentView.addView(mLoadingViewHelper.getLoadingView(), params);
