@@ -71,6 +71,16 @@ public class PullToRefresh extends SmartRefreshLayout {
         setRefreshFooter(footer);
     }
 
+    @Override
+    public SmartRefreshLayout finishRefresh() {
+        return finishRefresh(0);
+    }
+
+    @Override
+    public SmartRefreshLayout finishLoadmore() {
+        return finishLoadmore(0);
+    }
+
     public interface onListener {
         void onRefresh();
 
