@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:background="@color/white">
 
     <LinearLayout
         android:id="@+id/load_linear"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <ProgressBar
             style="@android:style/Widget.ProgressBar"
@@ -36,7 +37,7 @@
         android:layout_height="fill_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="130dip"
@@ -52,8 +53,8 @@
             android:layout_marginTop="12dip"
             android:gravity="center|top"
             android:text="抱歉，也许网络环境不太好，\n请检查一下您的网络设置。"
-            android:textColor="@color/text_gray_2"
-            android:textSize="16sp" />
+            android:textColor="#8a8a8a"
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/button"
@@ -63,8 +64,7 @@
             android:background="@drawable/purple_button"
             android:text="网络设置"
             android:textColor="@color/white"
-            android:textSize="@dimen/font_size_8" >
-        </Button>
+            android:textSize="@dimen/font_size_8"/>
     </LinearLayout>
 
 </RelativeLayout>
