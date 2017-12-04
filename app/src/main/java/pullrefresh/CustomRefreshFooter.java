@@ -124,7 +124,7 @@ public class CustomRefreshFooter implements RefreshFooter {
                     mLoadingTextView.setText(R.string.cube_ptr_loading);
                     break;
                 case ReleaseToLoad:
-                    mLoadingTextView.setText(R.string.cube_ptr_release_to_refresh);
+                    mLoadingTextView.setText(R.string.cube_ptr_release_to_load);
                     break;
                 case Refreshing:
                     mLoadingTextView.setText(R.string.cube_ptr_loading);
