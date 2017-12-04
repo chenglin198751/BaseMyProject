@@ -67,7 +67,11 @@ public class CustomRefreshHeader implements RefreshHeader {
     @Override
     public int onFinish(RefreshLayout layout, boolean success) {
         stopRotate();
-        mLoadingTextView.setText(R.string.cube_ptr_refresh_complete);
+        if (success){
+            mLoadingTextView.setText(R.string.cube_ptr_refresh_complete);
+        }else {
+            mLoadingTextView.setText(R.string.cube_ptr_refresh_fail);
+        }
         return 300;
     }
 

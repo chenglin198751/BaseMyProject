@@ -70,7 +70,11 @@ public class CustomRefreshFooter implements RefreshFooter {
     public int onFinish(RefreshLayout layout, boolean success) {
         if (!mLoadmoreFinished) {
             stopRotate();
-            mLoadingTextView.setText(R.string.cube_ptr_load_complete);
+            if (success){
+                mLoadingTextView.setText(R.string.cube_ptr_load_complete);
+            }else {
+                mLoadingTextView.setText(R.string.cube_ptr_load_fail);
+            }
         }
         return 300;
     }
