@@ -320,7 +320,9 @@ public class HttpUtils {
     private static void addCommonData(HashMap<String, Object> params) {
         params.put("IMEI", MyUtils.getDeviceId());
         params.put("product", Build.MODEL);
+        params.put("brand", Build.BRAND);
         params.put("sdkVer", Build.VERSION.SDK_INT);
+        params.put("sdkVerName", Build.VERSION.RELEASE);
         params.put("appVer", MyUtils.getVerCode());
         params.put("appVerName", MyUtils.getVerName());
         params.put("phone", "android");
@@ -328,11 +330,17 @@ public class HttpUtils {
         params.put("packageName", MyUtils.getPackageName());
     }
 
-
     /**
      * 构建get请求参数
      */
     public static String buildGetParams(HashMap<String, Object> hashMap) {
+        return buildGetParams(null, hashMap);
+    }
+
+    /**
+     * 构建get请求参数
+     */
+    public static String buildGetParams(String url, HashMap<String, Object> hashMap) {
         if (hashMap == null) {
             hashMap = new HashMap<>();
         }
@@ -351,7 +359,11 @@ public class HttpUtils {
             }
         }
 
-        return params.toString();
+        if (!TextUtils.isEmpty(url)) {
+            return url + params.toString();
+        } else {
+            return params.toString();
+        }
     }
 
     /**
