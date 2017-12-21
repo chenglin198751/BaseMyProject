@@ -41,7 +41,7 @@ public class HttpUtils {
             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
             .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
-            .cache(new Cache(new File(HTTP_CACHE_PATH), 50 * 1024 * 1024));
+            .cache(new Cache(new File(HTTP_CACHE_PATH), 100 * 1024 * 1024));
     public static final OkHttpClient client = builder.build();
 
     /**
