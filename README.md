@@ -5,7 +5,7 @@
 **2、debug切换**：我是在SD卡下面放置一个特殊文件，判断是否有这个文件来切换debug 环境。好处：可以随时把一个正式包设置为测试包，并且提交代码时再也不用去配置环境了。
 
 **3、内建广播**：BaseActivity 里面我基于LocalManagerBroadcast 封装了一个广播，可以很方便的发广播接收广播，不需要注册，因为我自动帮你注册了。使用很方便，性能很高且资源消耗也很低。建议以后所有
-的异步消息传递都用这个，解耦性强。甚至startActivityForResult 都可以启用，都统一使用内建广播传递消息。
+的异步消息传递都用这个，解耦性强。甚至startActivityForResult 都可以弃用，都统一使用内建广播传递消息。
 
 **4、MyApplication 类**：程序的入口，这里我把Application的Context 给持有了，获取的方法叫做getApp() 。切记，工程里凡是要用到Context的地方，都要引用MyApplication.getApp() 方法，以免造成内存泄漏
 。还有，这里面有一句话叫做mAppHelper.isAppMainProcess() ，是判断的主UI 进程的。因为Application的onCreate()有多少个进程就会执行多少次，而有些代码我们只需要在UI 进程执行，所以这里可以用上述
