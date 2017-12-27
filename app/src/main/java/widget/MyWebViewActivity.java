@@ -1,11 +1,13 @@
 package widget;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.View;
 
 import base.BaseActivity;
@@ -17,7 +19,18 @@ import cheerly.mybaseproject.R;
 
 public class MyWebViewActivity extends BaseActivity {
     private MyWebViewFragment mWebViewFragment;
-    private String mUrl;
+    private String mUrl, mTitle;
+
+    public static void start(Context context, String url, String title) {
+        if (TextUtils.isEmpty(url)) {
+            throw new NullPointerException("url must is not null");
+        }
+
+        Intent intent = new Intent(context, MyWebViewActivity.class);
+        intent.putExtra("url", url);
+        intent.putExtra("title", title);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +38,7 @@ public class MyWebViewActivity extends BaseActivity {
 
         getWindow().setFormat(PixelFormat.TRANSLUCENT); //防止网页中的视频闪烁的设置
         setContentLayout(R.layout.my_webview_layout);
-        parseSchema();
+        parseParams();
         init();
 
         getTitleHelper().setReturnListener(new View.OnClickListener() {
@@ -36,10 +49,19 @@ public class MyWebViewActivity extends BaseActivity {
         });
     }
 
-    private void parseSchema() {
-        Uri uri = getIntent().getData();
-        if (uri != null) {
-            mUrl = uri.getQueryParameter("url");
+    private void parseParams() {
+        mUrl = getIntent().getStringExtra("url");
+        mTitle = getIntent().getStringExtra("title");
+
+        Uri httpUri = Uri.parse(mUrl);
+        if (httpUri != null) {
+            String title = httpUri.getQueryParameter("title");
+            if (!TextUtils.isEmpty(title)) {
+                mTitle = title;
+            }
+            if (!TextUtils.isEmpty(mTitle)) {
+                getTitleHelper().setTitle(mTitle);
+            }
         }
     }
 

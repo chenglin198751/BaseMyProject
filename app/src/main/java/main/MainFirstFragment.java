@@ -14,13 +14,13 @@ import utils.MyUri;
 import utils.MyUtils;
 import view.AutoSizeImageView;
 import view.WebImageView;
+import widget.MyWebViewActivity;
 
 /**
  * Created by chenglin on 2017-9-14.
  */
 
 public class MainFirstFragment extends BaseFragment {
-    public static final String picUrl = "http://smallyellow.tinydonuts.cn/5780f0e8f5264d62a4f3e1af209123a2.png";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,9 +31,13 @@ public class MainFirstFragment extends BaseFragment {
 
     @Override
     protected void onViewCreated(View view) {
-        showProgress(null);
-        WebImageView image_1 = (WebImageView) view.findViewById(R.id.image_1);
-        image_1.load(picUrl);
+        view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "http://wxpay.wxutil.com/mch/pay/h5.v2.php";
+                MyWebViewActivity.start(getContext(),url,"微信支付测试");
+            }
+        });
     }
 
     @Override

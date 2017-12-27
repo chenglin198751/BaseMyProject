@@ -4,9 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
@@ -81,6 +80,11 @@ public class MyWebViewFragment extends BaseFragment {
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                if (url.startsWith("weixin://wap")) {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                    getContext().startActivity(intent);
+//                    return true;
+//                }
                 return false;
             }
 
