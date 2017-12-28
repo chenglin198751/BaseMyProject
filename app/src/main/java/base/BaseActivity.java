@@ -83,7 +83,7 @@ public class BaseActivity extends AppCompatActivity {
         if (fragmentList != null && fragmentList.size() > 0) {
             for (Fragment fragment : fragmentList) {
                 if (fragment instanceof BaseFragment) {
-                    ((BaseFragment) fragment).onMyBroadcastReceive(action, bundle);
+                    ((BaseFragment) fragment).onMyBroadcastReceiver(action, bundle);
                 }
             }
         }

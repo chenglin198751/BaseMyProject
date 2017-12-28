@@ -19,7 +19,7 @@ import widget.LoadingViewHelper;
  * Created by chenglin on 2017-9-14.
  */
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
     protected final static Gson gson = Constants.gson;
     private LoadingViewHelper mLoadingViewHelper = null;
     private RelativeLayout mContentView;
@@ -35,7 +35,7 @@ public class BaseFragment extends Fragment {
         }
     }
 
-    public void onMyBroadcastReceive(String action, Bundle bundle) {
+    public void onMyBroadcastReceiver(String action, Bundle bundle) {
     }
 
     @Deprecated
@@ -51,7 +51,7 @@ public class BaseFragment extends Fragment {
         if (mFragLayoutId > 0) {
             mContentView.addView(View.inflate(getContext(), mFragLayoutId, null), new RelativeLayout.LayoutParams(-1, -1));
         }
-        onViewCreated(view);
+        onViewCreated(savedInstanceState, view);
     }
 
     protected void setContentLayout(@LayoutRes int layoutId) {
@@ -61,8 +61,7 @@ public class BaseFragment extends Fragment {
     /**
      * 所有的业务逻辑在这里写
      */
-    protected void onViewCreated(View view) {
-    }
+    protected abstract void onViewCreated(Bundle savedInstanceState, View view);
 
     /**
      * 显示嵌入式进度条

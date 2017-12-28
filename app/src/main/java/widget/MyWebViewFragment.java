@@ -48,7 +48,7 @@ public class MyWebViewFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view) {
+    public void onViewCreated(Bundle savedInstanceState, View view) {
         parseSchema();
         init();
     }

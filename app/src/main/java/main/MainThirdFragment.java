@@ -21,7 +21,7 @@ public class MainThirdFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view) {
+    public void onViewCreated(Bundle savedInstanceState, View view) {
 
     }
 }

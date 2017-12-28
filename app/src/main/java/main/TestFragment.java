@@ -23,7 +23,7 @@ public class TestFragment extends BaseFragment {
 
 
     @Override
-    public void onViewCreated(View view) {
+    public void onViewCreated(Bundle savedInstanceState, View view) {
         TextView content = (TextView) getView().findViewById(R.id.content);
         content.setText(getArguments().getString("index"));
     }
