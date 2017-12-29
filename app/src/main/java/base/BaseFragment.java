@@ -23,7 +23,6 @@ public abstract class BaseFragment extends Fragment {
     protected final static Gson gson = Constants.gson;
     private LoadingViewHelper mLoadingViewHelper = null;
     private RelativeLayout mContentView;
-    private int mFragLayoutId = 0;
 
     public BaseActivity getContext() {
         return (BaseActivity) getActivity();
@@ -48,15 +47,14 @@ public abstract class BaseFragment extends Fragment {
     public final void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mContentView = (RelativeLayout) view.findViewById(R.id.base_frag_id);
-        if (mFragLayoutId > 0) {
-            mContentView.addView(View.inflate(getContext(), mFragLayoutId, null), new RelativeLayout.LayoutParams(-1, -1));
+        if (getContentLayout() > 0) {
+            mContentView.addView(View.inflate(getContext(), getContentLayout(), null), new RelativeLayout.LayoutParams(-1, -1));
         }
         onViewCreated(savedInstanceState, view);
     }
 
-    protected void setContentLayout(@LayoutRes int layoutId) {
-        mFragLayoutId = layoutId;
-    }
+    protected abstract @LayoutRes
+    int getContentLayout();
 
     /**
      * 所有的业务逻辑在这里写

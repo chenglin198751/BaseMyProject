@@ -17,7 +17,11 @@ public class MainSecondFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.main_second_frag_layout);
+    }
+
+    @Override
+    protected int getContentLayout() {
+        return R.layout.main_second_frag_layout;
     }
 
     @Override

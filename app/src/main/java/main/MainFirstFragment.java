@@ -16,8 +16,6 @@ public class MainFirstFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.main_first_frag_layout);
-
     }
 
     @Override
@@ -34,5 +32,10 @@ public class MainFirstFragment extends BaseFragment {
     @Override
     public void onMyBroadcastReceiver(String action, Bundle bundle) {
         super.onMyBroadcastReceiver(action, bundle);
+    }
+
+    @Override
+    protected int getContentLayout() {
+        return R.layout.main_first_frag_layout;
     }
 }

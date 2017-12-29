@@ -18,9 +18,13 @@ public class TestFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.fragment_test_layout);
     }
 
+
+    @Override
+    protected int getContentLayout() {
+        return R.layout.fragment_test_layout;
+    }
 
     @Override
     public void onViewCreated(Bundle savedInstanceState, View view) {
