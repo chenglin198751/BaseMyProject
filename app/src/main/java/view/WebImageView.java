@@ -9,12 +9,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Transformation;
+
+import java.io.File;
 
 import base.MyApplication;
 import utils.MyUtils;
@@ -42,24 +46,41 @@ public class WebImageView extends AppCompatImageView {
      * 加载原图，不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      */
     @Deprecated
-    public void load(String url) {
-        if (!TextUtils.isEmpty(url)) {
-            Picasso.with(MyApplication.getApp())
-                    .load(url.trim())
-                    .into(this);
-        }
+    public void load(Object object) {
+        load(object, -1, -1);
     }
 
     /**
      * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
      */
-    public void load(String url, int imageWidth, int imageHeight) {
-        if (!TextUtils.isEmpty(url)) {
-            Picasso.with(MyApplication.getApp())
-                    .load(url)
-                    .resize(imageWidth, imageHeight)
-                    .centerCrop()
-                    .into(this);
+    public void load(Object object, int imageWidth, int imageHeight) {
+        if (object == null) {
+            return;
+        }
+        RequestCreator requestCreator = null;
+
+        if (object instanceof String) {
+            String url = (String) object;
+            if (!TextUtils.isEmpty(url)) {
+                requestCreator = Picasso.with(MyApplication.getApp()).load(url.trim());
+            }
+        } else if (object instanceof File) {
+            File file = (File) object;
+            requestCreator = Picasso.with(MyApplication.getApp()).load(file);
+        } else if (object instanceof Integer) {
+            int resourceId = (int) object;
+            requestCreator = Picasso.with(MyApplication.getApp()).load(resourceId);
+        } else if (object instanceof Uri) {
+            Uri uri = (Uri) object;
+            requestCreator = Picasso.with(MyApplication.getApp()).load(uri);
+        }
+
+        if (requestCreator != null) {
+            if (imageWidth > 0 && imageHeight > 0) {
+                requestCreator.resize(imageWidth, imageHeight).centerCrop().into(this);
+            } else {
+                requestCreator.into(this);
+            }
         }
     }
 
