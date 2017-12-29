@@ -7,18 +7,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import base.MyApplication;
 import cheerly.mybaseproject.R;
 import utils.Constants;
 import utils.MyUtils;
@@ -129,11 +125,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
             viewHolder.photoImg.setOnClickListener(imgClickListener);
 
             int width = MyUtils.dip2px(100f);
-            Picasso.with(MyApplication.getApp())
-                    .load(new File(photoItem.getPath()))
-                    .resize(width, width)
-                    .centerCrop()
-                    .into(viewHolder.photoImg);
+            viewHolder.photoImg.load(new File(photoItem.getPath()), width, width);
 
             if (!mActivity.isSingleType) {
                 if (mSelectedList.contains(photoItem.getPath())) {

@@ -142,7 +142,7 @@ public class RecyclerViewRefreshActivity extends BaseActivity {
             public void setData(int position) {
 //                title.setText("标题 " + position);
                 imageView.setWidth(Constants.screenWidth);
-                imageView.load(getData().get(position).url);
+                imageView.load(getData().get(position).url, -1, -1);
             }
 
 

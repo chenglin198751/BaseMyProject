@@ -7,13 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-
-import com.squareup.picasso.Picasso;
-
 import java.io.File;
 import java.util.List;
 
-import base.MyApplication;
 import cheerly.mybaseproject.R;
 import utils.MyUtils;
 import view.WebImageView;
@@ -68,11 +64,7 @@ public class PhotoListAdapter extends BaseAdapter {
 
         if (photoItem != null && !TextUtils.isEmpty(photoItem.getPath())) {
             int width = MyUtils.dip2px(100);
-            Picasso.with(MyApplication.getApp())
-                    .load(new File(photoItem.getPath()))
-                    .resize(width, width)
-                    .centerCrop()
-                    .into(holder.mImageView);
+            holder.mImageView.load(new File(photoItem.getPath()), width, width);
 
         }
         holder.mAlbumName.setText(photoItem.getName());

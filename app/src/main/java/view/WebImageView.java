@@ -63,15 +63,8 @@ public class WebImageView extends AppCompatImageView {
     }
 
     /**
-     * 加载原图，不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
-     */
-    @Deprecated
-    public void load(Object object) {
-        load(object, -1, -1);
-    }
-
-    /**
      * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
+     * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      */
     public void load(Object object, int imageWidth, int imageHeight) {
         if (object == null) {
