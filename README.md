@@ -69,3 +69,5 @@ ImageView的宽和高，以便最大限度的节约内存空间，让滑动更�
 **31、SelectPhotosActivity 类**：一个通用的相册图片选择类，支持单选和多选，用法看代码。
 
 **32、EnglishCharFilter 类**：限制中文字符算作两个字，英文字符算作一个字的工具类。用法：editText.setFilters(new InputFilter[]{new EnglishCharFilter(MAX_COUNT)});
+
+**33、SimpleAnimatorListener 类**：一个简单的动画监听类，目的是减少代码量。只监听了动画结束，因为动画结束是最常用的
