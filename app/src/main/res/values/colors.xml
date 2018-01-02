@@ -15,11 +15,12 @@
     <color name="fc_1">#333333</color>
     <color name="fc_2">#666666</color>
     <color name="fc_3">#999999</color>
+    <color name="line">#dedede</color>
 
     <!-- 自定义个颜色 -->
     <color name="shadow_bg">#66000000</color>
     <color name="view_bg">#f3f3f3</color>
-    <color name="select">#f2e4fa</color>
+    <color name="select">#66dddddd</color>
     <color name="purple_button">#7b64a8</color>
     <color name="pink_color">#ff3a71</color>
     <color name="percent_50_white">#7fffffff</color>

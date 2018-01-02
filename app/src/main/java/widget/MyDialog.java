@@ -3,6 +3,7 @@ package widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,6 +36,7 @@ public class MyDialog extends Dialog {
         this(context, R.style.dialog);
         this.mContext = context;
         mDialogView = View.inflate(context, R.layout.alert_dialog, null);
+        mDialogView.findViewById(R.id.title_template).setVisibility(View.GONE);
     }
 
     protected MyDialog(Context context, int theme) {
@@ -89,6 +91,9 @@ public class MyDialog extends Dialog {
 
             if (mLeftBtn + mRightBtn == 0) {
                 mDialogView.findViewById(R.id.buttonPanel).setVisibility(View.GONE);
+                mDialogView.findViewById(R.id.bottom_line).setVisibility(View.INVISIBLE);
+            } else {
+                mDialogView.findViewById(R.id.bottom_line).setVisibility(View.VISIBLE);
             }
             this.setContentView(mDialogView);
         }
@@ -139,8 +144,6 @@ public class MyDialog extends Dialog {
         mLeftBtn = 1;
     }
 
-    ;
-
     /**
      * 为右边的按钮设置点击事件，并设置文字
      */
@@ -173,50 +176,49 @@ public class MyDialog extends Dialog {
     /**
      * 为对话框设置一个短消息显示
      */
-    public void setMessage(int msg) {
-        TextView view = (TextView) mDialogView.findViewById(R.id.message);
-        view.setText(msg);
+    public void setMessage(@StringRes int msg) {
+        setMessage(getContext().getString(msg));
     }
 
     public void setTitle(String title) {
+        mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
         TextView view = (TextView) mDialogView.findViewById(R.id.alertTitle);
         view.setText(title);
     }
 
-    public void setTitle(int title) {
-        TextView view = (TextView) mDialogView.findViewById(R.id.alertTitle);
-        view.setText(title);
+    public void setTitle(@StringRes int title) {
+        setTitle(getContext().getString(title));
     }
 
-    /**
-     * 设置要高亮显示的按钮
-     */
-    public void setButtonLight(int lightBtn) {
-        Button leftButton = (Button) mDialogView.findViewById(R.id.button_ok);
-        Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
-        if (lightBtn == LEFT_LIGHT) {
-            leftButton.setBackgroundResource(R.drawable.purple_button);
-            leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
-            rightButton.setBackgroundResource(R.drawable.gray_button);
-            rightButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
-        } else if (lightBtn == RIGHT_LIGHT) {
-            leftButton.setBackgroundResource(R.drawable.gray_button);
-            leftButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
-            rightButton.setBackgroundResource(R.drawable.purple_button);
-            rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
-        }
-    }
+//    /**
+//     * 设置要高亮显示的按钮
+//     */
+//    public void setButtonLight(int lightBtn) {
+//        Button leftButton = (Button) mDialogView.findViewById(R.id.button_ok);
+//        Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
+//        if (lightBtn == LEFT_LIGHT) {
+//            leftButton.setBackgroundResource(R.drawable.purple_button);
+//            leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
+//            rightButton.setBackgroundResource(R.drawable.gray_button);
+//            rightButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
+//        } else if (lightBtn == RIGHT_LIGHT) {
+//            leftButton.setBackgroundResource(R.drawable.gray_button);
+//            leftButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
+//            rightButton.setBackgroundResource(R.drawable.purple_button);
+//            rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
+//        }
+//    }
 
-    /**
-     * 设置两个按钮都高亮
-     */
-    public void setButtonLight() {
-        Button leftButton = (Button) mDialogView.findViewById(R.id.button_ok);
-        Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
-        leftButton.setBackgroundResource(R.drawable.purple_button);
-        leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
-        rightButton.setBackgroundResource(R.drawable.purple_button);
-        rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
-    }
+//    /**
+//     * 设置两个按钮都高亮
+//     */
+//    public void setButtonLight() {
+//        Button leftButton = (Button) mDialogView.findViewById(R.id.button_ok);
+//        Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
+//        leftButton.setBackgroundResource(R.drawable.purple_button);
+//        leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
+//        rightButton.setBackgroundResource(R.drawable.purple_button);
+//        rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
+//    }
 
 }

@@ -9,7 +9,8 @@
         android:id="@+id/dialog_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dip"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:background="@drawable/white_round_bg"
         android:orientation="vertical">
 
@@ -31,9 +32,9 @@
                     android:ellipsize="end"
                     android:gravity="left"
                     android:singleLine="true"
-                    android:text="提示"
+                    android:text="会吃侠提示"
                     android:textColor="@color/text_gray_2"
-                    android:textSize="@dimen/font_size_6" />
+                    android:textSize="15dp" />
             </LinearLayout>
 
             <View
@@ -42,7 +43,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="20dip"
                 android:layout_marginRight="20dip"
-                android:background="@color/fc_3" />
+                android:background="@color/line" />
         </RelativeLayout>
 
         <LinearLayout
@@ -63,51 +64,58 @@
                     android:id="@+id/message"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:paddingBottom="12dp"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.2"
+                    android:paddingBottom="18dp"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:paddingTop="12dp"
-                    android:textColor="@color/text_gray_2"
-                    android:textSize="@dimen/font_size_6" />
+                    android:paddingTop="18dp"
+                    android:textColor="@color/fc_1"
+                    android:textSize="15dp"
+                    tools:text="花褪残红青杏小" />
             </ScrollView>
         </LinearLayout>
+
+        <View
+            android:id="@+id/bottom_line"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/line" />
 
         <LinearLayout
             android:id="@+id/buttonPanel"
             android:layout_width="fill_parent"
-            android:layout_height="70dip"
-            android:orientation="horizontal"
-            android:paddingBottom="20dip"
-            android:paddingTop="10dip">
+            android:layout_height="45dip"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/button_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_marginLeft="10dip"
-                android:layout_marginRight="10dip"
                 android:layout_weight="1"
-                android:background="@drawable/gray_button"
+                android:background="@drawable/dialog_left_btn_bg"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@string/ok"
-                android:textColor="@color/text_gray_2"
-                android:textSize="@dimen/font_size_6" />
+                android:text="@string/cancel"
+                android:textColor="@color/fc_1"
+                android:textSize="15dp" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="@color/line" />
 
             <Button
                 android:id="@+id/button_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_marginLeft="10dip"
-                android:layout_marginRight="10dip"
                 android:layout_weight="1"
-                android:background="@drawable/purple_button"
+                android:background="@drawable/dialog_right_btn_bg"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@string/cancel"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_6" />
+                android:text="@string/ok"
+                android:textColor="@color/fc_1"
+                android:textSize="15dp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
