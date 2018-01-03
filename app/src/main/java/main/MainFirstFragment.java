@@ -24,7 +24,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                getContext().showWaitDialog(null);
             }
         });
     }

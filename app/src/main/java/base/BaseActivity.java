@@ -25,6 +25,7 @@ import helper.MainTitleHelper;
 import utils.Constants;
 import widget.LoadingViewHelper;
 import widget.MyDialog;
+import widget.WaitDialog;
 
 /**
  * Activity的基类
@@ -36,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
     private LoadingViewHelper mLoadingViewHelper = null;
-    private MyDialog mWaitDialog;
+    private WaitDialog mWaitDialog;
     private RelativeLayout mContentView;
     private RelativeLayout mBaseRootView;
 
@@ -112,10 +113,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 显示等待的对话框
      */
-    public final MyDialog showWaitDialog(String text) {
+    public final WaitDialog showWaitDialog(String text) {
         if (mWaitDialog == null) {
-            mWaitDialog = new MyDialog(getContext());
-            mWaitDialog.setContentView(R.layout.progress_layout);
+            mWaitDialog = new WaitDialog(getContext());
         }
 
         if (!TextUtils.isEmpty(text)) {
