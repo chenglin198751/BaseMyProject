@@ -115,8 +115,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public final MyDialog showWaitDialog(String text) {
         if (mWaitDialog == null) {
             mWaitDialog = new MyDialog(getContext());
-            View dialogView = View.inflate(getContext(), R.layout.progress_layout, null);
-            mWaitDialog.setFullScreenView(dialogView);
+            mWaitDialog.setContentView(R.layout.progress_layout);
         }
 
         if (!TextUtils.isEmpty(text)) {

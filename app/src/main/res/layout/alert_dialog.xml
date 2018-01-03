@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
+    <view.CornerLinearLayout
         android:id="@+id/dialog_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:background="@drawable/dialog_left_btn_bg"
+                android:background="@drawable/dialog_btn_bg"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="@string/cancel"
@@ -110,12 +110,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:background="@drawable/dialog_right_btn_bg"
+                android:background="@drawable/dialog_btn_bg"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="@string/ok"
                 android:textColor="@color/fc_1"
                 android:textSize="15dp" />
         </LinearLayout>
-    </LinearLayout>
+    </view.CornerLinearLayout>
 </LinearLayout>
