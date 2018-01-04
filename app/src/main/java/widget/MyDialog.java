@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -149,9 +150,11 @@ public class MyDialog extends Dialog {
     }
 
     public void setTitle(String title) {
-        mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
-        TextView view = (TextView) mDialogView.findViewById(R.id.alertTitle);
-        view.setText(title);
+        if (!TextUtils.isEmpty(title)) {
+            mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
+            TextView view = (TextView) mDialogView.findViewById(R.id.alertTitle);
+            view.setText(title);
+        }
     }
 
     public void setTitle(@StringRes int title) {
