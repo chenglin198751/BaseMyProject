@@ -150,8 +150,8 @@ public class MyDialog extends Dialog {
     }
 
     public void setTitle(String title) {
+        mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
         if (!TextUtils.isEmpty(title)) {
-            mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
             TextView view = (TextView) mDialogView.findViewById(R.id.alertTitle);
             view.setText(title);
         }
