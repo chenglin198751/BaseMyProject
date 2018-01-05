@@ -1,6 +1,7 @@
 package httpwork;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -44,6 +45,76 @@ public class HttpUtils {
             .cache(new Cache(new File(HTTP_CACHE_PATH), 100 * 1024 * 1024));
     public static final OkHttpClient client = builder.build();
 
+
+    /**
+     * 通用的okhttp3.Callback封装
+     */
+    private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpCallback) {
+        return new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                if (context == null) {
+                    return;
+                }
+                e.printStackTrace();
+
+                if (context instanceof Activity) {
+                    Activity activity = (Activity) context;
+                    if (!activity.isFinishing()) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                httpCallback.onFailure(e);
+                            }
+                        });
+                    }
+                } else {
+                    MyUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            httpCallback.onFailure(e);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (context == null) {
+                    return;
+                }
+                final String result = response.body().string();
+
+                if (context instanceof Activity) {
+                    Activity activity = (Activity) context;
+                    if (!activity.isFinishing()) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    httpCallback.onSuccess(result);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    MyUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                httpCallback.onSuccess(result);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }
+        };
+    }
+
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
@@ -54,7 +125,7 @@ public class HttpUtils {
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void postWithHeader(final Activity activity, String url, HashMap<String, String> headersMap, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
+    public static void postWithHeader(final Context context, String url, HashMap<String, String> headersMap, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
 
         if (hashMap == null) {
@@ -86,48 +157,13 @@ public class HttpUtils {
         Request request = requestBuilder.build();
 
         Call call = client.newCall(request);
-        call.enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(Call call, final IOException e) {
-                e.printStackTrace();
-                if (activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            httpCallback.onFailure(e);
-                        }
-                    });
-                } else {
-                    call.cancel();
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                final String result = response.body().string();
-                if (activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                httpCallback.onSuccess(result);
-                            } catch (Exception e) {
-                                httpCallback.onFailure(e);
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                } else {
-                    call.cancel();
-                }
-            }
-        });
+        call.enqueue(createOkhttp3Callback(context, httpCallback));
     }
 
     /**
      * 通用的异步get请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void get(final Activity activity, final String url, final HttpCallback httpCallback) {
+    public static void get(final Context context, final String url, final HttpCallback httpCallback) {
         final CacheControl.Builder builder = new CacheControl.Builder();
         builder.noCache();//不使用缓存，全部走网络
         builder.noStore();//不使用缓存，也不存储缓存
@@ -135,42 +171,7 @@ public class HttpUtils {
         Request request = new Request.Builder().cacheControl(cache).url(url).get().build();
 
         Call call = client.newCall(request);
-        call.enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(Call call, final IOException e) {
-                e.printStackTrace();
-                if (activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            httpCallback.onFailure(e);
-                        }
-                    });
-                } else {
-                    call.cancel();
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                final String result = response.body().string();
-                if (activity != null && !activity.isFinishing()) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                httpCallback.onSuccess(result);
-                            } catch (Exception e) {
-                                httpCallback.onFailure(e);
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                } else {
-                    call.cancel();
-                }
-            }
-        });
+        call.enqueue(createOkhttp3Callback(context, httpCallback));
     }
 
     /**
@@ -194,10 +195,8 @@ public class HttpUtils {
         multipartBodyBuilder.setType(MultipartBody.FORM);
 
         //遍历map中所有参数到builder
-        if (params != null) {
-            for (String key : params.keySet()) {
-                multipartBodyBuilder.addFormDataPart(key, params.get(key) + "");
-            }
+        for (String key : params.keySet()) {
+            multipartBodyBuilder.addFormDataPart(key, params.get(key) + "");
         }
 
         //遍历paths中所有图片绝对路径到builder，并约定key如“upload”作为后台接受多张图片的key
