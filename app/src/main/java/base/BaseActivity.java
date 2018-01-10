@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
 
 import cheerly.mybaseproject.R;
@@ -40,6 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private WaitDialog mWaitDialog;
     private RelativeLayout mContentView;
     private RelativeLayout mBaseRootView;
+    private HashMap<String, Object> mTagMap;
 
     @CallSuper
     @Override
@@ -89,6 +91,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (mBroadcastReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         }
+        if (mTagMap != null) {
+            mTagMap.clear();
+        }
     }
 
     @CallSuper
@@ -108,6 +113,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         intent.putExtra("action", action);
         intent.putExtra("bundle", bundle);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public void addTag(String key, Object object) {
+        if (mTagMap == null) {
+            mTagMap = new HashMap<>();
+        }
+        mTagMap.put(key, object);
+    }
+
+    public HashMap<String, Object> getTagMap() {
+        return mTagMap;
     }
 
     /**

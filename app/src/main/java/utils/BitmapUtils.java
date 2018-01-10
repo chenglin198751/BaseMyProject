@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import base.BaseActivity;
 import listener.MyCallback;
 
 /**
@@ -32,7 +34,7 @@ public class BitmapUtils {
         if (TextUtils.isEmpty(path)) {
             return;
         }
-        int[] size = getBitmapSize(path);
+        int[] size = getBitmapWidthHeight(path);
         int targetHeight = targetWidth * size[1] / size[0];
         Picasso.with(context).load(new File(path)).resize(targetWidth, targetHeight).into(target);
     }
@@ -45,7 +47,7 @@ public class BitmapUtils {
         if (TextUtils.isEmpty(path)) {
             return;
         }
-        int[] size = getBitmapSize(path);
+        int[] size = getBitmapWidthHeight(path);
         int targetHeight = targetWidth * size[1] / size[0];
         Picasso.with(context).load(uri).resize(targetWidth, targetHeight).into(target);
     }
@@ -53,7 +55,7 @@ public class BitmapUtils {
     /**
      * 返回图片宽高数组，0是宽，1是高
      */
-    public static int[] getBitmapSize(final String path) {
+    public static int[] getBitmapWidthHeight(final String path) {
         BitmapFactory.Options options = new BitmapFactory.Options();
 
         /**
@@ -97,7 +99,7 @@ public class BitmapUtils {
     /**
      * 保存图片到sdcard
      */
-    public static void saveBitmap(final Bitmap bmp, final MyCallback callback) {
+    public static void saveBitmapToSdcard(final Bitmap bmp, final MyCallback callback) {
         if (callback != null) {
             callback.onPrepare();
         }
@@ -133,5 +135,65 @@ public class BitmapUtils {
             }
         }).start();
 
+    }
+
+    /**
+     * 裁剪压缩图片
+     */
+    public static void cropPicture(final BaseActivity activity, Uri imageUri, int imageWidth, final MyCallback callback) {
+        final Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        saveBitmapToSdcard(bitmap, new MyCallback() {
+                            @Override
+                            public void onPrepare() {
+
+                            }
+
+                            @Override
+                            public void onSucceed(final Object path) {
+                                if (activity != null && !activity.isFinishing()) {
+                                    activity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            callback.onSucceed(path);
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onError() {
+                                if (activity != null && !activity.isFinishing()) {
+                                    callback.onError();
+                                }
+                            }
+                        });
+                    }
+                }.start();
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                if (activity != null && !activity.isFinishing()) {
+                    callback.onError();
+                }
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        };
+
+        activity.addTag(imageUri.toString(), target);
+        final String imagePath = getPathByUri(activity, imageUri);
+        final int[] size = getBitmapWidthHeight(imagePath);
+
+        int imageHeight = size[1] * imageWidth / size[0];
+        Picasso.with(activity).load(imageUri).resize(imageWidth, imageHeight).into(target);
     }
 }
