@@ -100,6 +100,20 @@ public class MyDialog extends Dialog {
     }
 
     /**
+     * 设置自定义View
+     */
+    public void setCustomView(View view) {
+        if (view == null) {
+            return;
+        }
+        ScrollView scrollView = (ScrollView) mDialogView.findViewById(R.id.scrollView);
+        scrollView.setVisibility(View.GONE);
+
+        LinearLayout customLinear = (LinearLayout) mDialogView.findViewById(R.id.my_custom);
+        customLinear.addView(view);
+    }
+
+    /**
      * 为左边的按钮设置点击事件，并设置文字
      */
     public void setLeftButton(String text, View.OnClickListener listener) {
