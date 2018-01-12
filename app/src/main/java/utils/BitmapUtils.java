@@ -140,7 +140,7 @@ public class BitmapUtils {
     /**
      * 裁剪压缩图片
      */
-    public static void cropPicture(final BaseActivity activity, Uri imageUri, int imageWidth, final MyCallback callback) {
+    public static void cropPicture(final BaseActivity activity, final Uri imageUri, int imageWidth, final MyCallback callback) {
         final Target target = new Target() {
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -161,6 +161,9 @@ public class BitmapUtils {
                                         @Override
                                         public void run() {
                                             callback.onSucceed(path);
+                                            if (activity.getTagMap() != null) {
+                                                activity.getTagMap().remove(imageUri.toString());
+                                            }
                                         }
                                     });
                                 }
@@ -193,7 +196,12 @@ public class BitmapUtils {
         final String imagePath = getPathByUri(activity, imageUri);
         final int[] size = getBitmapWidthHeight(imagePath);
 
-        int imageHeight = size[1] * imageWidth / size[0];
-        Picasso.with(activity).load(imageUri).resize(imageWidth, imageHeight).into(target);
+        //原图宽度大于传入的宽度才压缩，否则不压缩
+        if (size[0] > imageWidth) {
+            int imageHeight = size[1] * imageWidth / size[0];
+            Picasso.with(activity).load(imageUri).resize(imageWidth, imageHeight).into(target);
+        } else {
+            Picasso.with(activity).load(imageUri).into(target);
+        }
     }
 }
