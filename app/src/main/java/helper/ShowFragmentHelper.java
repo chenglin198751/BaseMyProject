@@ -1,5 +1,6 @@
 package helper;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -37,6 +38,10 @@ public class ShowFragmentHelper {
     }
 
     public BaseFragment showTabFragment(int index) {
+        return showTabFragment(null, index);
+    }
+
+    public BaseFragment showTabFragment(Bundle bundle, int index) {
         if (FRAGMENTS == null || FRAGMENTS.length <= 0) {
             throw new IllegalArgumentException("FRAGMENTS.length must >0");
         }
@@ -48,6 +53,9 @@ public class ShowFragmentHelper {
         if (mFragArray[index] == null) {
             try {
                 mFragArray[index] = (BaseFragment) FRAGMENTS[index].newInstance();
+                if (bundle != null){
+                    mFragArray[index].setArguments(bundle);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
