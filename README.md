@@ -73,3 +73,5 @@ ImageView的宽和高，以便最大限度的节约内存空间，让滑动更�
 **33、SimpleAnimatorListener 类**：一个简单的动画监听类，目的是减少代码量。只监听了动画结束，因为动画结束是最常用的
 
 **34、ZoomImageView 类**：一个支持手指缩放的ImageView ，支持在ViewPager中使用
+
+**35、CustomViewPagerIndicator 类**：自定义的ViewPager指示器
