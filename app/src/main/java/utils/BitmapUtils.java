@@ -173,6 +173,9 @@ public class BitmapUtils {
                             public void onError() {
                                 if (activity != null && !activity.isFinishing()) {
                                     callback.onError();
+                                    if (activity.getTagMap() != null) {
+                                        activity.getTagMap().remove(imageUri.toString());
+                                    }
                                 }
                             }
                         });
@@ -184,6 +187,9 @@ public class BitmapUtils {
             public void onBitmapFailed(Drawable errorDrawable) {
                 if (activity != null && !activity.isFinishing()) {
                     callback.onError();
+                    if (activity.getTagMap() != null) {
+                        activity.getTagMap().remove(imageUri.toString());
+                    }
                 }
             }
 
