@@ -201,7 +201,8 @@ public class BitmapUtils {
             int imageHeight = size[1] * imageWidth / size[0];
             Picasso.with(activity).load(imageUri).resize(imageWidth, imageHeight).into(target);
         } else {
-            Picasso.with(activity).load(imageUri).into(target);
+            callback.onSucceed(imagePath);
+//            Picasso.with(activity).load(imageUri).into(target);
         }
     }
 }
