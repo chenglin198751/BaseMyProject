@@ -1,4 +1,4 @@
-package main;
+package test;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -22,7 +22,7 @@ import view.KeepScaleImageView;
 /**
  * 资料：https://github.com/scwang90/SmartRefreshLayout
  */
-public class RecyclerViewRefreshActivity extends BaseActivity {
+public class TestRecyclerViewRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;

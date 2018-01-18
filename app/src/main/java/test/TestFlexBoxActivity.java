@@ -1,4 +1,4 @@
-package main;
+package test;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,7 +16,7 @@ import base.BaseActivity;
 import cheerly.mybaseproject.R;
 import utils.MyUtils;
 
-public class FlexBoxTestActivity extends BaseActivity {
+public class TestFlexBoxActivity extends BaseActivity {
     //例子：https://mp.weixin.qq.com/s/D0sCoIt7Gsms5JK9ZIhuhw
     private FlexboxLayout mFlexboxLayout;
     private static final String[] strArrs = {"百度助手", "新年", "穿衣服", "新年快乐3",

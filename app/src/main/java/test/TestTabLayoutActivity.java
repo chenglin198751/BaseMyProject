@@ -1,10 +1,8 @@
-package main;
+package test;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,7 @@ import widget.MyTabLayout;
  * Created by chenglin on 2017-9-14.
  */
 
-public class TabLayoutActivity extends BaseActivity {
+public class TestTabLayoutActivity extends BaseActivity {
     private ViewPager mViewPager;
     private MyFragmentViewPagerAdapter mFragmentAdapter;
     private List<Fragment> mFragList = new ArrayList<>();

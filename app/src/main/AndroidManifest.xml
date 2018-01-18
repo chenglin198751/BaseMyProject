@@ -45,32 +45,27 @@
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <activity
-            android:name="main.ThirdActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="photo.SelectPhotosActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name="main.RecyclerViewRefreshActivity"
+            android:name="test.TestRecyclerViewRefreshActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="recyclerview"
             android:screenOrientation="portrait" />
         <activity
-            android:name="main.FlexBoxTestActivity"
+            android:name="test.TestFlexBoxActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="flexbox"
             android:screenOrientation="portrait" />
         <activity
-            android:name="main.TabLayoutActivity"
+            android:name="test.TestTabLayoutActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="tabLayout"
             android:screenOrientation="portrait" />
         <activity
-            android:name="main.PullDownRefreshActivity"
+            android:name="test.TestPullDownRefreshActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="tabLayout"
             android:screenOrientation="portrait" />

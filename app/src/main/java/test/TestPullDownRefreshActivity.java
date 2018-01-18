@@ -1,4 +1,4 @@
-package main;
+package test;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ import utils.Constants;
 import utils.MyUtils;
 import view.WebImageView;
 
-public class PullDownRefreshActivity extends BaseActivity {
+public class TestPullDownRefreshActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;
     private ListView mListView;
     private MyAdapter mAdapter;
