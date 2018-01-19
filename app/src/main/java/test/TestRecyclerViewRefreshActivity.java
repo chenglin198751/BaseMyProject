@@ -18,6 +18,7 @@ import cheerly.mybaseproject.R;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
 import view.KeepScaleImageView;
+import view.WebImageView;
 
 /**
  * 资料：https://github.com/scwang90/SmartRefreshLayout
@@ -28,19 +29,19 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
     private MyAdapter mAdapter;
 
 
-    public static final String[] PIC_ARRAY = {"http://d.hiphotos.baidu.com/zhidao/pic/item/b8389b504fc2d5621e910222e31190ef77c66c60.jpg"
-            , "http://n.sinaimg.cn/translate/20170921/9hhr-fymesmq7657269.jpg"
-            , "http://img3.duitang.com/uploads/item/201605/26/20160526235927_ZHh5A.jpeg"
-            , "http://c.hiphotos.baidu.com/zhidao/pic/item/1e30e924b899a901e63b00dd18950a7b0308f5cb.jpg"
-            , "https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/d4628535e5dde71198f40978a5efce1b9d16611d.jpg"
-            , "http://img.mp.itc.cn/upload/20161225/aba0f4945c2341b4942b79005c37e489_th.jpg"
-            , "http://n.sinaimg.cn/translate/20170911/a1gc-fykuffc5152614.jpg"
-            , "http://media.teeqee.com/game/img/214/184511b1760bc9476170f405d978bdb6.jpg"
-            , "http://aliimg.changba.com/cache/photo/4310970_640_640.jpg"
-            , "http://img2.niutuku.com/desk/1207/1658/bizhi-1658-15519.jpg"
-            , "https://gss0.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D600%2C800/sign=380914ddf4246b607b5bba72dbc83674/4b90f603738da977bf12cca5b251f8198618e37b.jpg"
-            , "http://img1.ali213.net/picfile/News/2015/03/03/584_2015030320455693.jpg",
-            "http://img1.ali213.net/picfile/News/2015/03/03/584_2015030320504264.jpg"};
+    public static final String[] PIC_ARRAY = {"http://img.zcool.cn/community/01d4a0573bd4ba32f8757cb9f98a3f.gif"
+            , "https://b-ssl.duitang.com/uploads/item/201410/19/20141019095805_KaAju.thumb.700_0.gif"
+            , "https://b-ssl.duitang.com/uploads/blog/201501/02/20150102162511_8sA4h.thumb.700_0.gif"
+            , "http://img.zcool.cn/community/01bd32573bd4c432f8757cb9341633.gif"
+            , "http://img.zcool.cn/community/01c59d573bd4bc32f8757cb93c30b0.gif"
+            , "https://b-ssl.duitang.com/uploads/item/201510/06/20151006200129_HGuYP.thumb.700_0.gif"
+            , "http://img.zcool.cn/community/01d32c573bd4c36ac7253f9ac79aca.gif"
+            , "https://b-ssl.duitang.com/uploads/blog/201411/10/20141110185817_QUHed.thumb.700_0.gif"
+            , "http://img.zcool.cn/community/01eced573bd4b932f8757cb9ed9061.gif"
+            , "https://b-ssl.duitang.com/uploads/item/201411/24/20141124111818_tHQSz.thumb.700_0.gif"
+            , "http://img.zcool.cn/community/014da7573bd4bd6ac7253f9aea065b.gif"
+            , "http://www.95dm.com/a/pic/20151025/1-1505161500444V.gif",
+            "https://imgsa.baidu.com/forum/w%3D580/sign=8bf66bb9eaf81a4c2632ecc1e7286029/2456e6fb43166d22c88fcc59472309f79252d2b5.jpg"};
 
 
     @Override
@@ -60,7 +61,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         mAdapter.clear();
-                        setData(10, true);
+                        setData(13, true);
                         mPullToRefresh.finishRefresh();
                     }
                 }, 1500);
@@ -71,7 +72,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        setData(10, false);
+                        setData(13, false);
                         mPullToRefresh.finishLoadmore();
                     }
                 }, 1500);
@@ -84,7 +85,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        setData(10, true);
+        setData(13, true);
 
     }
 
@@ -130,18 +131,17 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         class ListHolder extends BaseRecyclerViewHolder {
             TextView title;
             TextView content;
-            KeepScaleImageView imageView;
+            WebImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
 //                title = (TextView) itemView.findViewById(R.id.title);
 //                content = (TextView) itemView.findViewById(R.id.content);
-                imageView = (KeepScaleImageView) itemView.findViewById(R.id.image_view);
+                imageView = (WebImageView) itemView.findViewById(R.id.image_view);
             }
 
             public void setData(int position) {
 //                title.setText("标题 " + position);
-                imageView.setWidth(Constants.screenWidth);
                 imageView.load(getData().get(position).url, -1, -1);
             }
 

@@ -32,7 +32,7 @@ dependencies {
     compile 'com.squareup.okio:okio:1.13.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.android.support:recyclerview-v7:25.4.0'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.7'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.10'
     compile 'com.google.android:flexbox:0.3.0'
     compile 'com.android.support:design:25.4.0'
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'

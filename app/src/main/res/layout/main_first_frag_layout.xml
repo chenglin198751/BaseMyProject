@@ -14,8 +14,9 @@
 
     <view.WebImageView
         android:id="@+id/image_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffcccc" />
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:background="#ffcccc"
+        android:scaleType="centerInside" />
 
 </LinearLayout>
