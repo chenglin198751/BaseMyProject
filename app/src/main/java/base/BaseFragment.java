@@ -11,7 +11,12 @@ import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 
+import java.util.Map;
+
 import cheerly.mybaseproject.R;
+import httpwork.HttpBuilder;
+import httpwork.HttpCallback;
+import httpwork.HttpUtils;
 import utils.Constants;
 import widget.LoadingViewHelper;
 
@@ -26,6 +31,15 @@ public abstract class BaseFragment extends Fragment {
 
     public BaseActivity getContext() {
         return (BaseActivity) getActivity();
+    }
+
+    /**
+     * post 请求，建议用这个
+     */
+    public void post(String url, Map<String, Object> map, final HttpCallback httpCallback) {
+        HttpBuilder builder = new HttpBuilder();
+        builder.setCache(false);
+        HttpUtils.postWithHeader(getContext(), url, null, map, builder, httpCallback);
     }
 
     public final void sendMyBroadcast(String action, Bundle bundle) {
