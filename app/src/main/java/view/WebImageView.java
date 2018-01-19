@@ -141,14 +141,7 @@ public class WebImageView extends ImageView {
                             }
                             Log.v("tag_2", "从硬盘加载");
                             if (url.equals(getTag(R.id.web_image_id))) {
-                                MyUtils.getHandler().post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (!isFinish()) {
-                                            setImageDrawable(gifDrawable);
-                                        }
-                                    }
-                                });
+                                setImageDrawable(gifDrawable);
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
