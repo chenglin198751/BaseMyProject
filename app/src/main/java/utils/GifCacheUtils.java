@@ -1,6 +1,5 @@
 package utils;
 
-import android.util.Log;
 import android.util.LruCache;
 
 import java.util.concurrent.ExecutorService;
@@ -15,7 +14,7 @@ import pl.droidsonroids.gif.GifDrawable;
 public class GifCacheUtils {
     //只取App 可用内存的十分之一
     private static final int CACHE_SIZE = (int) (Runtime.getRuntime().maxMemory() / 1024 / 10);//单位KB
-    private static LruCache<String, GifDrawable> mGifCache;
+    private static volatile LruCache<String, GifDrawable> mGifCache;
     private static ExecutorService mGifThreadPool = null;
 
     public static void put(String key, GifDrawable gifDrawable) {
@@ -25,8 +24,6 @@ public class GifCacheUtils {
                     mGifCache = new LruCache<String, GifDrawable>(CACHE_SIZE) {
                         @Override
                         protected int sizeOf(String key, GifDrawable gifDrawable) {
-                            Log.v("tag_2", "sizeOf = " + (int) (gifDrawable.getAllocationByteCount() / 1024) + "KB");
-                            Log.d("tag_2", "CACHE_SIZE = " + CACHE_SIZE + "KB");
                             return (int) (gifDrawable.getAllocationByteCount() / 1024);//单位KB
                         }
                     };

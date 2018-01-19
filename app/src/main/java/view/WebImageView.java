@@ -13,7 +13,6 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -112,7 +111,6 @@ public class WebImageView extends ImageView {
         setImageDrawable(null);
         if (GifCacheUtils.get(url) != null) {
             setImageDrawable(GifCacheUtils.get(url));
-            Log.i("tag_2", "从缓存加载");
         } else {
             downloadGif(url);
         }
@@ -139,7 +137,6 @@ public class WebImageView extends ImageView {
                             if (isFinish()) {
                                 return;
                             }
-                            Log.v("tag_2", "从硬盘加载");
                             if (url.equals(getTag(R.id.web_image_id))) {
                                 setImageDrawable(gifDrawable);
                             }
