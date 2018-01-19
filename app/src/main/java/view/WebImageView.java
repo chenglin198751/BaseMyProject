@@ -1,5 +1,6 @@
 package view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -10,24 +11,33 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Transformation;
 
 import java.io.File;
+import java.io.IOException;
 
+import base.BaseActivity;
 import base.MyApplication;
+import cheerly.mybaseproject.R;
+import httpwork.HttpDownloadCallback;
+import httpwork.HttpUtils;
+import okhttp3.Call;
+import pl.droidsonroids.gif.GifDrawable;
+import utils.GifCacheUtils;
 import utils.MyUtils;
 
 /**
  * Created by chenglin on 2017-7-14.
  */
-
-public class WebImageView extends AppCompatImageView {
+@SuppressLint("AppCompatCustomView")
+public class WebImageView extends ImageView {
     private final static PicassoCircleTransform mPicassoCircleTransform = new PicassoCircleTransform();
 
     public WebImageView(Context context) {
@@ -64,12 +74,20 @@ public class WebImageView extends AppCompatImageView {
 
     /**
      * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
+     * 支持 gif 格式的图片，但是前提后缀名是.gif 才能解析
      * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      */
     public void load(Object object, int imageWidth, int imageHeight) {
         if (object == null) {
             return;
         }
+        setTag(R.id.web_image_id, object);
+
+        if (isGif(object)) {
+            setGifDrawable((String) object);
+            return;
+        }
+
         RequestCreator requestCreator = getRequestCreator(object);
         if (requestCreator != null) {
             if (imageWidth > 0 && imageHeight > 0) {
@@ -78,6 +96,73 @@ public class WebImageView extends AppCompatImageView {
                 requestCreator.into(this);
             }
         }
+    }
+
+    private boolean isGif(Object object) {
+        if (object instanceof String) {
+            String url = (String) object;
+            if (url.toLowerCase().endsWith(".gif")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void setGifDrawable(String url) {
+        setImageDrawable(null);
+        if (GifCacheUtils.get(url) != null) {
+            setImageDrawable(GifCacheUtils.get(url));
+            Log.i("tag_2", "从缓存加载");
+        } else {
+            downloadGif(url);
+        }
+    }
+
+    private void downloadGif(final String url) {
+        HttpUtils.downloadFile(url, true, new HttpDownloadCallback() {
+            @Override
+            public void onFailure(IOException e) {
+            }
+
+            @Override
+            public void onSuccess(final String filePath) {
+                if (isFinish()) {
+                    return;
+                }
+
+                GifCacheUtils.getThreadPool().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            final GifDrawable gifDrawable = new GifDrawable(filePath);
+                            GifCacheUtils.put(url, gifDrawable);
+                            if (isFinish()) {
+                                return;
+                            }
+                            Log.v("tag_2", "从硬盘加载");
+                            if (url.equals(getTag(R.id.web_image_id))) {
+                                MyUtils.getHandler().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (!isFinish()) {
+                                            setImageDrawable(gifDrawable);
+                                        }
+                                    }
+                                });
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent) {
+
+            }
+        });
     }
 
     /**
@@ -93,6 +178,16 @@ public class WebImageView extends AppCompatImageView {
                         .into(this);
             }
         }
+    }
+
+    private boolean isFinish() {
+        if (getContext() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getContext();
+            if (activity != null) {
+                return activity.isFinishing();
+            }
+        }
+        return true;
     }
 
     /**
