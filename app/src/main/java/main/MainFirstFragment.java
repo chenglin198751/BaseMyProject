@@ -6,6 +6,7 @@ import android.view.View;
 
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
+import test.TestPullDownRefreshActivity;
 import test.TestRecyclerViewRefreshActivity;
 import view.WebImageView;
 import widget.MyDialog;
@@ -32,7 +33,8 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(),TestRecyclerViewRefreshActivity.class));
+                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
+
             }
         });
     }
