@@ -20,12 +20,15 @@ import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
+import httpwork.HttpBuilder;
+import httpwork.HttpCallback;
+import httpwork.HttpUtils;
 import utils.Constants;
 import widget.LoadingViewHelper;
-import widget.MyDialog;
 import widget.WaitDialog;
 
 /**
@@ -94,6 +97,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (mTagMap != null) {
             mTagMap.clear();
         }
+    }
+
+    /**
+     * post 请求，建议用这个
+     */
+    public void post(String url, Map<String, Object> map, final HttpCallback httpCallback) {
+        HttpBuilder builder = new HttpBuilder();
+        builder.setCache(false);
+        HttpUtils.postWithHeader(getContext(), url, null, map, builder, httpCallback);
     }
 
     @CallSuper
