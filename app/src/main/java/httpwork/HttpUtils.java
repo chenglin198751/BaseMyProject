@@ -118,15 +118,18 @@ public class HttpUtils {
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void post(final Activity activity, String url, HashMap<String, Object> paramsHashMap, final HttpCallback httpCallback) {
-        postWithHeader(activity, url, null, paramsHashMap, httpCallback);
+    public static void post(final Activity activity, String url, Map<String, Object> paramsHashMap, final HttpBuilder builder, final HttpCallback httpCallback) {
+        postWithHeader(activity, url, null, paramsHashMap, builder, httpCallback);
     }
 
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void postWithHeader(final Context context, String url, HashMap<String, String> headersMap, HashMap<String, Object> hashMap, final HttpCallback httpCallback) {
+    public static void postWithHeader(final Context context, String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
+        if (builder == null) {
+            builder = new HttpBuilder();
+        }
 
         if (hashMap == null) {
             hashMap = new HashMap<>();
@@ -142,10 +145,12 @@ public class HttpUtils {
         }
         RequestBody body = FormBuilder.build();
 
-        final CacheControl.Builder builder = new CacheControl.Builder();
-        builder.noCache();//不使用缓存，全部走网络
-        builder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = builder.build();
+        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
+        if (!builder.isCache()) {
+            cacheBuilder.noCache();//不使用缓存，全部走网络
+            cacheBuilder.noStore();//不使用缓存，也不存储缓存
+        }
+        CacheControl cache = cacheBuilder.build();
 
         Request.Builder requestBuilder = new Request.Builder()
                 .cacheControl(cache)
@@ -230,22 +235,45 @@ public class HttpUtils {
     }
 
     /**
-     * 可以自定义下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 默认下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
+     *
+     * @param fileUrl          下载文件地址
+     * @param downloadCallback 下载的回调监听
      */
     public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
-        downloadFile(fileUrl, null, downloadCallback);
+        downloadFile(fileUrl, null, false, downloadCallback);
+    }
+
+
+    /**
+     * 默认下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
+     *
+     * @param fileUrl          下载文件地址
+     * @param isNeedCache      是否需要缓存，如果true ，那么此文件同样地址只下载一次
+     * @param downloadCallback 下载的回调监听
+     */
+    public static void downloadFile(final String fileUrl, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+        downloadFile(fileUrl, null, isNeedCache, downloadCallback);
     }
 
     /**
-     * 默认的下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 可以自定义下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
+     *
+     * @param fileUrl          下载文件地址
+     * @param fileDownloadPath 自定义文件下载路径
+     * @param isNeedCache      是否需要缓存，如果true ，那么此文件同样地址只下载一次
+     * @param downloadCallback 下载的回调监听
      */
-    public static void downloadFile(final String fileUrl, final String fileDownloadPath, final HttpDownloadCallback downloadCallback) {
-        final CacheControl.Builder builder = new CacheControl.Builder();
-        builder.noCache();//不使用缓存，全部走网络
-        builder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = builder.build();
+    public static void downloadFile(final String fileUrl, final String fileDownloadPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
+        if (!isNeedCache) {
+            cacheBuilder.noCache();//不使用缓存，全部走网络
+            cacheBuilder.noStore();//不使用缓存，也不存储缓存
+        }
+        CacheControl cache = cacheBuilder.build();
         Request request = new Request.Builder().cacheControl(cache).url(fileUrl).get().build();
 
         client.newCall(request).enqueue(new okhttp3.Callback() {
@@ -316,7 +344,7 @@ public class HttpUtils {
     /**
      * 通用字段
      */
-    private static void addCommonData(HashMap<String, Object> params) {
+    private static void addCommonData(Map<String, Object> params) {
         params.put("IMEI", MyUtils.getDeviceId());
         params.put("product", Build.MODEL);
         params.put("brand", Build.BRAND);
