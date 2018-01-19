@@ -2,5 +2,5 @@
 <resources>
     <item name="position" type="id" />
     <item name="publish_picture_id" type="id" />
-    <item name="image_id" type="id" />
+    <item name="web_image_id" type="id" />
 </resources>
