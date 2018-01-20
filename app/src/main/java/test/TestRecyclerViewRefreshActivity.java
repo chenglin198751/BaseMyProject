@@ -137,7 +137,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
             public void setData(int position) {
 //                imageView.load(getData().get(position).url, -1, -1);
-                imageView.setImageDrawable(new CenterDrawable(mContext,R.mipmap.image_loadding_icon));
+                imageView.setImageDrawable(new CenterDrawable(R.mipmap.image_loadding_icon));
 
             }
 

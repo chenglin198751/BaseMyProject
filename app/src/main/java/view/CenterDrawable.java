@@ -1,20 +1,19 @@
 package view;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 
+import base.MyApplication;
+
 public class CenterDrawable extends Drawable {
-    private Context mContext;
     private Drawable mDrawable;
 
-    public CenterDrawable(Context context, @DrawableRes int resId) {
+    public CenterDrawable(@DrawableRes int resId) {
         super();
-        this.mContext = context;
-        mDrawable = mContext.getResources().getDrawable(resId);
+        mDrawable = MyApplication.getApp().getResources().getDrawable(resId);
     }
 
     @Override
