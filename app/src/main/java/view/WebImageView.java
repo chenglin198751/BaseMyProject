@@ -109,8 +109,9 @@ public class WebImageView extends ImageView {
 
     private void setGifDrawable(String url) {
         setImageDrawable(null);
-        if (GifCacheUtils.get(url) != null) {
-            setImageDrawable(GifCacheUtils.get(url));
+        String key = buildKey(url);
+        if (GifCacheUtils.get(key) != null) {
+            setImageDrawable(GifCacheUtils.get(key));
         } else {
             downloadGif(url);
         }
@@ -133,13 +134,20 @@ public class WebImageView extends ImageView {
                     public void run() {
                         try {
                             final GifDrawable gifDrawable = new GifDrawable(filePath);
-                            GifCacheUtils.put(url, gifDrawable);
+                            GifCacheUtils.put(buildKey(url), gifDrawable);
                             if (isFinish()) {
                                 return;
                             }
-                            if (url.equals(getTag(R.id.web_image_id))) {
-                                setImageDrawable(gifDrawable);
-                            }
+                            MyUtils.getHandler().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!isFinish()) {
+                                        if (url.equals(getTag(R.id.web_image_id))) {
+                                            setImageDrawable(gifDrawable);
+                                        }
+                                    }
+                                }
+                            });
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -178,6 +186,17 @@ public class WebImageView extends ImageView {
             }
         }
         return true;
+    }
+
+
+    /**
+     * 为了解决多个ImageView 共用一个GifDrawable 时，当此 GifDrawable 被回收时，
+     * 别的ImageView 上面的GifDrawable 也会被回收，就会导致别的ImageView GIF 停止不播放。
+     * 解决办法：把URL 和View 的hashCode 拼做一个参数当做Key 使用。
+     * 如果有更好的解决办法，欢迎讨论 by chegnlin 2018年1月19日20:05:48
+     */
+    private String buildKey(final String url) {
+        return MyUtils.MD5(url + "_" + this.hashCode());
     }
 
     /**
