@@ -1,6 +1,9 @@
 ## 工程各个工具类说明
 
-**1、BaseActivity 类** ：基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。好处：便于统一管理页面，比如可以在页面内部显示加载框，可以添加右侧菜单，添加空View，无网页面等等。
+**1、BaseActivity 类** ：基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。
+好处：便于统一管理页面，比如可以在页面内部显示加载框，可以添加右侧菜单，添加空View，无网页面等等。
+其中里面包含了Post() 网络请求的方法，建议使用这个请求网络，可以防止内存泄漏。
+BaseFragment里面的方法和和BaseActivity大体类似。所有的Fragment都要继承自BaseFragment
 
 **2、debug切换**：我是在SD卡下面放置一个特殊文件，判断是否有这个文件来切换debug 环境。好处：可以随时把一个正式包设置为测试包，并且提交代码时再也不用去配置环境了。
 
@@ -27,7 +30,7 @@ baseAdapter 。
 
 **11、MyUtils 类**：统一的工具类，里面包含了很多常用的方法并写了注释，大家可以看看，基本常用的方法都包含了。
 
-**12、特别说明**：MyUtills 里面有个方法叫做getHandler() ，这是一个全局的Handler ，当然，我获取的是MainLooper 。以后大家执行post 或者postDelay操作时就可以直接用这个全局Handler 了。（特别注意，
+**12、特别说明**：MyUtils 里面有个方法叫做getHandler() ，这是一个全局的Handler ，当然，我获取的是MainLooper 。以后大家执行post 或者postDelay操作时就可以直接用这个全局Handler 了。（特别注意，
 如果使用postDelay方法时，一定要记得onDestroy时调用removeCallback 方法，要不很容易内存泄漏）
 
 **13、MyDialog 类**：封装了dialog ，系统的dialog样式太难看，并且根据手机的不同显示的样式也不同，所以我自己封装了一个。使用很简单，看一眼就会。
