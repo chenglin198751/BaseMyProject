@@ -11,6 +11,9 @@ import base.MyApp;
 public class CenterDrawable extends Drawable {
     private Drawable mDrawable;
 
+    private CenterDrawable(){
+    }
+
     public CenterDrawable(@DrawableRes int resId) {
         super();
         mDrawable = MyApp.getApp().getResources().getDrawable(resId);
