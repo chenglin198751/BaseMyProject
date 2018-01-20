@@ -6,19 +6,18 @@ import android.view.View;
 
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
-import test.TestPullDownRefreshActivity;
 import test.TestRecyclerViewRefreshActivity;
-import view.WebImageView;
-import widget.MyDialog;
-import widget.MyWebViewActivity;
+import utils.Constants;
+import utils.MyUtils;
+import widget.LongImageView;
 
 /**
  * Created by chenglin on 2017-9-14.
  */
 
 public class MainFirstFragment extends BaseFragment {
-    private WebImageView webImageView;
-    private final static String url = "http://img.zcool.cn/community/01bd32573bd4c432f8757cb9341633.gif";
+    private LongImageView imageView;
+    private final static String url = "https://b-ssl.duitang.com/uploads/item/201409/20/20140920230643_8tij8.png";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,8 +26,8 @@ public class MainFirstFragment extends BaseFragment {
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-        webImageView = (WebImageView) view.findViewById(R.id.image_1);
-        webImageView.load(url, -1, -1);
+        imageView = (LongImageView) view.findViewById(R.id.image_1);
+        imageView.load(url, Constants.screenWidth);
 
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override

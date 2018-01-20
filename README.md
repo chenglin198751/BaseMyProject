@@ -75,3 +75,5 @@ baseAdapter 。
 **34、ZoomImageView 类**：一个支持手指缩放的ImageView ，支持在ViewPager中使用
 
 **35、CustomViewPagerIndicator 类**：自定义的ViewPager指示器
+
+**36、LongImageView 类**：自定义的用于显示长图的控件。基于WebView改造而来，性能卓越。
