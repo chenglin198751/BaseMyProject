@@ -268,6 +268,20 @@ public class HttpUtils {
      * @param downloadCallback 下载的回调监听
      */
     public static void downloadFile(final String fileUrl, final String fileDownloadPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+        if (TextUtils.isEmpty(fileUrl)) {
+            downloadCallback.onFailure(new IOException("下载URL为空"));
+            return;
+        }
+
+        final String defaultFilePath = SDCardUtils.SDCARD_PATH + MyUtils.MD5(fileUrl) + getSuffixNameByHttpUrl(fileUrl);
+        if (isNeedCache) {
+            File existFile = new File(defaultFilePath);
+            if (existFile.exists()) {
+                downloadCallback.onSuccess(defaultFilePath);
+                return;
+            }
+        }
+
         final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
         if (!isNeedCache) {
             cacheBuilder.noCache();//不使用缓存，全部走网络
@@ -290,7 +304,6 @@ public class HttpUtils {
 
             @Override
             public void onResponse(final Call call, Response response) {
-                final String defaultFilePath = SDCardUtils.SDCARD_PATH + System.currentTimeMillis() + getSuffixNameByHttpUrl(fileUrl);
                 final String filePath = TextUtils.isEmpty(fileDownloadPath) ? defaultFilePath : fileDownloadPath;
 
                 InputStream inputStream = response.body().byteStream();
