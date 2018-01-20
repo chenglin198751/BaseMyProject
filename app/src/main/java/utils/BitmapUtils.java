@@ -53,7 +53,7 @@ public class BitmapUtils {
     }
 
     /**
-     * 返回图片宽高数组，0是宽，1是高
+     * 返回图片宽高数组，第0个是宽，第1个是高
      */
     public static int[] getBitmapWidthHeight(final String path) {
         BitmapFactory.Options options = new BitmapFactory.Options();

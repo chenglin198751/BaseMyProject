@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
@@ -72,7 +72,11 @@ public class MyWebViewFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         if (mWebView != null) {
+            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+            mWebView.clearHistory();
+            ((ViewGroup) mWebView.getParent()).removeView(mWebView);
             mWebView.destroy();
+            mWebView = null;
         }
         super.onDestroy();
     }

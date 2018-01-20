@@ -8,8 +8,6 @@ import okhttp3.Call;
  * Created by chenglin on 2017-6-27.
  */
 public interface HttpDownloadCallback {
-    void onFailure(IOException e);
-
     void onSuccess(String filePath);
 
     /**
@@ -19,4 +17,6 @@ public interface HttpDownloadCallback {
      * @param percent         文件下载的进度百分比
      */
     void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent);
+
+    void onFailure(IOException e);
 }
