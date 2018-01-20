@@ -1,11 +1,10 @@
 package widget;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import base.MyApplication;
+import base.MyApp;
 import cheerly.mybaseproject.R;
 
 
@@ -17,15 +16,15 @@ public class MyToast {
     private static Toast mToast;
 
     public static void show(int resId) {
-        show(MyApplication.getApp().getString(resId));
+        show(MyApp.getApp().getString(resId));
     }
 
     public static void show(String text) {
         TextView msgTv = null;
         if (mToast == null) {
-            mToast = new Toast(MyApplication.getApp());
+            mToast = new Toast(MyApp.getApp());
 
-            View view = View.inflate(MyApplication.getApp(), R.layout.my_toast_layout, null);
+            View view = View.inflate(MyApp.getApp(), R.layout.my_toast_layout, null);
             msgTv = (TextView) view.findViewById(R.id.message);
             msgTv.setText(text);
 

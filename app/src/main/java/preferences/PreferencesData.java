@@ -3,7 +3,7 @@ package preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import base.MyApplication;
+import base.MyApp;
 
 public class PreferencesData {
 
@@ -12,7 +12,7 @@ public class PreferencesData {
     }
 
     public static void clear() {
-        getPreferences(MyApplication.getApp()).edit().clear().commit();
+        getPreferences(MyApp.getApp()).edit().clear().commit();
     }
 
     /**
@@ -21,14 +21,14 @@ public class PreferencesData {
     private static final String LAST_ALBUM_ID = "LAST_ALBUM_ID";
 
     public static void setLastAlbumId(String value) {
-        SharedPreferences prefs = getPreferences(MyApplication.getApp());
+        SharedPreferences prefs = getPreferences(MyApp.getApp());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(LAST_ALBUM_ID, value);
         editor.commit();
     }
 
     public static String getLastAlbumId() {
-        return getPreferences(MyApplication.getApp()).getString(LAST_ALBUM_ID, "");
+        return getPreferences(MyApp.getApp()).getString(LAST_ALBUM_ID, "");
     }
 
 }

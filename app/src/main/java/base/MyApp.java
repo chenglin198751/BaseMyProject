@@ -6,10 +6,10 @@ import com.tencent.smtt.sdk.QbSdk;
 
 import helper.ApplicationHelper;
 
-public class MyApplication extends Application {
-    private static MyApplication application = null;
+public class MyApp extends Application {
+    private static MyApp application = null;
 
-    public static MyApplication getApp() {
+    public static MyApp getApp() {
         return application;
     }
 

@@ -6,14 +6,14 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 
-import base.MyApplication;
+import base.MyApp;
 
 public class CenterDrawable extends Drawable {
     private Drawable mDrawable;
 
     public CenterDrawable(@DrawableRes int resId) {
         super();
-        mDrawable = MyApplication.getApp().getResources().getDrawable(resId);
+        mDrawable = MyApp.getApp().getResources().getDrawable(resId);
     }
 
     @Override

@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 import base.BaseActivity;
-import base.MyApplication;
+import base.MyApp;
 import cheerly.mybaseproject.R;
 import httpwork.HttpDownloadCallback;
 import httpwork.HttpUtils;
@@ -56,17 +56,17 @@ public class WebImageView extends ImageView {
         if (object instanceof String) {
             String url = (String) object;
             if (!TextUtils.isEmpty(url)) {
-                requestCreator = Picasso.with(MyApplication.getApp()).load(url.trim());
+                requestCreator = Picasso.with(MyApp.getApp()).load(url.trim());
             }
         } else if (object instanceof File) {
             File file = (File) object;
-            requestCreator = Picasso.with(MyApplication.getApp()).load(file);
+            requestCreator = Picasso.with(MyApp.getApp()).load(file);
         } else if (object instanceof Integer) {
             int resourceId = (int) object;
-            requestCreator = Picasso.with(MyApplication.getApp()).load(resourceId);
+            requestCreator = Picasso.with(MyApp.getApp()).load(resourceId);
         } else if (object instanceof Uri) {
             Uri uri = (Uri) object;
-            requestCreator = Picasso.with(MyApplication.getApp()).load(uri);
+            requestCreator = Picasso.with(MyApp.getApp()).load(uri);
         }
         return requestCreator;
     }

@@ -40,7 +40,7 @@ import java.util.Date;
 import java.util.List;
 
 import base.BaseActivity;
-import base.MyApplication;
+import base.MyApp;
 import bean.ApkItem;
 import widget.MyToast;
 
@@ -74,7 +74,7 @@ public class MyUtils {
      * 将dip转化为px *
      */
     public static int dip2px(float dipValue) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, MyApplication.getApp().getResources().getDisplayMetrics());
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, MyApp.getApp().getResources().getDisplayMetrics());
     }
 
     /**
@@ -375,7 +375,7 @@ public class MyUtils {
     public static String getVerCode() {
         if (mVerCode == null) {
             try {
-                mVerCode = MyApplication.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
+                mVerCode = MyApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -389,7 +389,7 @@ public class MyUtils {
     public static String getVerName() {
         if (mVerName == null) {
             try {
-                mVerName = MyApplication.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
+                mVerName = MyApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -403,12 +403,12 @@ public class MyUtils {
     public static String getDeviceId() {
         if (mStrImei == null) {
             try {
-                if (ActivityCompat.checkSelfPermission(MyApplication.getApp(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                    TelephonyManager telephonyManager = (TelephonyManager) MyApplication.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+                if (ActivityCompat.checkSelfPermission(MyApp.getApp(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                    TelephonyManager telephonyManager = (TelephonyManager) MyApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
                     mStrImei = telephonyManager.getDeviceId();
                 }
                 if (TextUtils.isEmpty(mStrImei)) {
-                    mStrImei = Settings.Secure.getString(MyApplication.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
+                    mStrImei = Settings.Secure.getString(MyApp.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -422,7 +422,7 @@ public class MyUtils {
     }
 
     public static String getPackageName() {
-        return MyApplication.getApp().getPackageName();
+        return MyApp.getApp().getPackageName();
     }
 
     /**
