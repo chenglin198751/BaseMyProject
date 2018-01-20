@@ -4,12 +4,12 @@
     <!--<item android:drawable="@mipmap/load_small_2"/>-->
     <item>
         <rotate
-            android:drawable="@mipmap/loading_small_icon"
-            android:duration="2500"
+            android:drawable="@mipmap/white_small_loading"
+            android:duration="500"
             android:fromDegrees="0.0"
             android:pivotX="50.0%"
             android:pivotY="50.0%"
-            android:toDegrees="720.0" />
+            android:toDegrees="360.0" />
     </item>
 
 </layer-list>

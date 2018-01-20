@@ -12,7 +12,7 @@ public class WaitDialog extends Dialog {
     private View mView;
 
     public WaitDialog(Context context) {
-        this(context, R.style.dialog);
+        this(context, R.style.dialogNullBg);
         mView = View.inflate(context, R.layout.progress_layout, null);
     }
 

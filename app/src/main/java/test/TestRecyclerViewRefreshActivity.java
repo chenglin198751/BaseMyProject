@@ -16,8 +16,7 @@ import base.BaseRecyclerViewAdapter;
 import base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
 import pullrefresh.PullToRefresh;
-import utils.Constants;
-import view.KeepScaleImageView;
+import view.CenterDrawable;
 import view.WebImageView;
 
 /**
@@ -61,10 +60,10 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         mAdapter.clear();
-                        setData(13, true);
+                        setData(PIC_ARRAY.length, true);
                         mPullToRefresh.finishRefresh();
                     }
-                }, 1500);
+                }, 500);
             }
 
             @Override
@@ -72,10 +71,10 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                 mPullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        setData(13, false);
+                        setData(PIC_ARRAY.length, false);
                         mPullToRefresh.finishLoadmore();
                     }
-                }, 1500);
+                }, 500);
             }
         });
 
@@ -129,20 +128,17 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         class ListHolder extends BaseRecyclerViewHolder {
-            TextView title;
-            TextView content;
             WebImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
-//                title = (TextView) itemView.findViewById(R.id.title);
-//                content = (TextView) itemView.findViewById(R.id.content);
                 imageView = (WebImageView) itemView.findViewById(R.id.image_view);
             }
 
             public void setData(int position) {
-//                title.setText("标题 " + position);
-                imageView.load(getData().get(position).url, -1, -1);
+//                imageView.load(getData().get(position).url, -1, -1);
+                imageView.setImageDrawable(new CenterDrawable(mContext,R.mipmap.image_loadding_icon));
+
             }
 
 
