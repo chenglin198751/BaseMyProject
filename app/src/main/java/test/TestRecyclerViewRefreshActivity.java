@@ -41,7 +41,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
             , "https://b-ssl.duitang.com/uploads/item/201411/24/20141124111818_tHQSz.thumb.700_0.gif"
             , "http://img.zcool.cn/community/014da7573bd4bd6ac7253f9aea065b.gif"
             , "http://www.95dm.com/a/pic/20151025/1-1505161500444V.gif",
-            "https://imgsa.baidu.com/forum/w%3D580/sign=8bf66bb9eaf81a4c2632ecc1e7286029/2456e6fb43166d22c88fcc59472309f79252d2b5.jpg"};
+            "http://www.95dm.com/a/pic/20151025/1-1505161500444V.gif"};
 
 
     @Override
