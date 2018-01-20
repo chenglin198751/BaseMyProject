@@ -37,6 +37,19 @@ public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 30;
     private static final String HTTP_CACHE_PATH = SDCardUtils.SDCARD_PATH + "httpCache" + File.separator;
+    private static final String HTTP_DOWNLOAD_PATH = SDCardUtils.SDCARD_PATH + "download" + File.separator;
+
+    static {
+        File cacheDir = new File(HTTP_CACHE_PATH);
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        }
+
+        File downloadDir = new File(HTTP_DOWNLOAD_PATH);
+        if (!downloadDir.exists()) {
+            downloadDir.mkdirs();
+        }
+    }
 
     private static final OkHttpClient.Builder builder = new OkHttpClient.Builder()
             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
@@ -273,11 +286,11 @@ public class HttpUtils {
             return;
         }
 
-        final String defaultFilePath = SDCardUtils.SDCARD_PATH + MyUtils.MD5(fileUrl) + getSuffixNameByHttpUrl(fileUrl);
+        final String defaultPath = HTTP_DOWNLOAD_PATH + MyUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
         if (isNeedCache) {
-            File existFile = new File(defaultFilePath);
-            if (existFile.exists()) {
-                downloadCallback.onSuccess(defaultFilePath);
+            File cacheFile = new File(defaultPath);
+            if (cacheFile.exists()) {
+                downloadCallback.onSuccess(defaultPath);
                 return;
             }
         }
@@ -304,7 +317,7 @@ public class HttpUtils {
 
             @Override
             public void onResponse(final Call call, Response response) {
-                final String filePath = TextUtils.isEmpty(fileDownloadPath) ? defaultFilePath : fileDownloadPath;
+                final String filePath = TextUtils.isEmpty(fileDownloadPath) ? defaultPath : fileDownloadPath;
 
                 InputStream inputStream = response.body().byteStream();
                 FileOutputStream fileOutputStream = null;
