@@ -1,5 +1,6 @@
 package utils;
 
+import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -35,9 +37,12 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
+import base.BaseActivity;
 import base.MyApplication;
 import bean.ApkItem;
+import widget.MyToast;
 
 public class MyUtils {
     private static Handler mHandler;
@@ -77,7 +82,8 @@ public class MyUtils {
      */
     public static boolean isTableExist(SQLiteDatabase db, String tableName) {
         boolean exist = false;
-        Cursor cursor = db.rawQuery("select name from sqlite_master where name = ?", new String[]{tableName});
+        String sql = "select name from sqlite_master where name = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{tableName});
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 exist = true;
@@ -144,8 +150,7 @@ public class MyUtils {
         view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
         view.setDrawingCacheEnabled(true);
-        Bitmap bitmap = view.getDrawingCache(true);
-        return bitmap;
+        return view.getDrawingCache(true);
     }
 
     /**
@@ -194,41 +199,6 @@ public class MyUtils {
         edit.clearFocus();
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
-    }
-
-    /**
-     * 四舍五入
-     */
-    public final static String siSheWuRu(String num) {
-        java.text.DecimalFormat df = new java.text.DecimalFormat("#");
-        return df.format(Float.parseFloat(num) / 100f);
-    }
-
-    /**
-     * 格式化数据，指定保留几位小数
-     */
-    public static String formatSize(long size, int flag) {
-        NumberFormat df = NumberFormat.getNumberInstance();
-        df.setMaximumFractionDigits(flag);
-
-        StringBuffer buffer = new StringBuffer();
-        if (size < 0) {
-            buffer.append(0);
-            buffer.append("B");
-        } else if (size < 1000) {
-            buffer.append(size);
-            buffer.append("B");
-        } else if (size < 1024000) {
-            buffer.append(df.format(((double) size) / 1024));
-            buffer.append("K");
-        } else if (size < 1048576000) {
-            buffer.append(df.format(((double) size) / 1048576));
-            buffer.append("M");
-        } else {
-            buffer.append(df.format(((double) size) / 1073741824));
-            buffer.append("G");
-        }
-        return buffer.toString();
     }
 
     /**
@@ -296,13 +266,48 @@ public class MyUtils {
         return b1.divide(b2, scale, BigDecimal.ROUND_HALF_DOWN).doubleValue();
     }
 
+
+    /**
+     * 格式化1024数据，指定保留几位小数
+     */
+    public static String format1024(long size, int flag) {
+        NumberFormat df = NumberFormat.getNumberInstance();
+        df.setMaximumFractionDigits(flag);
+
+        StringBuilder builder = new StringBuilder();
+        if (size < 0) {
+            builder.append(0);
+            builder.append("B");
+        } else if (size < 1000) {
+            builder.append(size);
+            builder.append("B");
+        } else if (size < 1024000) {
+            builder.append(df.format(((double) size) / 1024));
+            builder.append("K");
+        } else if (size < 1048576000) {
+            builder.append(df.format(((double) size) / 1048576));
+            builder.append("M");
+        } else {
+            builder.append(df.format(((double) size) / 1073741824));
+            builder.append("G");
+        }
+        return builder.toString();
+    }
+
     /**
      * 四舍五入保留指定位数的小数
      */
     public static double formatDouble(double d, int scale) {
         BigDecimal b = new BigDecimal(d);
-        double myNum3 = b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
-        return myNum3;
+        return b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    /**
+     * 四舍五入保留指定位数的小数
+     */
+    public static float formatFloat(float f, int scale) {
+        BigDecimal b = new BigDecimal(f);
+        return b.setScale(scale, BigDecimal.ROUND_HALF_UP).floatValue();
     }
 
 
@@ -398,9 +403,11 @@ public class MyUtils {
     public static String getDeviceId() {
         if (mStrImei == null) {
             try {
-                TelephonyManager telephonyManager = (TelephonyManager) MyApplication.getApp().getSystemService(Context.TELEPHONY_SERVICE);
-                mStrImei = telephonyManager.getDeviceId();
-                if (mStrImei == null || mStrImei.length() <= 0) {
+                if (ActivityCompat.checkSelfPermission(MyApplication.getApp(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                    TelephonyManager telephonyManager = (TelephonyManager) MyApplication.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+                    mStrImei = telephonyManager.getDeviceId();
+                }
+                if (TextUtils.isEmpty(mStrImei)) {
                     mStrImei = Settings.Secure.getString(MyApplication.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
                 }
             } catch (Exception e) {
@@ -498,6 +505,40 @@ public class MyUtils {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 根据包名打开别的应用
+     */
+    public static void startApp(BaseActivity context, String packageName) {
+        try {
+            if (isInstalledApp(context, packageName)) {
+                Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+                context.startActivity(LaunchIntent);
+            } else {
+                MyToast.show("你手机没安装此应用");
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            MyToast.show("你手机没安装此应用");
+        }
+    }
+
+    /**
+     * 是否安装了此应用
+     */
+    public static boolean isInstalledApp(Context context, String packageName) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<PackageInfo> pInfo = packageManager.getInstalledPackages(0);
+        if (pInfo != null) {
+            for (int i = 0; i < pInfo.size(); i++) {
+                String pn = pInfo.get(i).packageName;
+                if (pn.equals(packageName)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
