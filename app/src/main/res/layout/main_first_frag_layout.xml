@@ -8,14 +8,12 @@
     <Button
         android:id="@+id/button"
         android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="50dp" />
 
     <widget.LongImageView
         android:id="@+id/image_1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffcccc"
-        android:scaleType="centerInside" />
+        android:background="#ffcccc" />
 
 </LinearLayout>

@@ -176,9 +176,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 清除contentView里面的加载进度
+     * 清除嵌入式进度条
      */
     public final void hideProgress() {
+        clearLoadingView();
+    }
+
+    /**
+     * 清除contentView里面的加载进度
+     */
+    private void clearLoadingView() {
         if (mLoadingViewHelper != null) {
             mContentView.removeView(mLoadingViewHelper.getLoadingView());
             mLoadingViewHelper.removeShadowView(mBaseRootView);
@@ -192,6 +199,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     public final void showNoNetView() {
         addLoadView();
         mLoadingViewHelper.showNoNetView();
+    }
+
+    /**
+     * 清除没有网络的界面
+     */
+    public final void hideNoNetView() {
+        clearLoadingView();
     }
 
     /**
@@ -211,6 +225,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(text)) {
             mLoadingViewHelper.setEmptyText(text);
         }
+    }
+
+    /**
+     * 清除空数据的界面
+     */
+    public final void hideEmptyView() {
+        clearLoadingView();
     }
 
     private void addLoadView() {

@@ -33,7 +33,6 @@ public class MainFirstFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
-
             }
         });
     }
