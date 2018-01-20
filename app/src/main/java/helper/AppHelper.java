@@ -17,7 +17,7 @@ import utils.Constants;
  * Created by chenglin on 2017-5-24.
  */
 
-public class ApplicationHelper {
+public class AppHelper {
     private final static String PROCESS_NAME = "cheerly.mybaseproject";
 
     /**

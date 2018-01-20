@@ -10,9 +10,9 @@ BaseFragment里面的方法和和BaseActivity大体类似。所有的Fragment都
 **3、内建广播**：BaseActivity 里面我基于LocalManagerBroadcast 封装了一个广播，可以很方便的发广播接收广播，不需要注册，因为我自动帮你注册了。使用很方便，性能很高且资源消耗也很低。建议以后所有
 的异步消息传递都用这个，解耦性强。甚至startActivityForResult 都可以弃用，都统一使用内建广播传递消息。
 
-**4、MyApplication 类**：程序的入口，这里我把Application的Context 给持有了，获取的方法叫做getApp() 。切记，工程里凡是要用到Context的地方，都要引用MyApplication.getApp() 方法，以免造成内存泄漏
-。还有，这里面有一句话叫做mAppHelper.isAppMainProcess() ，是判断的主UI 进程的。因为Application的onCreate()有多少个进程就会执行多少次，而有些代码我们只需要在UI 进程执行，所以这里可以用上述
-方法判断。
+**4、MyApp 类**：程序的入口，这里我把Application的Context 给持有了，获取的方法叫做getApp() 。切记，工程里凡是要用到Context的地方，MyApp.getApp() 方法，以免造成内存泄漏。
+还有，这里面有一句话叫做AppHelper.isAppMainProcess() ，是判断的主UI 进程的。
+因为Application的onCreate()有多少个进程就会执行多少次，而有些代码我们只需要在UI 进程执行，所以这里可以用上述方法判断。
 
 **5、MyBaseAdapter 类**：对BaseAdapter简单的封装了下，统一了增加数据，删除数据的方法。不用大家每个adapter都要写增删数据的方法，使用也很简单。为了以后的维护方便，建议大家都使用这个作为
 baseAdapter 。
@@ -80,3 +80,7 @@ baseAdapter 。
 **35、CustomViewPagerIndicator 类**：自定义的ViewPager指示器
 
 **36、LongImageView 类**：自定义的用于显示长图的控件。基于WebView改造而来，性能卓越。
+
+**37、CenterDrawable 类**：自定义的可以居中显示一个小图片的类。比如可以用于设置一个图片的未显示图片之前的默认图。
+用法：imageView.setImageDrawable(new CenterDrawable(R.mipmap.image_loadding_icon))
+

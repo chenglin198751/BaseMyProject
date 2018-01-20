@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.tencent.smtt.sdk.QbSdk;
 
-import helper.ApplicationHelper;
+import helper.AppHelper;
 
 public class MyApp extends Application {
     private static MyApp application = null;
@@ -17,11 +17,11 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
-        ApplicationHelper.initPicasso();
-        ApplicationHelper.initGetDisplayMetrics(this);
+        AppHelper.initPicasso();
+        AppHelper.initGetDisplayMetrics(this);
 
         //只在应用主进程执行
-        if (ApplicationHelper.isAppMainProcess()) {
+        if (AppHelper.isAppMainProcess()) {
             QbSdk.initX5Environment(getApplicationContext(), null);
         }
 
