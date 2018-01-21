@@ -1,4 +1,4 @@
-package polygon.shapes;
+package view.polygon.shapes;
 
 /**
  * Paper Effect

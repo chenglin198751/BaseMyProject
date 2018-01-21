@@ -1,9 +1,9 @@
-package polygon.shapes;
+package view.polygon.shapes;
 
 
 import java.util.List;
 
-import polygon.GeometryUtil;
+import view.polygon.GeometryUtil;
 
 /**
  * Create a star shape

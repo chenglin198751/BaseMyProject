@@ -1,7 +1,7 @@
-package polygon.shapes;
+package view.polygon.shapes;
 
 /**
- * Regular polygon shape implementation
+ * Regular view.polygon shape implementation
  *
  */
 public class RegularPolygonShape extends BasePolygonShape {

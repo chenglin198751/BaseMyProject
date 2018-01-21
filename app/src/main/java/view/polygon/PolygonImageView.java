@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package polygon;
+package view.polygon;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -33,7 +33,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -41,15 +40,15 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import cheerly.mybaseproject.R;
-import polygon.shapes.PolygonShape;
-import polygon.shapes.PolygonShapeSpec;
-import polygon.shapes.RegularPolygonShape;
+import view.polygon.shapes.PolygonShape;
+import view.polygon.shapes.PolygonShapeSpec;
+import view.polygon.shapes.RegularPolygonShape;
 import view.WebImageView;
 
 
 /**
  * Construct a custom ImageView with a regular polygonal form.
- * The number of vertices determines the polygon form.
+ * The number of vertices determines the view.polygon form.
  * Special cases for vertex number are:
  * 0 -> Circle
  * 1 -> Regular ImageView
@@ -133,7 +132,7 @@ public class PolygonImageView extends WebImageView {
     }
 
     /**
-     * Gets incoming new canvas size and updates polygon form and image if needed.
+     * Gets incoming new canvas size and updates view.polygon form and image if needed.
      *
      * @param w    new Width
      * @param h    new Height
@@ -190,7 +189,7 @@ public class PolygonImageView extends WebImageView {
     }
 
     /**
-     * Draw the polygon form.
+     * Draw the view.polygon form.
      *
      * @param canvas main canvas
      */
@@ -339,7 +338,7 @@ public class PolygonImageView extends WebImageView {
     }
 
     /**
-     * Rebuild polygon after changes, take cares about padding, border and shadow radius.
+     * Rebuild view.polygon after changes, take cares about padding, border and shadow radius.
      * Rotate vertices with the variable angle.
      */
     private void rebuildPolygon() {
@@ -358,14 +357,14 @@ public class PolygonImageView extends WebImageView {
     }
 
     /**
-     * Update polygon size with unspecified padding.
+     * Update view.polygon size with unspecified padding.
      */
     private void updatePolygonSize() {
         updatePolygonSize(getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom());
     }
 
     /**
-     * Update polygon with new padding.
+     * Update view.polygon with new padding.
      *
      * @param l Left padding.
      * @param t Top padding.
@@ -381,7 +380,7 @@ public class PolygonImageView extends WebImageView {
         float xPadding = (l + r + (borderPadding * 2) + (shadowPadding * 2));
         float yPadding = (t + b + (borderPadding * 2) + (shadowPadding * 2));
         float diameter = Math.min((float) canvasWidth - xPadding, (float) canvasHeight - yPadding);
-        //if the size is changed we need to rebuild the polygon
+        //if the size is changed we need to rebuild the view.polygon
         if (diameter != mPolygonShapeSpec.getDiameter()) {
             mPolygonShapeSpec.setDiameter(diameter);
             rebuildPolygon();
@@ -428,7 +427,7 @@ public class PolygonImageView extends WebImageView {
     }
 
     /**
-     * Set new rotate angle and updates polygon form.
+     * Set new rotate angle and updates view.polygon form.
      *
      * @param mAngle angle in degrees.
      */
@@ -448,7 +447,7 @@ public class PolygonImageView extends WebImageView {
     }
 
     /**
-     * Sets the new vertex number and updates polygon form.
+     * Sets the new vertex number and updates view.polygon form.
      *
      * @param numVertices new number of vertices
      */
@@ -488,7 +487,7 @@ public class PolygonImageView extends WebImageView {
     }
 
     /**
-     * Sets new border width and update polygon size.
+     * Sets new border width and update view.polygon size.
      */
     private void updateBorderSpecs() {
         if (mPolygonShapeSpec.hasBorder()) {

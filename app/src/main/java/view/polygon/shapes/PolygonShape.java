@@ -1,9 +1,9 @@
-package polygon.shapes;
+package view.polygon.shapes;
 
 import android.graphics.Path;
 
 /**
- * Interface for set a custom polygon shape
+ * Interface for set a custom view.polygon shape
  */
 public interface PolygonShape {
 

@@ -1,4 +1,4 @@
-package zoomphoto;
+package view.zoomphoto;
 
 import android.view.View;
 

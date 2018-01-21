@@ -1,4 +1,4 @@
-package polygon.shapes;
+package view.polygon.shapes;
 
 import android.graphics.Color;
 

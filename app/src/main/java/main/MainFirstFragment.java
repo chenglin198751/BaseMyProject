@@ -26,8 +26,8 @@ public class MainFirstFragment extends BaseFragment {
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-        webImageView = (WebImageView) view.findViewById(R.id.image_1);
-        webImageView.load(url, -1, -1);
+//        webImageView = (WebImageView) view.findViewById(R.id.image_1);
+//        webImageView.load(url, -1, -1);
 
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override

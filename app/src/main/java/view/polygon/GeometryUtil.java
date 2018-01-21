@@ -1,4 +1,4 @@
-package polygon;
+package view.polygon;
 
 import java.util.Arrays;
 import java.util.Collections;
