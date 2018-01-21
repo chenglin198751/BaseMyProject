@@ -71,6 +71,29 @@ public class WebImageView extends ImageView {
         return requestCreator;
     }
 
+
+    /**
+     * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
+     * 支持 gif 格式的图片，但是前提后缀名是.gif 才能解析
+     * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
+     */
+    public void load(Object object, int imageWidth, int imageHeight) {
+        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
+        if (object == null) {
+            setImageDrawable(centerDrawable);
+            return;
+        }
+        setTag(R.id.web_image_id, object);
+
+        if (isGif(object)) {
+            setImageDrawable(centerDrawable);
+            setGifDrawable((String) object);
+            return;
+        }
+
+        loadRound(object, imageWidth, imageHeight, CenterDrawable.RECTANGLE);
+    }
+
     /**
      * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
      * 如果 radius <0 ,那么就是纯圆圈的图片;
@@ -99,28 +122,6 @@ public class WebImageView extends ImageView {
         } else {
             setImageDrawable(centerDrawable);
         }
-    }
-
-    /**
-     * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
-     * 支持 gif 格式的图片，但是前提后缀名是.gif 才能解析
-     * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
-     */
-    public void load(Object object, int imageWidth, int imageHeight) {
-        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
-        if (object == null) {
-            setImageDrawable(centerDrawable);
-            return;
-        }
-        setTag(R.id.web_image_id, object);
-
-        if (isGif(object)) {
-            setImageDrawable(centerDrawable);
-            setGifDrawable((String) object);
-            return;
-        }
-
-        loadRound(object, imageWidth, imageHeight, CenterDrawable.RECTANGLE);
     }
 
     private boolean isGif(Object object) {
