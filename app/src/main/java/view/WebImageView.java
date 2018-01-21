@@ -78,7 +78,17 @@ public class WebImageView extends ImageView {
      * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      */
     public void load(Object object, int imageWidth, int imageHeight) {
-        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
+        loadRound(object, imageWidth, imageHeight, CenterDrawable.RECTANGLE);
+    }
+
+    /**
+     * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
+     * 如果 radius <0 ,那么就是纯圆圈的图片;
+     * 如果 radius >0 是圆角
+     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
+     */
+    public void loadRound(Object object, int imageWidth, int imageHeight, int radius) {
+        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius);
         if (object == null) {
             setImageDrawable(centerDrawable);
             return;
@@ -91,19 +101,7 @@ public class WebImageView extends ImageView {
             return;
         }
 
-        loadRound(object, imageWidth, imageHeight, CenterDrawable.RECTANGLE);
-    }
-
-    /**
-     * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
-     * 如果 radius <0 ,那么就是纯圆圈的图片;
-     * 如果 radius >0 是圆角
-     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
-     */
-    public void loadRound(Object object, int imageWidth, int imageHeight, int radius) {
-        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius);
         RequestCreator requestCreator = getRequestCreator(object);
-
         if (requestCreator != null) {
             requestCreator = requestCreator
                     .placeholder(centerDrawable)
