@@ -88,3 +88,11 @@ baseAdapter 。
 **38、PolygonImageView 类**：github 地址：https://github.com/AlbertGrobas/PolygonImageView
 一个实现多边形的ImageView 类。四边形，五边形，六边形。另外还有星星，撕纸形状等，还可以自定义形状。
 
+**39、RoundImageView 类**：一个可以实现圆形图片、圆角图片的类。github 地址：https://github.com/vinc3m1/RoundedImageView
+app:riv_corner_radius="30dip" 圆角的角度
+app:riv_border_width="2dip" 图片边框的宽度
+app:riv_border_color="#333333" 图片边框的颜色
+app:riv_mutate_background="false" 是否需要显示控件的背景色，默认是显示
+app:riv_oval="true" 是否展示为圆形，如果true ，那么riv_corner_radius 不生效
+
+

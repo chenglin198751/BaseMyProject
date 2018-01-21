@@ -11,5 +11,13 @@
         android:layout_width="200dp"
         android:layout_height="50dp" />
 
-
+    <view.round.RoundImageView
+        android:id="@+id/imageView1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@mipmap/cat07"
+        app:riv_border_color="@color/line"
+        app:riv_border_width="1px"
+        app:riv_corner_radius="5dip"
+        app:riv_oval="true" />
 </LinearLayout>
