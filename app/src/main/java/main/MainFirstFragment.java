@@ -7,17 +7,17 @@ import android.view.View;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import test.TestRecyclerViewRefreshActivity;
-import utils.Constants;
-import utils.MyUtils;
-import widget.LongImageView;
+import view.WebImageView;
+import widget.MyDialog;
+import widget.MyWebViewActivity;
 
 /**
  * Created by chenglin on 2017-9-14.
  */
 
 public class MainFirstFragment extends BaseFragment {
-    private LongImageView imageView;
-    private final static String url = "https://b-ssl.duitang.com/uploads/item/201409/20/20140920230643_8tij8.png";
+    private WebImageView webImageView;
+    private final static String url = "http://img.zcool.cn/community/01bd32573bd4c432f8757cb9341633.gif";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,13 +26,13 @@ public class MainFirstFragment extends BaseFragment {
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-        imageView = (LongImageView) view.findViewById(R.id.image_1);
-        imageView.load(url, Constants.screenWidth);
+        webImageView = (WebImageView) view.findViewById(R.id.image_1);
+        webImageView.load(url, -1, -1);
 
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
+                startActivity(new Intent(getContext(),TestRecyclerViewRefreshActivity.class));
             }
         });
     }

@@ -3,12 +3,16 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
-    android:orientation="vertical"
-    android:paddingBottom="1dp">
+    android:orientation="vertical">
 
-    <view.WebImageView
+    <view.KeepScaleImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:background="#fdc" />
+        android:layout_height="250dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/image_view"
+        android:background="@color/line" />
 </RelativeLayout>

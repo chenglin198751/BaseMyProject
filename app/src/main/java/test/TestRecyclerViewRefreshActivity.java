@@ -16,7 +16,9 @@ import base.BaseRecyclerViewAdapter;
 import base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
 import pullrefresh.PullToRefresh;
+import utils.Constants;
 import view.CenterDrawable;
+import view.KeepScaleImageView;
 import view.WebImageView;
 
 /**
@@ -128,16 +130,16 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         class ListHolder extends BaseRecyclerViewHolder {
-            WebImageView imageView;
+            KeepScaleImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
-                imageView = (WebImageView) itemView.findViewById(R.id.image_view);
+                imageView = (KeepScaleImageView) itemView.findViewById(R.id.image_view);
+                imageView.setWidth(Constants.screenWidth);
             }
 
             public void setData(int position) {
-//                imageView.load(getData().get(position).url, -1, -1);
-                imageView.setImageDrawable(new CenterDrawable(R.mipmap.image_loadding_icon));
+                imageView.load(getData().get(position).url, -1, -1);
 
             }
 
