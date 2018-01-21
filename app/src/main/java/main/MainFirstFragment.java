@@ -7,6 +7,8 @@ import android.view.View;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import test.TestRecyclerViewRefreshActivity;
+import utils.MyUtils;
+import view.CenterDrawable;
 import view.WebImageView;
 import widget.MyDialog;
 import widget.MyWebViewActivity;
@@ -17,7 +19,7 @@ import widget.MyWebViewActivity;
 
 public class MainFirstFragment extends BaseFragment {
     private WebImageView webImageView;
-    private final static String url = "http://img.zcool.cn/community/01bd32573bd4c432f8757cb9341633.gif";
+    private final static String url = "http://5b0988e595225.cdn.sohucs.com/images/20170922/c7e95cf930a64a27b616e8c77525645b.jpeg";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,8 +28,8 @@ public class MainFirstFragment extends BaseFragment {
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-//        webImageView = (WebImageView) view.findViewById(R.id.image_1);
-//        webImageView.load(url, -1, -1);
+        webImageView = (WebImageView) view.findViewById(R.id.imageView1);
+        webImageView.load(url, -1,-1);
 
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
