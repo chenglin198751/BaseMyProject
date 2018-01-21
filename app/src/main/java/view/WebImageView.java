@@ -81,10 +81,10 @@ public class WebImageView extends ImageView {
             return;
         }
         setTag(R.id.web_image_id, object);
-        CenterDrawable centerDrawable = new CenterDrawable(R.mipmap.image_loadding_icon);
-        setImageDrawable(centerDrawable);
+        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
 
         if (isGif(object)) {
+            setImageDrawable(centerDrawable);
             setGifDrawable((String) object);
             return;
         }
@@ -92,9 +92,16 @@ public class WebImageView extends ImageView {
         RequestCreator requestCreator = getRequestCreator(object);
         if (requestCreator != null) {
             if (imageWidth > 0 && imageHeight > 0) {
-                requestCreator.resize(imageWidth, imageHeight).centerCrop().into(this);
+                requestCreator
+                        .resize(imageWidth, imageHeight)
+                        .placeholder(centerDrawable)
+                        .error(centerDrawable)
+                        .centerCrop().into(this);
             } else {
-                requestCreator.into(this);
+                requestCreator
+                        .placeholder(centerDrawable)
+                        .error(centerDrawable)
+                        .into(this);
             }
         }
     }
@@ -165,14 +172,28 @@ public class WebImageView extends ImageView {
     }
 
     /**
-     * 加载图片使其变为圆角或者圆形，radius单位是dp. 如果 radius <=0 ,那么就是圆形的图片，否则是圆角
+     * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
+     * 如果 radius <0 ,那么就是纯圆圈的图片;
+     * 如果 radius >0 是圆角
+     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
      */
     public void loadRound(Object object, int imageWidth, int imageHeight, int radius) {
+        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius);
+
         RequestCreator requestCreator = getRequestCreator(object);
         if (requestCreator != null) {
             if (imageWidth > 0 && imageHeight > 0) {
-                requestCreator.resize(imageWidth, imageHeight)
+                requestCreator
+                        .resize(imageWidth, imageHeight)
                         .centerCrop()
+                        .placeholder(centerDrawable)
+                        .error(centerDrawable)
+                        .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
+                        .into(this);
+            } else {
+                requestCreator
+                        .placeholder(centerDrawable)
+                        .error(centerDrawable)
                         .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
                         .into(this);
             }
