@@ -12,6 +12,7 @@ import base.MyApp;
 import cheerly.mybaseproject.R;
 
 public class CenterDrawable extends Drawable {
+    public final static int RECTANGLE = -1009;//直角
     private Drawable mDrawable;
     private Paint mPaint = new Paint();
     private RectF mRectF;
@@ -26,10 +27,14 @@ public class CenterDrawable extends Drawable {
 
     public CenterDrawable(@DrawableRes int resId, float radius) {
         super();
-        if (radius > 0) {
-            mRadius = radius;
-        } else if (radius < 0) {
-            mRadius = 1000;
+        if (radius != RECTANGLE) {
+            if (radius > 0) {
+                mRadius = radius;
+            } else if (radius < 0) {
+                mRadius = 1000;
+            }
+        } else {
+            mRadius = 0;
         }
         mDrawable = MyApp.getApp().getResources().getDrawable(resId);
         mPaint.setColor(MyApp.getApp().getResources().getColor(R.color.image_bg));
