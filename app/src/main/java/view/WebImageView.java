@@ -77,13 +77,14 @@ public class WebImageView extends ImageView {
      * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      */
     public void load(Object object, int imageWidth, int imageHeight) {
+        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
         if (object == null) {
+            setImageDrawable(centerDrawable);
             return;
         }
         setTag(R.id.web_image_id, object);
 
         if (isGif(object)) {
-            CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
             setImageDrawable(centerDrawable);
             setGifDrawable((String) object);
             return;
