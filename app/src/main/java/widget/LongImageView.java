@@ -67,6 +67,18 @@ public class LongImageView extends WebView {
      * @param showWidth 当前控件显示的宽度
      */
     public void load(final String url, final int showWidth) {
+        load(url, showWidth, null);
+    }
+
+    /**
+     * 加载长图，是利用WebView实现的。
+     * 一定要设置此控件的宽度，如果不设置，默认就是屏幕宽度
+     *
+     * @param url          网络图片URL
+     * @param showWidth    当前控件显示的宽度
+     * @param httpCallback 下载监听
+     */
+    public void load(final String url, final int showWidth, final HttpDownloadCallback httpCallback) {
         if (TextUtils.isEmpty(url)) {
             return;
         }
@@ -81,16 +93,23 @@ public class LongImageView extends WebView {
                     return;
                 }
                 load(new File(filePath), showWidth);
+                if (httpCallback != null) {
+                    httpCallback.onSuccess(filePath);
+                }
             }
 
             @Override
             public void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent) {
-
+                if (httpCallback != null) {
+                    httpCallback.onProgress(call, fileTotalSize, fileDowningSize, percent);
+                }
             }
 
             @Override
             public void onFailure(IOException e) {
-
+                if (httpCallback != null) {
+                    httpCallback.onFailure(e);
+                }
             }
         });
 
