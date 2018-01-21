@@ -81,29 +81,15 @@ public class WebImageView extends ImageView {
             return;
         }
         setTag(R.id.web_image_id, object);
-        CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
 
         if (isGif(object)) {
+            CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon);
             setImageDrawable(centerDrawable);
             setGifDrawable((String) object);
             return;
         }
 
-        RequestCreator requestCreator = getRequestCreator(object);
-        if (requestCreator != null) {
-            if (imageWidth > 0 && imageHeight > 0) {
-                requestCreator
-                        .resize(imageWidth, imageHeight)
-                        .placeholder(centerDrawable)
-                        .error(centerDrawable)
-                        .centerCrop().into(this);
-            } else {
-                requestCreator
-                        .placeholder(centerDrawable)
-                        .error(centerDrawable)
-                        .into(this);
-            }
-        }
+        loadRound(object, imageWidth, imageHeight, CenterDrawable.RECTANGLE);
     }
 
     private boolean isGif(Object object) {
@@ -179,24 +165,23 @@ public class WebImageView extends ImageView {
      */
     public void loadRound(Object object, int imageWidth, int imageHeight, int radius) {
         CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius);
-
         RequestCreator requestCreator = getRequestCreator(object);
+
         if (requestCreator != null) {
+            requestCreator = requestCreator
+                    .placeholder(centerDrawable)
+                    .error(centerDrawable);
+
             if (imageWidth > 0 && imageHeight > 0) {
-                requestCreator
+                requestCreator = requestCreator
                         .resize(imageWidth, imageHeight)
-                        .centerCrop()
-                        .placeholder(centerDrawable)
-                        .error(centerDrawable)
-                        .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
-                        .into(this);
-            } else {
-                requestCreator
-                        .placeholder(centerDrawable)
-                        .error(centerDrawable)
-                        .transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius))
-                        .into(this);
+                        .centerCrop();
             }
+
+            if (radius != CenterDrawable.RECTANGLE) {
+                requestCreator = requestCreator.transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius));
+            }
+            requestCreator.into(this);
         }
     }
 
