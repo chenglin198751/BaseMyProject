@@ -183,6 +183,8 @@ public class WebImageView extends ImageView {
                 requestCreator = requestCreator.transform(radius <= 0 ? mPicassoCircleTransform : new PicassoRoundTransform(radius, radius));
             }
             requestCreator.into(this);
+        } else {
+            setImageDrawable(centerDrawable);
         }
     }
 
