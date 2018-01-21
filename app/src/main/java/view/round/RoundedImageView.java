@@ -33,11 +33,10 @@ import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.makeramen.roundedimageview.RoundedDrawable;
-
+import cheerly.mybaseproject.R;
 import view.WebImageView;
 
-public class RoundImageView extends WebImageView {
+public class RoundedImageView extends WebImageView {
 
     // Constants for tile mode attributes
     private static final int TILE_MODE_UNDEFINED = -2;
@@ -65,7 +64,7 @@ public class RoundImageView extends WebImageView {
 
     private Drawable mBackgroundDrawable;
     private ColorStateList mBorderColor =
-            ColorStateList.valueOf(com.makeramen.roundedimageview.RoundedDrawable.DEFAULT_BORDER_COLOR);
+            ColorStateList.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
     private float mBorderWidth = DEFAULT_BORDER_WIDTH;
     private ColorFilter mColorFilter = null;
     private boolean mColorMod = false;
@@ -79,20 +78,20 @@ public class RoundImageView extends WebImageView {
     private Shader.TileMode mTileModeX = DEFAULT_TILE_MODE;
     private Shader.TileMode mTileModeY = DEFAULT_TILE_MODE;
 
-    public RoundImageView(Context context) {
+    public RoundedImageView(Context context) {
         super(context);
     }
 
-    public RoundImageView(Context context, AttributeSet attrs) {
+    public RoundedImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RoundImageView(Context context, AttributeSet attrs, int defStyle) {
+    public RoundedImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, com.makeramen.roundedimageview.R.styleable.RoundedImageView, defStyle, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RoundedImageView, defStyle, 0);
 
-        int index = a.getInt(com.makeramen.roundedimageview.R.styleable.RoundedImageView_android_scaleType, -1);
+        int index = a.getInt(R.styleable.RoundedImageView_android_scaleType, -1);
         if (index >= 0) {
             setScaleType(SCALE_TYPES[index]);
         } else {
@@ -101,16 +100,16 @@ public class RoundImageView extends WebImageView {
         }
 
         float cornerRadiusOverride =
-                a.getDimensionPixelSize(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_corner_radius, -1);
+                a.getDimensionPixelSize(R.styleable.RoundedImageView_riv_corner_radius, -1);
 
-        mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_LEFT] =
-                a.getDimensionPixelSize(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_corner_radius_top_left, -1);
-        mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_RIGHT] =
-                a.getDimensionPixelSize(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_corner_radius_top_right, -1);
-        mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_RIGHT] =
-                a.getDimensionPixelSize(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_corner_radius_bottom_right, -1);
-        mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_LEFT] =
-                a.getDimensionPixelSize(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_corner_radius_bottom_left, -1);
+        mCornerRadii[RoundedCorner.TOP_LEFT] =
+                a.getDimensionPixelSize(R.styleable.RoundedImageView_riv_corner_radius_top_left, -1);
+        mCornerRadii[RoundedCorner.TOP_RIGHT] =
+                a.getDimensionPixelSize(R.styleable.RoundedImageView_riv_corner_radius_top_right, -1);
+        mCornerRadii[RoundedCorner.BOTTOM_RIGHT] =
+                a.getDimensionPixelSize(R.styleable.RoundedImageView_riv_corner_radius_bottom_right, -1);
+        mCornerRadii[RoundedCorner.BOTTOM_LEFT] =
+                a.getDimensionPixelSize(R.styleable.RoundedImageView_riv_corner_radius_bottom_left, -1);
 
         boolean any = false;
         for (int i = 0, len = mCornerRadii.length; i < len; i++) {
@@ -130,33 +129,33 @@ public class RoundImageView extends WebImageView {
             }
         }
 
-        mBorderWidth = a.getDimensionPixelSize(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_border_width, -1);
+        mBorderWidth = a.getDimensionPixelSize(R.styleable.RoundedImageView_riv_border_width, -1);
         if (mBorderWidth < 0) {
             mBorderWidth = DEFAULT_BORDER_WIDTH;
         }
 
-        mBorderColor = a.getColorStateList(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_border_color);
+        mBorderColor = a.getColorStateList(R.styleable.RoundedImageView_riv_border_color);
         if (mBorderColor == null) {
-            mBorderColor = ColorStateList.valueOf(com.makeramen.roundedimageview.RoundedDrawable.DEFAULT_BORDER_COLOR);
+            mBorderColor = ColorStateList.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
         }
 
-        mMutateBackground = a.getBoolean(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_mutate_background, false);
-        mIsOval = a.getBoolean(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_oval, false);
+        mMutateBackground = a.getBoolean(R.styleable.RoundedImageView_riv_mutate_background, false);
+        mIsOval = a.getBoolean(R.styleable.RoundedImageView_riv_oval, false);
 
-        final int tileMode = a.getInt(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_tile_mode, TILE_MODE_UNDEFINED);
+        final int tileMode = a.getInt(R.styleable.RoundedImageView_riv_tile_mode, TILE_MODE_UNDEFINED);
         if (tileMode != TILE_MODE_UNDEFINED) {
             setTileModeX(parseTileMode(tileMode));
             setTileModeY(parseTileMode(tileMode));
         }
 
         final int tileModeX =
-                a.getInt(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_tile_mode_x, TILE_MODE_UNDEFINED);
+                a.getInt(R.styleable.RoundedImageView_riv_tile_mode_x, TILE_MODE_UNDEFINED);
         if (tileModeX != TILE_MODE_UNDEFINED) {
             setTileModeX(parseTileMode(tileModeX));
         }
 
         final int tileModeY =
-                a.getInt(com.makeramen.roundedimageview.R.styleable.RoundedImageView_riv_tile_mode_y, TILE_MODE_UNDEFINED);
+                a.getInt(R.styleable.RoundedImageView_riv_tile_mode_y, TILE_MODE_UNDEFINED);
         if (tileModeY != TILE_MODE_UNDEFINED) {
             setTileModeY(parseTileMode(tileModeY));
         }
@@ -227,7 +226,7 @@ public class RoundImageView extends WebImageView {
     @Override
     public void setImageDrawable(Drawable drawable) {
         mResource = 0;
-        mDrawable = com.makeramen.roundedimageview.RoundedDrawable.fromDrawable(drawable);
+        mDrawable = RoundedDrawable.fromDrawable(drawable);
         updateDrawableAttrs();
         super.setImageDrawable(mDrawable);
     }
@@ -235,7 +234,7 @@ public class RoundImageView extends WebImageView {
     @Override
     public void setImageBitmap(Bitmap bm) {
         mResource = 0;
-        mDrawable = com.makeramen.roundedimageview.RoundedDrawable.fromBitmap(bm);
+        mDrawable = RoundedDrawable.fromBitmap(bm);
         updateDrawableAttrs();
         super.setImageDrawable(mDrawable);
     }
@@ -273,7 +272,7 @@ public class RoundImageView extends WebImageView {
                 mResource = 0;
             }
         }
-        return com.makeramen.roundedimageview.RoundedDrawable.fromDrawable(d);
+        return RoundedDrawable.fromDrawable(d);
     }
 
     @Override
@@ -313,7 +312,7 @@ public class RoundImageView extends WebImageView {
                 mBackgroundResource = 0;
             }
         }
-        return com.makeramen.roundedimageview.RoundedDrawable.fromDrawable(d);
+        return RoundedDrawable.fromDrawable(d);
     }
 
     private void updateDrawableAttrs() {
@@ -323,7 +322,7 @@ public class RoundImageView extends WebImageView {
     private void updateBackgroundDrawableAttrs(boolean convert) {
         if (mMutateBackground) {
             if (convert) {
-                mBackgroundDrawable = com.makeramen.roundedimageview.RoundedDrawable.fromDrawable(mBackgroundDrawable);
+                mBackgroundDrawable = RoundedDrawable.fromDrawable(mBackgroundDrawable);
             }
             updateAttrs(mBackgroundDrawable, ScaleType.FIT_XY);
         }
@@ -360,8 +359,8 @@ public class RoundImageView extends WebImageView {
             return;
         }
 
-        if (drawable instanceof com.makeramen.roundedimageview.RoundedDrawable) {
-            ((com.makeramen.roundedimageview.RoundedDrawable) drawable)
+        if (drawable instanceof RoundedDrawable) {
+            ((RoundedDrawable) drawable)
                     .setScaleType(scaleType)
                     .setBorderWidth(mBorderWidth)
                     .setBorderColor(mBorderColor)
@@ -370,11 +369,11 @@ public class RoundImageView extends WebImageView {
                     .setTileModeY(mTileModeY);
 
             if (mCornerRadii != null) {
-                ((com.makeramen.roundedimageview.RoundedDrawable) drawable).setCornerRadius(
-                        mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_LEFT],
-                        mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_RIGHT],
-                        mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_RIGHT],
-                        mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_LEFT]);
+                ((RoundedDrawable) drawable).setCornerRadius(
+                        mCornerRadii[RoundedCorner.TOP_LEFT],
+                        mCornerRadii[RoundedCorner.TOP_RIGHT],
+                        mCornerRadii[RoundedCorner.BOTTOM_RIGHT],
+                        mCornerRadii[RoundedCorner.BOTTOM_LEFT]);
             }
 
             applyColorMod();
@@ -420,7 +419,7 @@ public class RoundImageView extends WebImageView {
      * @param corner the corner.
      * @return the radius.
      */
-    public float getCornerRadius(@com.makeramen.roundedimageview.Corner int corner) {
+    public float getCornerRadius(@RoundedCorner int corner) {
         return mCornerRadii[corner];
     }
 
@@ -440,7 +439,7 @@ public class RoundImageView extends WebImageView {
      * @param corner the corner to set.
      * @param resId  the dimension resource id of the corner radius.
      */
-    public void setCornerRadiusDimen(@com.makeramen.roundedimageview.Corner int corner, @DimenRes int resId) {
+    public void setCornerRadiusDimen(@RoundedCorner int corner, @DimenRes int resId) {
         setCornerRadius(corner, getResources().getDimensionPixelSize(resId));
     }
 
@@ -459,7 +458,7 @@ public class RoundImageView extends WebImageView {
      * @param corner the corner to set.
      * @param radius the corner radius to set in px.
      */
-    public void setCornerRadius(@com.makeramen.roundedimageview.Corner int corner, float radius) {
+    public void setCornerRadius(@RoundedCorner int corner, float radius) {
         if (mCornerRadii[corner] == radius) {
             return;
         }
@@ -480,17 +479,17 @@ public class RoundImageView extends WebImageView {
      * @param bottomLeft  radius of the bottom left corner in px.
      */
     public void setCornerRadius(float topLeft, float topRight, float bottomLeft, float bottomRight) {
-        if (mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_LEFT] == topLeft
-                && mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_RIGHT] == topRight
-                && mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_RIGHT] == bottomRight
-                && mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_LEFT] == bottomLeft) {
+        if (mCornerRadii[RoundedCorner.TOP_LEFT] == topLeft
+                && mCornerRadii[RoundedCorner.TOP_RIGHT] == topRight
+                && mCornerRadii[RoundedCorner.BOTTOM_RIGHT] == bottomRight
+                && mCornerRadii[RoundedCorner.BOTTOM_LEFT] == bottomLeft) {
             return;
         }
 
-        mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_LEFT] = topLeft;
-        mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_RIGHT] = topRight;
-        mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_LEFT] = bottomLeft;
-        mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_RIGHT] = bottomRight;
+        mCornerRadii[RoundedCorner.TOP_LEFT] = topLeft;
+        mCornerRadii[RoundedCorner.TOP_RIGHT] = topRight;
+        mCornerRadii[RoundedCorner.BOTTOM_LEFT] = bottomLeft;
+        mCornerRadii[RoundedCorner.BOTTOM_RIGHT] = bottomRight;
 
         updateDrawableAttrs();
         updateBackgroundDrawableAttrs(false);
@@ -547,7 +546,7 @@ public class RoundImageView extends WebImageView {
      * Return true if this view should be oval and always set corner radii to half the height or
      * width.
      *
-     * @return if this {@link RoundImageView} is set to oval.
+     * @return if this {@link RoundedImageView} is set to oval.
      */
     public boolean isOval() {
         return mIsOval;
@@ -557,7 +556,7 @@ public class RoundImageView extends WebImageView {
      * Set if the drawable should ignore the corner radii set and always round the source to
      * exactly half the height or width.
      *
-     * @param oval if this {@link RoundImageView} should be oval.
+     * @param oval if this {@link RoundedImageView} should be oval.
      */
     public void setOval(boolean oval) {
         mIsOval = oval;
@@ -607,7 +606,7 @@ public class RoundImageView extends WebImageView {
     }
 
     /**
-     * Set whether the {@link RoundImageView} should round the background drawable according to
+     * Set whether the {@link RoundedImageView} should round the background drawable according to
      * the settings in addition to the source drawable.
      *
      * @param mutate true if this view should mutate the background drawable.

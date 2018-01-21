@@ -24,7 +24,7 @@
         <attr name="polygonImageViewStyle" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="RoundImageView">
+    <declare-styleable name="RoundedImageView">
         <attr name="riv_corner_radius" format="dimension" />
         <attr name="riv_corner_radius_top_left" format="dimension" />
         <attr name="riv_corner_radius_top_right" format="dimension" />

@@ -23,8 +23,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.ImageView;
 
-import com.makeramen.roundedimageview.*;
-import com.makeramen.roundedimageview.RoundedDrawable;
 import com.squareup.picasso.Transformation;
 import java.util.Arrays;
 
@@ -37,7 +35,7 @@ public final class RoundedTransformationBuilder {
   private boolean mOval = false;
   private float mBorderWidth = 0;
   private ColorStateList mBorderColor =
-      ColorStateList.valueOf(com.makeramen.roundedimageview.RoundedDrawable.DEFAULT_BORDER_COLOR);
+      ColorStateList.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
   private ImageView.ScaleType mScaleType = ImageView.ScaleType.FIT_CENTER;
 
   public RoundedTransformationBuilder() {
@@ -56,10 +54,10 @@ public final class RoundedTransformationBuilder {
    * @return the builder for chaining.
    */
   public RoundedTransformationBuilder cornerRadius(float radius) {
-    mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_LEFT] = radius;
-    mCornerRadii[com.makeramen.roundedimageview.Corner.TOP_RIGHT] = radius;
-    mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_RIGHT] = radius;
-    mCornerRadii[com.makeramen.roundedimageview.Corner.BOTTOM_LEFT] = radius;
+    mCornerRadii[RoundedCorner.TOP_LEFT] = radius;
+    mCornerRadii[RoundedCorner.TOP_RIGHT] = radius;
+    mCornerRadii[RoundedCorner.BOTTOM_RIGHT] = radius;
+    mCornerRadii[RoundedCorner.BOTTOM_LEFT] = radius;
     return this;
   }
 
@@ -70,7 +68,7 @@ public final class RoundedTransformationBuilder {
    * @param radius the radius in px.
    * @return the builder for chaning.
    */
-  public RoundedTransformationBuilder cornerRadius(@com.makeramen.roundedimageview.Corner int corner, float radius) {
+  public RoundedTransformationBuilder cornerRadius(@RoundedCorner int corner, float radius) {
     mCornerRadii[corner] = radius;
     return this;
   }
@@ -93,7 +91,7 @@ public final class RoundedTransformationBuilder {
    * @param radius the radius in density independent pixels.
    * @return the builder for chaining.
    */
-  public RoundedTransformationBuilder cornerRadiusDp(@com.makeramen.roundedimageview.Corner int corner, float radius) {
+  public RoundedTransformationBuilder cornerRadiusDp(@RoundedCorner int corner, float radius) {
     return cornerRadius(corner,
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, radius, mDisplayMetrics));
   }

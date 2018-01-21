@@ -37,5 +37,4 @@ dependencies {
     compile 'com.android.support:design:25.4.0'
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     compile 'com.youth.banner:banner:1.4.10'
-    compile 'com.makeramen:roundedimageview:2.3.0'
 }
