@@ -9,8 +9,11 @@ import base.BaseActivity;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import helper.ShowFragmentHelper;
+import widget.MyToast;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
+    private static int TIME_LONG = 3 * 1000;//用户重复按返回键，检测是否真正要退出应用的时间间隔
+    private long mLastTime = 0;//检测用户重复按返回键的辅助变量
     public static final int TAB_FIRST = 0;
     public static final int TAB_SECOND = 1;
     public static final int TAB_THIRD = 2;
@@ -83,6 +86,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        long exitTime = System.currentTimeMillis();
+        if (exitTime - mLastTime < TIME_LONG) {
+            super.onBackPressed();
+        } else {
+            MyToast.show(getString(R.string.quit_alert));
+            mLastTime = exitTime;
+        }
     }
 
     @Override

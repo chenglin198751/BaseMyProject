@@ -9,6 +9,7 @@
     <string name="host_third_tab">流行</string>
     <string name="host_fourth_tab">我的</string>
 
+    <string name="quit_alert">再按一次返回键退出</string>
     <string name="publish_no_photo">无相册</string>
     <string name="publish_camera_open_error">打开相机失败,请检查是否开了启相机权限</string>
     <string name="publish_max_selected_photo_limit">最多选择X张图片~</string>
