@@ -81,6 +81,8 @@ public class WebImageView extends ImageView {
             return;
         }
         setTag(R.id.web_image_id, object);
+        CenterDrawable centerDrawable = new CenterDrawable(R.mipmap.image_loadding_icon);
+        setImageDrawable(centerDrawable);
 
         if (isGif(object)) {
             setGifDrawable((String) object);
@@ -108,7 +110,6 @@ public class WebImageView extends ImageView {
     }
 
     private void setGifDrawable(String url) {
-        setImageDrawable(null);
         String key = buildKey(url);
         if (GifCacheUtils.get(key) != null) {
             setImageDrawable(GifCacheUtils.get(key));
