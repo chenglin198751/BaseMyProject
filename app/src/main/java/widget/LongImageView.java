@@ -21,6 +21,7 @@ import utils.BitmapUtils;
  */
 
 public class LongImageView extends WebView {
+    private boolean isDestroy = false;
 
     public LongImageView(Context context) {
         super(context);
@@ -124,16 +125,25 @@ public class LongImageView extends WebView {
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        isDestroy = false;
+    }
+
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        try {
-            loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-            clearHistory();
-            ((ViewGroup) getParent()).removeView(this);
-            destroy();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!isDestroy) {
+            isDestroy = true;
+            try {
+                loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+                clearHistory();
+                ((ViewGroup) getParent()).removeView(this);
+                destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
