@@ -39,6 +39,7 @@ public class CenterDrawable extends Drawable {
         mDrawable = MyApp.getApp().getResources().getDrawable(resId);
         mPaint.setColor(MyApp.getApp().getResources().getColor(R.color.image_bg));
         mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setAntiAlias(true);
     }
 
     @Override
