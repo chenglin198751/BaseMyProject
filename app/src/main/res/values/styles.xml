@@ -17,6 +17,28 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <!-- 从下方弹出的对话框
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    Window window = this.getWindow();
+    window.getDecorView().setPadding(0, 0, 0, 0);
+    window.setWindowAnimations(R.style.dialog_from_bottom);
+    WindowManager.LayoutParams param = window.getAttributes();
+    param.gravity = Gravity.BOTTOM;
+    param.width = ViewGroup.LayoutParams.MATCH_PARENT;
+    window.setAttributes(param);
+
+    setContentView(R.layout.select_photos_dialog_layout);
+    setCanceledOnTouchOutside(true);
+    }-->
+    <style name="dialog.from.bottom" parent="@style/dialog">
+        <item name="android:windowEnterAnimation">@anim/push_up_in</item>
+        <item name="android:windowExitAnimation">@anim/push_up_out</item>
+    </style>
+
+
     <!-- 通用的基础的没有标题的Activity -->
     <style name="AppBaseTheme" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
