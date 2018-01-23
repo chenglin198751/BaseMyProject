@@ -9,6 +9,7 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         ndk {
             abiFilters "armeabi", "armeabi-v7a", 'x86'
@@ -37,4 +38,5 @@ dependencies {
     compile 'com.android.support:design:25.4.0'
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     compile 'com.youth.banner:banner:1.4.10'
+    compile 'com.android.support:multidex:1.0.2'
 }
