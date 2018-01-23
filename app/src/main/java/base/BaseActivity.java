@@ -110,9 +110,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @CallSuper
     public void onMyBroadcastReceive(String action, Bundle bundle) {
-        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-        if (fragmentList != null && fragmentList.size() > 0) {
-            for (Fragment fragment : fragmentList) {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null && fragments.size() > 0) {
+            for (Fragment fragment : fragments) {
                 if (fragment instanceof BaseFragment) {
                     ((BaseFragment) fragment).onMyBroadcastReceiver(action, bundle);
                 }

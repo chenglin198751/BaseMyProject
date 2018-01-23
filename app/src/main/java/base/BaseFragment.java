@@ -1,6 +1,7 @@
 package base;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -11,6 +12,7 @@ import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 
+import java.util.List;
 import java.util.Map;
 
 import cheerly.mybaseproject.R;
@@ -48,7 +50,16 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    @CallSuper
     public void onMyBroadcastReceiver(String action, Bundle bundle) {
+        List<Fragment> fragments = getChildFragmentManager().getFragments();
+        if (fragments != null && fragments.size() > 0) {
+            for (Fragment childFragment : fragments) {
+                if (childFragment instanceof BaseFragment) {
+                    ((BaseFragment) childFragment).onMyBroadcastReceiver(action, bundle);
+                }
+            }
+        }
     }
 
     @Deprecated
