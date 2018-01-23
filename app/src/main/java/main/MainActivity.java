@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setBackgroundDrawable(null);
         setContentLayout(R.layout.activity_main);
         getTitleHelper().hideTitle();
         mFragHelper = new ShowFragmentHelper(getSupportFragmentManager(), FRAGMENTS);
