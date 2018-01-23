@@ -87,6 +87,15 @@ public abstract class BaseFragment extends Fragment {
     protected abstract void onViewCreated(Bundle savedInstanceState, View view);
 
     /**
+     * 响应Activity 的 onBackPressed() 方法，需要手动实现。
+     *
+     * @return true 是可以返回，否则不能返回
+     */
+    public boolean onBackPressed() {
+        return true;
+    }
+
+    /**
      * 显示嵌入式进度条
      */
     public final void showProgress(String text) {
