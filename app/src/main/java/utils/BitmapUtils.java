@@ -197,12 +197,12 @@ public class BitmapUtils {
                     }
 
                     @Override
-                    public void onSucceed(Object object) {
+                    public void onSucceed(final Object path) {
                         if (activity != null && !activity.isFinishing()) {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onSucceed(imagePath);
+                                    callback.onSucceed(path);
                                 }
                             });
                         }
