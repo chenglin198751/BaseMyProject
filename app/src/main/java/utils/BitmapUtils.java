@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -138,77 +137,83 @@ public class BitmapUtils {
     }
 
     /**
-     * 裁剪压缩图片
+     * 按原图比例缩放裁剪图片
+     *
+     * @param activity   BaseActivity
+     * @param imagePath  图片的路径
+     * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
+     * @param callback   回调监听
      */
-    public static void cropPicture(final BaseActivity activity, final Uri imageUri, int imageWidth, final MyCallback callback) {
-        final Target target = new Target() {
-            @Override
-            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
-                        saveBitmap(bitmap, new MyCallback() {
-                            @Override
-                            public void onPrepare() {
-
-                            }
-
-                            @Override
-                            public void onSucceed(final Object path) {
-                                if (activity != null && !activity.isFinishing()) {
-                                    activity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callback.onSucceed(path);
-                                            if (activity.getTagMap() != null) {
-                                                activity.getTagMap().remove(imageUri.toString());
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-
-                            @Override
-                            public void onError() {
-                                if (activity != null && !activity.isFinishing()) {
-                                    callback.onError();
-                                    if (activity.getTagMap() != null) {
-                                        activity.getTagMap().remove(imageUri.toString());
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }.start();
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                if (activity != null && !activity.isFinishing()) {
-                    callback.onError();
-                    if (activity.getTagMap() != null) {
-                        activity.getTagMap().remove(imageUri.toString());
-                    }
-                }
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
-
-        activity.addTag(imageUri.toString(), target);
-        final String imagePath = getPathByUri(activity, imageUri);
-        final int[] size = getBitmapWidthHeight(imagePath);
-
-        //原图宽度大于传入的宽度才压缩，否则不压缩
-        if (size[0] > imageWidth) {
-            int imageHeight = size[1] * imageWidth / size[0];
-            Picasso.with(activity).load(imageUri).resize(imageWidth, imageHeight).into(target);
-        } else {
-            callback.onSucceed(imagePath);
-//            Picasso.with(activity).load(imageUri).into(target);
+    public static void createScaledBitmap(final BaseActivity activity, final String imagePath, final int imageWidth, final MyCallback callback) {
+        if (callback == null) {
+            throw new NullPointerException("MyCallback must not null");
         }
+        callback.onPrepare();
+
+        if (TextUtils.isEmpty(imagePath) || !(new File(imagePath).exists())) {
+            callback.onError();
+            return;
+        }
+
+        //原图宽度大于传入的宽度才压缩，否则不压缩，直接返回原图路径
+        final int[] size = getBitmapWidthHeight(imagePath);
+        if (size[0] <= imageWidth) {
+            callback.onSucceed(imagePath);
+            return;
+        }
+
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                int imageHeight = (int) (size[1] * 1f * imageWidth * 1f / size[0] * 1f);
+                Bitmap targetBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(imagePath), imageWidth, imageHeight, true);
+                saveBitmap(targetBitmap, new MyCallback() {
+                    @Override
+                    public void onPrepare() {
+
+                    }
+
+                    @Override
+                    public void onSucceed(Object object) {
+                        if (activity != null && !activity.isFinishing()) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onSucceed(imagePath);
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onError() {
+                        if (activity != null && !activity.isFinishing()) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onError();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }.start();
+    }
+
+
+    /**
+     * 按原图比例缩放裁剪图片
+     *
+     * @param activity   BaseActivity
+     * @param imageUri   图片的Uri
+     * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
+     * @param callback   回调监听
+     */
+    public static void createScaledBitmap(final BaseActivity activity, final Uri imageUri, int imageWidth, final MyCallback callback) {
+        final String imagePath = getPathByUri(activity, imageUri);
+        createScaledBitmap(activity, imagePath, imageWidth, callback);
     }
 }

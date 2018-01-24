@@ -61,11 +61,13 @@ public class MyWebViewFragment extends BaseFragment {
         mUrl = getArguments().getString("url");
     }
 
-    public void onBackPressed() {
+    public boolean onBackPressed() {
         if (mWebView != null && mWebView.canGoBack()) {
             mWebView.goBack();
+            return false;
         } else {
             getActivity().finish();
+            return true;
         }
     }
 
