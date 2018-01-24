@@ -99,7 +99,7 @@ public class BitmapUtils {
     /**
      * 保存图片到sdcard
      */
-    public static void saveBitmapToSdcard(final Bitmap bmp, final MyCallback callback) {
+    public static void saveBitmap(final Bitmap bmp, final MyCallback callback) {
         if (callback != null) {
             callback.onPrepare();
         }
@@ -148,7 +148,7 @@ public class BitmapUtils {
                     @Override
                     public void run() {
                         super.run();
-                        saveBitmapToSdcard(bitmap, new MyCallback() {
+                        saveBitmap(bitmap, new MyCallback() {
                             @Override
                             public void onPrepare() {
 
