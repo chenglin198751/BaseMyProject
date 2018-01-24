@@ -150,7 +150,9 @@ public abstract class BaseActivity extends AppCompatActivity {
             TextView textView = (TextView) mWaitDialog.findViewById(R.id.text);
             textView.setText(text);
         }
-        mWaitDialog.show();
+        if (!mWaitDialog.isShowing() && !isFinishing()) {
+            mWaitDialog.show();
+        }
         return mWaitDialog;
     }
 
@@ -158,7 +160,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 取消等待的对话框
      */
     public final void dismissWaitDialog() {
-        if (mWaitDialog != null) {
+        if (mWaitDialog != null && !isFinishing()) {
             mWaitDialog.dismiss();
         }
     }
