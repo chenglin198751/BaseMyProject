@@ -96,6 +96,22 @@ public class BitmapUtils {
     }
 
     /**
+     * 此方法仅仅用于计算createScaledBitmap() 方法获取Bitmap 时的缩放比例。
+     * 目的是为了防止OOM
+     */
+    private static int getOptionSize(final float size) {
+        int optionSize = 1;
+        if (size >= 2f && size < 4f) {
+            optionSize = 2;
+        } else if (size >= 4f && size < 8f) {
+            optionSize = 4;
+        } else if (size >= 8f) {
+            optionSize = 8;
+        }
+        return optionSize;
+    }
+
+    /**
      * 保存图片到sdcard
      */
     public static void saveBitmap(final Bitmap bmp, final MyCallback callback) {
@@ -168,7 +184,12 @@ public class BitmapUtils {
                 super.run();
 
                 int imageHeight = (int) (size[1] * 1f * imageWidth * 1f / size[0] * 1f);
-                Bitmap targetBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(imagePath), imageWidth, imageHeight, true);
+                float scale = size[0] * 1f / imageWidth * 1f;
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = getOptionSize(scale);
+                Bitmap targetBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(imagePath, options), imageWidth, imageHeight, true);
+
                 saveBitmap(targetBitmap, new MyCallback() {
                     @Override
                     public void onPrepare() {
