@@ -105,8 +105,10 @@ public class BitmapUtils {
             optionSize = 2;
         } else if (size >= 4f && size < 8f) {
             optionSize = 4;
-        } else if (size >= 8f) {
+        } else if (size >= 8f && size < 16) {
             optionSize = 8;
+        } else if (size >= 16f) {
+            optionSize = 16;
         }
         return optionSize;
     }
