@@ -57,7 +57,7 @@
 
 **24、OnFinishListener 类** ：我自己定义的一个接口，可以作为一个万能回调使用。别的地方任何如果只是临时性的回调，可以用它来做，不需要再写个回调接口了。
 
-**25、BitmapUtils 类**：压缩图片 以及得到图片宽高的类，具体使用看注释。
+**25、BitmapUtils 类**：压缩图片 以及得到图片宽高的类，里面有个方法叫createScaledBitmap() ，可以按比例创建缩放的图片，性能卓越。具体使用看注释。
 
 **26、MyTabLayout 类**：根据谷歌官方的TabLayout自己封装的ViewPager标题指示器，实现了自定义View。
 
@@ -94,5 +94,4 @@
         app:riv_border_color="#333333" 图片边框的颜色
         app:riv_mutate_background="false" 是否需要显示控件的背景色，默认是显示
         app:riv_oval="true" 是否展示为圆形，如果true ，那么riv_corner_radius 不生效
-
 
