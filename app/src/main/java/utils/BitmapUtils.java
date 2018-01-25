@@ -239,4 +239,11 @@ public class BitmapUtils {
         final String imagePath = getPathByUri(activity, imageUri);
         createScaledBitmap(activity, imagePath, imageWidth, callback);
     }
+
+    /**
+     * 返回bitmap 所占内存的大小
+     */
+    public static int getBitmapBytes(Bitmap bitmap) {
+        return bitmap.getByteCount();
+    }
 }
