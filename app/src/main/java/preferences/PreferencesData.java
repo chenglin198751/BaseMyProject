@@ -6,13 +6,14 @@ import android.content.SharedPreferences;
 import base.MyApp;
 
 public class PreferencesData {
+    private static String update_dialog_times = "update_dialog_times";//更新对话框
 
     private static SharedPreferences getPreferences(final Context context) {
         return context.getSharedPreferences("preference_1", Context.MODE_PRIVATE);
     }
 
     public static void clear() {
-        getPreferences(MyApp.getApp()).edit().clear().commit();
+        getPreferences(MyApp.getApp()).edit().clear().apply();
     }
 
     /**
@@ -24,11 +25,21 @@ public class PreferencesData {
         SharedPreferences prefs = getPreferences(MyApp.getApp());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(LAST_ALBUM_ID, value);
-        editor.commit();
+        editor.apply();
     }
 
     public static String getLastAlbumId() {
         return getPreferences(MyApp.getApp()).getString(LAST_ALBUM_ID, "");
     }
 
+    public static Long getUpdateDialogTimes() {
+        return getPreferences(MyApp.getApp()).getLong(update_dialog_times, 0);
+    }
+
+    public static void setUpdateDialogTimes(long value) {
+        SharedPreferences prefs = getPreferences(MyApp.getApp());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong(update_dialog_times, value);
+        editor.apply();
+    }
 }

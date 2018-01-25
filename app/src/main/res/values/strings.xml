@@ -4,11 +4,15 @@
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="dialog_download_file_message">你确定要下载此文件吗？</string>
+    <string name="net_error">网络连接中断，请检查网络设置</string>
     <string name="host_first_tab">首页</string>
     <string name="host_second_tab">分类</string>
     <string name="host_third_tab">流行</string>
     <string name="host_fourth_tab">我的</string>
-
+    <string name="update_version_notice">当前版本过低，请升级新版</string>
+    <string name="update_version_update">立即更新</string>
+    <string name="update_version_downloading">正在通知栏下载</string>
+    <string name="update_version_install">立即安装</string>
     <string name="quit_alert">再按一次返回键退出</string>
     <string name="publish_no_photo">无相册</string>
     <string name="publish_camera_open_error">打开相机失败,请检查是否开了启相机权限</string>

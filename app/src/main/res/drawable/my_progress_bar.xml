@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:id="@android:id/background">
+        <nine-patch android:src="@drawable/progress_gray_drawable" >
+        </nine-patch>
+    </item>
+    <item android:id="@android:id/secondaryProgress">
+        <nine-patch android:src="@drawable/progress_gray_drawable" >
+        </nine-patch>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip>
+            <nine-patch android:src="@drawable/green_progress_drawable" >
+            </nine-patch>
+        </clip>
+    </item>
+
+</layer-list>

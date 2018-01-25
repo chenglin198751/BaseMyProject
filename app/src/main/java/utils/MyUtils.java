@@ -53,21 +53,20 @@ public class MyUtils {
     /**
      * 判断手机是否联网
      */
-    public static boolean isNet(Context context) {
-        boolean flag = false;
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        int leng = 0;
-        NetworkInfo[] arrayOfNetworkInfo = manager.getAllNetworkInfo();
-        if (arrayOfNetworkInfo != null) {
-            leng = arrayOfNetworkInfo.length;
+    public static boolean hasNet() {
+        ConnectivityManager manager = (ConnectivityManager) MyApp.getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) {
+            return false;
         }
-        for (int i = 0; i < leng; i++) {
-            if (arrayOfNetworkInfo[i].getState() == NetworkInfo.State.CONNECTED) {
-                flag = true;
-                break;
-            }
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if (networkInfo == null || !networkInfo.isAvailable()) {
+            return false;
         }
-        return flag;
+        return true;
+    }
+
+    public static String getString(int id) {
+        return MyApp.getApp().getResources().getString(id);
     }
 
     /**
@@ -214,7 +213,7 @@ public class MyUtils {
     /**
      * 得到APK包的信息
      */
-    public static ApkItem getApkInfor(Context context, String path) {
+    public static ApkItem getApkInfo(Context context, String path) {
         File file = new File(path);
         if (TextUtils.isEmpty(path) || !file.exists()) {
             return null;
