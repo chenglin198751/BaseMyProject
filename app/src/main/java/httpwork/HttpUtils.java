@@ -281,8 +281,11 @@ public class HttpUtils {
      * @param downloadCallback 下载的回调监听
      */
     public static void downloadFile(final String fileUrl, final String fileDownloadPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+        if (downloadCallback == null) {
+            throw new NullPointerException("HttpDownloadCallback 不能为空");
+        }
         if (TextUtils.isEmpty(fileUrl)) {
-            downloadCallback.onFailure(new IOException("下载URL为空"));
+            downloadCallback.onFailure(new IOException("下载URL不能为空"));
             return;
         }
 
@@ -333,35 +336,40 @@ public class HttpUtils {
                         fileOutputStream.write(buffer, 0, len);
                         sum += len;
                         int progress = (int) (sum * 1.0f / total * 100f);
-                        if (downloadCallback != null) {
-                            if (lastProgress != progress) {
-                                lastProgress = progress;
+                        if (lastProgress != progress) {
+                            lastProgress = progress;
 
-                                final long tempTotal = total;
-                                final long tempSum = sum;
-                                final int tempProgress = progress;
-                                MyUtils.getHandler().post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        downloadCallback.onProgress(call, tempTotal, tempSum, tempProgress);
-                                    }
-                                });
-                            }
+                            final long tempTotal = total;
+                            final long tempSum = sum;
+                            final int tempProgress = progress;
+                            MyUtils.getHandler().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    downloadCallback.onProgress(call, tempTotal, tempSum, tempProgress);
+                                }
+                            });
                         }
+
                     }
                     fileOutputStream.flush();
                     inputStream.close();
                     fileOutputStream.close();
-                    if (downloadCallback != null) {
-                        MyUtils.getHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                downloadCallback.onSuccess(filePath);
-                            }
-                        });
-                    }
-                } catch (IOException e) {
+
+                    MyUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadCallback.onSuccess(filePath);
+                        }
+                    });
+
+                } catch (final IOException e) {
                     e.printStackTrace();
+                    MyUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadCallback.onFailure(e);
+                        }
+                    });
                 }
             }
         });
