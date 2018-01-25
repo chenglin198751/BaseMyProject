@@ -7,8 +7,11 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+
+import utils.MyUtils;
 
 /**
  * Created by chenglin on 2017-6-21.
@@ -26,38 +29,46 @@ public class CornerLinearLayout extends LinearLayout {
     }
 
     private final RectF roundRect = new RectF();
-    private float rect_adius = 4;
+    private int corner = 4;
     private final Paint maskPaint = new Paint();
     private final Paint zonePaint = new Paint();
 
     private void init() {
         maskPaint.setAntiAlias(true);
         maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        //
+
         zonePaint.setAntiAlias(true);
         zonePaint.setColor(Color.WHITE);
-        //
-        float density = getResources().getDisplayMetrics().density;
-        rect_adius = rect_adius * density;
+
+        if (getTag() != null && getTag() instanceof String) {
+            String tag = (String) getTag();
+            if (TextUtils.isDigitsOnly(tag.trim())) {
+                corner = Integer.parseInt(tag.trim());
+            }
+        }
+        corner = MyUtils.dip2px(corner);
     }
 
-    public void setCorner(float adius) {
-        rect_adius = adius;
+    /**
+     * 设置View 的显示角度
+     *
+     * @param corner 单位是像素
+     */
+    public void setCorner(int corner) {
+        this.corner = corner;
         invalidate();
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        int w = getWidth();
-        int h = getHeight();
-        roundRect.set(0, 0, w, h);
+        roundRect.set(0, 0, getWidth(), getHeight());
     }
 
     @Override
     public void draw(Canvas canvas) {
         canvas.saveLayer(roundRect, zonePaint, Canvas.ALL_SAVE_FLAG);
-        canvas.drawRoundRect(roundRect, rect_adius, rect_adius, zonePaint);
+        canvas.drawRoundRect(roundRect, corner, corner, zonePaint);
         canvas.saveLayer(roundRect, maskPaint, Canvas.ALL_SAVE_FLAG);
         super.draw(canvas);
         canvas.restore();

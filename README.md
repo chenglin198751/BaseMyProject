@@ -95,3 +95,6 @@
         app:riv_mutate_background="false" 是否需要显示控件的背景色，默认是显示
         app:riv_oval="true" 是否展示为圆形，如果true ，那么riv_corner_radius 不生效
 
+**40、CornerLinearLayout && CornerRelativeLayout 类**：自定义的可以显示圆角的View 。在布局中设置圆角用android:tag="20"
+
+**41、UpdateDialog 类**：一套完善的检查更新的对话框，稍作改动就可以实现复杂的检查更新逻辑

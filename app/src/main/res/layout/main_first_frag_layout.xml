@@ -11,8 +11,10 @@
         android:layout_height="50dp"
         android:text="下一页" />
 
-    <widget.LongImageView
+    <view.CornerLinearLayout
         android:id="@+id/imageView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:background="#ffcccc"
+        android:tag="20" />
 </LinearLayout>
