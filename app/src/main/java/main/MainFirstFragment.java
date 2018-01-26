@@ -4,15 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
-import httpwork.HttpDownloadCallback;
-import okhttp3.Call;
-import utils.Constants;
-import widget.LongImageView;
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -28,10 +21,9 @@ public class MainFirstFragment extends BaseFragment {
     }
 
 
-
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-        button = (Button) view.findViewById(R.id.button);
+        button = view.findViewById(R.id.button);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

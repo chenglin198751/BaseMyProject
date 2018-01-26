@@ -137,7 +137,7 @@ public abstract class BaseFragment extends Fragment {
     public final void showEmptyView(View.OnClickListener listener) {
         addLoadView();
         mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_EMPTY,
-                getString(R.string.empty_tips), null);
+                getString(R.string.empty_tips), listener);
     }
 
     /**
