@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,7 +101,7 @@ public abstract class BaseFragment extends Fragment {
         clearLoadingView();
         addLoadView();
         if (text != null) {
-            mLoadingViewHelper.setText(text);
+            mLoadingViewHelper.setLoadingText(text);
         }
     }
 
@@ -119,9 +118,10 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 显示没有网络的界面
      */
-    public final void showNoNetView() {
+    public final void showNoNetView(View.OnClickListener listener) {
         addLoadView();
-        mLoadingViewHelper.showNoNetView();
+        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_NO_NET,
+                getString(R.string.no_net_tips), listener);
     }
 
     /**
@@ -132,22 +132,20 @@ public abstract class BaseFragment extends Fragment {
     }
 
     /**
-     * 显示没有网络的界面
+     * 显示空数据的界面
      */
-    public final void showNoNetView(View.OnClickListener listener, String text) {
+    public final void showEmptyView(View.OnClickListener listener) {
         addLoadView();
-        mLoadingViewHelper.showNoNetView(listener, text);
+        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_EMPTY,
+                getString(R.string.empty_tips), null);
     }
 
     /**
      * 显示空数据的界面
      */
-    public final void showEmptyView(String text) {
+    public final void showEmptyView(String text, View.OnClickListener listener) {
         addLoadView();
-        mLoadingViewHelper.showEmptyView();
-        if (!TextUtils.isEmpty(text)) {
-            mLoadingViewHelper.setEmptyText(text);
-        }
+        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_EMPTY, text, listener);
     }
 
     /**

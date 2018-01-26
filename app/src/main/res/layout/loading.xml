@@ -40,7 +40,8 @@
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="130dip"
+            android:id="@+id/empty_icon"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/empty_icon" />
 
@@ -52,19 +53,20 @@
             android:layout_marginRight="10dip"
             android:layout_marginTop="12dip"
             android:gravity="center|top"
-            android:text="抱歉，也许网络环境不太好，\n请检查一下您的网络设置。"
+            android:lineSpacingMultiplier="1.2"
+            android:text="@string/no_net_tips"
             android:textColor="#8a8a8a"
             android:textSize="14sp" />
 
         <Button
             android:id="@+id/button"
-            android:layout_width="150dip"
-            android:layout_height="@dimen/button_height"
+            android:layout_width="130dip"
+            android:layout_height="40dp"
             android:layout_marginTop="20dip"
-            android:background="@drawable/purple_button"
-            android:text="网络设置"
-            android:textColor="@color/white"
-            android:textSize="@dimen/font_size_8"/>
+            android:background="@drawable/btn_bg_style_1"
+            android:text="点击重试"
+            android:textColor="#8a8a8a"
+            android:textSize="14dp" />
     </LinearLayout>
 
 </RelativeLayout>

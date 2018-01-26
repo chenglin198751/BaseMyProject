@@ -1,10 +1,10 @@
 package widget;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -13,6 +13,8 @@ import cheerly.mybaseproject.R;
 
 
 public class LoadingViewHelper {
+    public static final int VIEW_EMPTY = 1;
+    public static final int VIEW_NO_NET = 2;
     private Context mContext;
     private View mLoadView;
     private View mShadowView;
@@ -29,76 +31,49 @@ public class LoadingViewHelper {
         return mLoadView;
     }
 
-    public void setText(String text) {
-        TextView textView = (TextView) mLoadView.findViewById(R.id.text);
+    /**
+     * 设置加载中的View 的文字
+     */
+    public void setLoadingText(String text) {
+        LinearLayout loadLinear = mLoadView.findViewById(R.id.load_linear);
+        LinearLayout emptyLinear = mLoadView.findViewById(R.id.empty_linear);
+        loadLinear.setVisibility(View.VISIBLE);
+        emptyLinear.setVisibility(View.GONE);
+
+        TextView textView = mLoadView.findViewById(R.id.text);
         textView.setText(text);
     }
 
-    public void setText(int resId) {
-        TextView textView = (TextView) mLoadView.findViewById(R.id.text);
-        textView.setText(resId);
-    }
-
     /**
-     * 显示没有网络的界面
+     * 设置空页面或者无网页面
      */
-    public void showNoNetView() {
-        NoNetView();
-        setBtnClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                ComponentName component = new ComponentName("com.android.settings", "com.android.settings.WirelessSettings");
-                intent.setComponent(component);
-                intent.setAction(Intent.ACTION_VIEW);
-                mContext.startActivity(intent);
-            }
-        }, "网络设置");
-    }
+    public void showEmptyText(int type, String text, View.OnClickListener listener) {
+        LinearLayout loadLinear = mLoadView.findViewById(R.id.load_linear);
+        LinearLayout emptyLinear = mLoadView.findViewById(R.id.empty_linear);
+        ImageView emptyIcon = mLoadView.findViewById(R.id.empty_icon);
+        loadLinear.setVisibility(View.GONE);
+        emptyLinear.setVisibility(View.VISIBLE);
 
-    /**
-     * 显示没有网络的界面
-     */
-    public void showNoNetView(View.OnClickListener listener, String text) {
-        NoNetView();
-        setBtnClick(listener, text);
-    }
+        Button button = mLoadView.findViewById(R.id.button);
+        TextView textView = mLoadView.findViewById(R.id.empty_text);
+        if (!TextUtils.isEmpty(text)) {
+            textView.setText(text);
+        }
 
-    private void NoNetView() {
-        LinearLayout load_linear = (LinearLayout) mLoadView.findViewById(R.id.load_linear);
-        LinearLayout empty_linear = (LinearLayout) mLoadView.findViewById(R.id.empty_linear);
-        load_linear.setVisibility(View.GONE);
-        empty_linear.setVisibility(View.VISIBLE);
-    }
+        if (listener != null) {
+            button.setVisibility(View.VISIBLE);
+            button.setOnClickListener(listener);
+        } else {
+            button.setVisibility(View.GONE);
+        }
 
-    private void setBtnClick(View.OnClickListener listener, String text) {
-        Button button = (Button) mLoadView.findViewById(R.id.button);
-        button.setText(text);
-        button.setOnClickListener(listener);
-    }
-
-    /**
-     * 显示空数据的界面
-     */
-    public void showEmptyView() {
-        LinearLayout load_linear = (LinearLayout) mLoadView.findViewById(R.id.load_linear);
-        LinearLayout empty_linear = (LinearLayout) mLoadView.findViewById(R.id.empty_linear);
-        load_linear.setVisibility(View.GONE);
-        empty_linear.setVisibility(View.VISIBLE);
-
-        TextView empty_text = (TextView) mLoadView.findViewById(R.id.empty_text);
-        Button button = (Button) mLoadView.findViewById(R.id.button);
-        empty_text.setVisibility(View.VISIBLE);
-        button.setVisibility(View.GONE);
-        empty_text.setText("没有数据哦");
-    }
-
-    /**
-     * 设置空数据界面时的文字提示
-     */
-    public void setEmptyText(String text) {
-        TextView empty_text = (TextView) mLoadView.findViewById(R.id.empty_text);
-        empty_text.setText(text);
+        if (type == VIEW_EMPTY) {
+            button.setText("点击刷新");
+            emptyIcon.setImageResource(R.drawable.empty_icon);
+        } else if (type == VIEW_NO_NET) {
+            button.setText("点击重试");
+            emptyIcon.setImageResource(R.drawable.net_error_icon);
+        }
     }
 
     /**
