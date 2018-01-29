@@ -20,19 +20,19 @@ public class MyToast {
     }
 
     public static void show(String text) {
-        TextView msgTv = null;
+        TextView tvMessage;
         if (mToast == null) {
             mToast = new Toast(MyApp.getApp());
 
             View view = View.inflate(MyApp.getApp(), R.layout.my_toast_layout, null);
-            msgTv = (TextView) view.findViewById(R.id.message);
-            msgTv.setText(text);
+            tvMessage = (TextView) view.findViewById(R.id.message);
+            tvMessage.setText(text);
 
             mToast.setView(view);
             mToast.setDuration(Toast.LENGTH_SHORT);
         } else {
-            msgTv = (TextView) mToast.getView().findViewById(R.id.message);
-            msgTv.setText(text);
+            tvMessage = (TextView) mToast.getView().findViewById(R.id.message);
+            tvMessage.setText(text);
         }
         mToast.show();
     }
