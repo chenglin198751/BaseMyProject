@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import base.MyApp;
 import cheerly.mybaseproject.R;
+import utils.MyUtils;
 
 
 /**
@@ -19,19 +20,32 @@ public class MyToast {
         show(MyApp.getApp().getString(resId));
     }
 
-    public static void show(String text) {
+    public static void show(final String text) {
+        if (MyUtils.isUiThread()) {
+            showToast(text);
+        } else {
+            MyUtils.getHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    showToast(text);
+                }
+            });
+        }
+    }
+
+    private static void showToast(String text) {
         TextView tvMessage;
         if (mToast == null) {
             mToast = new Toast(MyApp.getApp());
 
             View view = View.inflate(MyApp.getApp(), R.layout.my_toast_layout, null);
-            tvMessage = (TextView) view.findViewById(R.id.message);
+            tvMessage = view.findViewById(R.id.message);
             tvMessage.setText(text);
 
             mToast.setView(view);
             mToast.setDuration(Toast.LENGTH_SHORT);
         } else {
-            tvMessage = (TextView) mToast.getView().findViewById(R.id.message);
+            tvMessage = mToast.getView().findViewById(R.id.message);
             tvMessage.setText(text);
         }
         mToast.show();

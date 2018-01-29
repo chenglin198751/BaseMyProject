@@ -452,9 +452,9 @@ public class MyUtils {
     }
 
     /**
-     * 判断当前线程是不是主线程
+     * 判断当前线程是不是UI线程
      */
-    public static boolean isMainThread() {
+    public static boolean isUiThread() {
         return Looper.getMainLooper() == Looper.myLooper();
     }
 
