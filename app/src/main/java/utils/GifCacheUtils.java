@@ -14,7 +14,7 @@ import pl.droidsonroids.gif.GifDrawable;
 public class GifCacheUtils {
     //只取App 可用内存的十分之一
     private static final int CACHE_SIZE = (int) (Runtime.getRuntime().maxMemory() / 1024 / 10);//单位KB
-    private static volatile LruCache<String, GifDrawable> mGifCache;
+    private static volatile LruCache<String, GifDrawable> mGifCache = null;
     private static ExecutorService mGifThreadPool = null;
 
     public static void put(String key, GifDrawable gifDrawable) {
@@ -46,7 +46,7 @@ public class GifCacheUtils {
         if (mGifThreadPool == null) {
             synchronized (GifCacheUtils.class) {
                 if (mGifThreadPool == null) {
-                    mGifThreadPool = Executors.newFixedThreadPool(5);
+                    mGifThreadPool = Executors.newFixedThreadPool(4);
                 }
             }
         }

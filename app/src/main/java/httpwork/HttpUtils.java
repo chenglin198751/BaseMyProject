@@ -296,6 +296,14 @@ public class HttpUtils {
                 downloadCallback.onSuccess(defaultPath);
                 return;
             }
+
+            if (!TextUtils.isEmpty(fileDownloadPath)) {
+                cacheFile = new File(fileDownloadPath);
+                if (cacheFile.exists()) {
+                    downloadCallback.onSuccess(fileDownloadPath);
+                    return;
+                }
+            }
         }
 
         final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
