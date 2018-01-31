@@ -97,7 +97,7 @@ public class WebImageView extends ImageView {
 
         if (isGif(object)) {
             setImageDrawable(centerDrawable);
-            setGifDrawable((String) object);
+            setGifDrawable(object);
             return;
         }
 
@@ -128,16 +128,21 @@ public class WebImageView extends ImageView {
             if (url.toLowerCase().endsWith(".gif")) {
                 return true;
             }
+        } else if (object instanceof File) {
+            File file = (File) object;
+            if (file.getAbsolutePath().toLowerCase().endsWith(".gif")) {
+                return true;
+            }
         }
         return false;
     }
 
-    private void setGifDrawable(String url) {
-        String key = buildKey(url);
-        if (GifCacheUtils.get(key) != null) {
-            setImageDrawable(GifCacheUtils.get(key));
-        } else {
-            downloadGif(url);
+    private void setGifDrawable(Object object) {
+        if (object instanceof String) {
+            downloadGif((String) object);
+        } else if (object instanceof File) {
+            File file = (File) object;
+            decodeGifFile(object, file.getAbsolutePath());
         }
     }
 
@@ -152,37 +157,38 @@ public class WebImageView extends ImageView {
                 if (isFinish()) {
                     return;
                 }
-
-                GifCacheUtils.getThreadPool().submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            final GifDrawable gifDrawable = new GifDrawable(filePath);
-                            GifCacheUtils.put(buildKey(url), gifDrawable);
-                            if (isFinish()) {
-                                return;
-                            }
-                            MyUtils.getHandler().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!isFinish()) {
-                                        if (url.equals(getTag(R.id.web_image_id))) {
-                                            setImageDrawable(gifDrawable);
-                                        }
-                                    }
-                                }
-                            });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
+                decodeGifFile(url, filePath);
             }
 
             @Override
             public void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent) {
 
+            }
+        });
+    }
+
+    private void decodeGifFile(final Object object, final String filePath) {
+        GifCacheUtils.getThreadPool().submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final GifDrawable gifDrawable = new GifDrawable(filePath);
+                    if (isFinish()) {
+                        return;
+                    }
+                    MyUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!isFinish()) {
+                                if (object.equals(getTag(R.id.web_image_id))) {
+                                    setImageDrawable(gifDrawable);
+                                }
+                            }
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -195,17 +201,6 @@ public class WebImageView extends ImageView {
             }
         }
         return true;
-    }
-
-
-    /**
-     * 为了解决多个ImageView 共用一个GifDrawable 时，当此 GifDrawable 被回收时，
-     * 别的ImageView 上面的GifDrawable 也会被回收，就会导致别的ImageView GIF 停止不播放。
-     * 解决办法：把URL 和View 的hashCode 拼做一个参数当做Key 使用。
-     * 如果有更好的解决办法，欢迎讨论 by chegnlin 2018年1月19日20:05:48
-     */
-    private String buildKey(final String url) {
-        return MyUtils.MD5(url + "_" + this.hashCode());
     }
 
     /**
