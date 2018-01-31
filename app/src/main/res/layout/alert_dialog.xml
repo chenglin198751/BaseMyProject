@@ -32,7 +32,7 @@
                     android:ellipsize="end"
                     android:gravity="left"
                     android:singleLine="true"
-                    android:text="会吃侠提示"
+                    android:text="提示"
                     android:textColor="@color/text_gray_2"
                     android:textSize="15dp" />
             </LinearLayout>
