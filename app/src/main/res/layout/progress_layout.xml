@@ -14,8 +14,8 @@
 
         <ProgressBar
             style="@android:style/Widget.ProgressBar"
-            android:layout_width="30dip"
-            android:layout_height="30dip"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:indeterminateDrawable="@drawable/small_loading"
             android:max="100" />
 
@@ -23,8 +23,8 @@
             android:id="@+id/text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:layout_marginRight="10dip"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/data_loading"

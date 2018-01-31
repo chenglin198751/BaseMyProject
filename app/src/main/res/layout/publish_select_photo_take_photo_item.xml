@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/take_photo"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:scaleType="centerInside"
         android:src="@mipmap/publish_album_take_photo_icon" />
 </RelativeLayout>

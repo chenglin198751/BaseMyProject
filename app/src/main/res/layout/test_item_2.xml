@@ -24,7 +24,7 @@
         android:layout_alignTop="@+id/image_view"
         android:layout_toRightOf="@+id/image_view"
         android:gravity="left"
-        android:padding="5dip"
+        android:padding="5dp"
         android:text="标题"
         android:textColor="@color/text_gray_2"
         android:textSize="@dimen/font_size_6" />
@@ -36,7 +36,7 @@
         android:layout_alignBottom="@+id/image_view"
         android:layout_toRightOf="@+id/image_view"
         android:gravity="left"
-        android:padding="5dip"
+        android:padding="5dp"
         android:text="北风卷地白草折，胡天八月即飞雪"
         android:textColor="@color/text_gray_2"
         android:textSize="@dimen/font_size_3" />

@@ -17,7 +17,7 @@
         <RelativeLayout
             android:id="@+id/title_template"
             android:layout_width="fill_parent"
-            android:layout_height="45dip">
+            android:layout_height="45dp">
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -41,8 +41,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
-                android:layout_marginLeft="20dip"
-                android:layout_marginRight="20dip"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:background="@color/line" />
         </RelativeLayout>
 
@@ -56,9 +56,9 @@
                 android:id="@+id/scrollView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:paddingTop="2dip">
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="2dp">
 
                 <TextView
                     android:id="@+id/message"
@@ -85,7 +85,7 @@
         <LinearLayout
             android:id="@+id/buttonPanel"
             android:layout_width="fill_parent"
-            android:layout_height="45dip"
+            android:layout_height="45dp"
             android:orientation="horizontal">
 
             <Button

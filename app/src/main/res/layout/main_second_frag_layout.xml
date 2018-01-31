@@ -12,7 +12,7 @@
         android:layout_height="fill_parent"
         android:background="@color/holo_blue_bright"
         android:gravity="center"
-        android:padding="5dip"
+        android:padding="5dp"
         android:text="2"
         android:textColor="@color/text_gray_2"
         android:textSize="20dp" />

@@ -39,10 +39,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingBottom="6dip"
+            android:paddingBottom="6dp"
             android:paddingLeft="@dimen/padding_middle"
             android:paddingRight="@dimen/padding_middle"
-            android:paddingTop="6dip"
+            android:paddingTop="6dp"
             android:text="完成"
             android:textColor="@color/fc_1"
             android:textSize="@dimen/font_size_4" />
@@ -89,7 +89,7 @@
             android:layout_marginBottom="150dp"
             android:background="@color/white"
             android:divider="#26505056"
-            android:dividerHeight="0.5dip"
+            android:dividerHeight="0.5dp"
             android:footerDividersEnabled="false" />
     </RelativeLayout>
 </RelativeLayout>
