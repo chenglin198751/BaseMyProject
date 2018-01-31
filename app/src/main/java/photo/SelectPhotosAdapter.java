@@ -53,10 +53,12 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
                     } else {
                         mSelectedList.remove(path);
                     }
-                    notifyDataSetChanged();
+//                    notifyDataSetChanged();
+                    notifyItemChanged(position);
                 } else if (mSelectedPhotoItem == null || mSelectedPhotoItem != mPhotoAlbumList.get(position)) {
                     mSelectedPhotoItem = mPhotoAlbumList.get(position);
-                    notifyDataSetChanged();
+//                    notifyDataSetChanged();
+                    notifyItemChanged(position);
                 }
             }
         }

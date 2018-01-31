@@ -46,6 +46,12 @@
             android:text="完成"
             android:textColor="@color/fc_1"
             android:textSize="@dimen/font_size_4" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/line" />
     </RelativeLayout>
 
     <LinearLayout
