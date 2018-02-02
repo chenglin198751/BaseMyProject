@@ -76,7 +76,6 @@ public class TestActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TestCacheUtils.shutdown();
     }
 
     private void getData() {
@@ -141,8 +140,8 @@ public class TestActivity extends BaseActivity {
 
             public ListHolder(View itemView) {
                 super(itemView);
-                imageView = (ImageView) itemView.findViewById(R.id.image_view);
-                appName = (TextView) itemView.findViewById(R.id.app_name);
+                imageView = itemView.findViewById(R.id.image_view);
+                appName = itemView.findViewById(R.id.app_name);
             }
 
             public void setData(int position) {

@@ -13,18 +13,12 @@ public class TestCacheUtils {
 
     public static ExecutorService getThreadPool() {
         if (mThreadPool == null) {
-            synchronized (utils.GifCacheUtils.class) {
+            synchronized (TestCacheUtils.class) {
                 if (mThreadPool == null) {
-                    mThreadPool = Executors.newFixedThreadPool(5);
+                    mThreadPool = Executors.newFixedThreadPool(4);
                 }
             }
         }
         return mThreadPool;
-    }
-
-    public static void shutdown() {
-        if (mThreadPool != null) {
-            mThreadPool.shutdown();
-        }
     }
 }
