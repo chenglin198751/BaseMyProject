@@ -4,9 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,7 @@ import base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
-import view.CenterDrawable;
 import view.KeepScaleImageView;
-import view.WebImageView;
 
 /**
  * 资料：https://github.com/scwang90/SmartRefreshLayout
@@ -115,7 +113,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
         @Override
         public ListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = View.inflate(mContext, R.layout.test_item, null);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.test_item, parent, false);
             return new ListHolder(view);
         }
 

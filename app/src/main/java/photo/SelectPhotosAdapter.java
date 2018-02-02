@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -104,9 +105,9 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View itemView = null;
         if (viewType == TAKE_PHOTO) {
-            itemView = View.inflate(mActivity, R.layout.publish_select_photo_take_photo_item, null);
+            itemView = LayoutInflater.from(mActivity).inflate(R.layout.publish_select_photo_take_photo_item, viewGroup, false);
         } else {
-            itemView = View.inflate(mActivity, R.layout.publish_select_photo_item, null);
+            itemView = LayoutInflater.from(mActivity).inflate(R.layout.publish_select_photo_item, viewGroup, false);
         }
 
         ViewHolder viewHolder = new ViewHolder(itemView);

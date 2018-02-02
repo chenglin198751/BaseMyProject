@@ -70,6 +70,11 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="tabLayout"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="test.TestActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="tabLayout"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
