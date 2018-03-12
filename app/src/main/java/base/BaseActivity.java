@@ -146,9 +146,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             mWaitDialog = new WaitDialog(getContext());
         }
 
+        TextView textView = (TextView) mWaitDialog.findViewById(R.id.text);
         if (!TextUtils.isEmpty(text)) {
-            TextView textView = (TextView) mWaitDialog.findViewById(R.id.text);
             textView.setText(text);
+        }else {
+            textView.setText(R.string.data_loading);
         }
         if (!mWaitDialog.isShowing() && !isFinishing()) {
             mWaitDialog.show();
