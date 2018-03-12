@@ -17,7 +17,7 @@ import base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
-import view.KeepScaleImageView;
+import view.AutoSizeImageView;
 
 /**
  * 资料：https://github.com/scwang90/SmartRefreshLayout
@@ -128,11 +128,11 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         class ListHolder extends BaseRecyclerViewHolder {
-            KeepScaleImageView imageView;
+            AutoSizeImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
-                imageView = (KeepScaleImageView) itemView.findViewById(R.id.image_view);
+                imageView = (AutoSizeImageView) itemView.findViewById(R.id.image_view);
                 imageView.setWidth(Constants.screenWidth);
             }
 
