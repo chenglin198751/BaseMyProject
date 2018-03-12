@@ -1,7 +1,6 @@
 package view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,9 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ViewGroup;
 
 /**
@@ -67,7 +64,7 @@ public class AutoSizeImageView extends WebImageView {
 
     @Override
     public void setImageDrawable(Drawable drawable) {
-        if (drawable != null) {
+        if (drawable != null && getLayoutParams() != null) {
             bitmapWidth = drawable.getIntrinsicWidth();
             bitmapHeight = drawable.getIntrinsicHeight();
 
