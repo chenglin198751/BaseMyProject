@@ -22,7 +22,6 @@ import utils.BitmapUtils;
 
 public class MainFirstFragment extends BaseFragment {
     private Button button;
-    private final static String url = "https://wx4.sinaimg.cn/mw690/006yV7D9gy1fnobzhvu6tj30glcmie88.jpg";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), TestActivity.class));
+                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
             }
         });
 

@@ -25,32 +25,6 @@ import listener.MyCallback;
  */
 
 public class BitmapUtils {
-
-    /**
-     * 根据传入的图片path压缩图片到指定大小
-     */
-    public static void compressBitmap(Context context, final String path, final int targetWidth, Target target) {
-        if (TextUtils.isEmpty(path)) {
-            return;
-        }
-        int[] size = getBitmapWidthHeight(path);
-        int targetHeight = targetWidth * size[1] / size[0];
-        Picasso.with(context).load(new File(path)).resize(targetWidth, targetHeight).into(target);
-    }
-
-    /**
-     * 根据传入的URI压缩图片到指定大小
-     */
-    public static void compressBitmap(Context context, final Uri uri, final int targetWidth, Target target) {
-        String path = getPathByUri(context, uri);
-        if (TextUtils.isEmpty(path)) {
-            return;
-        }
-        int[] size = getBitmapWidthHeight(path);
-        int targetHeight = targetWidth * size[1] / size[0];
-        Picasso.with(context).load(uri).resize(targetWidth, targetHeight).into(target);
-    }
-
     /**
      * 返回图片宽高数组，第0个是宽，第1个是高
      */
