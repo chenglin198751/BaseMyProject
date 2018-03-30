@@ -9,9 +9,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -128,6 +125,20 @@ public class BitmapUtils {
 
     }
 
+
+    /**
+     * 按原图比例缩放裁剪图片
+     *
+     * @param activity   BaseActivity
+     * @param imageUri   图片的Uri
+     * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
+     * @param callback   回调监听
+     */
+    public static void createScaledBitmap(final BaseActivity activity, final Uri imageUri, int imageWidth, final MyCallback callback) {
+        final String imagePath = getPathByUri(activity, imageUri);
+        createScaledBitmap(activity, imagePath, imageWidth, callback);
+    }
+
     /**
      * 按原图比例缩放裁剪图片
      *
@@ -198,20 +209,6 @@ public class BitmapUtils {
                 });
             }
         }.start();
-    }
-
-
-    /**
-     * 按原图比例缩放裁剪图片
-     *
-     * @param activity   BaseActivity
-     * @param imageUri   图片的Uri
-     * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
-     * @param callback   回调监听
-     */
-    public static void createScaledBitmap(final BaseActivity activity, final Uri imageUri, int imageWidth, final MyCallback callback) {
-        final String imagePath = getPathByUri(activity, imageUri);
-        createScaledBitmap(activity, imagePath, imageWidth, callback);
     }
 
     /**
