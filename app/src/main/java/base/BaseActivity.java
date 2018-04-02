@@ -45,7 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private RelativeLayout mContentView;
     private RelativeLayout mBaseRootView;
     private HashMap<String, Object> mTagMap;
-    private boolean isAddedView;
+    private boolean isAddedView = false;
 
     @CallSuper
     @Override
