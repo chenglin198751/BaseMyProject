@@ -19,7 +19,7 @@ import httpwork.HttpBuilder;
 import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
-import widget.LoadingViewHelper;
+import widget.BaseViewHelper;
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -27,7 +27,7 @@ import widget.LoadingViewHelper;
 
 public abstract class BaseFragment extends Fragment {
     protected final static Gson gson = Constants.gson;
-    private LoadingViewHelper mLoadingViewHelper = null;
+    private BaseViewHelper mBaseViewHelper = null;
     private RelativeLayout mContentView;
 
     public BaseActivity getContext() {
@@ -101,7 +101,7 @@ public abstract class BaseFragment extends Fragment {
         clearLoadingView();
         addLoadView();
         if (text != null) {
-            mLoadingViewHelper.setLoadingText(text);
+            mBaseViewHelper.setLoadingText(text);
         }
     }
 
@@ -109,9 +109,9 @@ public abstract class BaseFragment extends Fragment {
      * 清除contentView里面的加载进度
      */
     private void clearLoadingView() {
-        if (mLoadingViewHelper != null && getView() != null) {
-            mContentView.removeView(mLoadingViewHelper.getLoadingView());
-            mLoadingViewHelper = null;
+        if (mBaseViewHelper != null && getView() != null) {
+            mContentView.removeView(mBaseViewHelper.getView());
+            mBaseViewHelper = null;
         }
     }
 
@@ -120,8 +120,7 @@ public abstract class BaseFragment extends Fragment {
      */
     public final void showNoNetView(View.OnClickListener listener) {
         addLoadView();
-        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_NO_NET,
-                getString(R.string.no_net_tips), listener);
+        mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
     }
 
     /**
@@ -134,18 +133,9 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 显示空数据的界面
      */
-    public final void showEmptyView(View.OnClickListener listener) {
-        addLoadView();
-        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_EMPTY,
-                getString(R.string.empty_tips), listener);
-    }
-
-    /**
-     * 显示空数据的界面
-     */
     public final void showEmptyView(String text, View.OnClickListener listener) {
         addLoadView();
-        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_EMPTY, text, listener);
+        mBaseViewHelper.showEmptyText(text, listener);
     }
 
     /**
@@ -156,11 +146,11 @@ public abstract class BaseFragment extends Fragment {
     }
 
     private void addLoadView() {
-        if (mLoadingViewHelper == null && getView() != null) {
-            mLoadingViewHelper = new LoadingViewHelper(getActivity());
-            mLoadingViewHelper.getLoadingView().setClickable(true);
+        if (mBaseViewHelper == null && getView() != null) {
+            mBaseViewHelper = new BaseViewHelper(getActivity());
+            mBaseViewHelper.getView().setClickable(true);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            mContentView.addView(mLoadingViewHelper.getLoadingView(), params);
+            mContentView.addView(mBaseViewHelper.getView(), params);
         }
     }
 }
