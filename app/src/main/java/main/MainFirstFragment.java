@@ -15,6 +15,7 @@ import photo.SelectPhotosActivity;
 import test.TestActivity;
 import test.TestRecyclerViewRefreshActivity;
 import utils.BitmapUtils;
+import utils.MyUtils;
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -34,7 +35,14 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
+//                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
+
+                getContext().showNoNetView( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getContext().hideNoNetView();
+                    }
+                });
             }
         });
 

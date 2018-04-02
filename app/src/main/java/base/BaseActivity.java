@@ -28,7 +28,7 @@ import httpwork.HttpBuilder;
 import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
-import widget.LoadingViewHelper;
+import widget.BaseViewHelper;
 import widget.WaitDialog;
 
 /**
@@ -40,11 +40,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
-    private LoadingViewHelper mLoadingViewHelper = null;
+    private BaseViewHelper mBaseViewHelper = null;
     private WaitDialog mWaitDialog;
     private RelativeLayout mContentView;
     private RelativeLayout mBaseRootView;
     private HashMap<String, Object> mTagMap;
+    private boolean isAddedView;
 
     @CallSuper
     @Override
@@ -56,6 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mContentView = (RelativeLayout) this.findViewById(R.id.content_view);
         mBaseRootView = (RelativeLayout) findViewById(R.id.base_root);
         mTitleHelper = new MainTitleHelper(this);
+        mBaseViewHelper = new BaseViewHelper(this);
 
         if (getTitle() != null) {
             mTitleHelper.setTitle(getTitle().toString());
@@ -149,7 +151,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         TextView textView = (TextView) mWaitDialog.findViewById(R.id.text);
         if (!TextUtils.isEmpty(text)) {
             textView.setText(text);
-        }else {
+        } else {
             textView.setText(R.string.data_loading);
         }
         if (!mWaitDialog.isShowing() && !isFinishing()) {
@@ -172,9 +174,9 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public final void showProgress(String text) {
         hideProgress();
+        mBaseViewHelper.addShadowView(mBaseRootView);
+        mBaseViewHelper.setLoadingText(text);
         addLoadView();
-        mLoadingViewHelper.addShadowView(mBaseRootView);
-        mLoadingViewHelper.setLoadingText(text);
     }
 
     /**
@@ -188,10 +190,10 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 清除contentView里面的加载进度
      */
     private void clearLoadingView() {
-        if (mLoadingViewHelper != null) {
-            mContentView.removeView(mLoadingViewHelper.getLoadingView());
-            mLoadingViewHelper.removeShadowView(mBaseRootView);
-            mLoadingViewHelper = null;
+        if (isAddedView) {
+            mContentView.removeView(mBaseViewHelper.getView());
+            mBaseViewHelper.removeShadowView(mBaseRootView);
+            isAddedView = false;
         }
     }
 
@@ -199,9 +201,8 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 显示没有网络的界面
      */
     public final void showNoNetView(View.OnClickListener listener) {
+        mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
         addLoadView();
-        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_NO_NET,
-                getString(R.string.no_net_tips), listener);
     }
 
     /**
@@ -214,18 +215,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 显示空数据的界面
      */
-    public final void showEmptyView(View.OnClickListener listener) {
-        addLoadView();
-        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_EMPTY,
-                getString(R.string.empty_tips), listener);
-    }
-
-    /**
-     * 显示空数据的界面
-     */
     public final void showEmptyView(String text, View.OnClickListener listener) {
+        mBaseViewHelper.showEmptyText(text, listener);
         addLoadView();
-        mLoadingViewHelper.showEmptyText(LoadingViewHelper.VIEW_EMPTY, text, listener);
     }
 
     /**
@@ -236,11 +228,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private void addLoadView() {
-        if (mLoadingViewHelper == null) {
-            mLoadingViewHelper = new LoadingViewHelper(this);
-            mLoadingViewHelper.getLoadingView().setClickable(true);
+        if (!isAddedView) {
+            isAddedView = true;
+            mBaseViewHelper.getView().setClickable(true);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            mContentView.addView(mLoadingViewHelper.getLoadingView(), params);
+            mContentView.addView(mBaseViewHelper.getView(), params);
         }
     }
 

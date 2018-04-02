@@ -5,39 +5,10 @@
     android:background="@color/white">
 
     <LinearLayout
-        android:id="@+id/load_linear"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:orientation="vertical">
-
-        <ProgressBar
-            style="@android:style/Widget.ProgressBar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:indeterminateDrawable="@drawable/big_loading"
-            android:max="100" />
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="12dp"
-            android:gravity="center|top"
-            android:text="@string/data_loading"
-            android:textColor="@color/text_gray_2"
-            android:textSize="12dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/empty_linear"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
 
         <ImageView
             android:id="@+id/empty_icon"
