@@ -23,7 +23,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:supportsRtl="false"
+        android:supportsRtl="true"
         android:theme="@style/AppBaseTheme">
         <activity
             android:name="main.MainActivity"

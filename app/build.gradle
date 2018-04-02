@@ -46,4 +46,6 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'com.android.support:multidex:1.0.3'
+    //透明状态栏导航栏、沉浸式状态栏导航栏的终极解决方案 https://github.com/Zackratos/UltimateBar
+//    implementation 'com.github.zackratos.ultimatebar:ultimatebar2:2.0.0@aar'
 }
