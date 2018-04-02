@@ -37,12 +37,20 @@ public class MainFirstFragment extends BaseFragment {
             public void onClick(View v) {
 //                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
 
-                getContext().showNoNetView( new View.OnClickListener() {
+                showProgress(null);
+                MyUtils.getHandler().postDelayed(new Runnable() {
                     @Override
-                    public void onClick(View v) {
-                        getContext().hideNoNetView();
+                    public void run() {
+                        hideProgress();
                     }
-                });
+                },3 * 1000);
+
+//                showEmptyView("cesddddd", new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                       hideEmptyView();
+//                    }
+//                });
             }
         });
 

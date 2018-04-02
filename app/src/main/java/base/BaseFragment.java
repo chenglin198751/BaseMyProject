@@ -29,6 +29,7 @@ public abstract class BaseFragment extends Fragment {
     protected final static Gson gson = Constants.gson;
     private BaseViewHelper mBaseViewHelper = null;
     private RelativeLayout mContentView;
+    private boolean isAddedView = false;
 
     public BaseActivity getContext() {
         return (BaseActivity) getActivity();
@@ -71,6 +72,7 @@ public abstract class BaseFragment extends Fragment {
     public final void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mContentView = (RelativeLayout) view.findViewById(R.id.base_frag_id);
+        mBaseViewHelper = new BaseViewHelper(getContext());
         if (getContentLayout() > 0) {
             mContentView.addView(View.inflate(getContext(), getContentLayout(), null), new RelativeLayout.LayoutParams(-1, -1));
         }
@@ -99,19 +101,31 @@ public abstract class BaseFragment extends Fragment {
      */
     public final void showProgress(String text) {
         clearLoadingView();
-        addLoadView();
         if (text != null) {
             mBaseViewHelper.setLoadingText(text);
+        } else {
+            mBaseViewHelper.setLoadingText(getString(R.string.data_loading));
         }
+        addLoadView();
+    }
+
+    /**
+     * 清除嵌入式进度条
+     */
+    public final void hideProgress() {
+        clearLoadingView();
     }
 
     /**
      * 清除contentView里面的加载进度
      */
     private void clearLoadingView() {
-        if (mBaseViewHelper != null && getView() != null) {
+        if (getView() == null) {
+            return;
+        }
+        if (isAddedView) {
             mContentView.removeView(mBaseViewHelper.getView());
-            mBaseViewHelper = null;
+            isAddedView = false;
         }
     }
 
@@ -119,8 +133,8 @@ public abstract class BaseFragment extends Fragment {
      * 显示没有网络的界面
      */
     public final void showNoNetView(View.OnClickListener listener) {
-        addLoadView();
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
+        addLoadView();
     }
 
     /**
@@ -134,8 +148,8 @@ public abstract class BaseFragment extends Fragment {
      * 显示空数据的界面
      */
     public final void showEmptyView(String text, View.OnClickListener listener) {
-        addLoadView();
         mBaseViewHelper.showEmptyText(text, listener);
+        addLoadView();
     }
 
     /**
@@ -146,11 +160,14 @@ public abstract class BaseFragment extends Fragment {
     }
 
     private void addLoadView() {
-        if (mBaseViewHelper == null && getView() != null) {
-            mBaseViewHelper = new BaseViewHelper(getActivity());
+        if (getView() == null) {
+            return;
+        }
+        if (!isAddedView) {
             mBaseViewHelper.getView().setClickable(true);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
             mContentView.addView(mBaseViewHelper.getView(), params);
+            isAddedView = true;
         }
     }
 }
