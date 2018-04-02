@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper = null;
-    private WaitDialog mWaitDialog;
+    private static WaitDialog mWaitDialog;
     private RelativeLayout mContentView;
     private RelativeLayout mBaseRootView;
     private HashMap<String, Object> mTagMap;

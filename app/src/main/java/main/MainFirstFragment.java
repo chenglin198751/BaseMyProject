@@ -37,20 +37,7 @@ public class MainFirstFragment extends BaseFragment {
             public void onClick(View v) {
 //                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
 
-                showProgress(null);
-                MyUtils.getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgress();
-                    }
-                },3 * 1000);
-
-//                showEmptyView("cesddddd", new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                       hideEmptyView();
-//                    }
-//                });
+                showWaitDialog("正在加载数据");
             }
         });
 
