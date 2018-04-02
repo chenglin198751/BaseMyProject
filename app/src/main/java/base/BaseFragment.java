@@ -20,6 +20,7 @@ import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
 import widget.BaseViewHelper;
+import widget.WaitDialog;
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -94,6 +95,13 @@ public abstract class BaseFragment extends Fragment {
      */
     public boolean onBackPressed() {
         return true;
+    }
+
+    /**
+     * 显示等待的对话框
+     */
+    public final WaitDialog showWaitDialog(String text) {
+        return getContext().showWaitDialog(text);
     }
 
     /**
