@@ -2,7 +2,6 @@ package base;
 
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
-import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,7 @@ import widget.WaitDialog;
  * Created by chenglin on 2017-9-14.
  */
 
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment implements ImplBaseView {
     protected final static Gson gson = Constants.gson;
     private BaseViewHelper mBaseViewHelper = null;
     private RelativeLayout mContentView;
@@ -80,8 +79,7 @@ public abstract class BaseFragment extends Fragment {
         onViewCreated(savedInstanceState, view);
     }
 
-    protected abstract @LayoutRes
-    int getContentLayout();
+    protected abstract int getContentLayout();
 
     /**
      * 所有的业务逻辑在这里写
@@ -100,13 +98,20 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 显示等待的对话框
      */
+    @Override
     public final WaitDialog showWaitDialog(String text) {
         return getContext().showWaitDialog(text);
+    }
+
+    @Override
+    public void dismissWaitDialog() {
+        getContext().dismissWaitDialog();
     }
 
     /**
      * 显示嵌入式进度条
      */
+    @Override
     public final void showProgress(String text) {
         clearLoadingView();
         if (text != null) {
@@ -120,6 +125,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 清除嵌入式进度条
      */
+    @Override
     public final void hideProgress() {
         clearLoadingView();
     }
@@ -140,6 +146,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 显示没有网络的界面
      */
+    @Override
     public final void showNoNetView(View.OnClickListener listener) {
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
         addLoadView();
@@ -148,6 +155,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 清除没有网络的界面
      */
+    @Override
     public final void hideNoNetView() {
         clearLoadingView();
     }
@@ -155,6 +163,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 显示空数据的界面
      */
+    @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
         mBaseViewHelper.showEmptyText(text, listener);
         addLoadView();
@@ -163,6 +172,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 清除空数据的界面
      */
+    @Override
     public final void hideEmptyView() {
         clearLoadingView();
     }
