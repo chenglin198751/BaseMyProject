@@ -36,7 +36,7 @@ import widget.WaitDialog;
  *
  * @author weiChengLin 2013-06-20
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView{
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
@@ -143,6 +143,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 显示等待的对话框
      */
+    @Override
     public final WaitDialog showWaitDialog(String text) {
         if (mWaitDialog == null) {
             mWaitDialog = new WaitDialog(getContext());
@@ -163,6 +164,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 取消等待的对话框
      */
+    @Override
     public final void dismissWaitDialog() {
         if (mWaitDialog != null && !isFinishing()) {
             mWaitDialog.dismiss();
@@ -172,6 +174,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 显示嵌入式进度条
      */
+    @Override
     public final void showProgress(String text) {
         hideProgress();
         mBaseViewHelper.addShadowView(mBaseRootView);
@@ -182,6 +185,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 清除嵌入式进度条
      */
+    @Override
     public final void hideProgress() {
         clearLoadingView();
     }
@@ -200,6 +204,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 显示没有网络的界面
      */
+    @Override
     public final void showNoNetView(View.OnClickListener listener) {
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
         addLoadView();
@@ -208,6 +213,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 清除没有网络的界面
      */
+    @Override
     public final void hideNoNetView() {
         clearLoadingView();
     }
@@ -215,6 +221,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 显示空数据的界面
      */
+    @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
         mBaseViewHelper.showEmptyText(text, listener);
         addLoadView();
@@ -223,6 +230,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 清除空数据的界面
      */
+    @Override
     public final void hideEmptyView() {
         clearLoadingView();
     }
