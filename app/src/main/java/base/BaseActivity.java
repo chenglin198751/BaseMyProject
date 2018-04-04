@@ -36,13 +36,12 @@ import widget.WaitDialog;
  *
  * @author weiChengLin 2013-06-20
  */
-public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView{
+public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView {
     private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper = null;
     private WaitDialog mWaitDialog;
-    private RelativeLayout mContentView;
     private RelativeLayout mBaseRootView;
     private HashMap<String, Object> mTagMap;
     private boolean isAddedView = false;
@@ -54,8 +53,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         registerBroadcastReceiver();
 
         setContentView(R.layout.base_activity_layout);
-        mContentView = (RelativeLayout) this.findViewById(R.id.content_view);
-        mBaseRootView = (RelativeLayout) findViewById(R.id.base_root);
+        mBaseRootView = findViewById(R.id.base_root);
         mTitleHelper = new MainTitleHelper(this);
         mBaseViewHelper = new BaseViewHelper(this);
 
@@ -72,7 +70,9 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 设置Activity的内容布局，取代setContentView() 方法
      */
     public final void setContentLayout(@LayoutRes int layoutResID) {
-        mContentView.addView(View.inflate(this, layoutResID, null), new RelativeLayout.LayoutParams(-1, -1));
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+        params.addRule(RelativeLayout.BELOW, R.id.main_title);
+        mBaseRootView.addView(View.inflate(this, layoutResID, null), params);
     }
 
     public final MainTitleHelper getTitleHelper() {
@@ -177,9 +177,9 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     public final void showProgress(String text) {
         hideProgress();
-        mBaseViewHelper.addShadowView(mBaseRootView);
         mBaseViewHelper.setLoadingText(text);
         addLoadView();
+        mBaseViewHelper.addShadowView(mBaseRootView);
     }
 
     /**
@@ -195,7 +195,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      */
     private void clearLoadingView() {
         if (isAddedView) {
-            mContentView.removeView(mBaseViewHelper.getView());
+            mBaseRootView.removeView(mBaseViewHelper.getView());
             mBaseViewHelper.removeShadowView(mBaseRootView);
             isAddedView = false;
         }
@@ -240,7 +240,8 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             isAddedView = true;
             mBaseViewHelper.getView().setClickable(true);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            mContentView.addView(mBaseViewHelper.getView(), params);
+            params.addRule(RelativeLayout.BELOW, R.id.main_title);
+            mBaseRootView.addView(mBaseViewHelper.getView(), params);
         }
     }
 

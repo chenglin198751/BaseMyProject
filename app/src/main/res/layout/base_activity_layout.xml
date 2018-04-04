@@ -7,14 +7,8 @@
     <include
         android:id="@+id/main_title"
         layout="@layout/title_layout"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/main_title_height"
         android:layout_alignParentTop="true" />
-
-    <RelativeLayout
-        android:id="@+id/content_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/main_title" />
 
 </RelativeLayout>
