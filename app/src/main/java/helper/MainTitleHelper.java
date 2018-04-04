@@ -38,7 +38,7 @@ public class MainTitleHelper {
         titleView.setText(titleStr);
     }
 
-    public String getTitleStr() {
+    public String getTitle() {
         TextView titleView = (TextView) mTitleView.findViewById(R.id.title_text);
         return titleView.getText().toString();
     }
