@@ -45,6 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private RelativeLayout mBaseRootView;
     private HashMap<String, Object> mTagMap;
     private boolean isAddedView = false;
+    private View mContentView = null;
 
     @CallSuper
     @Override
@@ -70,9 +71,13 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 设置Activity的内容布局，取代setContentView() 方法
      */
     public final void setContentLayout(@LayoutRes int layoutResID) {
+        if (mContentView != null) {
+            mBaseRootView.removeView(mContentView);
+        }
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
         params.addRule(RelativeLayout.BELOW, R.id.main_title);
-        mBaseRootView.addView(View.inflate(this, layoutResID, null), params);
+        mContentView = View.inflate(this, layoutResID, null);
+        mBaseRootView.addView(mContentView, params);
     }
 
     public final MainTitleHelper getTitleHelper() {
