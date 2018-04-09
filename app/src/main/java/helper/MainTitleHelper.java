@@ -25,8 +25,7 @@ public class MainTitleHelper {
         mMenuView = mTitleView.findViewById(R.id.menu_linear);
         mTitleTv = mTitleView.findViewById(R.id.title_text);
 
-        View image = mTitleView.findViewById(R.id.back_icon);
-        image.setOnClickListener(new View.OnClickListener() {
+        mTitleView.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBaseActivity.finish();
@@ -63,8 +62,7 @@ public class MainTitleHelper {
      * 设置左上角返回图片的点击监听事件
      */
     public void setReturnListener(View.OnClickListener listener) {
-        View image = mTitleView.findViewById(R.id.back_icon);
-        image.setOnClickListener(listener);
+        mTitleView.findViewById(R.id.back_btn).setOnClickListener(listener);
     }
 
 
