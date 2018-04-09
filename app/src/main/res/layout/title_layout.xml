@@ -16,22 +16,13 @@
         android:textColor="@color/text_gray_2"
         android:textSize="@dimen/font_size_6" />
 
-    <LinearLayout
-        android:id="@+id/back_linear"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+    <ImageView
+        android:id="@+id/back_btn"
+        android:layout_width="@dimen/main_title_height"
+        android:layout_height="@dimen/main_title_height"
         android:layout_alignParentLeft="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/back_icon"
-            android:layout_width="@dimen/main_title_height"
-            android:layout_height="@dimen/main_title_height"
-            android:scaleType="centerInside"
-            android:src="@mipmap/return_image" />
-
-    </LinearLayout>
+        android:scaleType="centerInside"
+        android:src="@mipmap/return_image" />
 
     <RelativeLayout
         android:id="@+id/menu_linear"
