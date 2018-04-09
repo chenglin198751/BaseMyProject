@@ -48,8 +48,7 @@
             android:layout_centerInParent="true"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:scaleType="centerInside"
-            android:src="@mipmap/ic_fast" />
+            android:scaleType="centerInside" />
 
         <TextView
             android:id="@+id/menu_text"
@@ -61,8 +60,7 @@
             android:paddingRight="15dp"
             android:scaleType="centerInside"
             android:textColor="#333333"
-            android:textSize="13dp"
-            tools:text="删除" />
+            android:textSize="13dp" />
 
     </RelativeLayout>
 
