@@ -3,7 +3,7 @@ package helper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import base.BaseActivity;
@@ -16,10 +16,14 @@ import cheerly.mybaseproject.R;
 public class MainTitleHelper {
     private BaseActivity mBaseActivity;
     private View mTitleView;
+    private RelativeLayout mMenuView;
+    private TextView mTitleTv;
 
     public MainTitleHelper(BaseActivity baseActivity) {
         mBaseActivity = baseActivity;
         mTitleView = mBaseActivity.findViewById(R.id.main_title);
+        mMenuView = mTitleView.findViewById(R.id.menu_linear);
+        mTitleTv = mTitleView.findViewById(R.id.title_text);
 
         View image = mTitleView.findViewById(R.id.back_icon);
         image.setOnClickListener(new View.OnClickListener() {
@@ -34,27 +38,24 @@ public class MainTitleHelper {
      * 设置标题
      */
     public void setTitle(String titleStr) {
-        TextView titleView = (TextView) mTitleView.findViewById(R.id.title_text);
-        titleView.setText(titleStr);
+        mTitleTv.setText(titleStr);
     }
 
     public String getTitle() {
-        TextView titleView = (TextView) mTitleView.findViewById(R.id.title_text);
-        return titleView.getText().toString();
+        return mTitleTv.getText().toString();
     }
 
     /**
      * 设置标题
      */
     public void setTitle(int title_resId) {
-        TextView titleView = (TextView) mTitleView.findViewById(R.id.title_text);
-        titleView.setText(title_resId);
+        mTitleTv.setText(title_resId);
     }
 
     /**
-     * 隐藏标题
+     * 隐藏标题栏
      */
-    public void hideTitle() {
+    public void hideTitleBar() {
         mTitleView.setVisibility(View.GONE);
     }
 
@@ -66,77 +67,50 @@ public class MainTitleHelper {
         image.setOnClickListener(listener);
     }
 
-    /**
-     * 设置左上角的图片
-     */
-    public void setReturnImage(int res) {
-        ImageView image = (ImageView) mTitleView.findViewById(R.id.back_icon);
-        image.setImageResource(res);
-    }
 
     /**
      * 为右侧的菜单增加指定的view
      */
     public void addMenuView(View view) {
-        View menu_divider = mTitleView.findViewById(R.id.menu_divider);
-        menu_divider.setVisibility(View.VISIBLE);
-        LinearLayout menLinear = (LinearLayout) mTitleView.findViewById(R.id.menu_linear);
-        menLinear.setVisibility(View.VISIBLE);
-        menLinear.removeAllViews();
-        menLinear.addView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+        mMenuView.setVisibility(View.VISIBLE);
+        mMenuView.removeAllViews();
+        mMenuView.addView(view, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     /**
      * 为右侧的第一个菜单图片设置点击监听
      */
-    public void addFirstMenu(int resId, View.OnClickListener listener) {
-        addFirstMenu(resId);
-        View view = mTitleView.findViewById(R.id.menu_Linear_1);
-        view.setOnClickListener(listener);
+    public void addMenuIcon(int resId, View.OnClickListener listener) {
+        TextView menuTv = mTitleView.findViewById(R.id.menu_text);
+        ImageView menuIcon = mTitleView.findViewById(R.id.menu_icon);
+
+        mMenuView.setVisibility(View.VISIBLE);
+        menuTv.setVisibility(View.GONE);
+        menuIcon.setVisibility(View.VISIBLE);
+
+        menuIcon.setImageResource(resId);
+        menuIcon.setOnClickListener(listener);
     }
 
     /**
-     * 为右侧的第一个菜单图片设置资源图片
+     * 为右侧的第一个菜单文字设置点击监听
      */
-    public void addFirstMenu(int resId) {
-        View menu_divider = mTitleView.findViewById(R.id.menu_divider);
-        menu_divider.setVisibility(View.VISIBLE);
-        LinearLayout menLinear = (LinearLayout) mTitleView.findViewById(R.id.menu_linear);
-        menLinear.setVisibility(View.VISIBLE);
-        ImageView imageView = (ImageView) mTitleView.findViewById(R.id.menu_icon_1);
-        imageView.setImageResource(resId);
-    }
+    public void addMenuText(String text, View.OnClickListener listener) {
+        TextView menuTv = mTitleView.findViewById(R.id.menu_text);
+        ImageView menuIcon = mTitleView.findViewById(R.id.menu_icon);
 
-    /**
-     * 为右侧的第二个菜单图片设置点击监听
-     */
-    public void addSecondMenu(int resId, View.OnClickListener listener) {
-        addSecondMenu(resId);
-        View view = mTitleView.findViewById(R.id.menu_Linear_2);
-        view.setOnClickListener(listener);
-    }
+        mMenuView.setVisibility(View.VISIBLE);
+        menuTv.setVisibility(View.VISIBLE);
+        menuIcon.setVisibility(View.GONE);
 
-    /**
-     * 为右侧的第二个菜单图片设置点击监听
-     */
-    public void addSecondMenu(int resId) {
-        View menu_divider = mTitleView.findViewById(R.id.menu_divider);
-        menu_divider.setVisibility(View.VISIBLE);
-        LinearLayout menLinear = (LinearLayout) mTitleView.findViewById(R.id.menu_linear);
-        menLinear.setVisibility(View.VISIBLE);
-        ImageView imageView = (ImageView) mTitleView.findViewById(R.id.menu_icon_1);
-        imageView.setImageResource(resId);
+        menuTv.setText(text);
+        menuTv.setOnClickListener(listener);
     }
 
     /**
      * 设置右侧的菜单隐藏还是显示
      */
     public void setMenuVisible(int visible) {
-        LinearLayout menLinear = (LinearLayout) mTitleView.findViewById(R.id.menu_linear);
-        if (visible == View.VISIBLE) {
-            menLinear.setVisibility(visible);
-        } else {
-            menLinear.setVisibility(View.INVISIBLE);
-        }
+        mMenuView.setVisibility(visible);
     }
 }

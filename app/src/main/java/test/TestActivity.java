@@ -34,7 +34,7 @@ public class TestActivity extends BaseActivity {
         setContentLayout(R.layout.recyclerview_refresh_layout);
 
 
-        getTitleHelper().hideTitle();
+        getTitleHelper().hideTitleBar();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
         mPullToRefresh.setEnableLoadmore(false);
