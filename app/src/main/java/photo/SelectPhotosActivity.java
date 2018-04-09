@@ -76,7 +76,7 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         setContentLayout(R.layout.publish_select_photos);
-        getTitleHelper().hideTitle();
+        getTitleHelper().hideTitleBar();
         requestReadExternalPermission();
 
         if (getIntent().hasExtra("count")) {
