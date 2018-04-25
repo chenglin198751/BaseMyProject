@@ -121,7 +121,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         public void onBindViewHolder(BaseRecyclerViewHolder holder, int position) {
             if (holder instanceof ListHolder) {
                 ListHolder listHolder = (ListHolder) holder;
-                listHolder.setData(position);
+                listHolder.onBind(position);
             }
 
         }
@@ -136,7 +136,8 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                 imageView.setWidth(Constants.screenWidth);
             }
 
-            public void setData(int position) {
+            @Override
+            public void onBind(int position) {
                 imageView.load(getData().get(position).url, -1, -1);
 
             }
