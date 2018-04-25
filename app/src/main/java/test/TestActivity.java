@@ -128,7 +128,7 @@ public class TestActivity extends BaseActivity {
         public void onBindViewHolder(BaseRecyclerViewHolder holder, int position) {
             if (holder instanceof ListHolder) {
                 ListHolder listHolder = (ListHolder) holder;
-                listHolder.setData(position);
+                listHolder.onBind(position);
             }
 
         }
@@ -144,7 +144,8 @@ public class TestActivity extends BaseActivity {
                 appName = itemView.findViewById(R.id.app_name);
             }
 
-            public void setData(int position) {
+            @Override
+            public void onBind(int position) {
                 final ApkItem item = getData().get(position);
                 appName.setText(item.appName);
                 imageView.setTag(item);
