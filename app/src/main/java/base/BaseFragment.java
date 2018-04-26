@@ -18,6 +18,7 @@ import httpwork.HttpBuilder;
 import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
+import utils.MyAction;
 import widget.BaseViewHelper;
 import widget.WaitDialog;
 
@@ -45,9 +46,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView {
     }
 
     public final void sendMyBroadcast(String action, Bundle bundle) {
-        if (getActivity() instanceof BaseActivity) {
-            ((BaseActivity) getActivity()).sendMyBroadcast(action, bundle);
-        }
+        MyAction.sendMyBroadcast(action, bundle);
     }
 
     @CallSuper
