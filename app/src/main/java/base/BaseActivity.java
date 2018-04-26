@@ -28,6 +28,7 @@ import httpwork.HttpBuilder;
 import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
+import utils.MyAction;
 import widget.BaseViewHelper;
 import widget.WaitDialog;
 
@@ -37,7 +38,7 @@ import widget.WaitDialog;
  * @author weiChengLin 2013-06-20
  */
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView {
-    private final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
+
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper = null;
@@ -128,10 +129,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     public final void sendMyBroadcast(String action, Bundle bundle) {
-        Intent intent = new Intent(ACTION_BASE_BROADCAST);
-        intent.putExtra("action", action);
-        intent.putExtra("bundle", bundle);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        MyAction.sendMyBroadcast(action, bundle);
     }
 
     public void addTag(String key, Object object) {
@@ -252,14 +250,14 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     private void registerBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ACTION_BASE_BROADCAST);
+        intentFilter.addAction(MyAction.ACTION_BASE_BROADCAST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ACTION_BASE_BROADCAST)) {
+            if (intent.getAction().equals(MyAction.ACTION_BASE_BROADCAST)) {
                 String myAction = intent.getStringExtra("action");
                 onMyBroadcastReceive(myAction, intent.getBundleExtra("bundle"));
             }
