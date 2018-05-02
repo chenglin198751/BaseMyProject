@@ -3,8 +3,6 @@ package helper;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.Display;
-import android.view.WindowManager;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
@@ -64,9 +62,7 @@ public class AppHelper {
         Picasso.setSingletonInstance(picasso);
     }
 
-    public static void initGetDisplayMetrics(Context context){
-        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        Constants.screenWidth = display.getWidth();
-        Constants.screenHeight = display.getHeight();
+    public static void initDisplayMetrics() {
+        Constants.init();
     }
 }

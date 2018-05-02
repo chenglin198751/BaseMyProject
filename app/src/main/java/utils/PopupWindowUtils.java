@@ -41,7 +41,7 @@ public class PopupWindowUtils {
         y = location[1];
 
         int h = attachOnView.getHeight();
-        int screenHeight = Constants.screenHeight;
+        int screenHeight = Constants.getScreenWidth();
 
         if (popShowHeight == defaultBotom) {
             popHeight = screenHeight / 6;
