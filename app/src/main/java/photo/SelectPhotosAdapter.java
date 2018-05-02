@@ -213,7 +213,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
 
         private int getItemSize() {
             if (mItemSize < 0) {
-                mItemSize = Constants.screenWidth / SelectPhotosActivity.GRID_COLUMN;
+                mItemSize = Constants.getScreenWidth() / SelectPhotosActivity.GRID_COLUMN;
             }
 
             return mItemSize;

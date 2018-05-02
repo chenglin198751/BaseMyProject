@@ -133,7 +133,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
             public ListHolder(View itemView) {
                 super(itemView);
                 imageView = (AutoSizeImageView) itemView.findViewById(R.id.image_view);
-                imageView.setWidth(Constants.screenWidth);
+                imageView.setWidth(Constants.getScreenWidth());
             }
 
             @Override

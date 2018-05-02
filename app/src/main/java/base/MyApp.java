@@ -25,7 +25,7 @@ public class MyApp extends Application {
         super.onCreate();
         application = this;
         AppHelper.initPicasso();
-        AppHelper.initGetDisplayMetrics(this);
+        AppHelper.initDisplayMetrics();
 
         //只在应用主进程执行
         if (AppHelper.isAppMainProcess()) {
