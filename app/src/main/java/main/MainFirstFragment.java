@@ -13,6 +13,8 @@ import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import photo.SelectPhotosActivity;
 import test.TestActivity;
+import test.TestFragment;
+import test.TestPullDownRefreshActivity;
 import test.TestRecyclerViewRefreshActivity;
 import utils.BitmapUtils;
 import utils.MyUtils;
@@ -35,21 +37,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
-
-                showNoNetView( new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-
-                MyUtils.getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideNoNetView();
-                    }
-                },3 * 1000);
+                startActivity(new Intent(getContext(), TestPullDownRefreshActivity.class));
             }
         });
 
