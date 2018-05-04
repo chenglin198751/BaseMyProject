@@ -37,7 +37,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), TestPullDownRefreshActivity.class));
+                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
             }
         });
 
