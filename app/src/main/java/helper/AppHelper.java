@@ -4,7 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import base.MyApp;

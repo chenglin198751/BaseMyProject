@@ -56,17 +56,17 @@ public class WebImageView extends ImageView {
         if (object instanceof String) {
             String url = (String) object;
             if (!TextUtils.isEmpty(url)) {
-                requestCreator = Picasso.with(MyApp.getApp()).load(url.trim());
+                requestCreator = Picasso.get().load(url.trim());
             }
         } else if (object instanceof File) {
             File file = (File) object;
-            requestCreator = Picasso.with(MyApp.getApp()).load(file);
+            requestCreator = Picasso.get().load(file);
         } else if (object instanceof Integer) {
             int resourceId = (int) object;
-            requestCreator = Picasso.with(MyApp.getApp()).load(resourceId);
+            requestCreator = Picasso.get().load(resourceId);
         } else if (object instanceof Uri) {
             Uri uri = (Uri) object;
-            requestCreator = Picasso.with(MyApp.getApp()).load(uri);
+            requestCreator = Picasso.get().load(uri);
         }
         return requestCreator;
     }
