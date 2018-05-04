@@ -42,9 +42,7 @@ public abstract class BaseListViewAdapter<T> extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        return null;
-    }
+    public abstract View getView(int i, View view, ViewGroup viewGroup);
 
     public void add(T t) {
         if (null != t) {
