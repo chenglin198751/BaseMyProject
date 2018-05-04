@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
+    buildToolsVersion rootProject.ext.BUILD_TOOLS_VERSION
     defaultConfig {
         applicationId "cheerly.mybaseproject"
         minSdkVersion 15
@@ -31,20 +31,23 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support.constraint:constraint-layout:1.1.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'com.squareup.okio:okio:1.14.0'
-    compile 'com.google.code.gson:gson:2.8.2'
-    compile 'com.android.support:recyclerview-v7:27.1.1'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.10'
-    compile 'com.google.android:flexbox:0.3.0'
-    compile 'com.android.support:design:27.1.1'
-    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
-    compile 'com.youth.banner:banner:1.4.10'
-    compile 'com.android.support:multidex:1.0.3'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.android.support:design:$rootProject.ext.SUPPORT_V4_VERSION"
+    implementation "com.android.support:appcompat-v7:$rootProject.ext.SUPPORT_V4_VERSION"
+    implementation "com.android.support:exifinterface:$rootProject.ext.SUPPORT_V4_VERSION"
+    implementation "com.android.support:recyclerview-v7:$rootProject.ext.SUPPORT_V4_VERSION"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation ("com.squareup.picasso:picasso:2.71828") {
+        exclude group: "com.android.support"
+    }
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okio:okio:1.14.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.10'
+    implementation 'com.google.android:flexbox:0.3.0'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
+    implementation 'com.youth.banner:banner:1.4.10'
+    implementation 'com.android.support:multidex:1.0.3'
 
 }
