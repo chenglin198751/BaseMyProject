@@ -4,7 +4,7 @@
     <!--<item android:drawable="@mipmap/load_big_2"/>-->
     <item>
         <rotate
-            android:drawable="@mipmap/loading_big_icon"
+            android:drawable="@drawable/loading_big_icon"
             android:duration="500"
             android:fromDegrees="0.0"
             android:pivotX="50.0%"

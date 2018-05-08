@@ -4,7 +4,7 @@
     <!--<item android:drawable="@mipmap/load_small_2"/>-->
     <item>
         <rotate
-            android:drawable="@mipmap/white_small_loading"
+            android:drawable="@drawable/white_small_loading"
             android:duration="500"
             android:fromDegrees="0.0"
             android:pivotX="50.0%"

@@ -143,7 +143,7 @@ public class SelectPhotosHelper {
                             mTitleTextView.setCompoundDrawables(null, null, null, null);
                         } else {
                             mTitleTextView.setClickable(true);
-                            Drawable imgDrawable = mActivity.getResources().getDrawable(R.mipmap.publish_photo_ico_down);
+                            Drawable imgDrawable = mActivity.getResources().getDrawable(R.drawable.publish_photo_ico_down);
                             imgDrawable.setBounds(0, 0, imgDrawable.getMinimumWidth(), imgDrawable.getMinimumHeight());
                             mTitleTextView.setCompoundDrawables(null, null, imgDrawable, null);
                         }
@@ -181,7 +181,7 @@ public class SelectPhotosHelper {
                 isOpenedList = true;
                 isAnimationing = false;
 
-                Drawable imgDrawable = mActivity.getResources().getDrawable(R.mipmap.publish_photo_ico_up);
+                Drawable imgDrawable = mActivity.getResources().getDrawable(R.drawable.publish_photo_ico_up);
                 imgDrawable.setBounds(0, 0, imgDrawable.getMinimumWidth(), imgDrawable.getMinimumHeight());
                 mTitleTextView.setCompoundDrawables(null, null, imgDrawable, null);
             }
@@ -218,7 +218,7 @@ public class SelectPhotosHelper {
                 mPhotoListView.setVisibility(View.GONE);
 
 
-                Drawable imgDrawable = mActivity.getResources().getDrawable(R.mipmap.publish_photo_ico_down);
+                Drawable imgDrawable = mActivity.getResources().getDrawable(R.drawable.publish_photo_ico_down);
                 imgDrawable.setBounds(0, 0, imgDrawable.getMinimumWidth(), imgDrawable.getMinimumHeight());
                 mTitleTextView.setCompoundDrawables(null, null, imgDrawable, null);
             }

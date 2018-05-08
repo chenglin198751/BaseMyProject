@@ -53,5 +53,5 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/padding_big"
-        android:src="@mipmap/publish_circle_info_arrow" />
+        android:src="@drawable/publish_circle_info_arrow" />
 </RelativeLayout>

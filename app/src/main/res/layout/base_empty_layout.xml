@@ -14,7 +14,7 @@
             android:id="@+id/empty_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/empty_icon" />
+            android:src="@drawable/empty_icon" />
 
         <TextView
             android:id="@+id/empty_text"

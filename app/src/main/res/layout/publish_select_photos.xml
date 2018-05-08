@@ -17,7 +17,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:scaleType="centerInside"
-            android:src="@mipmap/return_image" />
+            android:src="@drawable/return_image" />
 
         <TextView
             android:id="@+id/title"
