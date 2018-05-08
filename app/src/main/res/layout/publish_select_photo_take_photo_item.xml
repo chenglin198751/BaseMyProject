@@ -10,5 +10,5 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:scaleType="centerInside"
-        android:src="@mipmap/publish_album_take_photo_icon" />
+        android:src="@drawable/publish_album_take_photo_icon" />
 </RelativeLayout>

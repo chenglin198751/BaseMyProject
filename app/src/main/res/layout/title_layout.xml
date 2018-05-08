@@ -22,7 +22,7 @@
         android:layout_height="@dimen/main_title_height"
         android:layout_alignParentLeft="true"
         android:scaleType="centerInside"
-        android:src="@mipmap/return_image" />
+        android:src="@drawable/return_image" />
 
     <RelativeLayout
         android:id="@+id/menu_linear"

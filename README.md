@@ -83,7 +83,7 @@
 **36、LongImageView 类**：自定义的用于显示长图的控件。基于WebView改造而来，性能卓越。
 
 **37、CenterDrawable 类**：自定义的可以居中显示一个小图片的类。比如可以用于设置一个图片的未显示图片之前的默认图。
-        用法：imageView.setImageDrawable(new CenterDrawable(R.mipmap.image_loadding_icon))
+        用法：imageView.setImageDrawable(new CenterDrawable(R.drawable.image_loadding_icon))
 
 **38、PolygonImageView 类**：github 地址：https://github.com/AlbertGrobas/PolygonImageView
         一个实现多边形的ImageView 类。四边形，五边形，六边形。另外还有星星，撕纸形状等，还可以自定义形状。

@@ -17,5 +17,5 @@
         android:layout_centerInParent="true"
         android:background="#4C000000"
         android:scaleType="centerInside"
-        android:src="@mipmap/publish_album_photo_checked" />
+        android:src="@drawable/publish_album_photo_checked" />
 </RelativeLayout>

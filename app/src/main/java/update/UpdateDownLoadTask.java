@@ -78,7 +78,7 @@ public class UpdateDownLoadTask {
         if (downNotification == null) {
             RemoteViews remoteView = new RemoteViews(MyApp.getApp().getPackageName(), R.layout.notification_progress_layout);
             downNotification = new Notification();
-            downNotification.icon = R.mipmap.ic_launcher;
+            downNotification.icon = R.drawable.ic_launcher;
             downNotification.contentView = remoteView;
             downNotification.flags = Notification.FLAG_ONGOING_EVENT;
             downNotification.tickerText = text;
