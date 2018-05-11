@@ -18,7 +18,7 @@ public class Constants {
     public static final String ACTION_GET_PHOTO_LIST = "ACTION_GET_PHOTO_LIST";
     public static final String KEY_PHOTO_LIST = "KEY_PHOTO_LIST";
 
-    public static void init() {
+    static {
         Display display = ((WindowManager) MyApp.getApp().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Constants.screenWidth = display.getWidth();
         Constants.screenHeight = display.getHeight();

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.os.Bundle;
 import android.support.v4.graphics.BitmapCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -17,6 +18,7 @@ import test.TestFragment;
 import test.TestPullDownRefreshActivity;
 import test.TestRecyclerViewRefreshActivity;
 import utils.BitmapUtils;
+import utils.Constants;
 import utils.MyUtils;
 
 /**
@@ -37,7 +39,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
+                Log.v("tag_2","width = " + Constants.getScreenWidth());
             }
         });
 

@@ -61,8 +61,4 @@ public class AppHelper {
                 .build();
         Picasso.setSingletonInstance(picasso);
     }
-
-    public static void initDisplayMetrics() {
-        Constants.init();
-    }
 }
