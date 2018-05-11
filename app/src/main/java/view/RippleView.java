@@ -37,9 +37,9 @@ public class RippleView extends RelativeLayout {
     //自定义view集合
     private ArrayList<CircleView> rippleViewList = new ArrayList<>();
     //每次动画的时间
-    private int rippleDurationTime = 4000;
+    private static final int RIPPLE_DURATION_TIME = 5000;
     //涟漪条目
-    private int rippleAmount = 4;
+    private static final int RIPPLE_AMOUNT = 4;
     //每条涟漪依次出现的延迟
     private int rippleDelay;
     //涟漪从出现到消失的动画次数，ValueAnimator.INFINITE为无限次
@@ -48,25 +48,22 @@ public class RippleView extends RelativeLayout {
 
     public RippleView(Context context) {
         super(context);
-        init();
     }
 
 
     public RippleView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
     }
 
 
     public RippleView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
 
     private void init() {
         //画每个圆的时间间隔为一个圆的动画时间除以总共出现圆的个数，达到每个圆出现的时间间隔一致
-        rippleDelay = rippleDurationTime / rippleAmount;
+        rippleDelay = RIPPLE_DURATION_TIME / RIPPLE_AMOUNT;
         //初始化画笔
         paint = new Paint();
         paint.setAntiAlias(true);
@@ -77,13 +74,13 @@ public class RippleView extends RelativeLayout {
         rippleParams.addRule(CENTER_IN_PARENT, TRUE);
 
         animatorSet = new AnimatorSet();
-        animatorSet.setDuration(rippleDurationTime);
+        animatorSet.setDuration(RIPPLE_DURATION_TIME);
         //加速插值器
         animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
         //圆圈的集合
         ArrayList<Animator> animatorList = new ArrayList<>();
         //缩放、渐变动画
-        for (int i = 0; i < rippleAmount; i++) {
+        for (int i = 0; i < RIPPLE_AMOUNT; i++) {
 
             CircleView rippleView = new CircleView(getContext());
             addView(rippleView, rippleParams);
@@ -195,10 +192,14 @@ public class RippleView extends RelativeLayout {
     /**
      * 设置涟漪的颜色
      */
-    public void setRippleColor(@ColorInt int color){
-        stopRippleAnimation();
+    public RippleView setRippleColor(@ColorInt int color){
         rippleColor = color;
+        return this;
+    }
+
+    public RippleView build(){
         init();
+        return this;
     }
 
     private boolean isRippleAnimationRunning() {
