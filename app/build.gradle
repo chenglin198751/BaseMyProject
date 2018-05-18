@@ -18,10 +18,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('../key_huichixia.jks')
-            keyAlias 'huichixia'
-            storePassword '2018huichixia'
-            keyPassword 'huichixia2018'
+            storeFile file('../keystore_debug.jks')
+            keyAlias 'young_debug'
+            storePassword '123abc'
+            keyPassword '123abc'
         }
     }
 
