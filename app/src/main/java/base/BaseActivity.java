@@ -28,6 +28,7 @@ import httpwork.HttpBuilder;
 import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
+import utils.LibAction;
 import utils.MyAction;
 import widget.BaseViewHelper;
 import widget.WaitDialog;
@@ -128,9 +129,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         }
     }
 
-    public final void sendMyBroadcast(String action, Bundle bundle) {
-        MyAction.sendMyBroadcast(action, bundle);
-    }
 
     public void addTag(String key, Object object) {
         if (mTagMap == null) {
@@ -250,14 +248,14 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     private void registerBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MyAction.ACTION_BASE_BROADCAST);
+        intentFilter.addAction(LibAction.ACTION_BASE_BROADCAST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MyAction.ACTION_BASE_BROADCAST)) {
+            if (intent.getAction().equals(LibAction.ACTION_BASE_BROADCAST)) {
                 String myAction = intent.getStringExtra("action");
                 onMyBroadcastReceive(myAction, intent.getBundleExtra("bundle"));
             }
