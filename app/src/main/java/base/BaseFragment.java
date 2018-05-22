@@ -18,6 +18,7 @@ import httpwork.HttpBuilder;
 import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
+import utils.LibAction;
 import utils.MyAction;
 import widget.BaseViewHelper;
 import widget.WaitDialog;
@@ -43,10 +44,6 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView {
         HttpBuilder builder = new HttpBuilder();
         builder.setCache(false);
         HttpUtils.postWithHeader(getContext(), url, null, map, builder, httpCallback);
-    }
-
-    public final void sendMyBroadcast(String action, Bundle bundle) {
-        MyAction.sendMyBroadcast(action, bundle);
     }
 
     @CallSuper
