@@ -5,8 +5,8 @@ android {
     buildToolsVersion rootProject.ext.BUILD_TOOLS_VERSION
     defaultConfig {
         applicationId "cheerly.mybaseproject"
-        minSdkVersion 15
-        targetSdkVersion 27
+        minSdkVersion 14
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
