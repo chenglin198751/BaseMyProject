@@ -4,7 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import base.MyApp;
+import base.BaseApp;
 import cheerly.mybaseproject.R;
 import utils.BaseUtils;
 
@@ -17,7 +17,7 @@ public class ToastUtils {
     private static Toast mToast;
 
     public static void show(int resId) {
-        show(MyApp.getApp().getString(resId));
+        show(BaseApp.getApp().getString(resId));
     }
 
     public static void show(final String text) {
@@ -36,9 +36,9 @@ public class ToastUtils {
     private static void showToast(String text) {
         TextView tvMessage;
         if (mToast == null) {
-            mToast = new Toast(MyApp.getApp());
+            mToast = new Toast(BaseApp.getApp());
 
-            View view = View.inflate(MyApp.getApp(), R.layout.my_toast_layout, null);
+            View view = View.inflate(BaseApp.getApp(), R.layout.my_toast_layout, null);
             tvMessage = view.findViewById(R.id.message);
             tvMessage.setText(text);
 

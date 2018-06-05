@@ -11,6 +11,6 @@ public class BaseAction {
         Intent intent = new Intent(BaseAction.ACTION_BASE_BROADCAST);
         intent.putExtra("action", action);
         intent.putExtra("bundle", bundle);
-        LocalBroadcastManager.getInstance(MyApp.getApp()).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(BaseApp.getApp()).sendBroadcast(intent);
     }
 }

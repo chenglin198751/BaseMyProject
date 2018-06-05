@@ -6,7 +6,7 @@ import android.view.WindowManager;
 
 import com.google.gson.Gson;
 
-import base.MyApp;
+import base.BaseApp;
 
 /**
  * 公共常量类
@@ -19,7 +19,7 @@ public class Constants {
     public static final String KEY_PHOTO_LIST = "KEY_PHOTO_LIST";
 
     static {
-        Display display = ((WindowManager) MyApp.getApp().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Display display = ((WindowManager) BaseApp.getApp().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Constants.screenWidth = display.getWidth();
         Constants.screenHeight = display.getHeight();
     }

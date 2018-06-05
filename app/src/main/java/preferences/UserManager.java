@@ -3,7 +3,7 @@ package preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import base.MyApp;
+import base.BaseApp;
 
 public class UserManager {
 
@@ -12,21 +12,21 @@ public class UserManager {
 	}
 
 	public static void clear(){
-		getPreferences(MyApp.getApp()).edit().clear().commit();
+		getPreferences(BaseApp.getApp()).edit().clear().commit();
 	}
 
 	/** 登录ID */
 	private static final String uid = "uid";
 
 	public static void setUid(String lastLogin) {
-		SharedPreferences prefs = getPreferences(MyApp.getApp());
+		SharedPreferences prefs = getPreferences(BaseApp.getApp());
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString(uid, lastLogin);
 		editor.commit();
 	}
 
 	public static String getUid() {
-		return getPreferences(MyApp.getApp()).getString(uid, "");
+		return getPreferences(BaseApp.getApp()).getString(uid, "");
 	}
 
 }

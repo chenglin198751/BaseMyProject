@@ -40,7 +40,7 @@ import java.util.Date;
 import java.util.List;
 
 import base.BaseActivity;
-import base.MyApp;
+import base.BaseApp;
 import bean.ApkItem;
 import widget.ToastUtils;
 
@@ -54,7 +54,7 @@ public class BaseUtils {
      * 判断手机是否联网
      */
     public static boolean hasNet() {
-        ConnectivityManager manager = (ConnectivityManager) MyApp.getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager manager = (ConnectivityManager) BaseApp.getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (manager == null) {
             return false;
         }
@@ -66,14 +66,14 @@ public class BaseUtils {
     }
 
     public static String getString(int id) {
-        return MyApp.getApp().getResources().getString(id);
+        return BaseApp.getApp().getResources().getString(id);
     }
 
     /**
      * 将dip转化为px *
      */
     public static int dip2px(float dipValue) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, MyApp.getApp().getResources().getDisplayMetrics());
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, BaseApp.getApp().getResources().getDisplayMetrics());
     }
 
     /**
@@ -374,7 +374,7 @@ public class BaseUtils {
     public static String getVerCode() {
         if (mVerCode == null) {
             try {
-                mVerCode = MyApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
+                mVerCode = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -388,7 +388,7 @@ public class BaseUtils {
     public static String getVerName() {
         if (mVerName == null) {
             try {
-                mVerName = MyApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
+                mVerName = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -402,12 +402,12 @@ public class BaseUtils {
     public static String getDeviceId() {
         if (mStrImei == null) {
             try {
-                if (ActivityCompat.checkSelfPermission(MyApp.getApp(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                    TelephonyManager telephonyManager = (TelephonyManager) MyApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+                if (ActivityCompat.checkSelfPermission(BaseApp.getApp(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                    TelephonyManager telephonyManager = (TelephonyManager) BaseApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
                     mStrImei = telephonyManager.getDeviceId();
                 }
                 if (TextUtils.isEmpty(mStrImei)) {
-                    mStrImei = Settings.Secure.getString(MyApp.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
+                    mStrImei = Settings.Secure.getString(BaseApp.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -421,7 +421,7 @@ public class BaseUtils {
     }
 
     public static String getPackageName() {
-        return MyApp.getApp().getPackageName();
+        return BaseApp.getApp().getPackageName();
     }
 
     /**

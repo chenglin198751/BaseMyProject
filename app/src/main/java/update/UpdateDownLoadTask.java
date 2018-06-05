@@ -7,7 +7,7 @@ import android.widget.RemoteViews;
 import java.io.File;
 import java.io.IOException;
 
-import base.MyApp;
+import base.BaseApp;
 import bean.ApkItem;
 import cheerly.mybaseproject.R;
 import httpwork.HttpDownloadCallback;
@@ -26,7 +26,7 @@ public class UpdateDownLoadTask {
 
     public UpdateDownLoadTask(UpdateDialog dialog) {
         mUpdateDialog = dialog;
-        NotificationManager = (android.app.NotificationManager) MyApp.getApp().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager = (android.app.NotificationManager) BaseApp.getApp().getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public void start(final String url) {
@@ -39,7 +39,7 @@ public class UpdateDownLoadTask {
             public void onSuccess(String filePath) {
                 mUpdateDialog.downloadSuccess();
                 cancelNotify();
-                BaseUtils.installApk(MyApp.getApp(), filePath);
+                BaseUtils.installApk(BaseApp.getApp(), filePath);
                 isDownLoading = false;
             }
 
@@ -76,7 +76,7 @@ public class UpdateDownLoadTask {
         final String text = "正在下载：" + progress + "%";
 
         if (downNotification == null) {
-            RemoteViews remoteView = new RemoteViews(MyApp.getApp().getPackageName(), R.layout.notification_progress_layout);
+            RemoteViews remoteView = new RemoteViews(BaseApp.getApp().getPackageName(), R.layout.notification_progress_layout);
             downNotification = new Notification();
             downNotification.icon = R.drawable.ic_launcher;
             downNotification.contentView = remoteView;
