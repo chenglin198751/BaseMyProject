@@ -47,8 +47,8 @@ public class MainFirstFragment extends BaseFragment {
     }
 
     @Override
-    public void onMyBroadcastReceiver(String action, Bundle bundle) {
-        super.onMyBroadcastReceiver(action, bundle);
+    public void onBroadcastReceiver(String action, Bundle bundle) {
+        super.onBroadcastReceiver(action, bundle);
     }
 
     @Override

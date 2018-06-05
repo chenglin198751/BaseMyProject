@@ -101,8 +101,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    public void onMyBroadcastReceiver(String myAction, Bundle bundle) {
-        super.onMyBroadcastReceiver(myAction, bundle);
+    public void onBroadcastReceiver(String myAction, Bundle bundle) {
+        super.onBroadcastReceiver(myAction, bundle);
     }
 
     @Override

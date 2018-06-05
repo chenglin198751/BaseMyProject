@@ -172,7 +172,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
                 list.add(mPicPath);
                 Bundle bundle = new Bundle();
                 bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, list);
-                BaseAction.sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
+                BaseAction.sendBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
                 mActivity.finish();
             }
         }
