@@ -7,9 +7,8 @@ import android.text.TextUtils;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
-import base.MyApp;
+import base.BaseApp;
 import httpwork.HttpUtils;
-import utils.Constants;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -24,7 +23,7 @@ public class AppHelper {
     public static boolean isAppMainProcess() {
         try {
             int pid = android.os.Process.myPid();
-            String process = getAppNameByPID(MyApp.getApp(), pid);
+            String process = getAppNameByPID(BaseApp.getApp(), pid);
             if (TextUtils.isEmpty(process)) {
                 return true;
             } else if (PROCESS_NAME.equalsIgnoreCase(process)) {
@@ -56,7 +55,7 @@ public class AppHelper {
      * 下载路径用的是OkHttp3设置的cache路径。Picasso内部没有实现硬盘缓存，用的是下载器自身带的缓存策略。
      */
     public static void initPicasso() {
-        Picasso picasso = new Picasso.Builder(MyApp.getApp())
+        Picasso picasso = new Picasso.Builder(BaseApp.getApp())
                 .downloader(new OkHttp3Downloader(HttpUtils.client))
                 .build();
         Picasso.setSingletonInstance(picasso);

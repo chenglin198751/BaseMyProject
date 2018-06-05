@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 
-import base.MyApp;
+import base.BaseApp;
 import cheerly.mybaseproject.R;
 
 public class CenterDrawable extends Drawable {
@@ -36,8 +36,8 @@ public class CenterDrawable extends Drawable {
         } else {
             mRadius = 0;
         }
-        mDrawable = MyApp.getApp().getResources().getDrawable(resId);
-        mPaint.setColor(MyApp.getApp().getResources().getColor(R.color.image_bg));
+        mDrawable = BaseApp.getApp().getResources().getDrawable(resId);
+        mPaint.setColor(BaseApp.getApp().getResources().getColor(R.color.image_bg));
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setAntiAlias(true);
     }

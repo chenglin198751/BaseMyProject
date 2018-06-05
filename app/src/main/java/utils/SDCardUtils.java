@@ -4,7 +4,7 @@ import android.os.Environment;
 
 import java.io.File;
 
-import base.MyApp;
+import base.BaseApp;
 
 public class SDCardUtils {
     public final static String SDCARD_PATH = getDataPath();
@@ -19,9 +19,9 @@ public class SDCardUtils {
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
-            cachePath = MyApp.getApp().getExternalCacheDir().getAbsolutePath();
+            cachePath = BaseApp.getApp().getExternalCacheDir().getAbsolutePath();
         } else {
-            cachePath = MyApp.getApp().getFilesDir().getAbsolutePath();
+            cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
         }
         return cachePath + File.separator;
     }

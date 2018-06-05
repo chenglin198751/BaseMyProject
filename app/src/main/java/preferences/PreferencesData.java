@@ -3,7 +3,7 @@ package preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import base.MyApp;
+import base.BaseApp;
 
 public class PreferencesData {
     private static String update_dialog_times = "update_dialog_times";//更新对话框
@@ -13,7 +13,7 @@ public class PreferencesData {
     }
 
     public static void clear() {
-        getPreferences(MyApp.getApp()).edit().clear().apply();
+        getPreferences(BaseApp.getApp()).edit().clear().apply();
     }
 
     /**
@@ -22,22 +22,22 @@ public class PreferencesData {
     private static final String LAST_ALBUM_ID = "LAST_ALBUM_ID";
 
     public static void setLastAlbumId(String value) {
-        SharedPreferences prefs = getPreferences(MyApp.getApp());
+        SharedPreferences prefs = getPreferences(BaseApp.getApp());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(LAST_ALBUM_ID, value);
         editor.apply();
     }
 
     public static String getLastAlbumId() {
-        return getPreferences(MyApp.getApp()).getString(LAST_ALBUM_ID, "");
+        return getPreferences(BaseApp.getApp()).getString(LAST_ALBUM_ID, "");
     }
 
     public static Long getUpdateDialogTimes() {
-        return getPreferences(MyApp.getApp()).getLong(update_dialog_times, 0);
+        return getPreferences(BaseApp.getApp()).getLong(update_dialog_times, 0);
     }
 
     public static void setUpdateDialogTimes(long value) {
-        SharedPreferences prefs = getPreferences(MyApp.getApp());
+        SharedPreferences prefs = getPreferences(BaseApp.getApp());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putLong(update_dialog_times, value);
         editor.apply();
