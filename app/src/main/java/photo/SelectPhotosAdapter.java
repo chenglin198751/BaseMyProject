@@ -19,7 +19,7 @@ import java.util.List;
 import cheerly.mybaseproject.R;
 import utils.Constants;
 import base.LibAction;
-import utils.MyUtils;
+import utils.BaseUtils;
 import utils.SDCardUtils;
 import view.WebImageView;
 import widget.ToastUtils;
@@ -128,7 +128,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
             viewHolder.photoImg.setTag(R.id.publish_picture_id, position);
             viewHolder.photoImg.setOnClickListener(imgClickListener);
 
-            int width = MyUtils.dip2px(100f);
+            int width = BaseUtils.dip2px(100f);
             viewHolder.photoImg.load(new File(photoItem.getPath()), width, width);
 
             if (!mActivity.isSingleType) {

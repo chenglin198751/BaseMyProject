@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 
 import cheerly.mybaseproject.R;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 public class RippleView extends RelativeLayout {
 
@@ -25,7 +25,7 @@ public class RippleView extends RelativeLayout {
     //最里面涟漪的实心圆
     private float rippleStrokeWidth = 10;
     //涟漪的半径
-    private float rippleRadius = MyUtils.dip2px(30f);
+    private float rippleRadius = BaseUtils.dip2px(30f);
     //自定义的动画开始与结束接口
     private AnimationListener mAnimationListener;
     //画笔

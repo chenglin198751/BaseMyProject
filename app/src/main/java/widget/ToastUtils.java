@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import base.MyApp;
 import cheerly.mybaseproject.R;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 
 /**
@@ -21,10 +21,10 @@ public class ToastUtils {
     }
 
     public static void show(final String text) {
-        if (MyUtils.isUiThread()) {
+        if (BaseUtils.isUiThread()) {
             showToast(text);
         } else {
-            MyUtils.getHandler().post(new Runnable() {
+            BaseUtils.getHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     showToast(text);

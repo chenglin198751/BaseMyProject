@@ -15,7 +15,7 @@ import httpwork.HttpCallback;
 import httpwork.HttpUrl;
 import preferences.PreferencesData;
 import utils.Constants;
-import utils.MyUtils;
+import utils.BaseUtils;
 import widget.ToastUtils;
 
 /**
@@ -64,12 +64,12 @@ public class UpdateDialog extends Dialog {
         mRightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!MyUtils.hasNet()) {
+                if (!BaseUtils.hasNet()) {
                     ToastUtils.show(getContext().getString(R.string.net_error));
                     return;
                 }
 
-                if (mRightBtn.getText().equals(MyUtils.getString(R.string.update_version_update))) {
+                if (mRightBtn.getText().equals(BaseUtils.getString(R.string.update_version_update))) {
                     if (mVersionModel != null && !TextUtils.isEmpty(mVersionModel.url)) {
                         if (mDownLoadTask == null) {
                             mDownLoadTask = new UpdateDownLoadTask(UpdateDialog.this);
@@ -81,17 +81,17 @@ public class UpdateDialog extends Dialog {
                         } else if (HcxVersionModel.UPDATE_FORCE == mVersionModel.updateType) {
                             mRightBtn.setText(R.string.update_version_downloading);
                         }
-                        ToastUtils.show(MyUtils.getString(R.string.update_version_downloading));
+                        ToastUtils.show(BaseUtils.getString(R.string.update_version_downloading));
                     } else {
                         ToastUtils.show("无效的下载路径");
                     }
-                } else if (mRightBtn.getText().equals(MyUtils.getString(R.string.update_version_downloading))) {
-                    ToastUtils.show(MyUtils.getString(R.string.update_version_downloading));
-                } else if (mRightBtn.getText().equals(MyUtils.getString(R.string.update_version_install))) {
+                } else if (mRightBtn.getText().equals(BaseUtils.getString(R.string.update_version_downloading))) {
+                    ToastUtils.show(BaseUtils.getString(R.string.update_version_downloading));
+                } else if (mRightBtn.getText().equals(BaseUtils.getString(R.string.update_version_install))) {
                     if (mVersionModel != null) {
                         boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName);
                         if (isExist) {
-                            MyUtils.installApk(mActivity, UpdateDownLoadTask.getApkPath());
+                            BaseUtils.installApk(mActivity, UpdateDownLoadTask.getApkPath());
                         } else {
                             ToastUtils.show("安装失败，请立即更新");
                             mRightBtn.setText(R.string.update_version_update);

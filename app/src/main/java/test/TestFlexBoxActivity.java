@@ -1,12 +1,8 @@
 package test;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.flexbox.FlexDirection;
@@ -14,7 +10,7 @@ import com.google.android.flexbox.FlexboxLayout;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 public class TestFlexBoxActivity extends BaseActivity {
     //例子：https://mp.weixin.qq.com/s/D0sCoIt7Gsms5JK9ZIhuhw
@@ -36,10 +32,10 @@ public class TestFlexBoxActivity extends BaseActivity {
 
         for (int i = 0; i < strArrs.length; i++) {
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(-2, -2);
-            params.leftMargin = MyUtils.dip2px(1f);
-            params.rightMargin = MyUtils.dip2px(1f);
-            params.topMargin = MyUtils.dip2px(1f);
-            params.bottomMargin = MyUtils.dip2px(1f);
+            params.leftMargin = BaseUtils.dip2px(1f);
+            params.rightMargin = BaseUtils.dip2px(1f);
+            params.topMargin = BaseUtils.dip2px(1f);
+            params.bottomMargin = BaseUtils.dip2px(1f);
             mFlexboxLayout.addView(buildTextView(strArrs[i]), params);
         }
 

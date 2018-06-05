@@ -20,7 +20,7 @@ import base.BaseRecyclerViewHolder;
 import bean.ApkItem;
 import cheerly.mybaseproject.R;
 import pullrefresh.PullToRefresh;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 public class TestActivity extends BaseActivity {
     private PullToRefresh mPullToRefresh;
@@ -155,7 +155,7 @@ public class TestActivity extends BaseActivity {
                     public void run() {
                         final Drawable drawable = item.packageInfo.applicationInfo.loadIcon(mContext.getPackageManager());
 
-                        MyUtils.getHandler().post(new Runnable() {
+                        BaseUtils.getHandler().post(new Runnable() {
                             @Override
                             public void run() {
                                 if (imageView.getTag() != null && imageView.getTag() == item) {

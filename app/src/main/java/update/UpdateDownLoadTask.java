@@ -13,7 +13,7 @@ import cheerly.mybaseproject.R;
 import httpwork.HttpDownloadCallback;
 import httpwork.HttpUtils;
 import okhttp3.Call;
-import utils.MyUtils;
+import utils.BaseUtils;
 import utils.SDCardUtils;
 import widget.ToastUtils;
 
@@ -39,7 +39,7 @@ public class UpdateDownLoadTask {
             public void onSuccess(String filePath) {
                 mUpdateDialog.downloadSuccess();
                 cancelNotify();
-                MyUtils.installApk(MyApp.getApp(), filePath);
+                BaseUtils.installApk(MyApp.getApp(), filePath);
                 isDownLoading = false;
             }
 
@@ -106,7 +106,7 @@ public class UpdateDownLoadTask {
      * 突然断网，取消下载进度
      */
     public void suddenBreadNet() {
-        MyUtils.getHandler().post(new Runnable() {
+        BaseUtils.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 cancelNotify();
@@ -122,7 +122,7 @@ public class UpdateDownLoadTask {
 
 
     public static boolean apkExist(Context context, String versionName) {
-        ApkItem apkItem = MyUtils.getApkInfo(context, getApkPath());
+        ApkItem apkItem = BaseUtils.getApkInfo(context, getApkPath());
 
         if (apkItem == null) {
             return false;
@@ -136,6 +136,6 @@ public class UpdateDownLoadTask {
     }
 
     public static String getApkPath() {
-        return SDCardUtils.SDCARD_PATH + MyUtils.getPackageName() + ".apk";
+        return SDCardUtils.SDCARD_PATH + BaseUtils.getPackageName() + ".apk";
     }
 }

@@ -44,7 +44,7 @@ import base.MyApp;
 import bean.ApkItem;
 import widget.ToastUtils;
 
-public class MyUtils {
+public class BaseUtils {
     private static Handler mHandler;
     private static String mStrImei = null;
     private static String mVerCode = null;
@@ -246,7 +246,7 @@ public class MyUtils {
      */
     public static Handler getHandler() {
         if (mHandler == null) {
-            synchronized (MyUtils.class) {
+            synchronized (BaseUtils.class) {
                 if (mHandler == null) {
                     mHandler = new Handler(Looper.getMainLooper());
                 }
