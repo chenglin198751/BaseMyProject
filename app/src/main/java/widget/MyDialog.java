@@ -13,7 +13,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import cheerly.mybaseproject.R;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 
 public class MyDialog extends Dialog {
@@ -86,8 +86,8 @@ public class MyDialog extends Dialog {
             public void run() {
                 ScrollView scrollView = (ScrollView) mDialogView.findViewById(R.id.scrollView);
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) scrollView.getLayoutParams();
-                if (mMessage.getHeight() > MyUtils.dip2px(330f)) {
-                    params.height = MyUtils.dip2px(330f);
+                if (mMessage.getHeight() > BaseUtils.dip2px(330f)) {
+                    params.height = BaseUtils.dip2px(330f);
                     scrollView.setLayoutParams(params);
                 } else {
                     if (params.height != ViewGroup.LayoutParams.WRAP_CONTENT) {

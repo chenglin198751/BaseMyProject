@@ -18,7 +18,7 @@ import java.util.List;
 
 import cheerly.mybaseproject.R;
 import preferences.PreferencesData;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 /**
  * weichenglin create in 16/4/11
@@ -264,7 +264,7 @@ public class SelectPhotosHelper {
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int padding = MyUtils.dip2px(1);
+            int padding = BaseUtils.dip2px(1);
             outRect.right = padding;
             outRect.top = padding;
             outRect.bottom = 0;

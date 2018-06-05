@@ -25,7 +25,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import utils.MyUtils;
+import utils.BaseUtils;
 import utils.SDCardUtils;
 
 /**
@@ -82,7 +82,7 @@ public class HttpUtils {
                         });
                     }
                 } else {
-                    MyUtils.getHandler().post(new Runnable() {
+                    BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             httpCallback.onFailure(e);
@@ -113,7 +113,7 @@ public class HttpUtils {
                         });
                     }
                 } else {
-                    MyUtils.getHandler().post(new Runnable() {
+                    BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -289,7 +289,7 @@ public class HttpUtils {
             return;
         }
 
-        final String defaultPath = HTTP_DOWNLOAD_PATH + MyUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+        final String defaultPath = HTTP_DOWNLOAD_PATH + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
         if (isNeedCache) {
             File cacheFile = new File(defaultPath);
             if (cacheFile.exists()) {
@@ -318,7 +318,7 @@ public class HttpUtils {
             @Override
             public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
-                MyUtils.getHandler().post(new Runnable() {
+                BaseUtils.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         downloadCallback.onFailure(e);
@@ -350,7 +350,7 @@ public class HttpUtils {
                             final long tempTotal = total;
                             final long tempSum = sum;
                             final int tempProgress = progress;
-                            MyUtils.getHandler().post(new Runnable() {
+                            BaseUtils.getHandler().post(new Runnable() {
                                 @Override
                                 public void run() {
                                     downloadCallback.onProgress(call, tempTotal, tempSum, tempProgress);
@@ -363,7 +363,7 @@ public class HttpUtils {
                     inputStream.close();
                     fileOutputStream.close();
 
-                    MyUtils.getHandler().post(new Runnable() {
+                    BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             downloadCallback.onSuccess(filePath);
@@ -372,7 +372,7 @@ public class HttpUtils {
 
                 } catch (final IOException e) {
                     e.printStackTrace();
-                    MyUtils.getHandler().post(new Runnable() {
+                    BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             downloadCallback.onFailure(e);
@@ -387,16 +387,16 @@ public class HttpUtils {
      * 通用字段
      */
     private static void addCommonData(Map<String, Object> params) {
-        params.put("IMEI", MyUtils.getDeviceId());
+        params.put("IMEI", BaseUtils.getDeviceId());
         params.put("product", Build.MODEL);
         params.put("brand", Build.BRAND);
         params.put("sdkVer", Build.VERSION.SDK_INT);
         params.put("sdkVerName", Build.VERSION.RELEASE);
-        params.put("appVer", MyUtils.getVerCode());
-        params.put("appVerName", MyUtils.getVerName());
+        params.put("appVer", BaseUtils.getVerCode());
+        params.put("appVerName", BaseUtils.getVerName());
         params.put("phone", "android");
-        params.put("channel", MyUtils.getChannel());
-        params.put("packageName", MyUtils.getPackageName());
+        params.put("channel", BaseUtils.getChannel());
+        params.put("packageName", BaseUtils.getPackageName());
     }
 
     /**

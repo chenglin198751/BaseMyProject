@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import cheerly.mybaseproject.R;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 /**
  * Created by chenglin on 2017-2-21.
@@ -18,8 +18,8 @@ public class CustomViewPagerIndicator extends LinearLayout {
     private int mDotCount;
     private ViewPager mViewPager;
     private int mDotSelector = R.drawable.viewpage_dot_selector;
-    private int mSize = MyUtils.dip2px(8f);
-    private int mMargin = MyUtils.dip2px(5f);
+    private int mSize = BaseUtils.dip2px(8f);
+    private int mMargin = BaseUtils.dip2px(5f);
 
     public CustomViewPagerIndicator(Context context) {
         super(context);

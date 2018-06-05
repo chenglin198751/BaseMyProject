@@ -5,15 +5,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.youth.banner.Banner;
-import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
-import com.youth.banner.loader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +20,7 @@ import cheerly.mybaseproject.R;
 import helper.BannerImageLoader;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
-import utils.MyUtils;
+import utils.BaseUtils;
 import view.WebImageView;
 
 public class TestPullDownRefreshActivity extends BaseActivity {
@@ -140,7 +136,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             TextView title = (TextView) convertView.findViewById(R.id.title);
             WebImageView webImageView = (WebImageView) convertView.findViewById(R.id.image_view);
             title.setText("标题 - " + position);
-            webImageView.load(imagesList.get(position), MyUtils.dip2px(100f), MyUtils.dip2px(100f));
+            webImageView.load(imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f));
 
             return convertView;
         }

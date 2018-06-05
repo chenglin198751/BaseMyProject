@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-import utils.MyUtils;
+import utils.BaseUtils;
 
 /**
  * Created by chenglin on 2017-6-21.
@@ -46,7 +46,7 @@ public class CornerLinearLayout extends LinearLayout {
                 corner = Integer.parseInt(tag.trim());
             }
         }
-        corner = MyUtils.dip2px(corner);
+        corner = BaseUtils.dip2px(corner);
     }
 
     /**

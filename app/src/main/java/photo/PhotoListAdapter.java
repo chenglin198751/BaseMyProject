@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.List;
 
 import cheerly.mybaseproject.R;
-import utils.MyUtils;
+import utils.BaseUtils;
 import view.WebImageView;
 
 /**
@@ -63,7 +63,7 @@ public class PhotoListAdapter extends BaseAdapter {
         PhotoAlbum photoItem = mPhotoAlbums.get(position);
 
         if (photoItem != null && !TextUtils.isEmpty(photoItem.getPath())) {
-            int width = MyUtils.dip2px(100);
+            int width = BaseUtils.dip2px(100);
             holder.mImageView.load(new File(photoItem.getPath()), width, width);
 
         }

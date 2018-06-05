@@ -23,14 +23,13 @@ import java.io.File;
 import java.io.IOException;
 
 import base.BaseActivity;
-import base.MyApp;
 import cheerly.mybaseproject.R;
 import httpwork.HttpDownloadCallback;
 import httpwork.HttpUtils;
 import okhttp3.Call;
 import pl.droidsonroids.gif.GifDrawable;
 import utils.GifCacheUtils;
-import utils.MyUtils;
+import utils.BaseUtils;
 
 /**
  * Created by chenglin on 2017-7-14.
@@ -176,7 +175,7 @@ public class WebImageView extends ImageView {
                     if (isFinish()) {
                         return;
                     }
-                    MyUtils.getHandler().post(new Runnable() {
+                    BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             if (!isFinish()) {
@@ -210,8 +209,8 @@ public class WebImageView extends ImageView {
         private int mRadiusX = 0, mRadiusY = 0;
 
         public PicassoRoundTransform(int radiusX, int radiusY) {
-            mRadiusX = MyUtils.dip2px(radiusX);
-            mRadiusY = MyUtils.dip2px(radiusY);
+            mRadiusX = BaseUtils.dip2px(radiusX);
+            mRadiusY = BaseUtils.dip2px(radiusY);
         }
 
         @Override
