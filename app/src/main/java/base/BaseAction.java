@@ -7,7 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 public class BaseAction {
     public final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
 
-    public static void sendMyBroadcast(String action, Bundle bundle) {
+    public static void sendBroadcast(String action, Bundle bundle) {
         Intent intent = new Intent(BaseAction.ACTION_BASE_BROADCAST);
         intent.putExtra("action", action);
         intent.putExtra("bundle", bundle);

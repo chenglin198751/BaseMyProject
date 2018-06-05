@@ -116,12 +116,12 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     @CallSuper
-    public void onMyBroadcastReceiver(String action, Bundle bundle) {
+    public void onBroadcastReceiver(String action, Bundle bundle) {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         if (fragments != null && fragments.size() > 0) {
             for (Fragment fragment : fragments) {
                 if (fragment instanceof BaseFragment) {
-                    ((BaseFragment) fragment).onMyBroadcastReceiver(action, bundle);
+                    ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
                 }
             }
         }
@@ -255,7 +255,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(BaseAction.ACTION_BASE_BROADCAST)) {
                 String myAction = intent.getStringExtra("action");
-                onMyBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
+                onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
             }
         }
     };
