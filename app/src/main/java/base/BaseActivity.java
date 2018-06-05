@@ -246,14 +246,14 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     private void registerBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(LibAction.ACTION_BASE_BROADCAST);
+        intentFilter.addAction(BaseAction.ACTION_BASE_BROADCAST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(LibAction.ACTION_BASE_BROADCAST)) {
+            if (intent.getAction().equals(BaseAction.ACTION_BASE_BROADCAST)) {
                 String myAction = intent.getStringExtra("action");
                 onMyBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
             }
