@@ -15,7 +15,7 @@ import httpwork.HttpUtils;
 import okhttp3.Call;
 import utils.MyUtils;
 import utils.SDCardUtils;
-import widget.MyToast;
+import widget.ToastUtils;
 
 public class UpdateDownLoadTask {
     private static final int DOWN_NOTIFY_ID = 0;
@@ -54,7 +54,7 @@ public class UpdateDownLoadTask {
                 isDownLoading = false;
                 suddenBreadNet();
                 clearTempFile();
-                MyToast.show(R.string.net_error);
+                ToastUtils.show(R.string.net_error);
             }
         };
 

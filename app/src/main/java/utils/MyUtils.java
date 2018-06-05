@@ -42,7 +42,7 @@ import java.util.List;
 import base.BaseActivity;
 import base.MyApp;
 import bean.ApkItem;
-import widget.MyToast;
+import widget.ToastUtils;
 
 public class MyUtils {
     private static Handler mHandler;
@@ -517,11 +517,11 @@ public class MyUtils {
                 Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
                 context.startActivity(LaunchIntent);
             } else {
-                MyToast.show("你手机没安装此应用");
+                ToastUtils.show("你手机没安装此应用");
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            MyToast.show("你手机没安装此应用");
+            ToastUtils.show("你手机没安装此应用");
         }
     }
 

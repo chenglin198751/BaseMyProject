@@ -16,7 +16,7 @@ import httpwork.HttpUrl;
 import preferences.PreferencesData;
 import utils.Constants;
 import utils.MyUtils;
-import widget.MyToast;
+import widget.ToastUtils;
 
 /**
  * Created by chenglin on 2017-12-4.
@@ -65,7 +65,7 @@ public class UpdateDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (!MyUtils.hasNet()) {
-                    MyToast.show(getContext().getString(R.string.net_error));
+                    ToastUtils.show(getContext().getString(R.string.net_error));
                     return;
                 }
 
@@ -81,19 +81,19 @@ public class UpdateDialog extends Dialog {
                         } else if (HcxVersionModel.UPDATE_FORCE == mVersionModel.updateType) {
                             mRightBtn.setText(R.string.update_version_downloading);
                         }
-                        MyToast.show(MyUtils.getString(R.string.update_version_downloading));
+                        ToastUtils.show(MyUtils.getString(R.string.update_version_downloading));
                     } else {
-                        MyToast.show("无效的下载路径");
+                        ToastUtils.show("无效的下载路径");
                     }
                 } else if (mRightBtn.getText().equals(MyUtils.getString(R.string.update_version_downloading))) {
-                    MyToast.show(MyUtils.getString(R.string.update_version_downloading));
+                    ToastUtils.show(MyUtils.getString(R.string.update_version_downloading));
                 } else if (mRightBtn.getText().equals(MyUtils.getString(R.string.update_version_install))) {
                     if (mVersionModel != null) {
                         boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName);
                         if (isExist) {
                             MyUtils.installApk(mActivity, UpdateDownLoadTask.getApkPath());
                         } else {
-                            MyToast.show("安装失败，请立即更新");
+                            ToastUtils.show("安装失败，请立即更新");
                             mRightBtn.setText(R.string.update_version_update);
                             mRightBtn.performLongClick();
                         }
