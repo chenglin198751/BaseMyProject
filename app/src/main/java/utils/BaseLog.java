@@ -6,7 +6,7 @@ import android.util.Log;
 
 import java.io.File;
 
-public class MyLog {
+public class BaseLog {
     private static boolean isDebug = false;
 
     static {
