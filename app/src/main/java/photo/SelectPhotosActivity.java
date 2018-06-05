@@ -14,7 +14,7 @@ import android.view.View;
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
 import utils.Constants;
-import base.LibAction;
+import base.BaseAction;
 import widget.ToastUtils;
 
 /**
@@ -129,7 +129,7 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
             if (mAdapter.getSelectedPhotoList() != null && mAdapter.getSelectedPhotoList().size() > 0) {
                 Bundle bundle = new Bundle();
                 bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, mAdapter.getSelectedPhotoList());
-                LibAction.sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
+                BaseAction.sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
                 finish();
             } else {
                 ToastUtils.show(R.string.publish_selected_single_photo);

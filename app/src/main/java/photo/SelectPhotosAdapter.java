@@ -18,7 +18,7 @@ import java.util.List;
 
 import cheerly.mybaseproject.R;
 import utils.Constants;
-import base.LibAction;
+import base.BaseAction;
 import utils.BaseUtils;
 import utils.SDCardUtils;
 import view.WebImageView;
@@ -172,7 +172,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
                 list.add(mPicPath);
                 Bundle bundle = new Bundle();
                 bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, list);
-                LibAction.sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
+                BaseAction.sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
                 mActivity.finish();
             }
         }
