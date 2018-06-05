@@ -15,7 +15,7 @@ import base.BaseActivity;
 import cheerly.mybaseproject.R;
 import utils.Constants;
 import base.LibAction;
-import widget.MyToast;
+import widget.ToastUtils;
 
 /**
  * weichenglin create in 16/4/11
@@ -67,7 +67,7 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {//获取权限成功
                 init();
             } else {//用户拒绝授予权限
-                MyToast.show("请开启访问权限");
+                ToastUtils.show("请开启访问权限");
             }
         }
     }
@@ -132,7 +132,7 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
                 LibAction.sendMyBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
                 finish();
             } else {
-                MyToast.show(R.string.publish_selected_single_photo);
+                ToastUtils.show(R.string.publish_selected_single_photo);
             }
         }
     }

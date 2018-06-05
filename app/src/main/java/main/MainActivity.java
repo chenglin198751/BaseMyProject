@@ -9,7 +9,7 @@ import base.BaseActivity;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import helper.ShowFragmentHelper;
-import widget.MyToast;
+import widget.ToastUtils;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static int TIME_LONG = 3 * 1000;//用户重复按返回键，检测是否真正要退出应用的时间间隔
@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (exitTime - mLastTime < TIME_LONG) {
             super.onBackPressed();
         } else {
-            MyToast.show(getString(R.string.quit_alert));
+            ToastUtils.show(getString(R.string.quit_alert));
             mLastTime = exitTime;
         }
     }

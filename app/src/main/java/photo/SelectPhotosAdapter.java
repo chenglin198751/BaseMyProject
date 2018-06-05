@@ -22,7 +22,7 @@ import base.LibAction;
 import utils.MyUtils;
 import utils.SDCardUtils;
 import view.WebImageView;
-import widget.MyToast;
+import widget.ToastUtils;
 
 /**
  * weichenglin create in 16/4/11
@@ -48,7 +48,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
                         if (mActivity.mCount > 0 && mSelectedList.size() == mActivity.mCount) {
                             String maxLimit = mActivity.getString(R.string.publish_max_selected_photo_limit);
                             maxLimit = maxLimit.replace("X", mActivity.mCount + "");
-                            MyToast.show(maxLimit);
+                            ToastUtils.show(maxLimit);
                             return;
                         }
                         mSelectedList.add(path);

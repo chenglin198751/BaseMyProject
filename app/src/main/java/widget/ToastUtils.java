@@ -13,7 +13,7 @@ import utils.MyUtils;
  * Created by chenglin on 2017-7-24.
  */
 
-public class MyToast {
+public class ToastUtils {
     private static Toast mToast;
 
     public static void show(int resId) {
