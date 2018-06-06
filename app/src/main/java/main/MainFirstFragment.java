@@ -1,5 +1,6 @@
 package main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,14 +9,15 @@ import java.util.UUID;
 
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
+import test.TestRecyclerViewRefreshActivity;
 import utils.DESUtils;
+import widget.ToastUtils;
 
 /**
  * Created by chenglin on 2017-9-14.
  */
 
 public class MainFirstFragment extends BaseFragment {
-    String aa;
 
 
     @Override
@@ -29,20 +31,10 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                aa = DESUtils.encrypt("今天天气真好，一起去郊游吧", "abcdabcd");
-                Log.v("tag_2", "加密 = " + aa);
+                startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
             }
         });
 
-        view.findViewById(R.id.button_2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Log.v("tag_2", "解密 = " + DESUtils.decrypt(aa, "abcdabcd"));
-
-                Log.v("tag_2", "解密 = " + UUID.randomUUID());
-
-            }
-        });
 
     }
 

@@ -5,7 +5,7 @@
     android:background="#ffffff"
     android:orientation="vertical">
 
-    <view.AutoSizeImageView
+    <view.WebImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="250dp" />
