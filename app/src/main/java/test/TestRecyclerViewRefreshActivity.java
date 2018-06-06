@@ -15,9 +15,12 @@ import base.BaseActivity;
 import base.BaseRecyclerViewAdapter;
 import base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
+import listener.OnViewPagerListener;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
 import view.AutoSizeImageView;
+import view.WebImageView;
+import widget.ViewPagerLayoutManager;
 
 /**
  * 资料：https://github.com/scwang90/SmartRefreshLayout
@@ -80,12 +83,27 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         mAdapter = new MyAdapter(this);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        ViewPagerLayoutManager mLayoutManager = new ViewPagerLayoutManager(getContext(),LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         setData(13, true);
 
+        mLayoutManager.setOnViewPagerListener(new OnViewPagerListener() {
+            @Override
+            public void onPageRelease(boolean isNext, int position) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position, boolean isBottom) {
+
+            }
+
+            @Override
+            public void onLayoutComplete() {
+
+            }
+        });
     }
 
     private void setData(int count, boolean isRefresh) {
@@ -128,12 +146,16 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         class ListHolder extends BaseRecyclerViewHolder {
-            AutoSizeImageView imageView;
+            WebImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
-                imageView = (AutoSizeImageView) itemView.findViewById(R.id.image_view);
-                imageView.setWidth(Constants.getScreenWidth());
+                imageView =  itemView.findViewById(R.id.image_view);
+
+                ViewGroup.LayoutParams params = imageView.getLayoutParams();
+                params.width = Constants.getScreenWidth();
+                params.height = Constants.getScreenHeight();
+                imageView.setLayoutParams(params);
             }
 
             @Override
