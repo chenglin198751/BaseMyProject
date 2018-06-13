@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import widget.MyWebViewActivity;
+import widget.BaseWebViewActivity;
 
 /**
  * Created by chenglin on 2017-8-23.
@@ -25,7 +25,7 @@ public class MyUri {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             context.startActivity(intent);
         } else if (uri.toLowerCase().startsWith("http://") || uri.toLowerCase().startsWith("https://")) {
-            MyWebViewActivity.start(context, uri, null);
+            BaseWebViewActivity.start(context, uri, null);
         }
     }
 }
