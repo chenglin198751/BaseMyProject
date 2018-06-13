@@ -17,8 +17,8 @@ import cheerly.mybaseproject.R;
  * Created by chenglin on 2017-8-23.
  */
 
-public class MyWebViewActivity extends BaseActivity {
-    private MyWebViewFragment mWebViewFragment;
+public class BaseWebViewActivity extends BaseActivity {
+    private BaseWebViewFragment mWebViewFragment;
     private String mUrl, mTitle;
 
     public static void start(Context context, String url, String title) {
@@ -26,7 +26,7 @@ public class MyWebViewActivity extends BaseActivity {
             throw new NullPointerException("url must is not null");
         }
 
-        Intent intent = new Intent(context, MyWebViewActivity.class);
+        Intent intent = new Intent(context, BaseWebViewActivity.class);
         intent.putExtra("url", url);
         intent.putExtra("title", title);
         context.startActivity(intent);
@@ -87,7 +87,7 @@ public class MyWebViewActivity extends BaseActivity {
     private void init() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        mWebViewFragment = MyWebViewFragment.newInstance(mUrl);
+        mWebViewFragment = BaseWebViewFragment.newInstance(mUrl);
         ft.add(R.id.fragment_base_id, mWebViewFragment);
         ft.commitAllowingStateLoss();
     }

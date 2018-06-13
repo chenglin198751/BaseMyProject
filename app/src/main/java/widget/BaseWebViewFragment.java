@@ -25,7 +25,7 @@ import cheerly.mybaseproject.R;
  * Created by chenglin on 2017-9-20.
  */
 
-public class MyWebViewFragment extends BaseFragment {
+public class BaseWebViewFragment extends BaseFragment {
     private WebView mWebView;
     private ProgressBar mPageLoadingProgressBar = null;
     private String mUrl;
@@ -33,8 +33,8 @@ public class MyWebViewFragment extends BaseFragment {
     /**
      * @return 构建一个MyWebViewFragment实例
      */
-    public static MyWebViewFragment newInstance(String url) {
-        MyWebViewFragment webViewFragment = new MyWebViewFragment();
+    public static BaseWebViewFragment newInstance(String url) {
+        BaseWebViewFragment webViewFragment = new BaseWebViewFragment();
         Bundle bundle = new Bundle();
         bundle.putString("url", url);
         webViewFragment.setArguments(bundle);
@@ -48,7 +48,7 @@ public class MyWebViewFragment extends BaseFragment {
 
     @Override
     protected int getContentLayout() {
-        return R.layout.my_fragment_webview_layout;
+        return R.layout.base_fragment_webview_layout;
     }
 
     @Override
