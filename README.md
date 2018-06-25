@@ -99,4 +99,4 @@
 
 **41、UpdateDialog 类**：一套完善的检查更新的对话框，稍作改动就可以实现复杂的检查更新逻辑
 
-**42、AutoScrollRecyclerView 类**：自动滚动的RecyclerView类，可以实现跑马灯效果，或者各种自动滚动效果
+**42、AutoScrollRecyclerView 类**：自动滚动的RecyclerView类，可以实现跑马灯效果，或者各种自动滚动效果。配合TestAutoScrollAdapter使用
