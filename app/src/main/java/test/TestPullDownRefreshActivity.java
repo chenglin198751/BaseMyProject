@@ -34,7 +34,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.pull_down_refresh_layout);
+        setContentLayout(R.layout.test_pull_down_refresh_layout);
 
         imagesList.add("http://img.zcool.cn/community/0166c756e1427432f875520f7cc838.jpg");
         imagesList.add("http://img.zcool.cn/community/018fdb56e1428632f875520f7b67cb.jpg");

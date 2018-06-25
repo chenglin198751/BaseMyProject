@@ -18,7 +18,6 @@ import cheerly.mybaseproject.R;
 import listener.OnViewPagerListener;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
-import view.AutoSizeImageView;
 import view.WebImageView;
 import widget.ViewPagerLayoutManager;
 
@@ -49,7 +48,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.recyclerview_refresh_layout);
+        setContentLayout(R.layout.test_recyclerview_refresh_layout);
 
 
         getTitleHelper().hideTitleBar();
