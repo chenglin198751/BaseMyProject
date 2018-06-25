@@ -24,7 +24,7 @@ public class TestFlexBoxActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.flex_box_test_layout);
+        setContentLayout(R.layout.test_flex_box_layout);
         getTitleHelper().setTitle("flexbox");
 
         mFlexboxLayout = (FlexboxLayout) findViewById(R.id.flex_box);

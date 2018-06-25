@@ -31,7 +31,7 @@ public class TestActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.recyclerview_refresh_layout);
+        setContentLayout(R.layout.test_recyclerview_refresh_layout);
 
 
         getTitleHelper().hideTitleBar();
