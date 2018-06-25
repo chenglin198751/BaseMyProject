@@ -50,7 +50,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$rootProject.ext.SUPPORT_V4_VERSION"
     implementation "com.android.support:exifinterface:$rootProject.ext.SUPPORT_V4_VERSION"
     implementation "com.android.support:recyclerview-v7:$rootProject.ext.SUPPORT_V4_VERSION"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation ("com.squareup.picasso:picasso:2.71828") {
         exclude group: "com.android.support"
     }

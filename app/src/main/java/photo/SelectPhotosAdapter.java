@@ -161,7 +161,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
     }
 
     private String getImagePath() {
-        String path = SDCardUtils.SDCARD_PATH;
+        String path = SDCardUtils.getPath();
         return path + System.currentTimeMillis() + ".jpg";
     }
 
