@@ -15,7 +15,6 @@ import base.BaseActivity;
 import base.BaseRecyclerViewAdapter;
 import base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
-import listener.OnViewPagerListener;
 import pullrefresh.PullToRefresh;
 import utils.Constants;
 import view.WebImageView;
@@ -87,7 +86,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         mRecyclerView.setAdapter(mAdapter);
         setData(13, true);
 
-        mLayoutManager.setOnViewPagerListener(new OnViewPagerListener() {
+        mLayoutManager.setOnViewPagerListener(new ViewPagerLayoutManager.OnViewPagerListener() {
             @Override
             public void onPageRelease(boolean isNext, int position) {
 

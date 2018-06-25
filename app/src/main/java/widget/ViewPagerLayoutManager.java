@@ -6,10 +6,9 @@ import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import listener.OnViewPagerListener;
-
 /**
  * Created by weichenglin  on 2018/6/6
+ * 仿抖音首页效果-横向和竖向滑动的viewPager--RecyclerView的LayoutManager
  */
 public class ViewPagerLayoutManager extends LinearLayoutManager {
     private static final String TAG = "ViewPagerLayoutManager";
@@ -118,6 +117,19 @@ public class ViewPagerLayoutManager extends LinearLayoutManager {
      */
     public void setOnViewPagerListener(OnViewPagerListener listener) {
         this.mOnViewPagerListener = listener;
+    }
+
+    public interface OnViewPagerListener {
+
+        /*释放的监听*/
+        void onPageRelease(boolean isNext, int position);
+
+        /*选中的监听以及判断是否滑动到底部*/
+        void onPageSelected(int position, boolean isBottom);
+
+        /*布局完成的监听*/
+        void onLayoutComplete();
+
     }
 
     private RecyclerView.OnChildAttachStateChangeListener mChildAttachStateChangeListener = new RecyclerView.OnChildAttachStateChangeListener() {
