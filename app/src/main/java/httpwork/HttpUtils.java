@@ -36,8 +36,8 @@ import utils.SDCardUtils;
 public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 30;
-    private static final String HTTP_CACHE_PATH = SDCardUtils.SDCARD_PATH + "httpCache" + File.separator;
-    private static final String HTTP_DOWNLOAD_PATH = SDCardUtils.SDCARD_PATH + "download" + File.separator;
+    private static final String HTTP_CACHE_PATH = SDCardUtils.getPath() + "httpCache" + File.separator;
+    private static final String HTTP_DOWNLOAD_PATH = SDCardUtils.getPath() + "download" + File.separator;
 
     static {
         File cacheDir = new File(HTTP_CACHE_PATH);
