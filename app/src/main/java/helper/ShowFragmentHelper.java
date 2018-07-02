@@ -52,8 +52,16 @@ public class ShowFragmentHelper {
 
         if (mFragArray[index] == null) {
             try {
-                mFragArray[index] = (BaseFragment) FRAGMENTS[index].newInstance();
-                if (bundle != null){
+                //非常重要，勿改：此处这么写是为了解决当Activity被回收后，重新onCreate()时会创建新的fragment的问题。
+                //具体分析见：https://mp.weixin.qq.com/s/mwTtxk4YfYWCG4m6n_ropw  --by chenglin 2018年7月2日
+                BaseFragment tempFragment = (BaseFragment) mFragmentManager.findFragmentByTag(index + "");
+                if (tempFragment != null) {
+                    mFragArray[index] = tempFragment;
+                } else {
+                    mFragArray[index] = (BaseFragment) FRAGMENTS[index].newInstance();
+                }
+
+                if (bundle != null) {
                     mFragArray[index].setArguments(bundle);
                 }
             } catch (Exception e) {
