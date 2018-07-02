@@ -1,5 +1,6 @@
 package main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,15 +25,18 @@ public class MainFirstFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String mWebViewUrl = "你好https://WX.tenpay.com/cgi-bin/mmpayweb";
-        Log.v("tag_2", "" + mWebViewUrl.toLowerCase());
-
     }
 
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-        initView(view);
+
+        view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(),MainActivity.class));
+            }
+        });
     }
 
     @Override
@@ -46,15 +50,4 @@ public class MainFirstFragment extends BaseFragment {
     }
 
 
-    private void initView(View view) {
-        AutoScrollRecyclerView mRecyclerView = view.findViewById(R.id.rv_recycleView);
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            list.add("今天天气不错" + i);
-        }
-        TestAutoScrollAdapter adapter = new TestAutoScrollAdapter(getActivity(), list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.start();
-    }
 }
