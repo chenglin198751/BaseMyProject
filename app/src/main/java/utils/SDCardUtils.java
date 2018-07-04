@@ -19,12 +19,12 @@ public class SDCardUtils {
      * 当APP卸载时，这些垃圾文件也跟着自动卸载清除了。
      */
     private static String getDataPath() {
-        String cachePath;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                || !Environment.isExternalStorageRemovable()) {
-            cachePath = BaseApp.getApp().getExternalCacheDir().getAbsolutePath();
-        } else {
-            cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
+        String cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
+            File file = BaseApp.getApp().getExternalCacheDir();
+            if (file != null) {
+                cachePath = file.getAbsolutePath();
+            }
         }
         return cachePath + File.separator;
     }
