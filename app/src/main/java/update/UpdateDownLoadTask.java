@@ -11,7 +11,7 @@ import base.BaseApp;
 import bean.ApkItem;
 import cheerly.mybaseproject.R;
 import httpwork.HttpDownloadCallback;
-import httpwork.HttpUtils;
+import httpwork.HttpExecutor;
 import okhttp3.Call;
 import utils.BaseUtils;
 import utils.SDCardUtils;
@@ -58,7 +58,8 @@ public class UpdateDownLoadTask {
             }
         };
 
-        HttpUtils.downloadFile(url, getApkPath(), false, downloadCallback);
+        HttpExecutor httpExecutor = new HttpExecutor();
+        httpExecutor.downloadFile(url, getApkPath(), false, downloadCallback);
     }
 
 
