@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 import httpwork.HttpDownloadCallback;
-import httpwork.HttpUtils;
+import httpwork.HttpExecutor;
 import okhttp3.Call;
 import utils.BitmapUtils;
 
@@ -22,6 +22,7 @@ import utils.BitmapUtils;
 
 public class LongImageView extends WebView {
     private boolean isDestroy = false;
+    private HttpExecutor mHttpExecutor;
 
     public LongImageView(Context context) {
         super(context);
@@ -87,7 +88,11 @@ public class LongImageView extends WebView {
             return;
         }
 
-        HttpUtils.downloadFile(url, true, new HttpDownloadCallback() {
+        if (mHttpExecutor == null){
+            mHttpExecutor = new HttpExecutor();
+        }
+
+        mHttpExecutor.downloadFile(url, true, new HttpDownloadCallback() {
             @Override
             public void onSuccess(String filePath) {
                 if (isFinish()) {

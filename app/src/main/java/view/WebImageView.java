@@ -25,7 +25,7 @@ import java.io.IOException;
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
 import httpwork.HttpDownloadCallback;
-import httpwork.HttpUtils;
+import httpwork.HttpExecutor;
 import okhttp3.Call;
 import pl.droidsonroids.gif.GifDrawable;
 import utils.GifCacheUtils;
@@ -37,6 +37,7 @@ import utils.BaseUtils;
 @SuppressLint("AppCompatCustomView")
 public class WebImageView extends ImageView {
     private final static PicassoCircleTransform mPicassoCircleTransform = new PicassoCircleTransform();
+    private HttpExecutor mHttpExecutor;
 
     public WebImageView(Context context) {
         super(context);
@@ -146,7 +147,11 @@ public class WebImageView extends ImageView {
     }
 
     private void downloadGif(final String url) {
-        HttpUtils.downloadFile(url, true, new HttpDownloadCallback() {
+        if (mHttpExecutor == null){
+            mHttpExecutor = new HttpExecutor();
+        }
+
+        mHttpExecutor.downloadFile(url, true, new HttpDownloadCallback() {
             @Override
             public void onFailure(IOException e) {
             }
