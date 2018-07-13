@@ -10,9 +10,11 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import base.BaseApp;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import test.TestAutoScrollAdapter;
+import test.TestRecyclerViewRefreshActivity;
 import view.AutoScrollRecyclerView;
 
 /**
@@ -34,7 +36,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(),MainActivity.class));
+                startActivity(new Intent(getActivity(), TestRecyclerViewRefreshActivity.class));
             }
         });
     }
