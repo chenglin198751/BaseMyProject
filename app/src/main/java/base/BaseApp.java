@@ -27,6 +27,7 @@ public class BaseApp extends Application {
     }
 
     @Override
+    @CallSuper
     public void onCreate() {
         super.onCreate();
         application = this;
