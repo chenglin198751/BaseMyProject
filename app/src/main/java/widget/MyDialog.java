@@ -23,10 +23,6 @@ public class MyDialog extends Dialog {
     private Button mLeftBtn, mRightBtn;
     private TextView mMessage;
 
-    //让对话框左边的按钮高亮
-    public static final int LEFT_LIGHT = 1;
-    //让对话框右边的按钮高亮
-    public static final int RIGHT_LIGHT = 2;
 
     public MyDialog(Context context) {
         this(context, R.style.dialog);
@@ -175,35 +171,5 @@ public class MyDialog extends Dialog {
         setTitle(getContext().getString(title));
     }
 
-//    /**
-//     * 设置要高亮显示的按钮
-//     */
-//    public void setButtonLight(int lightBtn) {
-//        Button leftButton = (Button) mDialogView.findViewById(R.id.button_ok);
-//        Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
-//        if (lightBtn == LEFT_LIGHT) {
-//            leftButton.setBackgroundResource(R.drawable.purple_button);
-//            leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
-//            rightButton.setBackgroundResource(R.drawable.gray_button);
-//            rightButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
-//        } else if (lightBtn == RIGHT_LIGHT) {
-//            leftButton.setBackgroundResource(R.drawable.gray_button);
-//            leftButton.setTextColor(mContext.getResources().getColor(R.color.text_gray_2));
-//            rightButton.setBackgroundResource(R.drawable.purple_button);
-//            rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
-//        }
-//    }
-
-//    /**
-//     * 设置两个按钮都高亮
-//     */
-//    public void setButtonLight() {
-//        Button leftButton = (Button) mDialogView.findViewById(R.id.button_ok);
-//        Button rightButton = (Button) mDialogView.findViewById(R.id.button_cancel);
-//        leftButton.setBackgroundResource(R.drawable.purple_button);
-//        leftButton.setTextColor(mContext.getResources().getColor(R.color.white));
-//        rightButton.setBackgroundResource(R.drawable.purple_button);
-//        rightButton.setTextColor(mContext.getResources().getColor(R.color.white));
-//    }
 
 }
