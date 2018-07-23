@@ -8,7 +8,7 @@ import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import base.BaseApp;
-import httpwork.HttpExecutor;
+import httpwork.HttpUtils;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -56,7 +56,7 @@ public class AppHelper {
      */
     public static void initPicasso() {
         Picasso picasso = new Picasso.Builder(BaseApp.getApp())
-                .downloader(new OkHttp3Downloader(HttpExecutor.client))
+                .downloader(new OkHttp3Downloader(HttpUtils.client))
                 .build();
         Picasso.setSingletonInstance(picasso);
     }

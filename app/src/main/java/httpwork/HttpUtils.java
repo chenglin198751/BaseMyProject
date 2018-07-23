@@ -19,6 +19,8 @@ import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -30,7 +32,9 @@ import utils.SDCardUtils;
  * Created by chenglin on 2017-5-24.
  * 资料：http://liuwangshu.cn/application/network/6-okhttp3.html
  */
-public class HttpExecutor {
+
+public class HttpUtils {
+    private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 30;
     private static final String HTTP_CACHE_PATH = SDCardUtils.getPath() + "httpCache" + File.separator;
     private static final String HTTP_DOWNLOAD_PATH = SDCardUtils.getPath() + "download" + File.separator;
@@ -55,10 +59,13 @@ public class HttpExecutor {
     public static final OkHttpClient client = builder.build();
 
 
+    private HttpUtils() {
+    }
+
     /**
      * 通用的okhttp3.Callback封装
      */
-    private okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpCallback) {
+    private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpCallback) {
         return new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
@@ -127,14 +134,14 @@ public class HttpExecutor {
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public void post(final Activity activity, String url, Map<String, Object> paramsHashMap, final HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void post(final Activity activity, String url, Map<String, Object> paramsHashMap, final HttpBuilder builder, final HttpCallback httpCallback) {
         postWithHeader(activity, url, null, paramsHashMap, builder, httpCallback);
     }
 
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public void postWithHeader(final Context context, String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void postWithHeader(final Context context, String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
         if (builder == null) {
             builder = new HttpBuilder();
@@ -177,7 +184,7 @@ public class HttpExecutor {
     /**
      * 通用的异步get请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public void get(final Context context, final String url, final HttpCallback httpCallback) {
+    public static void get(final Context context, final String url, final HttpCallback httpCallback) {
         final CacheControl.Builder builder = new CacheControl.Builder();
         builder.noCache();//不使用缓存，全部走网络
         builder.noStore();//不使用缓存，也不存储缓存
@@ -189,13 +196,68 @@ public class HttpExecutor {
     }
 
     /**
+     * 通用的上传图片 注：此方法暂时不可用，因为还没测试
+     */
+    public static void uploadImage(String reqUrl, HashMap<String, Object> params, String picKey, String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
+            return;
+        }
+        File file = new File(filePath);
+        if (file == null || !file.exists()) {
+            return;
+        }
+
+        if (params == null) {
+            params = new HashMap<>();
+        }
+        addCommonData(params);
+
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder();
+        multipartBodyBuilder.setType(MultipartBody.FORM);
+
+        //遍历map中所有参数到builder
+        for (String key : params.keySet()) {
+            multipartBodyBuilder.addFormDataPart(key, params.get(key) + "");
+        }
+
+        //遍历paths中所有图片绝对路径到builder，并约定key如“upload”作为后台接受多张图片的key
+        multipartBodyBuilder.addFormDataPart(picKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
+
+        final CacheControl.Builder builder = new CacheControl.Builder();
+        builder.noCache();//不使用缓存，全部走网络
+        builder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = builder.build();
+
+        RequestBody requestBody = multipartBodyBuilder.build();
+        Request.Builder RequestBuilder = new Request.Builder();
+        RequestBuilder.url(reqUrl);
+        RequestBuilder.cacheControl(cache);
+        RequestBuilder.post(requestBody);
+        Request request = RequestBuilder.build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String str = response.body().string();
+                call.cancel();
+            }
+        });
+
+    }
+
+    /**
      * 默认下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      *
      * @param fileUrl          下载文件地址
      * @param downloadCallback 下载的回调监听
      */
-    public void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
+    public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
         downloadFile(fileUrl, null, false, downloadCallback);
     }
 
@@ -208,7 +270,7 @@ public class HttpExecutor {
      * @param isNeedCache      是否需要缓存，如果true ，那么此文件同样地址只下载一次
      * @param downloadCallback 下载的回调监听
      */
-    public void downloadFile(final String fileUrl, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+    public static void downloadFile(final String fileUrl, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
         downloadFile(fileUrl, null, isNeedCache, downloadCallback);
     }
 
@@ -221,7 +283,7 @@ public class HttpExecutor {
      * @param isNeedCache      是否需要缓存，如果true ，那么此文件同样地址只下载一次
      * @param downloadCallback 下载的回调监听
      */
-    public void downloadFile(final String fileUrl, final String fileDownloadPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+    public static void downloadFile(final String fileUrl, final String fileDownloadPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
         if (downloadCallback == null) {
             throw new NullPointerException("HttpDownloadCallback 不能为空");
         }
@@ -327,7 +389,7 @@ public class HttpExecutor {
     /**
      * 通用字段
      */
-    private void addCommonData(Map<String, Object> params) {
+    private static void addCommonData(Map<String, Object> params) {
         params.put("IMEI", BaseUtils.getDeviceId());
         params.put("product", Build.MODEL);
         params.put("brand", Build.BRAND);
@@ -343,14 +405,14 @@ public class HttpExecutor {
     /**
      * 构建get请求参数
      */
-    public String buildGetParams(HashMap<String, Object> hashMap) {
+    public static String buildGetParams(HashMap<String, Object> hashMap) {
         return buildGetParams(null, hashMap);
     }
 
     /**
      * 构建get请求参数
      */
-    public String buildGetParams(String url, HashMap<String, Object> hashMap) {
+    public static String buildGetParams(String url, HashMap<String, Object> hashMap) {
         if (hashMap == null) {
             hashMap = new HashMap<>();
         }
