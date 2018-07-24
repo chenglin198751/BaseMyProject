@@ -372,7 +372,7 @@ public class BaseUtils {
      * 得到自身的versionCode
      */
     public static String getVerCode() {
-        if (mVerCode == null) {
+        if (TextUtils.isEmpty(mVerCode)) {
             try {
                 mVerCode = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
             } catch (PackageManager.NameNotFoundException e) {
@@ -386,7 +386,7 @@ public class BaseUtils {
      * 得到自身的versionName
      */
     public static String getVerName() {
-        if (mVerName == null) {
+        if (TextUtils.isEmpty(mVerName)) {
             try {
                 mVerName = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
             } catch (PackageManager.NameNotFoundException e) {
@@ -400,7 +400,7 @@ public class BaseUtils {
      * 得到设备的串号
      */
     public static String getDeviceId() {
-        if (mStrImei == null) {
+        if (TextUtils.isEmpty(mStrImei)) {
             try {
                 if (ActivityCompat.checkSelfPermission(BaseApp.getApp(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
                     TelephonyManager telephonyManager = (TelephonyManager) BaseApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
