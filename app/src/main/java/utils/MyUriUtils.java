@@ -11,7 +11,7 @@ import widget.BaseWebViewActivity;
  * Created by chenglin on 2017-8-23.
  */
 
-public class MyUri {
+public class MyUriUtils {
     public static final String URI_WEBVIEW = "mls://webview";
 
     /**
