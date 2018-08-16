@@ -108,3 +108,5 @@
 
 **43、SubsamplingScaleImageView 类**：一个可以显示长图的控件，和36不同的是，此类是自定义View实现的。
      github地址：https://github.com/davemorrissey/subsampling-scale-image-view
+
+**44、支持缩放的ImageView类：https://github.com/chrisbanes/PhotoView
