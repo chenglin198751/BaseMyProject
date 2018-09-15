@@ -174,6 +174,7 @@ public class BaseWebViewFragment extends BaseFragment {
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(false);
         // webSetting.setLoadWithOverviewMode(true);
+        webSetting.setDomStorageEnabled(true);
         webSetting.setAppCacheEnabled(true);
         // webSetting.setDatabaseEnabled(true);
         webSetting.setDomStorageEnabled(true);
