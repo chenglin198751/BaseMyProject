@@ -95,7 +95,7 @@ public class BaseWebViewFragment extends BaseFragment {
 //                    getContext().startActivity(intent);
 //                    return true;
 //                }
-                return false;
+                return shouldOverrideUrlLoading(view, url);
             }
 
             @Override
