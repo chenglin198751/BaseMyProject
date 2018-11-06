@@ -131,7 +131,7 @@ public class EasyCache {
      * @param saveTime 保存的时间，单位：秒
      */
     public void put(String key, String value, int saveTime) {
-        put(key, Utils.newStringWithDateInfo(saveTime, value));
+        put(key, EasyCacheUtils.newStringWithDateInfo(saveTime, value));
     }
 
     /**
@@ -154,8 +154,8 @@ public class EasyCache {
                 currentLine += '\n';
                 readString += currentLine;
             }
-            if (!Utils.isDue(readString)) {
-                return Utils.clearDateInfo(readString);
+            if (!EasyCacheUtils.isDue(readString)) {
+                return EasyCacheUtils.clearDateInfo(readString);
             } else {
                 removeFile = true;
                 return null;
@@ -299,7 +299,7 @@ public class EasyCache {
      * @param saveTime 保存的时间，单位：秒
      */
     public void put(String key, byte[] value, int saveTime) {
-        put(key, Utils.newByteArrayWithDateInfo(saveTime, value));
+        put(key, EasyCacheUtils.newByteArrayWithDateInfo(saveTime, value));
     }
 
     /**
@@ -318,8 +318,8 @@ public class EasyCache {
             RAFile = new RandomAccessFile(file, "r");
             byte[] byteArray = new byte[(int) RAFile.length()];
             RAFile.read(byteArray);
-            if (!Utils.isDue(byteArray)) {
-                return Utils.clearDateInfo(byteArray);
+            if (!EasyCacheUtils.isDue(byteArray)) {
+                return EasyCacheUtils.clearDateInfo(byteArray);
             } else {
                 removeFile = true;
                 return null;
@@ -433,7 +433,7 @@ public class EasyCache {
      * @param value 保存的bitmap数据
      */
     public void put(String key, Bitmap value) {
-        put(key, Utils.Bitmap2Bytes(value));
+        put(key, EasyCacheUtils.Bitmap2Bytes(value));
     }
 
     /**
@@ -444,7 +444,7 @@ public class EasyCache {
      * @param saveTime 保存的时间，单位：秒
      */
     public void put(String key, Bitmap value, int saveTime) {
-        put(key, Utils.Bitmap2Bytes(value), saveTime);
+        put(key, EasyCacheUtils.Bitmap2Bytes(value), saveTime);
     }
 
     /**
@@ -457,7 +457,7 @@ public class EasyCache {
         if (getAsBinary(key) == null) {
             return null;
         }
-        return Utils.Bytes2Bimap(getAsBinary(key));
+        return EasyCacheUtils.Bytes2Bimap(getAsBinary(key));
     }
 
     // =======================================
@@ -471,7 +471,7 @@ public class EasyCache {
      * @param value 保存的drawable数据
      */
     public void put(String key, Drawable value) {
-        put(key, Utils.drawable2Bitmap(value));
+        put(key, EasyCacheUtils.drawable2Bitmap(value));
     }
 
     /**
@@ -482,7 +482,7 @@ public class EasyCache {
      * @param saveTime 保存的时间，单位：秒
      */
     public void put(String key, Drawable value, int saveTime) {
-        put(key, Utils.drawable2Bitmap(value), saveTime);
+        put(key, EasyCacheUtils.drawable2Bitmap(value), saveTime);
     }
 
     /**
@@ -495,7 +495,7 @@ public class EasyCache {
         if (getAsBinary(key) == null) {
             return null;
         }
-        return Utils.bitmap2Drawable(Utils.Bytes2Bimap(getAsBinary(key)));
+        return EasyCacheUtils.bitmap2Drawable(EasyCacheUtils.Bytes2Bimap(getAsBinary(key)));
     }
 
     /**
@@ -672,7 +672,7 @@ public class EasyCache {
      * @version 1.0
      * @title 时间计算工具类
      */
-    private static class Utils {
+    private static class EasyCacheUtils {
 
         /**
          * 判断缓存的String数据是否到期
