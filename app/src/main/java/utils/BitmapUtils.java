@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.View;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +39,44 @@ public class BitmapUtils {
         size[0] = options.outWidth;
         size[1] = options.outHeight;
         return size;
+    }
+
+    /**
+     * 把View 生成bitmap
+     */
+    public static Bitmap createBitmapByView(View view) {
+        //打开图像缓存
+        view.setDrawingCacheEnabled(true);
+        //必须调用measure和layout方法才能成功保存可视组件的截图到png图像文件
+        //测量View大小
+        if (view.getHeight() <= 0) {
+            view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        } else if (view.getHeight() > 0) {
+            view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
+        }
+        //发送位置和尺寸到View及其所有的子View
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        Bitmap bitmap = null;
+        try {
+            //获得可视组件的截图
+            bitmap = view.getDrawingCache();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+    /**
+     * 从view 得到图片
+     */
+    public static Bitmap getBitmapFromView(View view) {
+        view.destroyDrawingCache();
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        view.setDrawingCacheEnabled(true);
+        return view.getDrawingCache(true);
     }
 
     public static String getPathByUri(Context context, Uri uri) {
