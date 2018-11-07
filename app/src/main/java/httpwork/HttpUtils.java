@@ -377,7 +377,7 @@ public class HttpUtils {
                                 if (isSuccess) {
                                     downloadCallback.onSuccess(downLoadFilePath);
                                 } else {
-                                    downloadCallback.onFailure(new IOException(tempPath + " rename to " + downLoadFilePath + "fail"));
+                                    downloadCallback.onFailure(new IOException(tempPath + " rename to " + downLoadFilePath + " fail"));
                                 }
                             } else {
                                 downloadCallback.onFailure(new IOException(tempPath + " not exists "));
