@@ -279,40 +279,44 @@ public class HttpUtils {
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      *
      * @param fileUrl          下载文件地址
-     * @param fileDownloadPath 自定义文件下载路径
+     * @param downPath         自定义文件下载路径
      * @param isNeedCache      是否需要缓存，如果true ，那么此文件同样地址只下载一次
      * @param downloadCallback 下载的回调监听
      */
-    public static void downloadFile(final String fileUrl, final String fileDownloadPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+    public static void downloadFile(final String fileUrl, final String downPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
         if (downloadCallback == null) {
             throw new NullPointerException("HttpDownloadCallback 不能为空");
-        }
-        if (TextUtils.isEmpty(fileUrl)) {
+        } else if (TextUtils.isEmpty(fileUrl)) {
             downloadCallback.onFailure(new IOException("下载URL不能为空"));
+            return;
+        } else if (!(new File(downPath)).exists()) {
+            downloadCallback.onFailure(new IOException("指定的下载目录不存在"));
             return;
         }
 
         final String defaultPath = HTTP_DOWNLOAD_PATH + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
-        if (isNeedCache) {
-            File cacheFile = new File(defaultPath);
-            if (cacheFile.exists()) {
-                downloadCallback.onSuccess(defaultPath);
-                return;
-            }
+        final String downLoadFilePath = TextUtils.isEmpty(downPath) ? defaultPath : downPath;
+        final String tempPath = downLoadFilePath + ".temp";
 
-            if (!TextUtils.isEmpty(fileDownloadPath)) {
-                cacheFile = new File(fileDownloadPath);
-                if (cacheFile.exists()) {
-                    downloadCallback.onSuccess(fileDownloadPath);
-                    return;
-                }
+        //防止下载时中断导致下载文件不全,但被使用了
+        File tempFile = new File(tempPath);
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
+
+        File cacheFile = new File(downLoadFilePath);
+        if (cacheFile.exists()) {
+            if (isNeedCache) {
+                downloadCallback.onSuccess(downLoadFilePath);
+            } else {
+                cacheFile.delete();
             }
         }
 
         final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
         if (!isNeedCache) {
-            cacheBuilder.noCache();//不使用缓存，全部走网络
-            cacheBuilder.noStore();//不使用缓存，也不存储缓存
+            cacheBuilder.noCache();// 不使用缓存，全部走网络
+            cacheBuilder.noStore();// 不使用缓存，也不存储缓存
         }
         CacheControl cache = cacheBuilder.build();
         Request request = new Request.Builder().cacheControl(cache).url(fileUrl).get().build();
@@ -331,13 +335,11 @@ public class HttpUtils {
 
             @Override
             public void onResponse(final Call call, Response response) {
-                final String filePath = TextUtils.isEmpty(fileDownloadPath) ? defaultPath : fileDownloadPath;
-
                 InputStream inputStream = response.body().byteStream();
                 FileOutputStream fileOutputStream = null;
 
                 try {
-                    fileOutputStream = new FileOutputStream(new File(filePath));
+                    fileOutputStream = new FileOutputStream(new File(tempPath));
                     long total = response.body().contentLength();
                     byte[] buffer = new byte[2048];
                     int len;
@@ -369,12 +371,27 @@ public class HttpUtils {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            downloadCallback.onSuccess(filePath);
+                            File tempFile = new File(tempPath);
+                            if (tempFile.exists()) {
+                                boolean isSuccess = tempFile.renameTo(new File(downLoadFilePath));
+                                if (isSuccess) {
+                                    downloadCallback.onSuccess(downLoadFilePath);
+                                } else {
+                                    downloadCallback.onFailure(new IOException(tempPath + " rename to " + downLoadFilePath + "fail"));
+                                }
+                            } else {
+                                downloadCallback.onFailure(new IOException(tempPath + " not exists "));
+                            }
                         }
                     });
 
                 } catch (final IOException e) {
                     e.printStackTrace();
+                    //防止下载时中断导致下载文件不全,但被使用了
+                    File tempFile = new File(tempPath);
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
