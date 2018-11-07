@@ -44,7 +44,7 @@ public class FastBlurUtil {
      * @return
      */
     public static void doBlur(final View view, final float scale, final int radius, final OnFinishListener listener) {
-        final Bitmap sentBitmap = BaseUtils.createBitmapByView(view);
+        final Bitmap sentBitmap = BitmapUtils.createBitmapByView(view);
         new Thread() {
             @Override
             public void run() {
