@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import cheerly.mybaseproject.R;
-import httpwork.HttpBuilder;
-import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
 import widget.BaseViewHelper;
@@ -38,8 +36,8 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView {
     /**
      * post 请求，建议用这个
      */
-    public void post(String url, Map<String, Object> map, final HttpCallback httpCallback) {
-        HttpBuilder builder = new HttpBuilder();
+    public void post(String url, Map<String, Object> map, final HttpUtils.HttpCallback httpCallback) {
+        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
         builder.setCache(false);
         HttpUtils.postWithHeader(getContext(), url, null, map, builder, httpCallback);
     }

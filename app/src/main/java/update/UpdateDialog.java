@@ -11,8 +11,8 @@ import java.io.File;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
-import httpwork.HttpCallback;
 import httpwork.HttpUrl;
+import httpwork.HttpUtils;
 import preferences.PreferencesData;
 import utils.Constants;
 import utils.BaseUtils;
@@ -119,7 +119,7 @@ public class UpdateDialog extends Dialog {
      * 检查更新
      */
     public void checkUpdate() {
-        mActivity.post(HttpUrl.check_update, null, new HttpCallback() {
+        mActivity.post(HttpUrl.check_update, null, new HttpUtils.HttpCallback() {
             @Override
             public void onFailure(Exception e) {
 

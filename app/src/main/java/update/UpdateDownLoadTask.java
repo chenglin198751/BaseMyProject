@@ -10,7 +10,6 @@ import java.io.IOException;
 import base.BaseApp;
 import bean.ApkItem;
 import cheerly.mybaseproject.R;
-import httpwork.HttpDownloadCallback;
 import httpwork.HttpUtils;
 import okhttp3.Call;
 import utils.BaseUtils;
@@ -34,7 +33,7 @@ public class UpdateDownLoadTask {
         clearTempFile();
         showNotification(0);
 
-        final HttpDownloadCallback downloadCallback = new HttpDownloadCallback() {
+        final HttpUtils.HttpDownloadCallback downloadCallback = new HttpUtils.HttpDownloadCallback() {
             @Override
             public void onSuccess(String filePath) {
                 mUpdateDialog.downloadSuccess();

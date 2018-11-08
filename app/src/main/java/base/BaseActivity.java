@@ -24,8 +24,6 @@ import java.util.Map;
 
 import cheerly.mybaseproject.R;
 import helper.MainTitleHelper;
-import httpwork.HttpBuilder;
-import httpwork.HttpCallback;
 import httpwork.HttpUtils;
 import utils.Constants;
 import widget.BaseViewHelper;
@@ -109,8 +107,8 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     /**
      * post 请求，建议用这个
      */
-    public void post(String url, Map<String, Object> map, final HttpCallback httpCallback) {
-        HttpBuilder builder = new HttpBuilder();
+    public void post(String url, Map<String, Object> map, final HttpUtils.HttpCallback httpCallback) {
+        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
         builder.setCache(false);
         HttpUtils.postWithHeader(getContext(), url, null, map, builder, httpCallback);
     }
