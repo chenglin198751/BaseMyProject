@@ -34,6 +34,37 @@ import utils.SDCardUtils;
  */
 
 public class HttpUtils {
+    public interface HttpCallback {
+        void onSuccess(String result);
+
+        void onFailure(Exception e);
+    }
+
+    public interface HttpDownloadCallback {
+        void onSuccess(String filePath);
+
+        //fileTotalSize  文件总大小
+        //fileDowningSize  文件已经下载的大小
+        //percent  文件下载的进度百分比
+        void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent);
+
+        void onFailure(IOException e);
+    }
+
+    public static class HttpBuilder {
+        private boolean cache = false;
+
+        //返回是否用缓存
+        public boolean isCache() {
+            return cache;
+        }
+
+        //设置是否用缓存
+        public void setCache(boolean cache) {
+            this.cache = cache;
+        }
+    }
+
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 30;
     private static final String HTTP_CACHE_PATH = SDCardUtils.getPath() + "httpCache" + File.separator;

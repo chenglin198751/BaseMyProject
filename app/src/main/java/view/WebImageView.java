@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import base.BaseActivity;
 import cheerly.mybaseproject.R;
-import httpwork.HttpDownloadCallback;
 import httpwork.HttpUtils;
 import okhttp3.Call;
 import pl.droidsonroids.gif.GifDrawable;
@@ -146,7 +145,7 @@ public class WebImageView extends ImageView {
     }
 
     private void downloadGif(final String url) {
-        HttpUtils.downloadFile(url, true, new HttpDownloadCallback() {
+        HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback() {
             @Override
             public void onFailure(IOException e) {
             }

@@ -11,7 +11,6 @@ import android.webkit.WebView;
 import java.io.File;
 import java.io.IOException;
 
-import httpwork.HttpDownloadCallback;
 import httpwork.HttpUtils;
 import okhttp3.Call;
 import utils.BitmapUtils;
@@ -79,7 +78,7 @@ public class LongImageView extends WebView {
      * @param showWidth    当前控件显示的宽度
      * @param httpCallback 下载监听
      */
-    public void load(final String url, final int showWidth, final HttpDownloadCallback httpCallback) {
+    public void load(final String url, final int showWidth, final HttpUtils.HttpDownloadCallback httpCallback) {
         if (TextUtils.isEmpty(url)) {
             return;
         }
@@ -87,7 +86,7 @@ public class LongImageView extends WebView {
             return;
         }
 
-        HttpUtils.downloadFile(url, true, new HttpDownloadCallback() {
+        HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback() {
             @Override
             public void onSuccess(String filePath) {
                 if (isFinish()) {
