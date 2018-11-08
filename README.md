@@ -26,18 +26,18 @@
 
 **9、ReplaceViewHelper 类**：一个封装的工具类，可以很方便的替换任意的View 为另一个View 。
 
-**10、MyLog 类**：打Log日志的工具，debug 开启时才打Log .
+**10、LogUtils 类**：打Log日志的工具，debug 开启时才打Log .
 
-**11、MyUtils 类**：统一的工具类，里面包含了很多常用的方法并写了注释，大家可以看看，基本常用的方法都包含了。
+**11、BaseUtils 类**：统一的工具类，里面包含了很多常用的方法并写了注释，大家可以看看，基本常用的方法都包含了。
 
 **12、特别说明**：MyUtils 里面有个方法叫做getHandler() ，这是一个全局的Handler ，当然，我获取的是MainLooper 。以后大家执行post 或者postDelay操作时就可以直接用这个全局Handler 了。
     （特别注意，如果使用postDelay方法时，一定要记得onDestroy时调用removeCallback 方法，要不很容易内存泄漏）
 
 **13、MyDialog 类**：封装了dialog ，系统的dialog样式太难看，并且根据手机的不同显示的样式也不同，所以我自己封装了一个。使用很简单，看一眼就会。
 
-**14、MyToast 类**：统一弹Toast 的类，系统的Toast 样式太丑，这个是我自己定制的，可以随意定制，并且解决了系统toast 一直弹出的问题。
+**14、ToastUtils 类**：统一弹Toast 的类，系统的Toast 样式太丑，这个是我自己定制的，可以随意定制，并且解决了系统toast 一直弹出的问题。
 
-**15、MyProgress 类**：自己封装的加载loading框，可以随意定制UI 。
+**15、支持缩放的ImageView类：https://github.com/chrisbanes/PhotoView
 
 **16、MyWebViewActivity 类**：基于腾讯X5浏览器内核封装的统一WebViewActivity ，性能卓越。具体介绍可以去看X5内核。
 
@@ -49,7 +49,7 @@
 
 **20、Constants 类**：公共常量类，存放了屏幕分辨率，全局gson 之类的，可以根据需要继续添加。
 
-**21、MyUri 类**：用schema 方式开发时的统一管理类，如果不用schema开发，就可以不用管这个。
+**21、MyUriUtils 类**：用schema 方式开发时的统一管理类，如果不用schema开发，就可以不用管这个。
 
 **22、UserManager 类**：用户信息管理类，如果牵涉到用户登录之类的，要用这个类来管理，方便别人使用。
 
@@ -109,4 +109,3 @@
 **43、SubsamplingScaleImageView 类**：一个可以显示长图的控件，和36不同的是，此类是自定义View实现的。
      github地址：https://github.com/davemorrissey/subsampling-scale-image-view
 
-**44、支持缩放的ImageView类：https://github.com/chrisbanes/PhotoView
