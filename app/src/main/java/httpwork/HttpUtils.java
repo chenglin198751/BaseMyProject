@@ -289,7 +289,7 @@ public class HttpUtils {
         } else if (TextUtils.isEmpty(fileUrl)) {
             downloadCallback.onFailure(new IOException("下载URL不能为空"));
             return;
-        } else if (!(new File(downPath)).exists()) {
+        } else if (!TextUtils.isEmpty(downPath) && !(new File(downPath)).exists()) {
             downloadCallback.onFailure(new IOException("指定的下载目录不存在"));
             return;
         }
@@ -308,6 +308,7 @@ public class HttpUtils {
         if (cacheFile.exists()) {
             if (isNeedCache) {
                 downloadCallback.onSuccess(downLoadFilePath);
+                return;
             } else {
                 cacheFile.delete();
             }
