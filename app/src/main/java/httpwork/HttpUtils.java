@@ -19,6 +19,7 @@ import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Headers;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -86,11 +87,37 @@ public class HttpUtils {
             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
             .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+            .addInterceptor(new RetryInterceptor(2))
             .cache(new Cache(new File(HTTP_CACHE_PATH), 100 * 1024 * 1024));
     public static final OkHttpClient client = builder.build();
 
 
     private HttpUtils() {
+    }
+
+    /**
+     * 重试拦截器
+     */
+    public static class RetryInterceptor implements Interceptor {
+        //最大重试次数
+        private int maxRetry;
+        //假如设置为3次重试的话，则最大可能请求4次（默认1次+3次重试）
+        private int retryNum = 0;
+
+        public RetryInterceptor(int maxRetry) {
+            this.maxRetry = maxRetry;
+        }
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+            while (!response.isSuccessful() && retryNum < maxRetry) {
+                retryNum++;
+                response = chain.proceed(request);
+            }
+            return response;
+        }
     }
 
     /**
