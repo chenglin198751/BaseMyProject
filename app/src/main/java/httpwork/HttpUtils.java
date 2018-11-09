@@ -123,7 +123,7 @@ public class HttpUtils {
             while (!response.isSuccessful() && retryNum < maxRetry) {
                 retryNum++;
                 response = chain.proceed(request);
-                LogUtils.v(TAG, "第 " + retryNum + " 次重试次数");
+                LogUtils.v(TAG, "第 " + retryNum + " 次重试");
             }
             return response;
         }
