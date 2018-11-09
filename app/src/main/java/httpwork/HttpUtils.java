@@ -27,6 +27,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import utils.BaseUtils;
+import utils.LogUtils;
 import utils.SDCardUtils;
 
 /**
@@ -35,6 +36,8 @@ import utils.SDCardUtils;
  */
 
 public class HttpUtils {
+    private final static String TAG = "HttpUtils";
+
     public interface HttpCallback {
         void onSuccess(String result);
 
@@ -115,6 +118,7 @@ public class HttpUtils {
             while (!response.isSuccessful() && retryNum < maxRetry) {
                 retryNum++;
                 response = chain.proceed(request);
+                LogUtils.v(TAG, "第 " + retryNum + " 次重试次数");
             }
             return response;
         }

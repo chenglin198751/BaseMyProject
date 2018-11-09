@@ -14,7 +14,7 @@ public class LogUtils {
         if (!TextUtils.isEmpty(sdcardPath)) {
             String debugFilePath = sdcardPath + File.separator + "debug_file_log";
             File file = new File(debugFilePath);
-            if (file != null && file.exists()) {
+            if (file.exists()) {
                 isDebug = true;
             }
         }
