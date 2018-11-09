@@ -114,7 +114,12 @@ public class HttpUtils {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
+            long start = System.currentTimeMillis();
             Response response = chain.proceed(request);
+            long end = System.currentTimeMillis();
+            final String url = response.request().url().toString();
+            LogUtils.v(TAG, "网络请求时间：" + url + " -- " + (end - start) + "毫秒");
+
             while (!response.isSuccessful() && retryNum < maxRetry) {
                 retryNum++;
                 response = chain.proceed(request);
