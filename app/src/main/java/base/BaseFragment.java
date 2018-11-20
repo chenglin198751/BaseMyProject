@@ -63,15 +63,21 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView {
     @Override
     public final void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mContentView = (RelativeLayout) view.findViewById(R.id.base_frag_id);
+        mContentView = view.findViewById(R.id.base_frag_id);
         mBaseViewHelper = new BaseViewHelper(getContext());
         if (getContentLayout() > 0) {
             mContentView.addView(View.inflate(getContext(), getContentLayout(), null), new RelativeLayout.LayoutParams(-1, -1));
+        } else if (getContentView() != null) {
+            mContentView.addView(getContentView(), new RelativeLayout.LayoutParams(-1, -1));
         }
         onViewCreated(savedInstanceState, view);
     }
 
     protected abstract int getContentLayout();
+
+    protected View getContentView() {
+        return null;
+    }
 
     /**
      * 所有的业务逻辑在这里写
