@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import base.BaseApp;
 
-public class PreferencesData {
+public class PreferSettings {
     private static String update_dialog_times = "update_dialog_times";//更新对话框
 
     private static SharedPreferences getPreferences(final Context context) {
