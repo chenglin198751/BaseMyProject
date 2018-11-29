@@ -9,7 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -23,7 +22,6 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -38,6 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.CRC32;
 
 import base.BaseActivity;
 import base.BaseApp;
@@ -502,5 +501,17 @@ public class BaseUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * java crc32 运算
+     */
+    public static long crc32(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return 0;
+        }
+        CRC32 crc32 = new CRC32();
+        crc32.update(str.getBytes());
+        return crc32.getValue();
     }
 }
