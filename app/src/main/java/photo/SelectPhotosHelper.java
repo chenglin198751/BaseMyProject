@@ -17,7 +17,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import cheerly.mybaseproject.R;
-import preferences.PreferencesData;
+import preferences.PreferSettings;
 import utils.BaseUtils;
 
 /**
@@ -45,7 +45,7 @@ public class SelectPhotosHelper {
 
             PhotoAlbum photoAlbum = mAlbumAdapter.getItem(position);
 
-            PreferencesData.setLastAlbumId(photoAlbum.getDirId() + "");
+            PreferSettings.setLastAlbumId(photoAlbum.getDirId() + "");
             final PhotoAlbum currentAlbum = LoadImageManager.existDir(mActivity, photoAlbum.getDirId() + "");
             mTitleTextView.setText(photoAlbum.getName());
 
@@ -100,7 +100,7 @@ public class SelectPhotosHelper {
             public void run() {
                 // 获取所有的相册集合
                 final List<PhotoAlbum> photoList = LoadImageManager.getAlbums(mActivity);
-                String dirId = PreferencesData.getLastAlbumId();
+                String dirId = PreferSettings.getLastAlbumId();
                 if (!TextUtils.isEmpty(dirId)) {  // 获取用户上一次的相册
                     mCurrentAlbum = LoadImageManager.existDir(mActivity, dirId);
                 }
