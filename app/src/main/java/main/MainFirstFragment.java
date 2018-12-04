@@ -2,10 +2,12 @@ package main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
+import httpwork.HttpUtils;
 import test.TestRecyclerViewRefreshActivity;
 
 /**
@@ -17,8 +19,6 @@ public class MainFirstFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
 
@@ -28,11 +28,10 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), TestRecyclerViewRefreshActivity.class));
+                getData();
             }
         });
 
-        ;
     }
 
     @Override
@@ -45,5 +44,19 @@ public class MainFirstFragment extends BaseFragment {
         return R.layout.main_first_frag_layout;
     }
 
+    private void getData(){
+        String url = "http://wanandroid.com/wxarticle/chapters/json";
+        HttpUtils.get(getContext(), url, new HttpUtils.HttpCallback() {
+            @Override
+            public void onSuccess(String result) {
+                Log.v("tag_3","result = " + result);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+    }
 
 }

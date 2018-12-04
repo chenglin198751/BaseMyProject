@@ -102,10 +102,8 @@ public class HttpUtils {
      * 重试拦截器
      */
     public static class RetryInterceptor implements Interceptor {
-        //最大重试次数
+        //最大重试次数。假如设置为3次重试的话，则最大可能请求4次（默认1次+3次重试）
         private int maxRetry;
-        //假如设置为3次重试的话，则最大可能请求4次（默认1次+3次重试）
-        private int retryNum = 0;
 
         public RetryInterceptor(int maxRetry) {
             this.maxRetry = maxRetry;
@@ -113,6 +111,7 @@ public class HttpUtils {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
+            int retryNum = 0;
             Request request = chain.request();
             long start = System.currentTimeMillis();
             Response response = chain.proceed(request);
