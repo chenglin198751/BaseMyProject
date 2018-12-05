@@ -9,13 +9,14 @@ import com.squareup.picasso.Picasso;
 
 import base.BaseApp;
 import httpwork.HttpUtils;
+import utils.BaseUtils;
 
 /**
  * Created by chenglin on 2017-5-24.
  */
 
 public class AppHelper {
-    private final static String PROCESS_NAME = "cheerly.mybaseproject";
+    private final static String PROCESS_NAME = BaseUtils.getPackageName();
 
     /**
      * 判断是不是UI主进程，因为有些东西只能在UI主进程初始化
