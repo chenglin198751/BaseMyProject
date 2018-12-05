@@ -218,13 +218,12 @@ public class HttpUtils {
         }
         addCommonData(hashMap);
 
-        Iterator iter = hashMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            Object key = entry.getKey();
+        for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
+            String key = entry.getKey();
             Object value = entry.getValue();
-            FormBuilder.add(key + "", value + "");
+            FormBuilder.add(key, value + "");
         }
+
         RequestBody body = FormBuilder.build();
 
         final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
@@ -503,10 +502,8 @@ public class HttpUtils {
         addCommonData(hashMap);
 
         StringBuilder params = new StringBuilder();
-        Iterator iter = hashMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            Object key = entry.getKey();
+        for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
+            String key = entry.getKey();
             Object value = entry.getValue();
             if (params.length() <= 0) {
                 params.append("?" + key + "=" + value);
