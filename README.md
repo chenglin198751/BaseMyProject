@@ -106,6 +106,6 @@
 **44、ViewPagerLayoutManager 类**：RecyclerView的LayoutManager，仿抖音首页效果-横向和竖向滑动的viewPager
       ViewPagerLayoutManager.OnViewPagerListener 是滑动监听器
 
-**43、SubsamplingScaleImageView 类**：一个可以显示长图的控件，和36不同的是，此类是自定义View实现的。
+**43、SubsamplingScaleImageView 类**：一个可以显示长图的控件，和36不同的是，此类是自定义View实现的，推荐使用这个。
      github地址：https://github.com/davemorrissey/subsampling-scale-image-view
 
