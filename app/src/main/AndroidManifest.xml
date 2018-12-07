@@ -34,39 +34,32 @@
         <activity
             android:name="widget.BaseWebViewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <activity
             android:name="photo.SelectPhotosActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
             android:name="test.TestRecyclerViewRefreshActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="recyclerview"
             android:screenOrientation="portrait" />
         <activity
             android:name="test.TestFlexBoxActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="flexbox"
             android:screenOrientation="portrait" />
         <activity
             android:name="test.TestTabLayoutActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="tabLayout"
             android:screenOrientation="portrait" />
         <activity
             android:name="test.TestPullDownRefreshActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="tabLayout"
             android:screenOrientation="portrait" />
         <activity
             android:name="test.TestActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="tabLayout"
             android:screenOrientation="portrait" />
     </application>
 
