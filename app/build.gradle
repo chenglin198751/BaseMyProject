@@ -58,7 +58,7 @@ dependencies {
     implementation 'com.squareup.okio:okio:2.1.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'
-    implementation 'com.google.android:flexbox:0.3.0'
+    implementation 'com.google.android:flexbox:1.1.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'com.android.support:multidex:1.0.3'
