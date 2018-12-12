@@ -110,4 +110,5 @@
       github地址：https://github.com/davemorrissey/subsampling-scale-image-view
 
 **44、TestFlexBoxActivity 类**：一个用谷歌FlexBox实现流式布局的demo类。谷歌官方出品的FlexBox，实现了流式布局。
+      其中的FlexboxLayoutManager是为RecyclerView定制，可以实现流式布局。
       github地址：https://github.com/google/flexbox-layout
