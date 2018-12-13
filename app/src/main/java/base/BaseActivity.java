@@ -13,6 +13,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -63,6 +64,42 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     public BaseActivity getContext() {
         return this;
+    }
+
+    /**
+     * 已弃用，请使用 {@link #setContentLayout}.
+     */
+    @Deprecated
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+    }
+
+    /**
+     * 已弃用，请使用 {@link #setContentLayout}.
+     */
+    @Deprecated
+    @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+    }
+
+    /**
+     * 已弃用，请使用 {@link #setContentLayout}.
+     */
+    @Deprecated
+    @Override
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
+        super.setContentView(view, params);
+    }
+
+    /**
+     * 已弃用，请使用 {@link #setContentLayout}.
+     */
+    @Deprecated
+    @Override
+    public void addContentView(View view, ViewGroup.LayoutParams params) {
+        super.addContentView(view, params);
     }
 
     /**
