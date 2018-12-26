@@ -354,9 +354,22 @@ public class HttpUtils {
         } else if (TextUtils.isEmpty(fileUrl)) {
             downloadCallback.onFailure(new IOException("下载URL不能为空"));
             return;
-        } else if (!TextUtils.isEmpty(downPath) && !(new File(downPath)).exists()) {
-            downloadCallback.onFailure(new IOException("指定的下载目录不存在"));
-            return;
+        }
+
+        try {
+            File file = new File(downPath);
+            if (!file.exists()) {
+                File parent = file.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                if (!parent.exists()) {
+                    downloadCallback.onFailure(new IOException("文件目录不存在"));
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         final String defaultPath = HTTP_DOWNLOAD_PATH + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
