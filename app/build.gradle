@@ -12,7 +12,7 @@ android {
         multiDexEnabled true
 
         ndk {
-            abiFilters "armeabi-v7a","x86"
+            abiFilters 'armeabi-v7a', 'x86'
         }
     }
 
@@ -51,7 +51,7 @@ dependencies {
     implementation "com.android.support:exifinterface:$rootProject.ext.SUPPORT_V4_VERSION"
     implementation "com.android.support:recyclerview-v7:$rootProject.ext.SUPPORT_V4_VERSION"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation ("com.squareup.picasso:picasso:2.71828") {
+    implementation("com.squareup.picasso:picasso:2.71828") {
         exclude group: "com.android.support"
     }
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
