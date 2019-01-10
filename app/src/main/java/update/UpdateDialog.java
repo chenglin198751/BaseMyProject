@@ -121,7 +121,7 @@ public class UpdateDialog extends Dialog {
     public void checkUpdate() {
         mActivity.post(HttpUrl.check_update, null, new HttpUtils.HttpCallback() {
             @Override
-            public void onFailure(Exception e) {
+            public void onFailure(HttpUtils.HttpException e) {
 
             }
 

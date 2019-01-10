@@ -5,14 +5,18 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
+import org.apache.http.conn.ConnectTimeoutException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLException;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
@@ -41,7 +45,7 @@ public class HttpUtils {
     public interface HttpCallback {
         void onSuccess(String result);
 
-        void onFailure(Exception e);
+        void onFailure(HttpException e);
     }
 
     public interface HttpDownloadCallback {
@@ -140,13 +144,28 @@ public class HttpUtils {
                 }
                 e.printStackTrace();
 
+                final HttpException httpEx = new HttpException();
+                httpEx.errorCode = HttpConst.ERROR_UNKNOWN;
+                httpEx.errorMsg = e.getMessage();
+
+                if (e instanceof SSLException) {
+                    httpEx.errorCode = HttpConst.ERROR_CODE_SSL;
+                    httpEx.errorMsg = HttpConst.HTTP_SSL_EXCEPTION;
+                } else if (e instanceof ConnectTimeoutException) {
+                    httpEx.errorCode = HttpConst.ERROR_CODE_TIME_OUT;
+                    httpEx.errorMsg = HttpConst.HTTP_TIME_OUT;
+                } else if (e instanceof SocketTimeoutException) {
+                    httpEx.errorCode = HttpConst.ERROR_CODE_TIME_OUT;
+                    httpEx.errorMsg = HttpConst.HTTP_TIME_OUT_RESPONSE;
+                }
+
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                httpCallback.onFailure(e);
+                                httpCallback.onFailure(httpEx);
                             }
                         });
                     }
@@ -154,7 +173,7 @@ public class HttpUtils {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onFailure(e);
+                            httpCallback.onFailure(httpEx);
                         }
                     });
                 }
@@ -541,5 +560,20 @@ public class HttpUtils {
             return url.substring(index, url.length());
         }
         return "";
+    }
+
+    public static class HttpException {
+        public int errorCode;
+        public String errorMsg;
+    }
+
+    private static class HttpConst {
+        static final int ERROR_UNKNOWN = 100;
+        static final int ERROR_CODE_SSL = 200;
+        static final int ERROR_CODE_TIME_OUT = 300;
+
+        static String HTTP_TIME_OUT = "请求超时，请稍后再试...";
+        static String HTTP_TIME_OUT_RESPONSE = "响应超时，请稍后再试...";
+        static String HTTP_SSL_EXCEPTION = "连接服务器失败，请正确设置手机日期或稍后重试";
     }
 }
