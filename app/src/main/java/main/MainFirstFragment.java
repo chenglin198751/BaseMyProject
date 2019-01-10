@@ -9,6 +9,7 @@ import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import httpwork.HttpUtils;
 import test.TestRecyclerViewRefreshActivity;
+import widget.ToastUtils;
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -53,8 +54,8 @@ public class MainFirstFragment extends BaseFragment {
             }
 
             @Override
-            public void onFailure(Exception e) {
-
+            public void onFailure(HttpUtils.HttpException e) {
+                ToastUtils.show(e.errorMsg);
             }
         });
     }
