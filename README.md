@@ -113,6 +113,5 @@
       其中的FlexboxLayoutManager是为RecyclerView定制，可以实现流式布局。
       github地址：https://github.com/google/flexbox-layout
 
-**45、implementation 'com.lxj:xpopup:latest release **：一款强大，美观，优雅的通用弹窗XPopup，支持随意位置显示。
-      具体项目介绍：http://www.wanandroid.com/blog/show/2464
-      github：https://github.com/li-xiaojun/XPopup
+**45、com.github.zyyoona7:EasyPopup:1.1.1 **：一款强大，美观，优雅的通用弹窗XPopup，支持随意位置显示。
+      github：https://github.com/zyyoona7/EasyPopup
