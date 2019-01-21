@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -157,6 +158,9 @@ public class HttpUtils {
                 } else if (e instanceof SocketTimeoutException) {
                     httpEx.errorCode = HttpConst.ERROR_CODE_TIME_OUT;
                     httpEx.errorMsg = HttpConst.HTTP_TIME_OUT_RESPONSE;
+                } else if (e instanceof UnknownHostException) {
+                    httpEx.errorCode = HttpConst.ERROR_CODE_NO_NET_WORK;
+                    httpEx.errorMsg = HttpConst.HTTP_NO_NET;
                 }
 
                 if (context instanceof Activity) {
@@ -571,9 +575,11 @@ public class HttpUtils {
         static final int ERROR_UNKNOWN = 100;
         static final int ERROR_CODE_SSL = 200;
         static final int ERROR_CODE_TIME_OUT = 300;
+        static final int ERROR_CODE_NO_NET_WORK = 400;
 
         static String HTTP_TIME_OUT = "请求超时，请稍后再试...";
         static String HTTP_TIME_OUT_RESPONSE = "响应超时，请稍后再试...";
         static String HTTP_SSL_EXCEPTION = "连接服务器失败，请正确设置手机日期或稍后重试";
+        static String HTTP_NO_NET = "网络已断开";
     }
 }
