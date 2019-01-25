@@ -63,6 +63,6 @@
 # 保持测试相关的代码
 -dontnote junit.framework.**
 -dontnote junit.runner.**
--dontwarn android.test.**
--dontwarn android.support.test.**
+-dontwarn android.cheerly.mybaseproject.test.**
+-dontwarn android.support.cheerly.mybaseproject.test.**
 -dontwarn org.junit.**
