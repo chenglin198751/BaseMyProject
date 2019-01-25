@@ -9,7 +9,7 @@
     android:paddingLeft="8dp"
     android:paddingTop="8dp">
 
-    <view.WebImageView
+    <cheerly.mybaseproject.view.WebImageView
         android:id="@+id/image_view"
         android:layout_width="100dp"
         android:layout_height="100dp"

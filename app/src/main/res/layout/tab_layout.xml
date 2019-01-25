@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <widget.MyTabLayout
+    <cheerly.mybaseproject.widget.MyTabLayout
         android:id="@+id/tab_layout"
         style="@style/TabLayoutCommonStyle"
         android:layout_width="match_parent"

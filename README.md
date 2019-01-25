@@ -107,7 +107,7 @@
       ViewPagerLayoutManager.OnViewPagerListener 是滑动监听器
 
 **43、SubsamplingScaleImageView 类**：一个可以显示长图的控件，和36不同的是，此类是自定义View实现的，推荐使用这个。
-      github地址：https://github.com/davemorrissey/subsampling-scale-image-view
+      github地址：https://github.com/davemorrissey/subsampling-scale-image-cheerly.mybaseproject.view
 
 **44、TestFlexBoxActivity 类**：一个用谷歌FlexBox实现流式布局的demo类。谷歌官方出品的FlexBox，实现了流式布局。
       其中的FlexboxLayoutManager是为RecyclerView定制，可以实现流式布局。

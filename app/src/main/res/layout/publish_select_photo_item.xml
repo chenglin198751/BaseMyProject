@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <view.WebImageView
+    <cheerly.mybaseproject.view.WebImageView
         android:id="@+id/photo_img"
         android:layout_width="60dp"
         android:layout_height="60dp"
