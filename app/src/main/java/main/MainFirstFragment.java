@@ -1,6 +1,5 @@
 package main;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,7 +7,7 @@ import android.view.View;
 import base.BaseFragment;
 import cheerly.mybaseproject.R;
 import httpwork.HttpUtils;
-import test.TestRecyclerViewRefreshActivity;
+import widget.BaseWebViewActivity;
 import widget.ToastUtils;
 
 /**
@@ -29,7 +28,8 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getData();
+//                getData();
+                BaseWebViewActivity.start(getContext(),"https://www.baidu.com/","百度");
             }
         });
 
