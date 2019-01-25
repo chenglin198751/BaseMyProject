@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <view.CornerLinearLayout
+    <cheerly.mybaseproject.view.CornerLinearLayout
         android:id="@+id/dialog_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -117,5 +117,5 @@
                 android:textColor="@color/fc_1"
                 android:textSize="15dp" />
         </LinearLayout>
-    </view.CornerLinearLayout>
+    </cheerly.mybaseproject.view.CornerLinearLayout>
 </LinearLayout>
