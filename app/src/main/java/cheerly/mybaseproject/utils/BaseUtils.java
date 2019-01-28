@@ -25,7 +25,9 @@ import android.util.TypedValue;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -513,5 +515,77 @@ public class BaseUtils {
         CRC32 crc32 = new CRC32();
         crc32.update(str.getBytes());
         return crc32.getValue();
+    }
+
+    /**
+     * 获取指定域名的ip地址
+     */
+    public static String getHostIP(final String serverHost) {
+        final String[] res = new String[1];
+        res[0] = "";
+        final ThreadSync sync = new ThreadSync();
+        try {
+            sync.pause();
+            final Thread tr = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String hostIP = "";
+                    // 系统函数方式
+                    try {
+                        java.net.InetAddress addr = java.net.InetAddress.getByName(serverHost);
+                        if (addr != null) {
+                            hostIP = addr.getHostAddress();
+                        }
+                    } catch (Throwable tr) {
+                        tr.printStackTrace();
+                    }
+
+                    if (!TextUtils.isEmpty(hostIP)) {
+                        res[0] = hostIP;
+                        sync.resume();
+                        return;
+                    }
+
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    // ping 命令方式
+                    try {
+                        Process p = Runtime.getRuntime().exec("/system/bin/ping -c " + 1 + " " + serverHost);
+                        p.waitFor();
+                        BufferedReader buf = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+                        String str = "";
+                        while ((str = buf.readLine()) != null) {
+                            int startIndex = str.indexOf("(");
+                            int endIndex = str.indexOf(")");
+                            if ((startIndex >= 0) && (endIndex >= 0)) {
+                                hostIP = str.substring(startIndex + 1, endIndex);
+                                break;
+                            }
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    res[0] = hostIP;
+                    sync.resume();
+                }
+            });
+            tr.start();
+
+            if (sync.isPaused()) {
+                // 等15秒钟
+                sync.callWait(15000);
+            }
+            tr.interrupt();
+        } catch (Throwable tr) {
+            tr.printStackTrace();
+        } finally {
+            if (sync != null) {
+                sync.exit();
+            }
+        }
+
+        return res[0];
     }
 }
