@@ -37,7 +37,7 @@ public class TestActivity extends BaseActivity {
         getTitleHelper().hideTitleBar();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
-        mPullToRefresh.setEnableLoadmore(false);
+        mPullToRefresh.setEnableLoadMore(false);
 
         mPullToRefresh.setListener(new PullToRefresh.onListener() {
             @Override
@@ -58,7 +58,7 @@ public class TestActivity extends BaseActivity {
                     @Override
                     public void run() {
                         getData();
-                        mPullToRefresh.finishLoadmore();
+                        mPullToRefresh.finishLoadMore();
                     }
                 }, 500);
             }
