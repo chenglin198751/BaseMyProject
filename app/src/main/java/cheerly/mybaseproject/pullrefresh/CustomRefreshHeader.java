@@ -2,6 +2,7 @@ package cheerly.mybaseproject.pullrefresh;
 
 import android.content.Context;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -67,9 +68,9 @@ public class CustomRefreshHeader implements RefreshHeader {
     @Override
     public int onFinish(RefreshLayout layout, boolean success) {
         stopRotate();
-        if (success){
+        if (success) {
             mLoadingTextView.setText(R.string.cube_ptr_refresh_complete);
-        }else {
+        } else {
             mLoadingTextView.setText(R.string.cube_ptr_refresh_fail);
         }
         return 300;
@@ -81,14 +82,14 @@ public class CustomRefreshHeader implements RefreshHeader {
     }
 
     @Override
-    public void onPullingDown(float percent, int offset, int headerHeight, int extendHeight) {
+    public void onMoving(boolean isDragging, float percent, int offset, int headerHeight, int extendHeight) {
         mLoadingView.setRotation(percent * 360f);
     }
 
     @Override
-    public void onReleasing(float percent, int offset, int headerHeight, int extendHeight) {
-
+    public void onReleased(@NonNull RefreshLayout refreshLayout, int height, int maxDragHeight) {
     }
+
 
     @Override
     public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {

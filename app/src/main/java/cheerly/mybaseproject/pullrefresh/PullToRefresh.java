@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 
@@ -41,9 +41,9 @@ public class PullToRefresh extends SmartRefreshLayout {
                 }
             }
         });
-        setOnLoadmoreListener(new OnLoadmoreListener() {
+        setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onLoadmore(RefreshLayout refreshlayout) {
+            public void onLoadMore(RefreshLayout refreshlayout) {
                 if (listener != null) {
                     listener.onLoadMore();
                 }
@@ -77,8 +77,8 @@ public class PullToRefresh extends SmartRefreshLayout {
     }
 
     @Override
-    public SmartRefreshLayout finishLoadmore() {
-        return finishLoadmore(0);
+    public SmartRefreshLayout finishLoadMore() {
+        return finishLoadMore(0);
     }
 
     public interface onListener {

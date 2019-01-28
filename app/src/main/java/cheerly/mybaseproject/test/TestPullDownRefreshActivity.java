@@ -76,7 +76,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         setData(5, false);
-                        mPullToRefresh.finishLoadmore();
+                        mPullToRefresh.finishLoadMore();
                     }
                 }, 1500);
             }

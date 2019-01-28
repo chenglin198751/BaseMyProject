@@ -2,6 +2,7 @@ package cheerly.mybaseproject.pullrefresh;
 
 import android.content.Context;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -86,20 +87,19 @@ public class CustomRefreshFooter implements RefreshFooter {
 
 
     @Override
-    public void onPullingUp(float percent, int offset, int footerHeight, int extendHeight) {
+    public void onMoving(boolean isDragging, float percent, int offset, int footerHeight, int extendHeight) {
         mLoadingView.setRotation(percent * 360f);
     }
 
     @Override
-    public void onPullReleasing(float percent, int offset, int footerHeight, int extendHeight) {
-
+    public void onReleased(@NonNull RefreshLayout refreshLayout, int height, int maxDragHeight) {
     }
 
     /**
      * 设置数据全部加载完成，将不能再次触发加载功能
      */
     @Override
-    public boolean setLoadmoreFinished(boolean finished) {
+    public boolean setNoMoreData(boolean finished) {
         if (mLoadmoreFinished != finished) {
             mLoadmoreFinished = finished;
             if (finished) {
@@ -121,7 +121,7 @@ public class CustomRefreshFooter implements RefreshFooter {
             switch (newState) {
                 case None:
                     break;
-                case PullToUpLoad:
+                case PullUpToLoad:
                     mLoadingTextView.setText(R.string.cube_ptr_pull_up_to_load);
                     break;
                 case Loading:

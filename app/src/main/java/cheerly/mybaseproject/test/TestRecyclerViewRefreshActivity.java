@@ -73,7 +73,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         setData(PIC_ARRAY.length, false);
-                        mPullToRefresh.finishLoadmore();
+                        mPullToRefresh.finishLoadMore();
                     }
                 }, 500);
             }
