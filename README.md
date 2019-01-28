@@ -37,7 +37,7 @@
 
 **14、ToastUtils 类**：统一弹Toast 的类，系统的Toast 样式太丑，这个是我自己定制的，可以随意定制，并且解决了系统toast 一直弹出的问题。
 
-**15、支持缩放的ImageView类：https://github.com/chrisbanes/PhotoView
+**15、支持缩放的ImageView类**：https://github.com/chrisbanes/PhotoView
 
 **16、MyWebViewActivity 类**：基于腾讯X5浏览器内核封装的统一WebViewActivity ，性能卓越。具体介绍可以去看X5内核。
 
