@@ -113,9 +113,9 @@
       其中的FlexboxLayoutManager是为RecyclerView定制，可以实现流式布局。
       github地址：https://github.com/google/flexbox-layout
 
-**45、com.github.zyyoona7:EasyPopup:1.1.1 **：一款强大，美观，优雅的通用弹窗XPopup，支持随意位置显示。
+**45、com.github.zyyoona7:EasyPopup:1.1.1** ：一款强大，美观，优雅的通用弹窗XPopup，支持随意位置显示。
       github：https://github.com/zyyoona7/EasyPopup
    
-**46、支持断点续传的下载：**https://github.com/AriaLyy/Aria
+**46、支持断点续传的下载**：https://github.com/AriaLyy/Aria
 
-**47、封装的易用数据库dbflow：**https://joyrun.github.io/2016/08/02/dbflow/
+**47、封装的易用数据库dbflow**：https://joyrun.github.io/2016/08/02/dbflow/
