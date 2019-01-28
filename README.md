@@ -30,7 +30,7 @@
 
 **11、BaseUtils 类**：统一的工具类，里面包含了很多常用的方法并写了注释，大家可以看看，基本常用的方法都包含了。
 
-**12、特别说明**：MyUtils 里面有个方法叫做getHandler() ，这是一个全局的Handler ，当然，我获取的是MainLooper 。以后大家执行post 或者postDelay操作时就可以直接用这个全局Handler 了。
+**12、特别说明**：BaseUtils 里面有个方法叫做 getHandler() ，这是一个全局的Handler ，当然，我获取的是MainLooper 。以后大家执行post 或者postDelay操作时就可以直接用这个全局Handler 了。
     （特别注意，如果使用postDelay方法时，一定要记得onDestroy时调用removeCallback 方法，要不很容易内存泄漏）
 
 **13、MyDialog 类**：封装了dialog ，系统的dialog样式太难看，并且根据手机的不同显示的样式也不同，所以我自己封装了一个。使用很简单，看一眼就会。
@@ -39,7 +39,7 @@
 
 **15、支持缩放的ImageView类**：https://github.com/chrisbanes/PhotoView
 
-**16、MyWebViewActivity 类**：基于腾讯X5浏览器内核封装的统一WebViewActivity ，性能卓越。具体介绍可以去看X5内核。
+**16、BaseWebViewActivity 类**：基于腾讯X5浏览器内核封装的统一 WebViewActivity ，性能卓越。具体介绍可以去看X5内核。
 
 **17、EasyCache 类**：一个基于文件的存储工具，可以很方便的存储很长的字符串，且效率很高。如果大家想做缓存，建议用这个。
 
