@@ -22,7 +22,7 @@
 **7、WebImageView 类**：图片加载类。使用的是square 公司出品的picasso ，并做了简单的封装，封装的目的是以后可以方便的换其他的图片加载工具。封装为：WebImageView .
         我已经写了支持GIF的方法，性能卓越。具体用法是一定要传入当前ImageView的宽和高，以便最大限度的节约内存空间，让滑动更流畅，并且避免OOM。
 
-**8、PullToRefresh 类**：实现了上拉加载更多，下拉刷新。封装自https://github.com/scwang90/SmartRefreshLayout ，它可以很随意的定制自己的header 和footer ，并有很多属性可以设置，极为好用。
+**8、PullToRefreshView 类**：实现了上拉加载更多，下拉刷新。封装自https://github.com/scwang90/SmartRefreshLayout ，它可以很随意的定制自己的header 和footer ，并有很多属性可以设置，极为好用。
 
 **9、ReplaceViewHelper 类**：一个封装的工具类，可以很方便的替换任意的View 为另一个View 。
 
