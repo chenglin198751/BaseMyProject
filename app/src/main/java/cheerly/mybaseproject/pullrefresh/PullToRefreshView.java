@@ -72,14 +72,33 @@ public class PullToRefreshView extends SmartRefreshLayout {
     }
 
     @Override
-    public SmartRefreshLayout finishRefresh() {
-        return finishRefresh(0);
+    public PullToRefreshView finishRefresh() {
+        finishRefresh(0);
+        return this;
     }
 
     @Override
-    public SmartRefreshLayout finishLoadMore() {
-        return finishLoadMore(0);
+    public PullToRefreshView finishLoadMore() {
+        finishLoadMore(0);
+        return this;
     }
+
+    @Override
+    public boolean autoRefresh() {
+        return super.autoRefresh();
+    }
+
+    @Override
+    public boolean autoRefresh(int delayed) {
+        return super.autoRefresh(delayed);
+    }
+
+    @Override
+    public PullToRefreshView finishLoadMoreWithNoMoreData() {
+        super.finishLoadMoreWithNoMoreData();
+        return this;
+    }
+
 
     public interface onListener {
         void onRefresh();

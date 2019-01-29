@@ -57,6 +57,8 @@ public class TestPullDownRefreshActivity extends BaseActivity {
 
         mPullToRefreshView = (PullToRefreshView) findViewById(R.id.swipe_refresh);
 
+        mPullToRefreshView.autoRefresh();
+
         mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
             @Override
             public void onRefresh() {
@@ -75,8 +77,13 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                 mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        setData(5, false);
-                        mPullToRefreshView.finishLoadMore();
+                        boolean hasData = setData(5, false);
+                        if (hasData){
+                            mPullToRefreshView.finishLoadMore();
+                        }else{
+                            mPullToRefreshView.finishLoadMoreWithNoMoreData();
+                        }
+
                     }
                 }, 1500);
             }
@@ -85,11 +92,11 @@ public class TestPullDownRefreshActivity extends BaseActivity {
 
         mAdapter = new MyAdapter(this);
         mListView.setAdapter(mAdapter);
-        setData(10, true);
+//        setData(10, true);
     }
 
-    private void setData(int count, boolean isRefresh) {
-        List<String> list = new ArrayList<String>();
+    private boolean setData(int count, boolean isRefresh) {
+        List<String> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add("" + (mAdapter.getCount() + i));
         }
@@ -100,6 +107,11 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             mAdapter.appendDataList(list);
         }
 
+        if (mAdapter.getCount() > 20){
+            return false;
+        }
+
+        return true;
     }
 
     private static class MyAdapter extends BaseListViewAdapter<String> {
