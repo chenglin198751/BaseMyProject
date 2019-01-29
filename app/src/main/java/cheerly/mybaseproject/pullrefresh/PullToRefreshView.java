@@ -15,19 +15,19 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
  * 支持下拉刷新和上拉加载更多
  */
 
-public class PullToRefresh extends SmartRefreshLayout {
+public class PullToRefreshView extends SmartRefreshLayout {
 
-    public PullToRefresh(Context context) {
+    public PullToRefreshView(Context context) {
         super(context);
         init();
     }
 
-    public PullToRefresh(Context context, AttributeSet attrs) {
+    public PullToRefreshView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PullToRefresh(Context context, AttributeSet attrs, int defStyle) {
+    public PullToRefreshView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }

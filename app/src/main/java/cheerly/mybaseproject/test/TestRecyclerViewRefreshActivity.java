@@ -15,7 +15,7 @@ import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
-import cheerly.mybaseproject.pullrefresh.PullToRefresh;
+import cheerly.mybaseproject.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.view.WebImageView;
 import cheerly.mybaseproject.widget.ViewPagerLayoutManager;
@@ -24,7 +24,7 @@ import cheerly.mybaseproject.widget.ViewPagerLayoutManager;
  * 资料：https://github.com/scwang90/SmartRefreshLayout
  */
 public class TestRecyclerViewRefreshActivity extends BaseActivity {
-    private PullToRefresh mPullToRefresh;
+    private PullToRefreshView mPullToRefreshView;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
 
@@ -52,28 +52,28 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
         getTitleHelper().hideTitleBar();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
+        mPullToRefreshView = (PullToRefreshView) findViewById(R.id.swipe_refresh);
 
-        mPullToRefresh.setListener(new PullToRefresh.onListener() {
+        mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
             @Override
             public void onRefresh() {
-                mPullToRefresh.postDelayed(new Runnable() {
+                mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mAdapter.clear();
                         setData(PIC_ARRAY.length, true);
-                        mPullToRefresh.finishRefresh();
+                        mPullToRefreshView.finishRefresh();
                     }
                 }, 500);
             }
 
             @Override
             public void onLoadMore() {
-                mPullToRefresh.postDelayed(new Runnable() {
+                mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         setData(PIC_ARRAY.length, false);
-                        mPullToRefresh.finishLoadMore();
+                        mPullToRefreshView.finishLoadMore();
                     }
                 }, 500);
             }

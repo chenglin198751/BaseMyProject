@@ -18,13 +18,13 @@ import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseListViewAdapter;
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.helper.BannerImageLoader;
-import cheerly.mybaseproject.pullrefresh.PullToRefresh;
+import cheerly.mybaseproject.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.view.WebImageView;
 
 public class TestPullDownRefreshActivity extends BaseActivity {
-    private PullToRefresh mPullToRefresh;
+    private PullToRefreshView mPullToRefreshView;
     private ListView mListView;
     private MyAdapter mAdapter;
 
@@ -55,28 +55,28 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         mListView.addHeaderView(banner);
 
 
-        mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
+        mPullToRefreshView = (PullToRefreshView) findViewById(R.id.swipe_refresh);
 
-        mPullToRefresh.setListener(new PullToRefresh.onListener() {
+        mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
             @Override
             public void onRefresh() {
-                mPullToRefresh.postDelayed(new Runnable() {
+                mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mAdapter.clear();
                         setData(10, true);
-                        mPullToRefresh.finishRefresh();
+                        mPullToRefreshView.finishRefresh();
                     }
                 }, 1500);
             }
 
             @Override
             public void onLoadMore() {
-                mPullToRefresh.postDelayed(new Runnable() {
+                mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         setData(5, false);
-                        mPullToRefresh.finishLoadMore();
+                        mPullToRefreshView.finishLoadMore();
                     }
                 }, 1500);
             }
