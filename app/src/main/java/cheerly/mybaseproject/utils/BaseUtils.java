@@ -27,6 +27,7 @@ import android.widget.EditText;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -587,5 +588,16 @@ public class BaseUtils {
         }
 
         return res[0];
+    }
+
+    /**
+     * 执行adb shell 命令来滑动屏幕
+     */
+    public static void exec() {
+        try {
+            Runtime.getRuntime().exec("input swipe 400 1000 400 100 4000");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
