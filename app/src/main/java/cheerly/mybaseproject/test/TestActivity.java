@@ -19,11 +19,11 @@ import cheerly.mybaseproject.base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.bean.ApkItem;
 import cheerly.mybaseproject.R;
-import cheerly.mybaseproject.pullrefresh.PullToRefresh;
+import cheerly.mybaseproject.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.utils.BaseUtils;
 
 public class TestActivity extends BaseActivity {
-    private PullToRefresh mPullToRefresh;
+    private PullToRefreshView mPullToRefreshView;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
 
@@ -36,29 +36,29 @@ public class TestActivity extends BaseActivity {
 
         getTitleHelper().hideTitleBar();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mPullToRefresh = (PullToRefresh) findViewById(R.id.swipe_refresh);
-        mPullToRefresh.setEnableLoadMore(false);
+        mPullToRefreshView = (PullToRefreshView) findViewById(R.id.swipe_refresh);
+        mPullToRefreshView.setEnableLoadMore(false);
 
-        mPullToRefresh.setListener(new PullToRefresh.onListener() {
+        mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
             @Override
             public void onRefresh() {
-                mPullToRefresh.postDelayed(new Runnable() {
+                mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mAdapter.clear();
                         getData();
-                        mPullToRefresh.finishRefresh();
+                        mPullToRefreshView.finishRefresh();
                     }
                 }, 500);
             }
 
             @Override
             public void onLoadMore() {
-                mPullToRefresh.postDelayed(new Runnable() {
+                mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         getData();
-                        mPullToRefresh.finishLoadMore();
+                        mPullToRefreshView.finishLoadMore();
                     }
                 }, 500);
             }
@@ -70,7 +70,7 @@ public class TestActivity extends BaseActivity {
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        mPullToRefresh.autoRefresh();
+        mPullToRefreshView.autoRefresh();
     }
 
     @Override
@@ -102,7 +102,7 @@ public class TestActivity extends BaseActivity {
                     @Override
                     public void run() {
                         mAdapter.notifyDataSetChanged();
-                        mPullToRefresh.finishRefresh(true);
+                        mPullToRefreshView.finishRefresh(true);
                     }
                 });
             }
