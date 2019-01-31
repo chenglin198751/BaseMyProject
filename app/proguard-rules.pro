@@ -63,6 +63,24 @@
 # 保持测试相关的代码
 -dontnote junit.framework.**
 -dontnote junit.runner.**
--dontwarn android.cheerly.mybaseproject.test.**
--dontwarn android.support.cheerly.mybaseproject.test.**
+-dontwarn android.com.game.security.scan.test.**
+-dontwarn android.support.com.game.security.scan.test.**
 -dontwarn org.junit.**
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontoptimize
+-dontusemixedcaseclassnames
+-verbose
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
+-dontwarn dalvik.**
+-dontwarn com.tencent.smtt.**
+
+-keep class com.tencent.tbs.** {*;}
+-keep class com.tencent.smtt.** {*;}
+-keep class com.google.gson.** {*;}
+
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+-dontwarn org.codehaus.mojo.animal_sniffer.*
+-dontwarn okhttp3.internal.platform.ConscryptPlatform
