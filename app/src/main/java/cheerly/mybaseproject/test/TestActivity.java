@@ -19,7 +19,7 @@ import cheerly.mybaseproject.base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.bean.ApkItem;
 import cheerly.mybaseproject.R;
-import cheerly.mybaseproject.pullrefresh.PullToRefreshView;
+import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.utils.BaseUtils;
 
 public class TestActivity extends BaseActivity {

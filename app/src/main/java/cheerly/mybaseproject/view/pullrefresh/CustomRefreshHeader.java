@@ -1,4 +1,4 @@
-package cheerly.mybaseproject.pullrefresh;
+package cheerly.mybaseproject.view.pullrefresh;
 
 import android.content.Context;
 import android.support.annotation.ColorInt;
