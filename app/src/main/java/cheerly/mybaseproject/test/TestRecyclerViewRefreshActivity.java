@@ -15,7 +15,7 @@ import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.R;
-import cheerly.mybaseproject.pullrefresh.PullToRefreshView;
+import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.view.WebImageView;
 import cheerly.mybaseproject.widget.ViewPagerLayoutManager;

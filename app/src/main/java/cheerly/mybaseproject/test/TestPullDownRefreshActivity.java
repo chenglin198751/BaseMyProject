@@ -18,7 +18,7 @@ import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseListViewAdapter;
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.helper.BannerImageLoader;
-import cheerly.mybaseproject.pullrefresh.PullToRefreshView;
+import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.view.WebImageView;
