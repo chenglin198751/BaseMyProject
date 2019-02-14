@@ -80,10 +80,10 @@ public class WebImageView extends ImageView {
     }
 
     /**
-     * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
+     * 加载图片使其变为圆角或者圆形，(radius单位是dp).
      * 如果 radius <0 ,那么就是纯圆圈的图片;
      * 如果 radius >0 是圆角
-     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
+     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图(单位是px)
      */
     public void loadRound(Object object, int imageWidth, int imageHeight, int radius) {
         CenterDrawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius);
