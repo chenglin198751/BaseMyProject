@@ -75,7 +75,7 @@ public class BaseApp extends Application {
     /**
      * 得到栈顶Activity(有Activity在另一个进程打开就检测不到了)
      */
-    public Activity getmTopActivity() {
+    public Activity getTopActivity() {
         return mTopAct;
     }
 }
