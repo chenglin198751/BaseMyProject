@@ -188,7 +188,14 @@ public class HttpUtils {
                 if (context == null) {
                     return;
                 }
-                final String result = response.body().string();
+
+                //有时服务端返回json带了bom头，会导致解析生效
+                String tempStr = response.body().string();
+                if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
+                    tempStr = tempStr.substring(1);
+                }
+
+                final String result = tempStr;
 
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
