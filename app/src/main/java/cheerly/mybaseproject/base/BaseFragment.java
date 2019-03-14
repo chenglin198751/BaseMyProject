@@ -60,6 +60,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView {
         return inflater.inflate(R.layout.base_fragment_layout, container, false);
     }
 
+    @Deprecated
     @Override
     public final void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
