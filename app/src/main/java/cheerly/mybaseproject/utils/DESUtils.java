@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class DESUtils {
 
     /**
-     * DES 加密
+     * DES 加密(密钥建议使用手机IMEI的前8位)
      *
      * @param encryptString 要被DES加密的数据
      * @param desKey        密钥：一定要是8个字节
@@ -49,7 +49,7 @@ public class DESUtils {
     }
 
     /**
-     * DES 解密
+     * DES 解密(密钥建议使用手机IMEI的前8位)
      *
      * @param decryptString 要被DES解密的数据
      * @param desKey        密钥：一定要是8个字节
