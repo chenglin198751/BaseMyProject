@@ -35,11 +35,17 @@ import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.utils.LogUtils;
 import cheerly.mybaseproject.utils.SDCardUtils;
 
+//为了防止参数被人抓包恶意串改，所以建议客户端和服务器的参数传递做签名校验：
+//1、把要上传的参数按照key值做升序排列(a-z升序排序)，并用&符号连接，md5之后转为小写。Java开发可以使用TreeMap自动排序。
+//   特别注意，空值（空字符串或null）不参与签名运算。建议加入时间戳ts作为签名参数之一。示例如下：
+//   String signature = to_lower_case(md5(key1=value1&ts=时间戳&...&keyN=valueN)))
+//2、将被签名字符串转成字节数组时必须指定编码为utf-8。服务端也需要采用上述签名算法校验。
+//3、把signature作为和普通参数同级的参数，传递给服务端。
+
 /**
  * Created by chenglin on 2017-5-24.
  * 资料：http://liuwangshu.cn/application/network/6-okhttp3.html
  */
-
 public class HttpUtils {
     private final static String TAG = "HttpUtils";
 
