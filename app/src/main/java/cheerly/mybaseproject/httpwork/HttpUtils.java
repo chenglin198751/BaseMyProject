@@ -41,6 +41,7 @@ import cheerly.mybaseproject.utils.SDCardUtils;
 //   String signature = to_lower_case(md5(key1=value1&ts=时间戳&...&keyN=valueN)))
 //2、将被签名字符串转成字节数组时必须指定编码为utf-8。服务端也需要采用上述签名算法校验。
 //3、把signature作为和普通参数同级的参数，传递给服务端。
+//4、补充：如果还想要更安全，让服务器把返回结果用DES加密一下，客户端再解密使用。工具类：DESUtils.java
 
 /**
  * Created by chenglin on 2017-5-24.
