@@ -54,6 +54,9 @@
 **22、UserManager 类**：用户信息管理类，如果牵涉到用户登录之类的，要用这个类来管理，方便别人使用。
 
 **23、FastBlurUtil 类**：被我改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。
+      github上的两种实现：
+      1、https://github.com/CameraKit/blurkit-android
+      2、https://github.com/wasabeef/Blurry
 
 **24、OnFinishListener 类** ：我自己定义的一个接口，可以作为一个万能回调使用。别的地方任何如果只是临时性的回调，可以用它来做，不需要再写个回调接口了。
 
