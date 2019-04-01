@@ -538,14 +538,14 @@ public class HttpUtils {
     /**
      * 构建get请求参数
      */
-    public static String buildGetParams(HashMap<String, Object> hashMap) {
+    public static String buildGetParams(Map<String, Object> hashMap) {
         return buildGetParams(null, hashMap);
     }
 
     /**
      * 构建get请求参数
      */
-    public static String buildGetParams(String url, HashMap<String, Object> hashMap) {
+    public static String buildGetParams(String url, Map<String, Object> hashMap) {
         if (hashMap == null) {
             hashMap = new HashMap<>();
         }
