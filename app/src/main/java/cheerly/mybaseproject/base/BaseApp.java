@@ -31,7 +31,6 @@ public class BaseApp extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
-        AppHelper.initPicasso();
 
         //只在应用主进程执行
         if (AppHelper.isAppMainProcess()) {
