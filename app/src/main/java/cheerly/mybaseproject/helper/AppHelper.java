@@ -4,9 +4,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.squareup.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
-
 import cheerly.mybaseproject.base.BaseApp;
 import cheerly.mybaseproject.httpwork.HttpUtils;
 import cheerly.mybaseproject.utils.BaseUtils;
@@ -49,16 +46,5 @@ public class AppHelper {
             }
         }
         return "";
-    }
-
-    /**
-     * 自定义Picasso的Downloader，用的是Picasso的作者JakeWharton写的用OkHttp3作为下载器的Downloader.
-     * 下载路径用的是OkHttp3设置的cache路径。Picasso内部没有实现硬盘缓存，用的是下载器自身带的缓存策略。
-     */
-    public static void initPicasso() {
-        Picasso picasso = new Picasso.Builder(BaseApp.getApp())
-                .downloader(new OkHttp3Downloader(HttpUtils.client))
-                .build();
-        Picasso.setSingletonInstance(picasso);
     }
 }
