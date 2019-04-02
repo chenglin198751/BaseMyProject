@@ -3,6 +3,7 @@ package cheerly.mybaseproject.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Keep;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -60,7 +61,7 @@ public class WebImageView extends ImageView {
      * @param imageHeight 图片的高度
      * @param resDrawable 占位图，如果不设置，也会有默认占位图
      */
-    public void load(Object object, int imageWidth, int imageHeight, int resDrawable) {
+    public void load(Object object, int imageWidth, int imageHeight, @DrawableRes int resDrawable) {
         loadRound(object, imageWidth, imageHeight, CenterDrawable.RECTANGLE, resDrawable);
     }
 
@@ -111,7 +112,7 @@ public class WebImageView extends ImageView {
      * @param drawable    占位图，如果不设置，也会有默认占位图
      */
     public void loadRound(Object object, int imageWidth, int imageHeight, int radius, final Drawable drawable) {
-        Drawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, BaseUtils.dip2px(radius));
+        Drawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius > 0 ? BaseUtils.dip2px(radius) : radius);
         if (drawable != null) {
             centerDrawable = drawable;
         }
