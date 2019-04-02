@@ -147,7 +147,7 @@ public class WebImageView extends ImageView {
             glideRequest = glideRequest.circleCrop();
         } else {
             RoundedCorners roundedCorner = new RoundedCorners(BaseUtils.dip2px(radius));
-            glideRequest = glideRequest.transforms(new CenterCrop(), roundedCorner);
+            glideRequest = glideRequest.transform(new CenterCrop(), roundedCorner);
         }
         glideRequest.into(this);
     }
