@@ -4,8 +4,8 @@ import android.animation.Animator;
 
 /**
  * Created by chenglin on 2017-12-25.
+ * 参看： AnimatorListenerAdapter 官方实现的abstract 监听
  */
-
 public abstract class SimpleAnimatorListener implements Animator.AnimatorListener {
     public abstract void onAnimationEnd();
 
