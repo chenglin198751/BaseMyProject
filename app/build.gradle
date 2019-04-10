@@ -46,6 +46,12 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "base_project.apk"
+        }
+    }
 }
 
 dependencies {
