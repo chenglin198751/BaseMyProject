@@ -14,7 +14,6 @@ import cheerly.mybaseproject.utils.BaseUtils;
  */
 
 public class ToastUtils {
-    private static Toast mToast;
 
     public static void show(int resId) {
         show(BaseApp.getApp().getString(resId));
@@ -35,20 +34,14 @@ public class ToastUtils {
 
     private static void showToast(String text) {
         TextView tvMessage;
-        if (mToast == null) {
-            mToast = new Toast(BaseApp.getApp());
+        Toast toast = new Toast(BaseApp.getApp());
 
-            View view = View.inflate(BaseApp.getApp(), R.layout.my_toast_layout, null);
-            tvMessage = view.findViewById(R.id.message);
-            tvMessage.setText(text);
-
-            mToast.setView(view);
-            mToast.setDuration(Toast.LENGTH_SHORT);
-        } else {
-            tvMessage = mToast.getView().findViewById(R.id.message);
-            tvMessage.setText(text);
-        }
-        mToast.show();
+        View view = View.inflate(BaseApp.getApp(), R.layout.my_toast_layout, null);
+        tvMessage = view.findViewById(R.id.message);
+        tvMessage.setText(text);
+        toast.setView(view);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.show();
     }
 
 }
