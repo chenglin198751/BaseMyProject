@@ -49,7 +49,7 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "base_project.apk"
+            outputFileName = "base_project_" + "v" + defaultConfig.versionName + ".apk"
         }
     }
 }
