@@ -121,13 +121,6 @@ public class MyDialog extends Dialog {
     }
 
     /**
-     * 为左边的按钮设置点击事件
-     */
-    public void setLeftButton(View.OnClickListener listener) {
-        setLeftButton(null, listener);
-    }
-
-    /**
      * 为右边的按钮设置点击事件，并设置文字
      */
     public void setRightButton(String text, View.OnClickListener listener) {
@@ -136,13 +129,6 @@ public class MyDialog extends Dialog {
         }
         mRightBtn.setOnClickListener(listener);
         isRightVisible = true;
-    }
-
-    /**
-     * 为右边的按钮设置点击事件
-     */
-    public void setRightButton(View.OnClickListener listener) {
-        setRightButton(null, listener);
     }
 
     /**
