@@ -22,6 +22,13 @@ public class VersionUpdateModel {
     public String content; //升级描述
     public String url; //下载链接
 
+    public void setUpdateType(@UpdateType int updateType) {
+        this.updateType = updateType;
+    }
+
+    public int getUpdateType() {
+        return this.updateType;
+    }
 
     @IntDef({
             UPDATE_NORMAL,
@@ -41,13 +48,5 @@ public class VersionUpdateModel {
 
     //接口，定义新的注解类型
     public @interface UpdateType {
-    }
-
-    public void setUpdateType(@UpdateType int updateType) {
-        this.updateType = updateType;
-    }
-
-    public int getUpdateType() {
-        return this.updateType;
     }
 }
