@@ -6,8 +6,8 @@ package cheerly.mybaseproject.update;
  */
 
 public class HcxVersionModel {
-    public static transient final int UPDATE_NORMAL = 0;
-    public static transient final int UPDATE_FORCE = 1;
+    public static transient final int UPDATE_NORMAL = 0;//正常更新
+    public static transient final int UPDATE_FORCE = 1;//强制更新
 
     public int id; //唯一ID
     public String version; //最新版本号
