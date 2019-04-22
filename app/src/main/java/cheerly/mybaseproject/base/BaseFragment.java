@@ -45,7 +45,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView {
     @CallSuper
     public void onBroadcastReceiver(String action, Bundle bundle) {
         List<Fragment> fragments = getChildFragmentManager().getFragments();
-        if (fragments != null && fragments.size() > 0) {
+        if (fragments.size() > 0) {
             for (Fragment childFragment : fragments) {
                 if (childFragment instanceof BaseFragment) {
                     ((BaseFragment) childFragment).onBroadcastReceiver(action, bundle);
