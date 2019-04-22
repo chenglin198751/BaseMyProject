@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.R;
+import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.httpwork.HttpUrls;
 import cheerly.mybaseproject.httpwork.HttpUtils;
 import cheerly.mybaseproject.preferences.PreferSettings;
-import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.utils.BaseUtils;
+import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.widget.ToastUtils;
 
 /**
@@ -76,9 +76,9 @@ public class UpdateDialog extends Dialog {
                         }
                         mDownLoadTask.start(mVersionModel.url);
 
-                        if (HcxVersionModel.UPDATE_NORMAL == mVersionModel.updateType) {
+                        if (VersionUpdateModel.UPDATE_NORMAL == mVersionModel.getUpdateType()) {
                             dismiss();
-                        } else if (HcxVersionModel.UPDATE_FORCE == mVersionModel.updateType) {
+                        } else if (VersionUpdateModel.UPDATE_FORCE == mVersionModel.getUpdateType()) {
                             mRightBtn.setText(R.string.update_version_downloading);
                         }
                         ToastUtils.show(BaseUtils.getString(R.string.update_version_downloading));
@@ -144,7 +144,7 @@ public class UpdateDialog extends Dialog {
                 //用MVVM模式，中转一下
                 mVersionModel = new VersionUpdateModel();
                 mVersionModel.url = infoModel.url;
-                mVersionModel.updateType = infoModel.forceUpgrade;
+                mVersionModel.setUpdateType(infoModel.forceUpgrade);
                 mVersionModel.content = infoModel.content;
                 mVersionModel.title = infoModel.title;
                 mVersionModel.versionName = infoModel.version;
@@ -160,11 +160,11 @@ public class UpdateDialog extends Dialog {
     }
 
     private void setData(VersionUpdateModel infoModel) {
-        if (infoModel != null && infoModel.updateType >= 0) {
+        if (infoModel != null && infoModel.getUpdateType() >= 0) {
             long currentTimeMillis = System.currentTimeMillis();
 
             //非强制更新的对话框24H只弹一次
-            if (HcxVersionModel.UPDATE_NORMAL == infoModel.updateType) {
+            if (VersionUpdateModel.UPDATE_NORMAL == infoModel.getUpdateType()) {
                 long lastTimes = PreferSettings.getUpdateDialogTimes();
                 if (lastTimes > 0 && currentTimeMillis - lastTimes <= TIMES) {
                     return;
@@ -188,14 +188,14 @@ public class UpdateDialog extends Dialog {
             }
             mRightBtn.setText(R.string.update_version_update);
 
-            if (HcxVersionModel.UPDATE_NORMAL == infoModel.updateType) {
+            if (VersionUpdateModel.UPDATE_NORMAL == infoModel.getUpdateType()) {
                 mLeftBtn.setVisibility(View.VISIBLE);
                 mRightBtn.setVisibility(View.VISIBLE);
                 bottom_line.setVisibility(View.VISIBLE);
                 setCancelable(true);
                 setOnDismissListener(null);
                 PreferSettings.setUpdateDialogTimes(currentTimeMillis);
-            } else if (HcxVersionModel.UPDATE_FORCE == infoModel.updateType) {
+            } else if (VersionUpdateModel.UPDATE_FORCE == infoModel.getUpdateType()) {
                 mLeftBtn.setVisibility(View.GONE);
                 mRightBtn.setVisibility(View.VISIBLE);
                 bottom_line.setVisibility(View.GONE);
