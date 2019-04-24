@@ -5,9 +5,9 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Keep;
+import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -24,7 +24,7 @@ import cheerly.mybaseproject.utils.BaseUtils;
  */
 @SuppressLint("AppCompatCustomView")
 @Keep
-public class WebImageView extends ImageView {
+public class WebImageView extends AppCompatImageView {
 
     public WebImageView(Context context) {
         super(context);
