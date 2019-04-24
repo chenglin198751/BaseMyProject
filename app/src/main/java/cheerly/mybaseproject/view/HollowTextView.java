@@ -11,6 +11,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.IntRange;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
@@ -58,7 +59,7 @@ public class HollowTextView extends AppCompatTextView {
      * @param color  文本框背景色
      * @param radius 文本框圆角角度
      */
-    public void setBgColorAndRadius(@ColorInt int color, int radius) {
+    public void setBgColorAndRadius(@ColorInt int color, @IntRange(from = 0) int radius) {
         mBackgroundColor = color;
         mBackgroundPaint.setColor(mBackgroundColor);
         mCornerRadius = radius;
