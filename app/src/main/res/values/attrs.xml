@@ -9,7 +9,7 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="PolygonImageView" >
+    <declare-styleable name="PolygonImageView">
         <attr name="poly_vertices" format="integer" />
         <attr name="poly_rotation_angle" format="float" />
         <attr name="poly_corner_radius" format="float" />
@@ -20,7 +20,7 @@
         <attr name="poly_shadow_color" format="color" />
     </declare-styleable>
 
-    <declare-styleable name="PolygonImageViewTheme" >
+    <declare-styleable name="PolygonImageViewTheme">
         <attr name="polygonImageViewStyle" format="reference" />
     </declare-styleable>
 
@@ -50,5 +50,10 @@
             <enum name="repeat" value="1" />
             <enum name="mirror" value="2" />
         </attr>
+    </declare-styleable>
+
+    <declare-styleable name="HollowTextView">
+        <attr name="background_color" format="reference" />
+        <attr name="corner_radius" format="integer" />
     </declare-styleable>
 </resources>
