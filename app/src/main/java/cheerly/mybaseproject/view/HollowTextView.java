@@ -51,23 +51,20 @@ public class HollowTextView extends AppCompatTextView {
         a.recycle();
     }
 
-    /***
-     * 设置文本框背景色
+
+    /**
+     * 设置文本框背景色和文本框圆角角度
+     *
+     * @param color  文本框背景色
+     * @param radius 文本框圆角角度
      */
-    public void setBackgroundColor(@ColorInt int color) {
+    public void setBgColorAndRadius(@ColorInt int color, int radius) {
         mBackgroundColor = color;
         mBackgroundPaint.setColor(mBackgroundColor);
-        invalidate();
-    }
-
-
-    /***
-     * 设置文本框圆角角度，单位px
-     */
-    public void setCornerRadius(int radius) {
         mCornerRadius = radius;
         invalidate();
     }
+
 
     /***
      * 初始化画笔属性
