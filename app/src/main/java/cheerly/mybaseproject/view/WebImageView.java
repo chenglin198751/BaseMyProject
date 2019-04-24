@@ -22,7 +22,6 @@ import cheerly.mybaseproject.utils.BaseUtils;
 /**
  * Created by chenglin on 2017-7-14.
  */
-@SuppressLint("AppCompatCustomView")
 @Keep
 public class WebImageView extends AppCompatImageView {
 
