@@ -5,9 +5,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseFragment;
-import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.helper.ShowFragmentHelper;
 import cheerly.mybaseproject.widget.ToastUtils;
 
@@ -83,6 +83,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return mFragHelper.mSelectedTab;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("tab_index", getSelectedTab());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedState) {
+        super.onRestoreInstanceState(savedState);
+        showTab(savedState.getInt("tab_index"));
+    }
 
     @Override
     protected void onDestroy() {
