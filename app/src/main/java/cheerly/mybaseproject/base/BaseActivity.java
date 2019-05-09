@@ -142,12 +142,19 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     /**
-     * post 请求，建议用这个
+     * 内置 post 请求，建议用这个，可以防止内存泄漏
      */
     public void post(String url, Map<String, Object> map, final HttpUtils.HttpCallback httpCallback) {
         HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
         builder.setCache(false);
         HttpUtils.postWithHeader(getContext(), url, null, map, builder, httpCallback);
+    }
+
+    /**
+     * 内置 get 请求，建议用这个，可以防止内存泄漏
+     */
+    public void get(String url, final HttpUtils.HttpCallback httpCallback) {
+        HttpUtils.get(getContext(), url, httpCallback);
     }
 
     @CallSuper
