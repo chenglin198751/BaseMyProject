@@ -5,11 +5,11 @@ import android.content.SharedPreferences;
 
 import cheerly.mybaseproject.base.BaseApp;
 
-public class PreferSettings {
+public class PreferAppSettings {
     private static String update_dialog_times = "update_dialog_times";//更新对话框
 
     private static SharedPreferences getPreferences(final Context context) {
-        return context.getSharedPreferences("preference_1", Context.MODE_PRIVATE);
+        return context.getSharedPreferences("app_settings", Context.MODE_PRIVATE);
     }
 
     public static void clear() {

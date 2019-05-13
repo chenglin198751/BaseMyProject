@@ -13,7 +13,7 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.httpwork.HttpUrls;
 import cheerly.mybaseproject.httpwork.HttpUtils;
-import cheerly.mybaseproject.preferences.PreferSettings;
+import cheerly.mybaseproject.preferences.PreferAppSettings;
 import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.widget.ToastUtils;
@@ -165,7 +165,7 @@ public class UpdateDialog extends Dialog {
 
             //非强制更新的对话框24H只弹一次
             if (VersionUpdateModel.UPDATE_NORMAL == infoModel.getUpdateType()) {
-                long lastTimes = PreferSettings.getUpdateDialogTimes();
+                long lastTimes = PreferAppSettings.getUpdateDialogTimes();
                 if (lastTimes > 0 && currentTimeMillis - lastTimes <= TIMES) {
                     return;
                 }
@@ -194,7 +194,7 @@ public class UpdateDialog extends Dialog {
                 bottom_line.setVisibility(View.VISIBLE);
                 setCancelable(true);
                 setOnDismissListener(null);
-                PreferSettings.setUpdateDialogTimes(currentTimeMillis);
+                PreferAppSettings.setUpdateDialogTimes(currentTimeMillis);
             } else if (VersionUpdateModel.UPDATE_FORCE == infoModel.getUpdateType()) {
                 mLeftBtn.setVisibility(View.GONE);
                 mRightBtn.setVisibility(View.VISIBLE);
