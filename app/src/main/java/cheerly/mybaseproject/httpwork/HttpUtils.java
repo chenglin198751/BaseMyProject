@@ -153,7 +153,7 @@ public class HttpUtils {
 
                 final HttpException httpEx = new HttpException();
                 httpEx.errorCode = HttpConst.ERROR_UNKNOWN;
-                httpEx.errorMsg = e.getMessage();
+                httpEx.errorMsg = e.toString();
 
                 if (e instanceof SSLException) {
                     httpEx.errorCode = HttpConst.ERROR_CODE_SSL;
@@ -213,6 +213,10 @@ public class HttpUtils {
                                     httpCallback.onSuccess(result);
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    final HttpException httpEx = new HttpException();
+                                    httpEx.errorCode = HttpConst.ERROR_CODE_CATCH;
+                                    httpEx.errorMsg = e.toString();
+                                    httpCallback.onFailure(httpEx);
                                 }
                             }
                         });
@@ -225,6 +229,10 @@ public class HttpUtils {
                                 httpCallback.onSuccess(result);
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                final HttpException httpEx = new HttpException();
+                                httpEx.errorCode = HttpConst.ERROR_CODE_CATCH;
+                                httpEx.errorMsg = e.toString();
+                                httpCallback.onFailure(httpEx);
                             }
                         }
                     });
@@ -589,6 +597,7 @@ public class HttpUtils {
         static final int ERROR_CODE_SSL = 200;
         static final int ERROR_CODE_TIME_OUT = 300;
         static final int ERROR_CODE_NO_NET_WORK = 400;
+        static final int ERROR_CODE_CATCH = 500;
 
         static String HTTP_TIME_OUT = "请求超时，请稍后再试...";
         static String HTTP_TIME_OUT_RESPONSE = "响应超时，请稍后再试...";
