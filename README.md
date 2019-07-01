@@ -126,3 +126,7 @@
 **48、沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar
 
 **49、检测是否为模拟器的工具类**：EmulatorUtil.java
+
+**50、图片裁剪器**：https://github.com/Yalantis/uCrop
+
+**51、一款轻量级的socket连接工具**：https://github.com/xuuhaoo/OkSocket
