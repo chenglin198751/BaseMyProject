@@ -129,4 +129,7 @@
 
 **50、图片裁剪器**：https://github.com/Yalantis/uCrop
 
-**51、一款轻量级的socket连接工具**：https://github.com/xuuhaoo/OkSocket
+**51、一款轻量级的socket库**：https://github.com/xuuhaoo/OkSocket
+
+**51、另一款socket库**：https://github.com/nkzawa/socket.io-android-chat
+
