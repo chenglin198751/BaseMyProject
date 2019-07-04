@@ -35,8 +35,7 @@ import cheerly.mybaseproject.widget.WaitDialog;
  *
  * @author weiChengLin 2013-06-20
  */
-public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView {
-
+public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
     protected final static Gson gson = Constants.gson;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper = null;
@@ -158,9 +157,10 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     @CallSuper
+    @Override
     public void onBroadcastReceiver(String action, Bundle bundle) {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        if (fragments != null && fragments.size() > 0) {
+        if (fragments.size() > 0) {
             for (Fragment fragment : fragments) {
                 if (fragment instanceof BaseFragment) {
                     ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
@@ -301,4 +301,5 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             }
         }
     };
+
 }
