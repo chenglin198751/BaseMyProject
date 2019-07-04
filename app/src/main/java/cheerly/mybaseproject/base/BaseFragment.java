@@ -23,7 +23,7 @@ import cheerly.mybaseproject.widget.WaitDialog;
  * Created by chenglin on 2017-9-14.
  */
 
-public abstract class BaseFragment extends Fragment implements ImplBaseView {
+public abstract class BaseFragment extends Fragment implements ImplBaseView, OnBroadcastListener {
     protected final static Gson gson = Constants.gson;
     private BaseViewHelper mBaseViewHelper = null;
     private RelativeLayout mContentView;
@@ -50,6 +50,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView {
     }
 
     @CallSuper
+    @Override
     public void onBroadcastReceiver(String action, Bundle bundle) {
         List<Fragment> fragments = getChildFragmentManager().getFragments();
         if (fragments.size() > 0) {
