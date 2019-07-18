@@ -400,7 +400,7 @@ public class HttpUtils {
             return;
         }
 
-        try {
+        if (!TextUtils.isEmpty(downPath)) {
             File file = new File(downPath);
             if (!file.exists()) {
                 File parent = file.getParentFile();
@@ -412,8 +412,6 @@ public class HttpUtils {
                     return;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         final String defaultPath = HTTP_DOWNLOAD_PATH + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
