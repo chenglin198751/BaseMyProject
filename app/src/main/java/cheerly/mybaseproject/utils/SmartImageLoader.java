@@ -42,9 +42,10 @@ public class SmartImageLoader {
      * 支持 gif 格式的图片，但是前提后缀名是.gif 才能解析
      * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      *
+     * @param imageView   ImageView
      * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度
-     * @param imageHeight 图片的高度
+     * @param imageWidth  图片的宽度(单位px)
+     * @param imageHeight 图片的高度(单位px)
      */
     public void load(ImageView imageView, Object object, int imageWidth, int imageHeight) {
         loadRound(imageView, object, imageWidth, imageHeight, CenterDrawable.RECTANGLE);
@@ -55,9 +56,10 @@ public class SmartImageLoader {
      * 支持 gif 格式的图片，但是前提后缀名是.gif 才能解析
      * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
      *
+     * @param imageView   ImageView
      * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度
-     * @param imageHeight 图片的高度
+     * @param imageWidth  图片的宽度(单位px)
+     * @param imageHeight 图片的高度(单位px)
      * @param placeholder 占位图，如果不设置，也会有默认占位图
      */
     public void load(ImageView imageView, Object object, int imageWidth, int imageHeight, @DrawableRes int placeholder) {
@@ -71,10 +73,11 @@ public class SmartImageLoader {
      * 如果 radius >0 , 是圆角图片
      * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
      *
+     * @param imageView   ImageView
      * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度
-     * @param imageHeight 图片的高度
-     * @param radius      图片的圆角角度，传入的单位是dp
+     * @param imageWidth  图片的宽度(单位px)
+     * @param imageHeight 图片的高度(单位px)
+     * @param radius      图片的圆角角度(单位dp)
      */
     public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius) {
         loadRound(imageView, object, imageWidth, imageHeight, radius, 0);
@@ -87,10 +90,11 @@ public class SmartImageLoader {
      * 如果 radius >0 , 是圆角图片
      * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
      *
+     * @param imageView   ImageView
      * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度
-     * @param imageHeight 图片的高度
-     * @param radius      图片的圆角角度，传入的单位是dp
+     * @param imageWidth  图片的宽度(单位px)
+     * @param imageHeight 图片的高度(单位px)
+     * @param radius      图片的圆角角度(单位dp)
      * @param placeholder 占位图，如果不设置，也会有默认占位图
      */
     public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, int placeholder) {
@@ -104,10 +108,11 @@ public class SmartImageLoader {
      * 如果 radius >0 , 是圆角图片
      * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
      *
+     * @param imageView   ImageView
      * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度
-     * @param imageHeight 图片的高度
-     * @param radius      图片的圆角角度，传入的单位是dp
+     * @param imageWidth  图片的宽度(单位px)
+     * @param imageHeight 图片的高度(单位px)
+     * @param radius      图片的圆角角度(单位dp)
      * @param placeholder 占位图，如果不设置，也会有默认占位图
      */
     public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, final Drawable placeholder) {
