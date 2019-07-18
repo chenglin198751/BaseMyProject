@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cheerly.mybaseproject.R;
-import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.base.BaseAction;
 import cheerly.mybaseproject.utils.BaseUtils;
+import cheerly.mybaseproject.utils.Constants;
+import cheerly.mybaseproject.utils.ImageLoader;
 import cheerly.mybaseproject.utils.SDCardUtils;
-import cheerly.mybaseproject.view.WebImageView;
 import cheerly.mybaseproject.widget.ToastUtils;
 
 /**
@@ -129,7 +129,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
             viewHolder.photoImg.setOnClickListener(imgClickListener);
 
             int width = BaseUtils.dip2px(100f);
-            viewHolder.photoImg.load(new File(photoItem.getPath()), width, width);
+            ImageLoader.getInstance().load(viewHolder.photoImg, new File(photoItem.getPath()), width, width);
 
             if (!mActivity.isSingleType) {
                 if (mSelectedList.contains(photoItem.getPath())) {
@@ -180,7 +180,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         int mItemSize = -1;
-        WebImageView photoImg;
+        ImageView photoImg;
         ImageView takePhoto;
         ImageView checkBox;
         private int mViewType;
@@ -196,13 +196,13 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
 
         private void initViewHolder() {
             if (mViewType == TAKE_PHOTO) {
-                takePhoto = (ImageView) itemView.findViewById(R.id.take_photo);
+                takePhoto = itemView.findViewById(R.id.take_photo);
 
                 takePhoto.getLayoutParams().width = getItemSize();
                 takePhoto.getLayoutParams().height = getItemSize();
             } else if (mViewType == ALBUM_LIST) {
-                photoImg = (WebImageView) itemView.findViewById(R.id.photo_img);
-                checkBox = (ImageView) itemView.findViewById(R.id.check_box);
+                photoImg = itemView.findViewById(R.id.photo_img);
+                checkBox = itemView.findViewById(R.id.check_box);
 
                 photoImg.getLayoutParams().width = getItemSize();
                 photoImg.getLayoutParams().height = getItemSize();

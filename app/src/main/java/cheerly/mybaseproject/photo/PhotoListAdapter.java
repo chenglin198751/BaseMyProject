@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -12,7 +13,7 @@ import java.util.List;
 
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.utils.BaseUtils;
-import cheerly.mybaseproject.view.WebImageView;
+import cheerly.mybaseproject.utils.ImageLoader;
 
 /**
  * @title: PhotoListAdappter.java
@@ -52,9 +53,9 @@ public class PhotoListAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.publish_photo_list_item, null);
             ViewHolder holder = new ViewHolder();
-            holder.mImageView = (WebImageView) convertView.findViewById(R.id.photo_img_view);
-            holder.mAlbumName = (TextView) convertView.findViewById(R.id.photo_name);
-            holder.mAlbumNum = (TextView) convertView.findViewById(R.id.photo_num);
+            holder.mImageView = convertView.findViewById(R.id.photo_img_view);
+            holder.mAlbumName = convertView.findViewById(R.id.photo_name);
+            holder.mAlbumNum = convertView.findViewById(R.id.photo_num);
             convertView.setTag(holder);
         }
 
@@ -64,7 +65,7 @@ public class PhotoListAdapter extends BaseAdapter {
 
         if (photoItem != null && !TextUtils.isEmpty(photoItem.getPath())) {
             int width = BaseUtils.dip2px(100);
-            holder.mImageView.load(new File(photoItem.getPath()), width, width);
+            ImageLoader.getInstance().load(holder.mImageView, new File(photoItem.getPath()), width, width);
 
         }
         holder.mAlbumName.setText(photoItem.getName());
@@ -73,7 +74,7 @@ public class PhotoListAdapter extends BaseAdapter {
     }
 
     class ViewHolder {
-        WebImageView mImageView;
+        ImageView mImageView;
         TextView mAlbumName;
         TextView mAlbumNum;
     }

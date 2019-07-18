@@ -36,6 +36,7 @@ import android.net.Uri;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -43,7 +44,6 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.view.polygon.shapes.PolygonShape;
 import cheerly.mybaseproject.view.polygon.shapes.PolygonShapeSpec;
 import cheerly.mybaseproject.view.polygon.shapes.RegularPolygonShape;
-import cheerly.mybaseproject.view.WebImageView;
 
 
 /**
@@ -58,7 +58,7 @@ import cheerly.mybaseproject.view.WebImageView;
  *
  * @author Albert Grobas
  */
-public class PolygonImageView extends WebImageView {
+public class PolygonImageView extends AppCompatImageView {
 
     //draws
     private Paint mPaint;

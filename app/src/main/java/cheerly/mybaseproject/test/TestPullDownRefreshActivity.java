@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -14,14 +15,14 @@ import com.youth.banner.Transformer;
 import java.util.ArrayList;
 import java.util.List;
 
+import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseListViewAdapter;
-import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.helper.BannerImageLoader;
-import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
-import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.utils.BaseUtils;
-import cheerly.mybaseproject.view.WebImageView;
+import cheerly.mybaseproject.utils.Constants;
+import cheerly.mybaseproject.utils.ImageLoader;
+import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 
 public class TestPullDownRefreshActivity extends BaseActivity {
     private PullToRefreshView mPullToRefreshView;
@@ -78,9 +79,9 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                     @Override
                     public void run() {
                         boolean hasData = setData(5, false);
-                        if (hasData){
+                        if (hasData) {
                             mPullToRefreshView.finishLoadMore();
-                        }else{
+                        } else {
                             mPullToRefreshView.finishLoadMoreWithNoMoreData();
                         }
 
@@ -107,7 +108,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             mAdapter.appendDataList(list);
         }
 
-        if (mAdapter.getCount() > 20){
+        if (mAdapter.getCount() > 20) {
             return false;
         }
 
@@ -146,9 +147,9 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             }
 
             TextView title = (TextView) convertView.findViewById(R.id.title);
-            WebImageView webImageView = (WebImageView) convertView.findViewById(R.id.image_view);
+            ImageView webImageView = convertView.findViewById(R.id.image_view);
             title.setText("标题 - " + position);
-            webImageView.load(imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f));
+            ImageLoader.getInstance().load(webImageView, imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f));
 
             return convertView;
         }
