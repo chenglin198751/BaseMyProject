@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.ImageView;
 
 import cheerly.mybaseproject.utils.Constants;
-import cheerly.mybaseproject.utils.ImageLoader;
+import cheerly.mybaseproject.utils.SmartImageLoader;
 
 /**
  * Created by chenglin on 2017-9-27.
@@ -13,7 +13,7 @@ import cheerly.mybaseproject.utils.ImageLoader;
 public class BannerImageLoader extends com.youth.banner.loader.ImageLoader {
     @Override
     public void displayImage(Context context, Object path, ImageView imageView) {
-        ImageLoader.getInstance().load(imageView, (String) path, Constants.getScreenWidth(), Constants.getScreenWidth() / 2);
+        SmartImageLoader.getInstance().load(imageView, (String) path, Constants.getScreenWidth(), Constants.getScreenWidth() / 2);
     }
 
     @Override

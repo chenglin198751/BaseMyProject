@@ -17,7 +17,7 @@ import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.base.BaseRecyclerViewHolder;
 import cheerly.mybaseproject.utils.Constants;
-import cheerly.mybaseproject.utils.ImageLoader;
+import cheerly.mybaseproject.utils.SmartImageLoader;
 import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.widget.ViewPagerLayoutManager;
 
@@ -159,7 +159,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
             @Override
             public void onBind(int position) {
-                ImageLoader.getInstance().load(imageView, getData().get(position).url, -1, -1);
+                SmartImageLoader.getInstance().load(imageView, getData().get(position).url, -1, -1);
             }
 
 

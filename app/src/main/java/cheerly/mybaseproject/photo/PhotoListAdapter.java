@@ -13,7 +13,7 @@ import java.util.List;
 
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.utils.BaseUtils;
-import cheerly.mybaseproject.utils.ImageLoader;
+import cheerly.mybaseproject.utils.SmartImageLoader;
 
 /**
  * @title: PhotoListAdappter.java
@@ -65,7 +65,7 @@ public class PhotoListAdapter extends BaseAdapter {
 
         if (photoItem != null && !TextUtils.isEmpty(photoItem.getPath())) {
             int width = BaseUtils.dip2px(100);
-            ImageLoader.getInstance().load(holder.mImageView, new File(photoItem.getPath()), width, width);
+            SmartImageLoader.getInstance().load(holder.mImageView, new File(photoItem.getPath()), width, width);
 
         }
         holder.mAlbumName.setText(photoItem.getName());
