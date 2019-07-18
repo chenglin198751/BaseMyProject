@@ -21,7 +21,7 @@ import cheerly.mybaseproject.base.BaseListViewAdapter;
 import cheerly.mybaseproject.helper.BannerImageLoader;
 import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.utils.Constants;
-import cheerly.mybaseproject.utils.ImageLoader;
+import cheerly.mybaseproject.utils.SmartImageLoader;
 import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 
 public class TestPullDownRefreshActivity extends BaseActivity {
@@ -149,7 +149,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             TextView title = (TextView) convertView.findViewById(R.id.title);
             ImageView webImageView = convertView.findViewById(R.id.image_view);
             title.setText("标题 - " + position);
-            ImageLoader.getInstance().load(webImageView, imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f));
+            SmartImageLoader.getInstance().load(webImageView, imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f));
 
             return convertView;
         }

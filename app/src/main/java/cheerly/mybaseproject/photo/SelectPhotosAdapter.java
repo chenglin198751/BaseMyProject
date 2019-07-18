@@ -20,7 +20,7 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseAction;
 import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.utils.Constants;
-import cheerly.mybaseproject.utils.ImageLoader;
+import cheerly.mybaseproject.utils.SmartImageLoader;
 import cheerly.mybaseproject.utils.SDCardUtils;
 import cheerly.mybaseproject.widget.ToastUtils;
 
@@ -129,7 +129,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
             viewHolder.photoImg.setOnClickListener(imgClickListener);
 
             int width = BaseUtils.dip2px(100f);
-            ImageLoader.getInstance().load(viewHolder.photoImg, new File(photoItem.getPath()), width, width);
+            SmartImageLoader.getInstance().load(viewHolder.photoImg, new File(photoItem.getPath()), width, width);
 
             if (!mActivity.isSingleType) {
                 if (mSelectedList.contains(photoItem.getPath())) {

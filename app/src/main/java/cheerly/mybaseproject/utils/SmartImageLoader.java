@@ -20,17 +20,17 @@ import cheerly.mybaseproject.view.CenterDrawable;
  * Created by chenglin on 2017-7-14.
  */
 @Keep
-public class ImageLoader {
-    private static ImageLoader INSTANCE;
+public class SmartImageLoader {
+    private static SmartImageLoader INSTANCE;
 
-    private ImageLoader() {
+    private SmartImageLoader() {
     }
 
-    public static ImageLoader getInstance() {
+    public static SmartImageLoader getInstance() {
         if (INSTANCE == null) {
-            synchronized (ImageLoader.class) {
+            synchronized (SmartImageLoader.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new ImageLoader();
+                    INSTANCE = new SmartImageLoader();
                 }
             }
         }
