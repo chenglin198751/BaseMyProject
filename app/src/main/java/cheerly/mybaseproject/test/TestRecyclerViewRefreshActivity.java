@@ -7,17 +7,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.base.BaseRecyclerViewHolder;
-import cheerly.mybaseproject.R;
-import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.utils.Constants;
-import cheerly.mybaseproject.view.WebImageView;
+import cheerly.mybaseproject.utils.ImageLoader;
+import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
 import cheerly.mybaseproject.widget.ViewPagerLayoutManager;
 
 /**
@@ -81,7 +82,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         mAdapter = new MyAdapter(this);
-        ViewPagerLayoutManager mLayoutManager = new ViewPagerLayoutManager(getContext(),LinearLayoutManager.VERTICAL);
+        ViewPagerLayoutManager mLayoutManager = new ViewPagerLayoutManager(getContext(), LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         setData(13, true);
@@ -144,11 +145,11 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         class ListHolder extends BaseRecyclerViewHolder {
-            WebImageView imageView;
+            ImageView imageView;
 
             public ListHolder(View itemView) {
                 super(itemView);
-                imageView =  itemView.findViewById(R.id.image_view);
+                imageView = itemView.findViewById(R.id.image_view);
 
                 ViewGroup.LayoutParams params = imageView.getLayoutParams();
                 params.width = Constants.getScreenWidth();
@@ -158,8 +159,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
             @Override
             public void onBind(int position) {
-                imageView.load(getData().get(position).url, -1, -1);
-
+                ImageLoader.getInstance().load(imageView, getData().get(position).url, -1, -1);
             }
 
 

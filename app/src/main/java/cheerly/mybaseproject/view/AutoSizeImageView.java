@@ -8,14 +8,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 /**
  * Created by chenglin on 2017-10-27.
  */
 
-public class AutoSizeImageView extends WebImageView {
+public class AutoSizeImageView extends AppCompatImageView {
     public AutoSizeImageView(Context context) {
         super(context);
     }
