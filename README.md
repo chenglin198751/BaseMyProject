@@ -131,5 +131,7 @@
 
 **51、一款轻量级的socket库**：https://github.com/xuuhaoo/OkSocket
 
-**51、另一款socket库**：https://github.com/nkzawa/socket.io-android-chat
+**52、另一款socket库**：https://github.com/nkzawa/socket.io-android-chat
+
+**53、二维码扫描**：https://github.com/devilsen/CZXing(底层库用的是：https://github.com/nu-book/zxing-cpp)
 
