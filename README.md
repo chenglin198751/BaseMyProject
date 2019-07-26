@@ -135,3 +135,5 @@
 
 **53、二维码扫描**：https://github.com/devilsen/CZXing(底层库用的是：https://github.com/nu-book/zxing-cpp)
 
+**53、jackpal的Android-Terminal源码**：https://github.com/jackpal/Android-Terminal-Emulator/
+
