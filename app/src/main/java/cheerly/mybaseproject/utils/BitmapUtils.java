@@ -186,7 +186,7 @@ public class BitmapUtils {
      * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
      * @param callback   回调监听
      */
-    public static void createScaledBitmap(final BaseActivity activity, final String imagePath, final int imageWidth, final MyCallback callback) {
+    public static void createScaledBitmap(final Activity activity, final String imagePath, final int imageWidth, final MyCallback callback) {
         if (callback == null) {
             throw new NullPointerException("MyCallback must not null");
         }
