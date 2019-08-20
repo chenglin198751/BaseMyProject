@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.multidex.MultiDex;
+import androidx.annotation.CallSuper;
+import androidx.multidex.MultiDex;
 
 import com.tencent.smtt.sdk.QbSdk;
 

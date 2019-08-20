@@ -3,7 +3,7 @@ package cheerly.mybaseproject.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;

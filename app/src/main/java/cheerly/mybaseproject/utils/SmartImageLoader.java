@@ -1,8 +1,8 @@
 package cheerly.mybaseproject.utils;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Keep;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Keep;
 import android.text.TextUtils;
 import android.widget.ImageView;
 

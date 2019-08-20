@@ -2,7 +2,7 @@ package cheerly.mybaseproject.base;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class BaseAction {
     public final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
