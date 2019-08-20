@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 
 import cheerly.mybaseproject.base.BaseApp;
 import cheerly.mybaseproject.R;
