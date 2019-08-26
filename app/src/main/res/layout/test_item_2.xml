@@ -15,7 +15,7 @@
         android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:background="#fdc" />
+        tools:background="#fdc" />
 
     <TextView
         android:id="@+id/title"
