@@ -137,3 +137,5 @@
 
 **53、jackpal的Android-Terminal源码**：https://github.com/jackpal/Android-Terminal-Emulator/
 
+**54、类似抖音评论列表--滑动关闭的dialog**：BottomDialogFragment(使用的是BottomSheetDialogFragment或者BottomSheetDialog)
+
