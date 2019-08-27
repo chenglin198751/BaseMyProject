@@ -137,5 +137,8 @@
 
 **53、jackpal的Android-Terminal源码**：https://github.com/jackpal/Android-Terminal-Emulator/
 
-**54、类似抖音评论列表--滑动关闭的dialog**：BottomDialogFragment(使用的是BottomSheetDialogFragment或者BottomSheetDialog)
+**54、BottomDialogFragment**：类似抖音评论列表--滑动关闭的dialog(使用的是BottomSheetDialogFragment或者BottomSheetDialog)
+
+**55、TestSnapNestViewPagerActivity**：使用Android自带的UI实现的带头部的嵌套滚动的ViewPager
+
 
