@@ -25,7 +25,8 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#ffcccc" />
+                android:background="#ffcccc"
+                android:overScrollMode="never" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
