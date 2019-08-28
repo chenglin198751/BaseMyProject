@@ -45,7 +45,10 @@
             android:id="@+id/tab_collect"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@color/holo_orange_dark" />
+            android:background="@color/holo_orange_dark"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager
