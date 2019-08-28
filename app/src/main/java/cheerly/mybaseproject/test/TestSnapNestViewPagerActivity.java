@@ -6,6 +6,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import java.util.ArrayList;
 
 import cheerly.mybaseproject.R;
@@ -35,6 +37,14 @@ public class TestSnapNestViewPagerActivity extends BaseActivity {
         mAdapter = new CommonFragmentViewPagerAdapter(getSupportFragmentManager(), fragments);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(4);
+
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+                //offset 滑动位移
+            }
+        });
 
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override

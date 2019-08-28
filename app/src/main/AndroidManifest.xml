@@ -67,7 +67,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="cheerly.mybaseproject.main.TestBottomSheetActivity"
+            android:name="cheerly.mybaseproject.test.TestBottomSheetActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
 
