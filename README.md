@@ -141,4 +141,8 @@
 
 **55、TestSnapNestViewPagerActivity**：使用Android自带的UI实现的带头部的嵌套滚动的ViewPager
 
+**56、CommonFragmentViewPagerAdapter**：通用的ViewPager的FragmentAdapter
+
+
+
 
