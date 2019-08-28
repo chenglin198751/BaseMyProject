@@ -1,4 +1,4 @@
-package cheerly.mybaseproject;
+package cheerly.mybaseproject.widget;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.test.TestRecyclerAdapter;
 import cheerly.mybaseproject.utils.Constants;
 
