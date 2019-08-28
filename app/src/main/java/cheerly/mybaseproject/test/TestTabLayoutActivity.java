@@ -9,7 +9,7 @@ import java.util.List;
 
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.R;
-import cheerly.mybaseproject.common.MyFragmentViewPagerAdapter;
+import cheerly.mybaseproject.common.CommonFragmentViewPagerAdapter;
 import cheerly.mybaseproject.widget.MyTabLayout;
 
 /**
@@ -18,7 +18,7 @@ import cheerly.mybaseproject.widget.MyTabLayout;
 
 public class TestTabLayoutActivity extends BaseActivity {
     private ViewPager mViewPager;
-    private MyFragmentViewPagerAdapter mFragmentAdapter;
+    private CommonFragmentViewPagerAdapter mFragmentAdapter;
     private List<Fragment> mFragList = new ArrayList<>();
     private MyTabLayout mTabLayout;
 
@@ -37,7 +37,7 @@ public class TestTabLayoutActivity extends BaseActivity {
             fragment.setArguments(bundle);
             mFragList.add(fragment);
         }
-        mFragmentAdapter = new MyFragmentViewPagerAdapter(getSupportFragmentManager(),mFragList);
+        mFragmentAdapter = new CommonFragmentViewPagerAdapter(getSupportFragmentManager(),mFragList);
         for (int i = 0; i < 4; i++) {
             mFragmentAdapter.mTitleList.add("标题");
         }
