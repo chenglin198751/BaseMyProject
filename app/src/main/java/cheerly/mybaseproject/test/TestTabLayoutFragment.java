@@ -11,7 +11,7 @@ import cheerly.mybaseproject.R;
  * Created by chenglin on 2017-9-14.
  */
 
-public class TestFragment extends BaseFragment {
+public class TestTabLayoutFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
