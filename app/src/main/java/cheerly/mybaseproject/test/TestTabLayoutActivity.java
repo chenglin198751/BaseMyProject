@@ -31,7 +31,7 @@ public class TestTabLayoutActivity extends BaseActivity {
         mTabLayout = (MyTabLayout) findViewById(R.id.tab_layout);
 
         for (int i = 0; i < 4; i++) {
-            TestFragment fragment = new TestFragment();
+            TestTabLayoutFragment fragment = new TestTabLayoutFragment();
             Bundle bundle = new Bundle();
             bundle.putString("index",i + "");
             fragment.setArguments(bundle);
