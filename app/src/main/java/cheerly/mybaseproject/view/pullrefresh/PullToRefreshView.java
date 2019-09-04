@@ -27,11 +27,6 @@ public class PullToRefreshView extends SmartRefreshLayout {
         init();
     }
 
-    public PullToRefreshView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init();
-    }
-
     public void setListener(final onListener listener) {
         setOnRefreshListener(new OnRefreshListener() {
             @Override

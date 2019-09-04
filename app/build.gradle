@@ -66,7 +66,7 @@ dependencies {
     implementation 'com.squareup.okio:okio:2.2.2'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.google.android:flexbox:1.0.0'
-    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-31'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
