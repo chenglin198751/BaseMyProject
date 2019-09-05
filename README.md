@@ -143,7 +143,9 @@
 
 **56、CommonFragmentViewPagerAdapter**：通用的ViewPager的FragmentAdapter
 
-**56、TestGridViewWithHeaderActivity**：利用NestedScrollView实现RecyclerView带上header
+**57、TestGridViewWithHeaderActivity**：利用NestedScrollView实现RecyclerView带上header
 
-**57、TestUserInfoViewModel**：LiveData和ViewModel的使用示例
+**58、TestUserInfoViewModel**：LiveData和ViewModel的使用示例
+
+**59、androidx.lifecycle.LifecycleObserver**：可以让随便一个类具有Activity的生命周期
 
