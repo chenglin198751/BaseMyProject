@@ -12,7 +12,7 @@ public class UserManager {
 	}
 
 	public static void clear(){
-		getPreferences(BaseApp.getApp()).edit().clear().commit();
+		getPreferences(BaseApp.getApp()).edit().clear().apply();
 	}
 
 	/** 登录ID */
