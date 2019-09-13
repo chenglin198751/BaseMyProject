@@ -67,7 +67,7 @@ public class SmartImageLoader {
     }
 
     /**
-     * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
+     * 加载图片使其变为圆角或者圆形，radius传入的单位是px.
      * 如果 radius <0  , 那么就是纯圆圈图片;
      * 如果 radius = 0 , 那么就是直角图片;
      * 如果 radius >0 , 是圆角图片
@@ -77,14 +77,14 @@ public class SmartImageLoader {
      * @param object      图片地址Url、图片文件file
      * @param imageWidth  图片的宽度(单位px)
      * @param imageHeight 图片的高度(单位px)
-     * @param radius      图片的圆角角度(单位dp)
+     * @param radius      图片的圆角角度(单位px)
      */
     public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius) {
         loadRound(imageView, object, imageWidth, imageHeight, radius, 0);
     }
 
     /**
-     * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
+     * 加载图片使其变为圆角或者圆形，radius传入的单位是px.
      * 如果 radius <0  , 那么就是纯圆圈图片;
      * 如果 radius = 0 , 那么就是直角图片;
      * 如果 radius >0 , 是圆角图片
@@ -94,7 +94,7 @@ public class SmartImageLoader {
      * @param object      图片地址Url、图片文件file
      * @param imageWidth  图片的宽度(单位px)
      * @param imageHeight 图片的高度(单位px)
-     * @param radius      图片的圆角角度(单位dp)
+     * @param radius      图片的圆角角度(单位px)
      * @param placeholder 占位图，如果不设置，也会有默认占位图
      */
     public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, int placeholder) {
@@ -102,7 +102,7 @@ public class SmartImageLoader {
     }
 
     /**
-     * 加载图片使其变为圆角或者圆形，radius传入的单位是dp.
+     * 加载图片使其变为圆角或者圆形，radius传入的单位是px.
      * 如果 radius <0  , 那么就是纯圆圈图片;
      * 如果 radius = 0 , 那么就是直角图片;
      * 如果 radius >0 , 是圆角图片
@@ -112,11 +112,11 @@ public class SmartImageLoader {
      * @param object      图片地址Url、图片文件file
      * @param imageWidth  图片的宽度(单位px)
      * @param imageHeight 图片的高度(单位px)
-     * @param radius      图片的圆角角度(单位dp)
+     * @param radius      图片的圆角角度(单位px)
      * @param placeholder 占位图，如果不设置，也会有默认占位图
      */
     public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, final Drawable placeholder) {
-        Drawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius > 0 ? BaseUtils.dip2px(radius) : radius);
+        Drawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius);
         if (placeholder != null) {
             centerDrawable = placeholder;
         }
@@ -150,7 +150,7 @@ public class SmartImageLoader {
         } else if (radius < 0) {
             glideRequest = glideRequest.circleCrop();
         } else {
-            RoundedCorners roundedCorner = new RoundedCorners(BaseUtils.dip2px(radius));
+            RoundedCorners roundedCorner = new RoundedCorners(radius);
             glideRequest = glideRequest.transform(new CenterCrop(), roundedCorner);
         }
         glideRequest.into(imageView);
