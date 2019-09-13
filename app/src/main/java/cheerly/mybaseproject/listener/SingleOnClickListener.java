@@ -16,6 +16,7 @@ public abstract class SingleOnClickListener implements View.OnClickListener {
     }
 
     @Override
+    @Deprecated
     public void onClick(View v) {
         long nowTime = System.currentTimeMillis();
         if (nowTime - mLastClickTime > timeInterval) {
