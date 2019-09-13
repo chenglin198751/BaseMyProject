@@ -149,3 +149,6 @@
 
 **59、androidx.lifecycle.LifecycleObserver**：可以让随便一个类具有Activity的生命周期
 
+**60、SingleOnClickListener **：防止重复多次点击的类
+
+
