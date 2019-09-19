@@ -1,5 +1,7 @@
 package cheerly.mybaseproject.main;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,7 +36,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setBackgroundDrawable(null);
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setContentLayout(R.layout.activity_main);
         getTitleHelper().hideTitleBar();
         mFragHelper = new ShowFragmentHelper(getSupportFragmentManager(), FRAGMENTS);
