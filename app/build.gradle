@@ -66,6 +66,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.2.0'
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.9.0'
     implementation 'com.squareup.okio:okio:2.4.0'
+    implementation 'org.conscrypt:conscrypt-openjdk-uber:2.2.1'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.google.android:flexbox:1.0.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'
