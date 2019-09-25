@@ -1,6 +1,5 @@
 package cheerly.mybaseproject.utils;
 
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -9,73 +8,78 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LogUtils {
     private static boolean isDebug = false;
 
     static {
-        String sdcardPath = getSDCardPath();
-        if (!TextUtils.isEmpty(sdcardPath)) {
-            File file = new File(getDebugFilePath());
-            if (file.exists()) {
-                isDebug = true;
-            }
-        }
+        File file = new File(getDebugFilePath());
+        isDebug = file.exists();
     }
 
     public static boolean isDebug() {
         return isDebug;
     }
 
-    private static String getSDCardPath() {
-        File sdDir = null;
-        boolean sdCardExist = Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED); //判断sd卡是否存在
-        if (sdCardExist) {
-            sdDir = Environment.getExternalStorageDirectory();//获取跟目录
-        }
-        if (sdDir != null) {
-            return sdDir.getAbsolutePath();
-        }
-        return null;
-    }
 
     public static String getDebugFilePath() {
-        return getSDCardPath() + File.separator + "launcher.log";
+        return SDCardUtils.getDataPath(SDCardUtils.TYPE_FILE) + "debug.log";
+    }
+
+    private static void writeLog(String tag, String msg) {
+        String str = getDate() + "<" + tag + ">" + msg;
+        writeFile(getDebugFilePath(), str);
     }
 
     public static void d(String tag, String msg) {
-        if (isDebug)
+        if (isDebug) {
+            writeLog(tag, msg);
             Log.d(tag, msg);
+        }
     }
 
     public static void e(String tag, String msg) {
-        if (isDebug)
+        if (isDebug) {
+            writeLog(tag, msg);
             Log.e(tag, msg);
+        }
     }
 
     public static void i(String tag, String msg) {
-        if (isDebug)
+        if (isDebug) {
+            writeLog(tag, msg);
             Log.i(tag, msg);
+        }
     }
 
     public static void v(String tag, String msg) {
-        if (isDebug)
+        if (isDebug) {
+            writeLog(tag, msg);
             Log.v(tag, msg);
+        }
     }
 
     public static void w(String tag, String msg) {
-        if (isDebug)
+        if (isDebug) {
+            writeLog(tag, msg);
             Log.w(tag, msg);
+        }
     }
 
     public static void w(String tag, String msg, Throwable tr) {
-        if (isDebug)
+        if (isDebug) {
+            writeLog(tag, msg);
             Log.w(tag, msg, tr);
+        }
     }
 
     public static void e(String tag, String msg, Throwable tr) {
-        if (isDebug)
+        if (isDebug) {
+            writeLog(tag, msg);
             Log.e(tag, msg, tr);
+        }
     }
 
     public static void writeFile(String filePath, String value) {
@@ -89,7 +93,7 @@ public class LogUtils {
 
         try {
             FileWriter fileWriter = new FileWriter(file, true);
-            fileWriter.write(value + "\r\n");
+            fileWriter.write(value + "\r\n\n");
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,5 +131,10 @@ public class LogUtils {
                 }
             }
         }
+    }
+
+    private static String getDate() {
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss");
+        return (sf.format(new Date()));
     }
 }
