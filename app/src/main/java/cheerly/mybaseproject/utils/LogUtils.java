@@ -25,7 +25,8 @@ public class LogUtils {
 
 
     public static String getDebugFilePath() {
-        return SDCardUtils.getDataPath(SDCardUtils.TYPE_FILE) + "debug.log";
+        File file = new File(SDCardUtils.getDataPath(SDCardUtils.TYPE_FILE));
+        return file.getParent() + File.separator + "debug.log";
     }
 
     private static void writeLog(String tag, String msg) {
