@@ -16,8 +16,7 @@ public class LogUtils {
     static {
         String sdcardPath = getSDCardPath();
         if (!TextUtils.isEmpty(sdcardPath)) {
-            String debugFilePath = sdcardPath + File.separator + "debug_file_log";
-            File file = new File(debugFilePath);
+            File file = new File(getDebugFilePath());
             if (file.exists()) {
                 isDebug = true;
             }
@@ -38,6 +37,10 @@ public class LogUtils {
             return sdDir.getAbsolutePath();
         }
         return null;
+    }
+
+    public static String getDebugFilePath() {
+        return getSDCardPath() + File.separator + "launcher.log";
     }
 
     public static void d(String tag, String msg) {
