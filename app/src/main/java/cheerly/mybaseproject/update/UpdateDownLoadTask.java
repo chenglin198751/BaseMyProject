@@ -135,6 +135,6 @@ public class UpdateDownLoadTask {
     }
 
     public static String getApkPath() {
-        return SDCardUtils.getPath() + BaseUtils.getPackageName() + ".apk";
+        return SDCardUtils.getDataPath(SDCardUtils.TYPE_FILE) + BaseUtils.getPackageName() + ".apk";
     }
 }

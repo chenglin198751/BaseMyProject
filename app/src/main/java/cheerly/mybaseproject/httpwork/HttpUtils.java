@@ -82,8 +82,8 @@ public class HttpUtils {
     private final static String TAG = "HttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 30;
-    private static final String HTTP_CACHE_PATH = SDCardUtils.getPath() + "httpCache" + File.separator;
-    private static final String HTTP_DOWNLOAD_PATH = SDCardUtils.getPath() + "download" + File.separator;
+    private static final String HTTP_CACHE_PATH = SDCardUtils.getDataPath(SDCardUtils.TYPE_CACHE) + "httpCache" + File.separator;
+    private static final String HTTP_DOWNLOAD_PATH = SDCardUtils.getDataPath(SDCardUtils.TYPE_CACHE) + "download" + File.separator;
 
     static {
         File cacheDir = new File(HTTP_CACHE_PATH);
