@@ -1,0 +1,21 @@
+set -e
+cd $QBUILD_PATH
+
+echo '' >  local.properties
+echo 'sdk.dir=$ANDROID_SDK_HOME' >> local.properties
+echo 'ndk.dir=$ANDROID_NDK_HOME' >> local.properties
+
+ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env
+rm $ENV_PATH/EnvConstants.java
+mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java
+sed -i 's/EnvConstantsRelease/EnvConstants/g' $ENV_PATH/EnvConstants.java
+
+chmod 777 gradlew
+./gradlew build >> $QBUILD_LOG 2>&1
+
+ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1
+ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1
+
+cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1
+cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1
+cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1
