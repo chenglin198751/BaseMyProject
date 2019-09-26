@@ -1,21 +1,55 @@
-set -e
-cd $QBUILD_PATH
+set -e;
+cd $QBUILD_PATH;
 
-echo '' >  local.properties
-echo 'sdk.dir=$ANDROID_SDK_HOME' >> local.properties
-echo 'ndk.dir=$ANDROID_NDK_HOME' >> local.properties
+echo '' >  local.properties;
+echo 'sdk.dir=$ANDROID_SDK_HOME' >> local.properties;
+echo 'ndk.dir=$ANDROID_NDK_HOME' >> local.properties;
 
-ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env
-rm $ENV_PATH/EnvConstants.java
-mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java
-sed -i 's/EnvConstantsRelease/EnvConstants/g' $ENV_PATH/EnvConstants.java
+######################build create Relase Package######################
+echo '1111111111' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env;
+rm $ENV_PATH/EnvConstants.java;
+mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java;
+sed -i 's/EnvConstantsRelease/EnvConstants/g' $ENV_PATH/EnvConstants.java;
 
-chmod 777 gradlew
-./gradlew build >> $QBUILD_LOG 2>&1
+chmod 777 gradlew;
+./gradlew build >> $QBUILD_LOG 2>&1;
 
-ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1
-ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1
+ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1;
+ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1;
 
-cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1
-cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1
-cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1
+cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+
+######################copy Relase folder######################
+echo '2222222222' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/release;
+echo $ENV_PATH
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_OUT/*.aar $ENV_PATH;
+cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
+rm -rf $QBUILD_OUT/release;
+rm -rf $QBUILD_OUT/debug;
+
+
+######################build create debug Package######################
+echo '3333333333' >> $QBUILD_LOG 2>&1;
+chmod 777 gradlew;
+./gradlew build >> $QBUILD_LOG 2>&1;
+
+ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1;
+ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1;
+
+cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+
+######################copy debug folder######################
+echo '4444444444' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/debug;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_OUT/*.aar $ENV_PATH;
+cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
+rm -rf $QBUILD_OUT/release;
+rm -rf $QBUILD_OUT/debug;
