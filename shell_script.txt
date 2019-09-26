@@ -31,6 +31,7 @@ cp -rf $QBUILD_OUT/*.aar $ENV_PATH;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
 rm -rf $QBUILD_OUT/release;
 rm -rf $QBUILD_OUT/debug;
+rm -rf $QBUILD_OUT/*.aar;
 
 
 ######################build create debug Package######################
@@ -53,3 +54,4 @@ cp -rf $QBUILD_OUT/*.aar $ENV_PATH;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
 rm -rf $QBUILD_OUT/release;
 rm -rf $QBUILD_OUT/debug;
+rm -rf $QBUILD_OUT/*.aar;
