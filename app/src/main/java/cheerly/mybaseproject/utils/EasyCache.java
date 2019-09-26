@@ -151,7 +151,6 @@ public class EasyCache {
             String readString = "";
             String currentLine;
             while ((currentLine = in.readLine()) != null) {
-                currentLine += '\n';
                 readString += currentLine;
             }
             if (!EasyCacheUtils.isDue(readString)) {
