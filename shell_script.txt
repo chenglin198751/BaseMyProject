@@ -27,12 +27,11 @@ echo '2222222222' >> $QBUILD_LOG 2>&1;
 ENV_PATH=$QBUILD_OUT/miniGameSdk/release;
 echo $ENV_PATH
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
-cp -rf $QBUILD_OUT/*.aar $ENV_PATH;
+mv $QBUILD_OUT/*.aar $ENV_PATH;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
 rm -rf $QBUILD_OUT/release;
 rm -rf $QBUILD_OUT/debug;
-rm -rf $QBUILD_OUT/*.aar;
-
+cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH;
 
 ######################build create debug Package######################
 echo '3333333333' >> $QBUILD_LOG 2>&1;
@@ -50,8 +49,8 @@ cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 echo '4444444444' >> $QBUILD_LOG 2>&1;
 ENV_PATH=$QBUILD_OUT/miniGameSdk/debug;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
-cp -rf $QBUILD_OUT/*.aar $ENV_PATH;
+mv $QBUILD_OUT/*.aar $ENV_PATH;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
 rm -rf $QBUILD_OUT/release;
 rm -rf $QBUILD_OUT/debug;
-rm -rf $QBUILD_OUT/*.aar;
+cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH;
