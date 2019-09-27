@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import org.apache.http.conn.ConnectTimeoutException;
 
 import java.io.File;
@@ -19,6 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLException;
 
+import cheerly.mybaseproject.utils.BaseUtils;
+import cheerly.mybaseproject.utils.Constants;
+import cheerly.mybaseproject.utils.LogUtils;
+import cheerly.mybaseproject.utils.SDCardUtils;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
@@ -31,9 +37,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import cheerly.mybaseproject.utils.BaseUtils;
-import cheerly.mybaseproject.utils.LogUtils;
-import cheerly.mybaseproject.utils.SDCardUtils;
 
 //为了防止参数被人抓包恶意串改，所以建议客户端和服务器的参数传递做签名校验：
 //1、把要上传的参数按照key值做升序排列(a-z升序排序)，并用&符号连接，md5之后转为小写。Java开发可以使用TreeMap自动排序。
@@ -588,6 +591,12 @@ public class HttpUtils {
     public static class HttpException {
         public int errorCode;
         public String errorMsg;
+
+        @NonNull
+        @Override
+        public String toString() {
+            return Constants.gson.toJson(HttpException.this);
+        }
     }
 
     private static class HttpConst {
