@@ -564,12 +564,8 @@ public class HttpUtils {
             String key = entry.getKey();
             Object value = entry.getValue();
 
-            if (params.length() <= 0) {
-                if (url.contains("?")) {
-                    params.append("&" + key + "=" + value);
-                } else {
-                    params.append("?" + key + "=" + value);
-                }
+            if (params.length() <= 0 && !url.contains("?")) {
+                params.append("?" + key + "=" + value);
             } else {
                 params.append("&" + key + "=" + value);
             }
