@@ -33,8 +33,9 @@ public class WaitDialog extends Dialog {
 
     @Override
     public void show() {
-        super.show();
-
+        if (getOwnerActivity() != null && !getOwnerActivity().isFinishing()) {
+            super.show();
+        }
     }
 
 
