@@ -563,8 +563,13 @@ public class HttpUtils {
         for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
+
             if (params.length() <= 0) {
-                params.append("?" + key + "=" + value);
+                if (url.contains("?")) {
+                    params.append("&" + key + "=" + value);
+                } else {
+                    params.append("?" + key + "=" + value);
+                }
             } else {
                 params.append("&" + key + "=" + value);
             }
