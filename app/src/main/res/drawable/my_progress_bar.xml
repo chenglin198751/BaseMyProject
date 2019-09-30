@@ -11,7 +11,7 @@
 <!--    </item>-->
     <item android:id="@android:id/progress">
         <clip>
-            <nine-patch android:src="@drawable/green_progress_drawable" >
+            <nine-patch android:src="@drawable/progress_drawable" >
             </nine-patch>
         </clip>
     </item>
