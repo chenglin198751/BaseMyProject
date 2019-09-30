@@ -247,8 +247,8 @@ public class HttpUtils {
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void post(final Activity activity, String url, Map<String, Object> paramsHashMap, final HttpBuilder builder, final HttpCallback httpCallback) {
-        postWithHeader(activity, url, null, paramsHashMap, builder, httpCallback);
+    public static void post(final Context context, String url, Map<String, Object> paramsHashMap, final HttpBuilder builder, final HttpCallback httpCallback) {
+        postWithHeader(context, url, null, paramsHashMap, builder, httpCallback);
     }
 
     /**
