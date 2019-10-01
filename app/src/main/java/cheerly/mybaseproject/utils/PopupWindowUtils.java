@@ -36,7 +36,7 @@ public class PopupWindowUtils {
         int x, y;
         int popHeight = 0, popWidth = 0;
 
-        attachOnView.getLocationOnScreen(location);
+        attachOnView.getLocationInWindow(location);
         x = location[0];
         y = location[1];
 
