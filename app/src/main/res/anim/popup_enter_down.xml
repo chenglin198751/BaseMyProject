@@ -20,7 +20,7 @@
         android:toYScale="1.0"
         android:pivotX="100%"
         android:pivotY="0%"
-        android:duration="@android:integer/config_shortAnimTime" />
+        android:duration="300" />
 
 	<alpha android:interpolator="@android:anim/decelerate_interpolator"
 		android:fromAlpha="0.0" android:toAlpha="1.0" android:duration="@android:integer/config_shortAnimTime" />

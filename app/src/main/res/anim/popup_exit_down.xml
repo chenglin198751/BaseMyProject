@@ -23,7 +23,7 @@
         android:toYScale="0.0"
         android:pivotX="100%"
         android:pivotY="0%"
-        android:duration="@android:integer/config_shortAnimTime" />
+        android:duration="300" />
 
     <alpha
         android:interpolator="@android:anim/accelerate_interpolator"
