@@ -60,6 +60,7 @@ public class PopupWindowUtils {
 
         popupWindow = new PopupWindow(popView, popWidth, popHeight, true);
         popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        popupWindow.setOutsideTouchable(true);
 
         popupWindow.setAnimationStyle(R.style.PopupAnimationDown);
         popupWindow.showAtLocation(attachOnView, Gravity.NO_GRAVITY, x, h + y);
