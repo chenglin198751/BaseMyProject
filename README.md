@@ -149,7 +149,6 @@
 
 **59、androidx.lifecycle.LifecycleObserver**：可以让随便一个类具有Activity的生命周期
 
-**60、SingleOnClickListener**：防止重复多次点击的类
+**60、OnSingleClickListener**：防止重复多次点击的类
 
-**61、js和android通信的库**：https://github.com/pedant/safe-java-js-webview-bridge
 
