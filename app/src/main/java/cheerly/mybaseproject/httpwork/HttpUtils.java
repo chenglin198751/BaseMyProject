@@ -197,6 +197,16 @@ public class HttpUtils {
                     return;
                 }
 
+                if (response.code() != 200) {
+                    BaseUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            httpCallback.onFailure(new HttpException(response.code(), response.toString()));
+                        }
+                    });
+                    return;
+                }
+
                 //有时服务端返回json带了bom头，会导致解析生效
                 String tempStr = response.body().string();
                 if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
@@ -208,7 +218,7 @@ public class HttpUtils {
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
-                        activity.runOnUiThread(new Runnable() {
+                        BaseUtils.getHandler().post(new Runnable() {
                             @Override
                             public void run() {
                                 try {
