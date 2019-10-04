@@ -16,7 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import cheerly.mybaseproject.base.BaseActivity;
-import cheerly.mybaseproject.listener.CompressBitmapListener;
+import cheerly.mybaseproject.listener.OnCompressBitmapListener;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -126,7 +126,7 @@ public class BitmapUtils {
     /**
      * 保存图片到sdcard
      */
-    public static void saveBitmap(final Bitmap bmp, final CompressBitmapListener callback) {
+    public static void saveBitmap(final Bitmap bmp, final OnCompressBitmapListener callback) {
         if (callback != null) {
             callback.onPrepare();
         }
@@ -173,7 +173,7 @@ public class BitmapUtils {
      * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
      * @param callback   回调监听
      */
-    public static void createScaledBitmap(final BaseActivity activity, final Uri imageUri, int imageWidth, final CompressBitmapListener callback) {
+    public static void createScaledBitmap(final BaseActivity activity, final Uri imageUri, int imageWidth, final OnCompressBitmapListener callback) {
         final String imagePath = getPathByUri(activity, imageUri);
         createScaledBitmap(activity, imagePath, imageWidth, callback);
     }
@@ -186,9 +186,9 @@ public class BitmapUtils {
      * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
      * @param callback   回调监听
      */
-    public static void createScaledBitmap(final Activity activity, final String imagePath, final int imageWidth, final CompressBitmapListener callback) {
+    public static void createScaledBitmap(final Activity activity, final String imagePath, final int imageWidth, final OnCompressBitmapListener callback) {
         if (callback == null) {
-            throw new NullPointerException("CompressBitmapListener must not null");
+            throw new NullPointerException("OnCompressBitmapListener must not null");
         }
         callback.onPrepare();
 
@@ -216,7 +216,7 @@ public class BitmapUtils {
                 options.inSampleSize = getOptionSize(scale);
                 Bitmap targetBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(imagePath, options), imageWidth, imageHeight, true);
 
-                saveBitmap(targetBitmap, new CompressBitmapListener() {
+                saveBitmap(targetBitmap, new OnCompressBitmapListener() {
                     @Override
                     public void onPrepare() {
 

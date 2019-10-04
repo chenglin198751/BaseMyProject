@@ -2,16 +2,16 @@ package cheerly.mybaseproject.listener;
 
 import android.view.View;
 
-public abstract class SingleOnClickListener implements View.OnClickListener {
+public abstract class OnSingleClickListener implements View.OnClickListener {
     private long mLastClickTime;
 
     //时间间隔：比如1000毫秒内只能点击一次
     private long timeInterval = 1000L;
 
-    public SingleOnClickListener() {
+    public OnSingleClickListener() {
     }
 
-    public SingleOnClickListener(long interval) {
+    public OnSingleClickListener(long interval) {
         this.timeInterval = interval;
     }
 
