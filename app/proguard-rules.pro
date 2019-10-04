@@ -24,6 +24,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-ignorewarnings
+
 #指定压缩级别
 -optimizationpasses 5
 
