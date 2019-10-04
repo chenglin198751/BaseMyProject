@@ -420,7 +420,7 @@ public class HttpUtils {
 
         File cacheFile = new File(downLoadFilePath);
         if (cacheFile.exists()) {
-            if (isNeedCache) {
+            if (isNeedCache && cacheFile.length() > 0) {
                 downloadCallback.onSuccess(downLoadFilePath);
                 return;
             } else {
