@@ -135,6 +135,7 @@ public class HttpUtils {
 
             while (!response.isSuccessful() && retryNum < maxRetry) {
                 retryNum++;
+                response.close();
                 response = chain.proceed(request);
                 LogUtils.v(TAG, "第 " + retryNum + " 次重试");
             }
@@ -600,8 +601,8 @@ public class HttpUtils {
     }
 
     public static class HttpException {
-        private int errorCode;
-        private String errorMsg;
+        public int errorCode;
+        public String errorMsg;
 
         public HttpException(int code, String msg) {
             errorCode = code;
