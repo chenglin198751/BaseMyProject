@@ -221,12 +221,7 @@ public class HttpUtils {
                         BaseUtils.getHandler().post(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    httpCallback.onSuccess(result);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
-                                }
+                                requestHttpSuccess(httpCallback, result);
                             }
                         });
                     }
@@ -234,12 +229,7 @@ public class HttpUtils {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                httpCallback.onSuccess(result);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
-                            }
+                            requestHttpSuccess(httpCallback, result);
                         }
                     });
                 }
@@ -608,6 +598,17 @@ public class HttpUtils {
             return url.substring(index, url.length());
         }
         return "";
+    }
+
+    private static void requestHttpSuccess(HttpCallback httpCallback, String result) {
+        //这里try catch的唯一目的就是防止在回调结果时，json解析错误、之类的crash没处理。
+        //如果你觉得回调结果的crash不要try，要直接暴露，你可以注释调我这里的try catch
+        try {
+            httpCallback.onSuccess(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
+        }
     }
 
     public static class HttpException {
