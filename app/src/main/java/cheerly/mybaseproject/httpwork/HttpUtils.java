@@ -218,20 +218,10 @@ public class HttpUtils {
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
-                        BaseUtils.getHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                requestHttpSuccess(httpCallback, result);
-                            }
-                        });
+                        handleHttpSuccessOnUiThread(httpCallback, result);
                     }
                 } else {
-                    BaseUtils.getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            requestHttpSuccess(httpCallback, result);
-                        }
-                    });
+                    handleHttpSuccessOnUiThread(httpCallback, result);
                 }
             }
         };
@@ -606,15 +596,20 @@ public class HttpUtils {
         return "";
     }
 
-    private static void requestHttpSuccess(HttpCallback httpCallback, String result) {
-        //这里try catch的唯一目的就是防止在回调结果时，json解析错误、之类的crash没处理。
-        //如果你觉得回调结果的crash不要try，要直接暴露，你可以注释调我这里的try catch
-        try {
-            httpCallback.onSuccess(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
-        }
+    private static void handleHttpSuccessOnUiThread(final HttpCallback httpCallback, final String result) {
+        BaseUtils.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                //这里try catch的唯一目的就是防止在回调结果时，json解析错误、之类的crash没处理。
+                //如果你觉得回调结果的crash不要try，要直接暴露，你可以注释调我这里的try catch
+                try {
+                    httpCallback.onSuccess(result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
+                }
+            }
+        });
     }
 
     public static class HttpException {
