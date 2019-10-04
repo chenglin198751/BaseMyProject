@@ -154,9 +154,7 @@ public class HttpUtils {
                 }
                 e.printStackTrace();
 
-                final HttpException httpEx = new HttpException();
-                httpEx.errorCode = HttpConst.ERROR_UNKNOWN;
-                httpEx.errorMsg = e.toString();
+                final HttpException httpEx = new HttpException(HttpConst.ERROR_UNKNOWN, e.toString());
 
                 if (e instanceof SSLException) {
                     httpEx.errorCode = HttpConst.ERROR_CODE_SSL;
@@ -216,10 +214,7 @@ public class HttpUtils {
                                     httpCallback.onSuccess(result);
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    final HttpException httpEx = new HttpException();
-                                    httpEx.errorCode = HttpConst.ERROR_CODE_CATCH;
-                                    httpEx.errorMsg = e.toString();
-                                    httpCallback.onFailure(httpEx);
+                                    httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
                                 }
                             }
                         });
@@ -232,10 +227,7 @@ public class HttpUtils {
                                 httpCallback.onSuccess(result);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                final HttpException httpEx = new HttpException();
-                                httpEx.errorCode = HttpConst.ERROR_CODE_CATCH;
-                                httpEx.errorMsg = e.toString();
-                                httpCallback.onFailure(httpEx);
+                                httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
                             }
                         }
                     });
@@ -401,6 +393,9 @@ public class HttpUtils {
         } else if (TextUtils.isEmpty(fileUrl)) {
             downloadCallback.onFailure(new IOException("下载URL不能为空"));
             return;
+        } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
+            downloadCallback.onFailure(new IOException(fileUrl + " 不是有效的URL"));
+            return;
         }
 
         if (!TextUtils.isEmpty(downPath)) {
@@ -459,6 +454,12 @@ public class HttpUtils {
 
             @Override
             public void onResponse(final Call call, Response response) {
+                int httpCode = response.code();
+                if (httpCode != 200) {
+                    downloadCallback.onFailure(new IOException("下载失败：" + response.toString()));
+                    return;
+                }
+
                 InputStream inputStream = response.body().byteStream();
                 FileOutputStream fileOutputStream = null;
 
@@ -578,20 +579,29 @@ public class HttpUtils {
         }
     }
 
+//    private static void postUiThread(HttpCallback httpCallback, boolean isSuccess, Ec) {
+//
+//    }
+
     /**
      * 根据下载文件地址得到文件的后缀名
      */
     private static String getSuffixNameByHttpUrl(final String url) {
         int index = url.lastIndexOf(".");
-        if (index < url.length()) {
+        if (index > 0 && index < url.length()) {
             return url.substring(index, url.length());
         }
         return "";
     }
 
     public static class HttpException {
-        public int errorCode;
-        public String errorMsg;
+        private int errorCode;
+        private String errorMsg;
+
+        public HttpException(int code, String msg) {
+            errorCode = code;
+            errorMsg = msg;
+        }
 
         @NonNull
         @Override
