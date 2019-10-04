@@ -246,7 +246,12 @@ public class HttpUtils {
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void postWithHeader(final Context context, String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void postWithHeader(final Context context, final String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_INVALID, HttpConst.HTTP_INVALID));
+            return;
+        }
+
         FormBody.Builder FormBuilder = new FormBody.Builder();
         if (builder == null) {
             builder = new HttpBuilder();
@@ -307,7 +312,7 @@ public class HttpUtils {
             return;
         }
         File file = new File(filePath);
-        if (file == null || !file.exists()) {
+        if (!file.exists()) {
             return;
         }
 
@@ -453,10 +458,14 @@ public class HttpUtils {
             }
 
             @Override
-            public void onResponse(final Call call, Response response) {
-                int httpCode = response.code();
-                if (httpCode != 200) {
-                    downloadCallback.onFailure(new IOException("下载失败：" + response.toString()));
+            public void onResponse(final Call call, final Response response) {
+                if (response.code() != 200) {
+                    BaseUtils.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadCallback.onFailure(new IOException("下载失败：" + response.toString()));
+                        }
+                    });
                     return;
                 }
 
@@ -579,10 +588,6 @@ public class HttpUtils {
         }
     }
 
-//    private static void postUiThread(HttpCallback httpCallback, boolean isSuccess, Ec) {
-//
-//    }
-
     /**
      * 根据下载文件地址得到文件的后缀名
      */
@@ -616,10 +621,12 @@ public class HttpUtils {
         static final int ERROR_CODE_TIME_OUT = 300;
         static final int ERROR_CODE_NO_NET_WORK = 400;
         static final int ERROR_CODE_CATCH = 500;
+        static final int ERROR_CODE_INVALID = 600;
 
         static String HTTP_TIME_OUT = "请求超时，请稍后再试...";
         static String HTTP_TIME_OUT_RESPONSE = "响应超时，请稍后再试...";
         static String HTTP_SSL_EXCEPTION = "连接服务器失败，请正确设置手机日期或稍后重试";
         static String HTTP_NO_NET = "网络已断开";
+        static String HTTP_INVALID = "非法的URL";
     }
 }
