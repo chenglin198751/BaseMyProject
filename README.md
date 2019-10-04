@@ -151,4 +151,5 @@
 
 **60、OnSingleClickListener**：防止重复多次点击的类
 
+**60、js和android WebView通信**：https://github.com/lzyzsd/JsBridge
 
