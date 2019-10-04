@@ -593,9 +593,15 @@ public class HttpUtils {
      * 根据下载文件地址得到文件的后缀名
      */
     private static String getSuffixNameByHttpUrl(final String url) {
-        int index = url.lastIndexOf(".");
+        String tempUrl = url;
+        int index = url.indexOf("?");
         if (index > 0 && index < url.length()) {
-            return url.substring(index, url.length());
+            tempUrl = url.substring(0, index);
+        }
+
+        index = tempUrl.lastIndexOf(".");
+        if (index > 0 && index < tempUrl.length()) {
+            return tempUrl.substring(index);
         }
         return "";
     }
