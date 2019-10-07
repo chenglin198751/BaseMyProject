@@ -5,8 +5,30 @@ echo '' >  local.properties;
 echo 'sdk.dir=$ANDROID_SDK_HOME' >> local.properties;
 echo 'ndk.dir=$ANDROID_NDK_HOME' >> local.properties;
 
-######################build create Relase Package######################
-echo '1111111111' >> $QBUILD_LOG 2>&1;
+############################################ 带360Webkit ############################################
+######################1、构建debug apk包######################
+echo '11111111111' >> $QBUILD_LOG 2>&1;
+chmod 777 gradlew;
+./gradlew build >> $QBUILD_LOG 2>&1;
+
+ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1;
+ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1;
+
+cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+
+######################2、复制debug apk到指定目录######################
+echo '22222222222' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/debug;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/*.aar >> $QBUILD_LOG 2>&1;
+
+######################3、构建release apk包######################
+echo '3333333333' >> $QBUILD_LOG 2>&1;
 ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env;
 rm $ENV_PATH/EnvConstants.java;
 mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java;
@@ -22,35 +44,18 @@ cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 #cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
 
-######################copy Relase folder######################
-echo '2222222222' >> $QBUILD_LOG 2>&1;
+######################4、复制release apk到指定目录######################
+echo '444444444444' >> $QBUILD_LOG 2>&1;
 ENV_PATH=$QBUILD_OUT/miniGameSdk/release;
 echo $ENV_PATH
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
-mv $QBUILD_OUT/*.aar $ENV_PATH;
-cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
-rm -rf $QBUILD_OUT/release;
-rm -rf $QBUILD_OUT/debug;
-cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH;
+cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
 
-######################build create debug Package######################
-echo '3333333333' >> $QBUILD_LOG 2>&1;
-chmod 777 gradlew;
-./gradlew build >> $QBUILD_LOG 2>&1;
-
-ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1;
-ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1;
-
-cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
-cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
-#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
-
-######################copy debug folder######################
-echo '4444444444' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/debug;
+######################5、复制aar文件到指定目录######################
+echo '55555555555555' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar >> $QBUILD_LOG 2>&1;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
-mv $QBUILD_OUT/*.aar $ENV_PATH;
-cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH;
-rm -rf $QBUILD_OUT/release;
-rm -rf $QBUILD_OUT/debug;
-cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH;
+mv $QBUILD_OUT/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
