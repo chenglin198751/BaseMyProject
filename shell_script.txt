@@ -125,3 +125,27 @@ ENV_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/aar >> $QBUILD_LOG 2>&1;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 mv $QBUILD_OUT/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
+
+
+############################################ 构建DEMO工程源码 ############################################
+echo '99999999999999' >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/DEMO;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH $ENV_PATH >> $QBUILD_LOG 2>&1;
+
+ls $ENV_PATH >> $QBUILD_LOG 2>&1;
+echo '99999999999999_0000' >> $QBUILD_LOG 2>&1;
+rm -rf $ENV_PATH/MiniGameSdkDemo/settings.gradle >> $QBUILD_LOG 2>&1;
+mv $ENV_PATH/MiniGameSdkDemo/settings.temp $ENV_PATH/MiniGameSdkDemo/settings.gradle >> $QBUILD_LOG 2>&1;
+
+rm -rf $ENV_PATH/MiniGameSdkDemo/demo/build.gradle >> $QBUILD_LOG 2>&1;
+mv $ENV_PATH/MiniGameSdkDemo/demo/build.temp $ENV_PATH/MiniGameSdkDemo/demo/build.gradle >> $QBUILD_LOG 2>&1;
+
+rm -rf $ENV_PATH/MiniGameSdkDemo/gameSdk >> $QBUILD_LOG 2>&1;
+rm -rf $ENV_PATH/MiniGameSdkDemo/open_ad_sdk >> $QBUILD_LOG 2>&1;
+
+AARS_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/aar >> $QBUILD_LOG 2>&1;
+cp -rf $AARS_PATH/*.aar $ENV_PATH/MiniGameSdkDemo/demo/libs >> $QBUILD_LOG 2>&1;
+
+echo '99999999999999_1111' >> $QBUILD_LOG 2>&1;
