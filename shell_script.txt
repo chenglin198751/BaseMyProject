@@ -11,16 +11,13 @@ echo '11111111111' >> $QBUILD_LOG 2>&1;
 chmod 777 gradlew;
 ./gradlew build >> $QBUILD_LOG 2>&1;
 
-ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1;
-ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1;
-
 cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 #cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
 
 ######################2、复制debug apk到指定目录######################
 echo '22222222222' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/debug;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/360webkit/debug;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
@@ -29,16 +26,23 @@ rm -rf $QBUILD_OUT/*.aar >> $QBUILD_LOG 2>&1;
 
 ######################3、构建release apk包######################
 echo '3333333333' >> $QBUILD_LOG 2>&1;
+
 ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env;
-rm $ENV_PATH/EnvConstants.java;
-mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java;
+
+#编译前修改debug、release的类
+mv $ENV_PATH/EnvConstants.java $ENV_PATH/EnvConstantsDebug.java >> $QBUILD_LOG 2>&1;
+sed -i 's/EnvConstants/EnvConstantsDebug/g' $ENV_PATH/EnvConstantsDebug.java;
+mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java >> $QBUILD_LOG 2>&1;
 sed -i 's/EnvConstantsRelease/EnvConstants/g' $ENV_PATH/EnvConstants.java;
 
 chmod 777 gradlew;
 ./gradlew build >> $QBUILD_LOG 2>&1;
 
-ls $QBUILD_PATH/gameSdk/build/outputs/ >> $QBUILD_LOG 2>&1;
-ls $QBUILD_PATH/demo/build/outputs/ >> $QBUILD_LOG 2>&1;
+#编译后恢复之前修改的debug、release的类
+mv $ENV_PATH/EnvConstants.java $ENV_PATH/EnvConstantsRelease.java >> $QBUILD_LOG 2>&1;
+sed -i 's/EnvConstants/EnvConstantsRelease/g' $ENV_PATH/EnvConstantsRelease.java;
+mv $ENV_PATH/EnvConstantsDebug.java $ENV_PATH/EnvConstants.java >> $QBUILD_LOG 2>&1;
+sed -i 's/EnvConstantsDebug/EnvConstants/g' $ENV_PATH/EnvConstants.java;
 
 cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
@@ -46,7 +50,7 @@ cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 
 ######################4、复制release apk到指定目录######################
 echo '444444444444' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/release;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/360webkit/release;
 echo $ENV_PATH
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
@@ -55,7 +59,69 @@ rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
 
 ######################5、复制aar文件到指定目录######################
 echo '55555555555555' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/aar >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/360webkit/aar >> $QBUILD_LOG 2>&1;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+mv $QBUILD_OUT/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
+
+
+
+############################################ 不带360Webkit ############################################
+######################1、构建debug apk包######################
+echo 'aaaaaaaaaa' >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_PATH/gameSdk/libs/armeabi-v7a/*.so >> $QBUILD_LOG 2>&1;
+
+chmod 777 gradlew;
+./gradlew build >> $QBUILD_LOG 2>&1;
+
+cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+
+######################2、复制debug apk到指定目录######################
+echo 'bbbbbbbbbb' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/debug;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/*.aar >> $QBUILD_LOG 2>&1;
+
+######################3、构建release apk包######################
+echo 'cccccccccc' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env;
+
+#编译前修改debug、release的类
+mv $ENV_PATH/EnvConstants.java $ENV_PATH/EnvConstantsDebug.java >> $QBUILD_LOG 2>&1;
+sed -i 's/EnvConstants/EnvConstantsDebug/g' $ENV_PATH/EnvConstantsDebug.java;
+mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java >> $QBUILD_LOG 2>&1;
+sed -i 's/EnvConstantsRelease/EnvConstants/g' $ENV_PATH/EnvConstants.java;
+
+chmod 777 gradlew;
+./gradlew build >> $QBUILD_LOG 2>&1;
+
+#编译后恢复之前修改的debug、release的类
+mv $ENV_PATH/EnvConstants.java $ENV_PATH/EnvConstantsRelease.java >> $QBUILD_LOG 2>&1;
+sed -i 's/EnvConstants/EnvConstantsRelease/g' $ENV_PATH/EnvConstantsRelease.java;
+mv $ENV_PATH/EnvConstantsDebug.java $ENV_PATH/EnvConstants.java >> $QBUILD_LOG 2>&1;
+sed -i 's/EnvConstantsDebug/EnvConstants/g' $ENV_PATH/EnvConstants.java;
+
+cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+
+######################4、复制release apk到指定目录######################
+echo 'dddddddddd' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/release;
+echo $ENV_PATH
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
+
+######################5、复制aar文件到指定目录######################
+echo 'eeeeeeeeee' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/aar >> $QBUILD_LOG 2>&1;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 mv $QBUILD_OUT/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
