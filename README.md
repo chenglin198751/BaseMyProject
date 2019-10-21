@@ -153,3 +153,7 @@
 
 **60、js和android WebView通信**：https://github.com/lzyzsd/JsBridge
 
+**61、集成各大push推送平台的库**：https://github.com/xuexiangjys/XPush/wiki
+
+
+
