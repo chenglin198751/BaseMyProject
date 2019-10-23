@@ -53,7 +53,8 @@
 
 **22、UserManager 类**：用户信息管理类，如果牵涉到用户登录之类的，要用这个类来管理，方便别人使用。
 
-**23、FastBlurUtil 类**：被我改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。
+**23、FastBlurUtil 类**：我改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。
+
       github上的两种实现：
       1、https://github.com/CameraKit/blurkit-android
       2、https://github.com/wasabeef/Blurry
@@ -75,7 +76,9 @@
 
 **31、SelectPhotosActivity 类**：一个通用的相册图片选择类，支持单选和多选，用法看代码。
 
-**32、EnglishCharFilter 类**：限制中文字符算作两个字，英文字符算作一个字的工具类。用法：editText.setFilters(new InputFilter[]{new EnglishCharFilter(MAX_COUNT)});
+**32、EnglishCharFilter 类**：限制中文字符算作两个字，英文字符算作一个字的工具类。用法：
+
+      editText.setFilters(new InputFilter[]{new EnglishCharFilter(MAX_COUNT)});
 
 **33、SimpleAnimatorListener 类**：一个简单的动画监听类，目的是减少代码量。只监听了动画结束，因为动画结束是最常用的
 
@@ -92,6 +95,7 @@
       一个实现多边形的ImageView 类。四边形，五边形，六边形。另外还有星星，撕纸形状等，还可以自定义形状。
 
 **39、RoundedImageView 类**：一个可以实现圆形图片、圆角图片的类。github 地址：https://github.com/vinc3m1/RoundedImageView
+
       app:riv_corner_radius="30dp" 圆角的角度
       app:riv_border_width="2dp" 图片边框的宽度
       app:riv_border_color="#333333" 图片边框的颜色
@@ -124,7 +128,7 @@
 **47、封装的易用数据库dbflow**：https://github.com/agrosner/DBFlow 、 https://joyrun.github.io/2016/08/02/dbflow/
 
 **48、沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar 
-    **设置状态栏颜色**：https://github.com/msdx/status-bar-compat
+      **设置状态栏颜色**：https://github.com/msdx/status-bar-compat
 
 **49、检测是否为模拟器的工具类**：EmulatorUtil.java
 
