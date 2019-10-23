@@ -123,7 +123,8 @@
 
 **47、封装的易用数据库dbflow**：https://github.com/agrosner/DBFlow 、 https://joyrun.github.io/2016/08/02/dbflow/
 
-**48、沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar
+**48、沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar 
+    **设置状态栏颜色**：https://github.com/msdx/status-bar-compat
 
 **49、检测是否为模拟器的工具类**：EmulatorUtil.java
 
