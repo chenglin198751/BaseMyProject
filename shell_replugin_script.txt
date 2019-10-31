@@ -1,0 +1,56 @@
+set -e;
+cd $QBUILD_PATH;
+
+echo '' >  local.properties;
+echo 'sdk.dir=$ANDROID_SDK_HOME' >> local.properties;
+echo 'ndk.dir=$ANDROID_NDK_HOME' >> local.properties;
+
+############################################ 带360Webkit ############################################
+######################1、构建release apk包######################
+echo '111111111111' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env;
+
+chmod 777 gradlew;
+./gradlew build >> $QBUILD_LOG 2>&1;
+
+echo '222222222222' >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
+ls $QBUILD_PATH/demo/build/outputs/apk >> $QBUILD_LOG 2>&1
+cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1
+
+
+######################2、复制release apk到指定目录######################
+echo '33333333333' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/replugin/tuitui;
+echo $ENV_PATH
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
+rm -rf $QBUILD_OUT/*.aar >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/replugin/libs/armeabi-v7a;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/doc/minigames.so $ENV_PATH >> $QBUILD_LOG 2>&1;
+
+############################################3、构建DEMO工程源码 ############################################
+echo '44444444444' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/demo;
+TARGET_SRC_PATH=$ENV_PATH/MiniGameSdk
+
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+mkdir -m 777 -p $TARGET_SRC_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/* $TARGET_SRC_PATH >> $QBUILD_LOG 2>&1;
+
+ls $ENV_PATH >> $QBUILD_LOG 2>&1;
+echo '555555555555' >> $QBUILD_LOG 2>&1;
+
+
+rm -rf $TARGET_SRC_PATH/gameSdk >> $QBUILD_LOG 2>&1;
+rm -rf $TARGET_SRC_PATH/open_ad_sdk >> $QBUILD_LOG 2>&1;
+rm -rf $TARGET_SRC_PATH/demo/build >> $QBUILD_LOG 2>&1;
+rm -rf $TARGET_SRC_PATH/build >> $QBUILD_LOG 2>&1;
+rm -rf $TARGET_SRC_PATH/.gradle >> $QBUILD_LOG 2>&1;
+rm -rf $TARGET_SRC_PATH/minisdkdemo.jks >> $QBUILD_LOG 2>&1;
+rm -rf $TARGET_SRC_PATH/doc >> $QBUILD_LOG 2>&1;
+rm -rf $TARGET_SRC_PATH/README.md >> $QBUILD_LOG 2>&1;
