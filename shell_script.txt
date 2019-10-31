@@ -7,25 +7,31 @@ echo 'ndk.dir=$ANDROID_NDK_HOME' >> local.properties;
 
 ############################################ 带360Webkit ############################################
 ######################1、构建debug apk包######################
-echo '11111111111' >> $QBUILD_LOG 2>&1;
+echo '----------{{ 360Webkit: build debug apk }} ----------' >> $QBUILD_LOG 2>&1;
+
+chmod 777 gradlew;
+./gradlew clean >> $QBUILD_LOG 2>&1;
+
 chmod 777 gradlew;
 ./gradlew build >> $QBUILD_LOG 2>&1;
 
 cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
-#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/mapping.txt $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 
 ######################2、复制debug apk到指定目录######################
-echo '22222222222' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/360webkit/debug;
+echo '----------{{ 360Webkit: copy debug apk }} ----------' >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/with360webkit/apk/debug;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/*.aar >> $QBUILD_LOG 2>&1;
+mv $QBUILD_OUT/mapping.txt $ENV_PATH >> $QBUILD_LOG 2>&1;
 
 ######################3、构建release apk包######################
-echo '3333333333' >> $QBUILD_LOG 2>&1;
+echo '----------{{ 360Webkit: build release apk }} ----------' >> $QBUILD_LOG 2>&1;
 
 ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env;
 
@@ -34,6 +40,9 @@ mv $ENV_PATH/EnvConstants.java $ENV_PATH/EnvConstantsDebug.java >> $QBUILD_LOG 2
 sed -i 's/EnvConstants/EnvConstantsDebug/g' $ENV_PATH/EnvConstantsDebug.java;
 mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java >> $QBUILD_LOG 2>&1;
 sed -i 's/EnvConstantsRelease/EnvConstants/g' $ENV_PATH/EnvConstants.java;
+
+chmod 777 gradlew;
+./gradlew clean >> $QBUILD_LOG 2>&1;
 
 chmod 777 gradlew;
 ./gradlew build >> $QBUILD_LOG 2>&1;
@@ -46,20 +55,23 @@ sed -i 's/EnvConstantsDebug/EnvConstants/g' $ENV_PATH/EnvConstants.java;
 
 cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
-#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/mapping.txt $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 
 ######################4、复制release apk到指定目录######################
-echo '444444444444' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/360webkit/release;
+echo '----------{{ 360Webkit: copy release apk }} ----------' >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/with360webkit/apk/release;
 echo $ENV_PATH
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
+mv $QBUILD_OUT/mapping.txt $ENV_PATH >> $QBUILD_LOG 2>&1;
 
 ######################5、复制aar文件到指定目录######################
-echo '55555555555555' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/360webkit/aar >> $QBUILD_LOG 2>&1;
+echo '----------{{ 360Webkit: copy aar }} ----------' >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/with360webkit/libs/aar >> $QBUILD_LOG 2>&1;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 mv $QBUILD_OUT/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
@@ -68,27 +80,34 @@ cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
 
 ############################################ 不带360Webkit ############################################
 ######################1、构建debug apk包######################
-echo 'aaaaaaaaaa' >> $QBUILD_LOG 2>&1;
+echo '----------{{ without 360Webkit: build debug apk }} ----------' >> $QBUILD_LOG 2>&1;
+
 rm -rf $QBUILD_PATH/gameSdk/libs/armeabi-v7a/*.so >> $QBUILD_LOG 2>&1;
+
+chmod 777 gradlew;
+./gradlew clean >> $QBUILD_LOG 2>&1;
 
 chmod 777 gradlew;
 ./gradlew build >> $QBUILD_LOG 2>&1;
 
 cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
-#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/mapping.txt $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 
 ######################2、复制debug apk到指定目录######################
-echo 'bbbbbbbbbb' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/debug;
+echo '----------{{ without 360Webkit: copy debug apk }} ----------' >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/without360webkit/apk/debug;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/*.aar >> $QBUILD_LOG 2>&1;
+mv $QBUILD_OUT/mapping.txt $ENV_PATH >> $QBUILD_LOG 2>&1;
 
 ######################3、构建release apk包######################
-echo 'cccccccccc' >> $QBUILD_LOG 2>&1;
+echo '----------{{ without 360Webkit: build release apk }} ----------' >> $QBUILD_LOG 2>&1;
+
 ENV_PATH=$QBUILD_PATH/gameSdk/src/main/java/com/qihoo/minigame/sdk/env;
 
 #编译前修改debug、release的类
@@ -96,6 +115,9 @@ mv $ENV_PATH/EnvConstants.java $ENV_PATH/EnvConstantsDebug.java >> $QBUILD_LOG 2
 sed -i 's/EnvConstants/EnvConstantsDebug/g' $ENV_PATH/EnvConstantsDebug.java;
 mv $ENV_PATH/EnvConstantsRelease.java $ENV_PATH/EnvConstants.java >> $QBUILD_LOG 2>&1;
 sed -i 's/EnvConstantsRelease/EnvConstants/g' $ENV_PATH/EnvConstants.java;
+
+chmod 777 gradlew;
+./gradlew clean >> $QBUILD_LOG 2>&1;
 
 chmod 777 gradlew;
 ./gradlew build >> $QBUILD_LOG 2>&1;
@@ -108,44 +130,39 @@ sed -i 's/EnvConstantsDebug/EnvConstants/g' $ENV_PATH/EnvConstants.java;
 
 cp -rf $QBUILD_PATH/gameSdk/build/outputs/aar/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/demo/build/outputs/apk/* $QBUILD_OUT >> $QBUILD_LOG 2>&1;
-#cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/* $QBUILD_DEV_OUT >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/demo/build/outputs/mapping/release/mapping.txt $QBUILD_OUT >> $QBUILD_LOG 2>&1;
 
 ######################4、复制release apk到指定目录######################
-echo 'dddddddddd' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/release;
+echo '----------{{ without 360Webkit: copy release apk }} ----------' >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/without360webkit/apk/release;
 echo $ENV_PATH
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_OUT/release/*.apk $ENV_PATH >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/release >> $QBUILD_LOG 2>&1;
 rm -rf $QBUILD_OUT/debug >> $QBUILD_LOG 2>&1;
+mv $QBUILD_OUT/mapping.txt $ENV_PATH >> $QBUILD_LOG 2>&1;
 
 ######################5、复制aar文件到指定目录######################
-echo 'eeeeeeeeee' >> $QBUILD_LOG 2>&1;
-ENV_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/aar >> $QBUILD_LOG 2>&1;
+echo '----------{{ without 360Webkit: copy aar }} ----------' >> $QBUILD_LOG 2>&1;
+
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/without360webkit/libs/aar >> $QBUILD_LOG 2>&1;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
 mv $QBUILD_OUT/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
 cp -rf $QBUILD_PATH/gameSdk/libs/aars/*.aar $ENV_PATH >> $QBUILD_LOG 2>&1;
 
 
-############################################ 构建DEMO工程源码 ############################################
-echo '99999999999999' >> $QBUILD_LOG 2>&1;
+######################复制接入文件到指定目录######################
+echo '----------{{ copy document }} ----------' >> $QBUILD_LOG 2>&1;
 
-ENV_PATH=$QBUILD_OUT/miniGameSdk/DEMO;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/with360webkit/libs/armeabi-v7a;
 mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
-cp -rf $QBUILD_PATH $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/doc/minigames.so $ENV_PATH >> $QBUILD_LOG 2>&1;
 
-ls $ENV_PATH >> $QBUILD_LOG 2>&1;
-echo '99999999999999_0000' >> $QBUILD_LOG 2>&1;
-rm -rf $ENV_PATH/MiniGameSdkDemo/settings.gradle >> $QBUILD_LOG 2>&1;
-mv $ENV_PATH/MiniGameSdkDemo/settings.temp $ENV_PATH/MiniGameSdkDemo/settings.gradle >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/aar_apk/without360webkit/libs/armeabi-v7a;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/doc/minigames.so $ENV_PATH >> $QBUILD_LOG 2>&1;
 
-rm -rf $ENV_PATH/MiniGameSdkDemo/demo/build.gradle >> $QBUILD_LOG 2>&1;
-mv $ENV_PATH/MiniGameSdkDemo/demo/build.temp $ENV_PATH/MiniGameSdkDemo/demo/build.gradle >> $QBUILD_LOG 2>&1;
-
-rm -rf $ENV_PATH/MiniGameSdkDemo/gameSdk >> $QBUILD_LOG 2>&1;
-rm -rf $ENV_PATH/MiniGameSdkDemo/open_ad_sdk >> $QBUILD_LOG 2>&1;
-
-AARS_PATH=$QBUILD_OUT/miniGameSdk/without360webkit/aar >> $QBUILD_LOG 2>&1;
-cp -rf $AARS_PATH/*.aar $ENV_PATH/MiniGameSdkDemo/demo/libs >> $QBUILD_LOG 2>&1;
-
-echo '99999999999999_1111' >> $QBUILD_LOG 2>&1;
+ENV_PATH=$QBUILD_OUT/miniGameSdk/doc;
+mkdir -m 777 -p $ENV_PATH >> $QBUILD_LOG 2>&1;
+cp -rf $QBUILD_PATH/doc/README.docx $ENV_PATH >> $QBUILD_LOG 2>&1;
