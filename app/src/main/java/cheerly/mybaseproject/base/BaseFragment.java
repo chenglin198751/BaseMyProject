@@ -106,8 +106,8 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
      * 显示等待的对话框
      */
     @Override
-    public final WaitDialog showWaitDialog(String text) {
-        return getContext().showWaitDialog(text);
+    public final WaitDialog showWaitDialog() {
+        return getContext().showWaitDialog();
     }
 
     @Override

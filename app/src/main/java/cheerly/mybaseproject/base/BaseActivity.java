@@ -185,17 +185,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 显示等待的对话框
      */
     @Override
-    public final WaitDialog showWaitDialog(String text) {
+    public final WaitDialog showWaitDialog() {
         if (mWaitDialog == null) {
             mWaitDialog = new WaitDialog(getContext());
         }
 
-        TextView textView = (TextView) mWaitDialog.findViewById(R.id.text);
-        if (!TextUtils.isEmpty(text)) {
-            textView.setText(text);
-        } else {
-            textView.setText(R.string.data_loading);
-        }
         if (!mWaitDialog.isShowing() && !isFinishing()) {
             mWaitDialog.show();
         }
