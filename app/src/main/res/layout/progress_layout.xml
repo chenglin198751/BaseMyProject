@@ -15,8 +15,8 @@
         <ImageView
             android:id="@+id/image"
             android:src="@drawable/white_small_loading"
-            android:layout_width="30dp"
-            android:layout_height="30dp" />
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
 
     </LinearLayout>
 </RelativeLayout>
