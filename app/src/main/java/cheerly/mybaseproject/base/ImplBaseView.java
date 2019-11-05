@@ -17,7 +17,7 @@ public interface ImplBaseView {
 
     void hideProgress();
 
-    WaitDialog showWaitDialog(String text);
+    WaitDialog showWaitDialog();
 
     void dismissWaitDialog();
 }
