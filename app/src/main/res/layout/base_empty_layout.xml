@@ -24,9 +24,9 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="12dp"
             android:gravity="center|top"
-            android:lineSpacingMultiplier="1.2"
+            android:lineSpacingMultiplier="1.1"
             android:text="@string/no_net_tips"
-            android:textColor="#8a8a8a"
+            android:textColor="#666666"
             android:textSize="14sp" />
 
         <Button
@@ -36,7 +36,7 @@
             android:layout_marginTop="20dp"
             android:background="@drawable/btn_bg_style_1"
             android:text="点击重试"
-            android:textColor="#8a8a8a"
+            android:textColor="#666666"
             android:textSize="14dp" />
     </LinearLayout>
 
