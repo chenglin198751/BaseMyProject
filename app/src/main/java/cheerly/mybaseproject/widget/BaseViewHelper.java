@@ -5,7 +5,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -68,7 +67,7 @@ public class BaseViewHelper {
     public void showEmptyText(String text, View.OnClickListener listener) {
         mView = View.inflate(mContext, R.layout.base_empty_layout, null);
         ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
-        Button button = mView.findViewById(R.id.button);
+        View btnRefresh = mView.findViewById(R.id.btn_refresh);
         TextView textView = mView.findViewById(R.id.empty_text);
 
         if (!TextUtils.isEmpty(text)) {
@@ -78,13 +77,12 @@ public class BaseViewHelper {
         }
 
         if (listener != null) {
-            button.setVisibility(View.VISIBLE);
-            button.setOnClickListener(listener);
+            btnRefresh.setVisibility(View.VISIBLE);
+            btnRefresh.setOnClickListener(listener);
         } else {
-            button.setVisibility(View.GONE);
+            btnRefresh.setVisibility(View.GONE);
         }
 
-        button.setText("点击刷新");
         emptyIcon.setImageResource(R.drawable.empty_icon);
     }
 
@@ -95,20 +93,19 @@ public class BaseViewHelper {
         mView = View.inflate(mContext, R.layout.base_empty_layout, null);
         ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
 
-        Button button = mView.findViewById(R.id.button);
+        View btnRefresh = mView.findViewById(R.id.btn_refresh);
         TextView textView = mView.findViewById(R.id.empty_text);
         if (!TextUtils.isEmpty(text)) {
             textView.setText(text);
         }
 
         if (listener != null) {
-            button.setVisibility(View.VISIBLE);
-            button.setOnClickListener(listener);
+            btnRefresh.setVisibility(View.VISIBLE);
+            btnRefresh.setOnClickListener(listener);
         } else {
-            button.setVisibility(View.GONE);
+            btnRefresh.setVisibility(View.GONE);
         }
 
-        button.setText("点击重试");
         emptyIcon.setImageResource(R.drawable.net_error_icon);
     }
 
