@@ -126,6 +126,8 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
         } else {
             mBaseViewHelper.setLoadingText(getString(R.string.data_loading));
         }
+
+        mBaseViewHelper.startLoadingAnimation();
         addLoadView();
     }
 
@@ -134,6 +136,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
      */
     @Override
     public final void hideProgress() {
+        mBaseViewHelper.stopLoadingAnimation();
         clearLoadingView();
     }
 
