@@ -14,7 +14,7 @@
 
         <ImageView
             android:id="@+id/image"
-            android:src="@drawable/white_small_loading"
+            android:src="@drawable/loading_small_icon"
             android:layout_width="40dp"
             android:layout_height="40dp" />
 
