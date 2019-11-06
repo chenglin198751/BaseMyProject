@@ -136,7 +136,6 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
      */
     @Override
     public final void hideProgress() {
-        mBaseViewHelper.stopLoadingAnimation();
         clearLoadingView();
     }
 
@@ -148,6 +147,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
             return;
         }
         if (isAddedView) {
+            mBaseViewHelper.clearLoadingView();
             mContentView.removeView(mBaseViewHelper.getView());
             isAddedView = false;
         }

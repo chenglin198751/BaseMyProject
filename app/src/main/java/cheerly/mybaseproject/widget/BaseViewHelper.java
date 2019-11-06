@@ -17,7 +17,18 @@ public class BaseViewHelper {
     private View mView;
     private View mShadowView;
     private ValueAnimator mValueAnimator;
-    private ImageView mLoadImg;
+    private View mLoadImg;
+    private View.OnClickListener mTempClickListener;
+
+    private View.OnClickListener mClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startLoadingAnimation();
+            if (mTempClickListener != null) {
+                mTempClickListener.onClick(v);
+            }
+        }
+    };
 
     public BaseViewHelper(Context context) {
         mContext = context;
@@ -41,6 +52,10 @@ public class BaseViewHelper {
     }
 
     public void startLoadingAnimation() {
+        if (mValueAnimator != null && mValueAnimator.isRunning()) {
+            return;
+        }
+
         mValueAnimator = ValueAnimator.ofFloat(360f);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -56,9 +71,15 @@ public class BaseViewHelper {
     }
 
     public void stopLoadingAnimation() {
-        if (mValueAnimator != null) {
+        if (mValueAnimator != null && mValueAnimator.isRunning()) {
             mValueAnimator.cancel();
+            mValueAnimator = null;
         }
+    }
+
+    public void clearLoadingView() {
+        stopLoadingAnimation();
+        mTempClickListener = null;
     }
 
     /**
@@ -69,6 +90,7 @@ public class BaseViewHelper {
         ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
         View btnRefresh = mView.findViewById(R.id.btn_refresh);
         TextView textView = mView.findViewById(R.id.empty_text);
+        mLoadImg = btnRefresh;
 
         if (!TextUtils.isEmpty(text)) {
             textView.setText(text);
@@ -77,8 +99,9 @@ public class BaseViewHelper {
         }
 
         if (listener != null) {
+            mTempClickListener = listener;
             btnRefresh.setVisibility(View.VISIBLE);
-            btnRefresh.setOnClickListener(listener);
+            btnRefresh.setOnClickListener(mClickListener);
         } else {
             btnRefresh.setVisibility(View.GONE);
         }
@@ -94,14 +117,16 @@ public class BaseViewHelper {
         ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
 
         View btnRefresh = mView.findViewById(R.id.btn_refresh);
+        mLoadImg = btnRefresh;
         TextView textView = mView.findViewById(R.id.empty_text);
         if (!TextUtils.isEmpty(text)) {
             textView.setText(text);
         }
 
         if (listener != null) {
+            mTempClickListener = listener;
             btnRefresh.setVisibility(View.VISIBLE);
-            btnRefresh.setOnClickListener(listener);
+            btnRefresh.setOnClickListener(mClickListener);
         } else {
             btnRefresh.setVisibility(View.GONE);
         }
