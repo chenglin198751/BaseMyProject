@@ -18,7 +18,7 @@ public class WaitDialog extends Dialog {
 
     public WaitDialog(Context context) {
         this(context, R.style.dialogNullBg);
-        mView = View.inflate(context, R.layout.progress_layout, null);
+        mView = View.inflate(context, R.layout.wait_dialog_layout, null);
     }
 
     protected WaitDialog(Context context, int theme) {
