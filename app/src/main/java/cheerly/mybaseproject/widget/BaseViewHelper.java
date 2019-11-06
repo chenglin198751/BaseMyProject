@@ -1,8 +1,10 @@
 package cheerly.mybaseproject.widget;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -15,6 +17,8 @@ public class BaseViewHelper {
     private Context mContext;
     private View mView;
     private View mShadowView;
+    private ValueAnimator mValueAnimator;
+    private ImageView mLoadImg;
 
     public BaseViewHelper(Context context) {
         mContext = context;
@@ -32,8 +36,30 @@ public class BaseViewHelper {
      */
     public void setLoadingText(String text) {
         mView = View.inflate(mContext, R.layout.base_loading_layout, null);
+        mLoadImg = mView.findViewById(R.id.image);
         TextView textView = mView.findViewById(R.id.text);
         textView.setText(text);
+    }
+
+    public void startLoadingAnimation() {
+        mValueAnimator = ValueAnimator.ofFloat(360f);
+        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float value = (float) animation.getAnimatedValue();
+                mLoadImg.setRotation(value);
+            }
+        });
+        mValueAnimator.setInterpolator(new LinearInterpolator());
+        mValueAnimator.setDuration(2 * 1000);
+        mValueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        mValueAnimator.start();
+    }
+
+    public void stopLoadingAnimation() {
+        if (mValueAnimator != null) {
+            mValueAnimator.cancel();
+        }
     }
 
     /**
