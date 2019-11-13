@@ -1,5 +1,9 @@
 package cheerly.mybaseproject.utils;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -137,5 +141,20 @@ public class LogUtils {
     private static String getDate() {
         SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss");
         return (sf.format(new Date()));
+    }
+
+
+    /**
+     * 判断是否为直接通过开发工具运行起来的状态
+     */
+    public static boolean isDebuggable(Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo packageInfo = pm.getPackageInfo(context.getPackageName(), 0);
+            return (0 != (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
