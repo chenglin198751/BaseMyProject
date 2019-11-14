@@ -135,11 +135,9 @@
 
 **50、图片裁剪器**：https://github.com/Yalantis/uCrop
 
-**51、一款轻量级的socket库**：https://github.com/xuuhaoo/OkSocket
+**51、一款轻量级的socket库（模拟器Launcher在使用）**：https://github.com/xuuhaoo/OkSocket
 
-**52、另一款socket库**：https://github.com/nkzawa/socket.io-android-chat
-
-**53、二维码扫描**：https://github.com/devilsen/CZXing(底层库用的是：https://github.com/nu-book/zxing-cpp)
+**52、二维码扫描**：https://github.com/devilsen/CZXing(底层库用的是：https://github.com/nu-book/zxing-cpp)
 
 **53、jackpal的Android-Terminal源码**：https://github.com/jackpal/Android-Terminal-Emulator/
 
