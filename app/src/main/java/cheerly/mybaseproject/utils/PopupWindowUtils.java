@@ -18,13 +18,14 @@ public class PopupWindowUtils {
     public static final int defaultBotom = -100;
 
     /**
-     * 让popView显示在popView的下面，popShowHeight 和 popShowWidth 的单位都是像素
+     * 让popView显示在attachOnView的下面，popShowHeight 和 popShowWidth 的单位都是像素
+     * popView.setTag(R.id.offset_x,px) 和 popView.setTag(R.id.offset_y,px) 可以设置当前显示popWindow的坐标偏移量
      */
     public static PopupWindow show(Activity activity, View attachOnView, View popView, final int popShowHeight, final int popShowWidth) {
         if (popView != null && popView.getParent() != null) {
             ((ViewGroup) popView.getParent()).removeAllViews();
         }
-        if (popView == null){
+        if (popView == null) {
             return null;
         }
 
@@ -39,6 +40,16 @@ public class PopupWindowUtils {
         attachOnView.getLocationInWindow(location);
         x = location[0];
         y = location[1];
+
+        Integer offsetX = (Integer) popView.getTag(R.id.offset_x);
+        Integer offsetY = (Integer) popView.getTag(R.id.offset_y);
+
+        if (offsetX != null) {
+            x = x + offsetX;
+        }
+        if (offsetY != null) {
+            y = y + offsetY;
+        }
 
         int h = attachOnView.getHeight();
         int screenHeight = Constants.getScreenWidth();
