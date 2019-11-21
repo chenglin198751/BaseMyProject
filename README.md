@@ -128,9 +128,9 @@
 **47、封装的易用数据库dbflow**：https://github.com/agrosner/DBFlow 、 https://joyrun.github.io/2016/08/02/dbflow/
 
 **48、  
-<br>48.1：沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar  
-<br>**48.2：设置状态栏颜色**：https://github.com/msdx/status-bar-compat  
-<br>**48.3：判断刘海屏的工具类**：NotchUtils.class
+48.1：沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar  
+**48.2：设置状态栏颜色**：https://github.com/msdx/status-bar-compat  
+**48.3：判断刘海屏的工具类**：NotchUtils.class
       
       // 如果使用48.2，那么在Android6.0以下会存在页面被状态栏遮挡了的bug，需要加上这段代码：
           viewLayout.post(new Runnable() {
