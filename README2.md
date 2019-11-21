@@ -5,8 +5,8 @@
 注解表示枚举String型：@StringDef
 代码示例如下：
 
-    public static final int LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-    public static final int PORTRAIT = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    public static final int LANDSCAPE = 0;
+    public static final int PORTRAIT = 1;
 
     @IntDef({LANDSCAPE, PORTRAIT})
     @Retention(RetentionPolicy.SOURCE)
