@@ -133,6 +133,7 @@
 **48.3：判断刘海屏的工具类**：NotchUtils.class
       
       // 如果使用48.2，那么在Android6.0以下会存在页面被状态栏遮挡了的bug，需要加上这段代码：
+      // 注：viewLayout为当前Activity的根布局
           viewLayout.post(new Runnable() {
               @Override
               public void run() {
