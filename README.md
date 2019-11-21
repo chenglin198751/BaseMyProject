@@ -127,9 +127,26 @@
 
 **47、封装的易用数据库dbflow**：https://github.com/agrosner/DBFlow 、 https://joyrun.github.io/2016/08/02/dbflow/
 
-**48、沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar 
-      **设置状态栏颜色**：https://github.com/msdx/status-bar-compat
-      **判断刘海屏的工具类**：NotchUtils.class
+**48、48.1：沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar 
+      **48.2：设置状态栏颜色**：https://github.com/msdx/status-bar-compat
+      **48.3：判断刘海屏的工具类**：NotchUtils.class
+      
+      // 如果使用48.2，那么在Android6.0以下会存在页面被状态栏遮挡了的bug，需要加上这段代码：
+          viewLayout.post(new Runnable() {
+              @Override
+              public void run() {
+                  int[] location = new int[2];
+                  viewLayout.getLocationOnScreen(location);
+                  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                      int barHeight = BaseUtils.getStatusBarHeight();
+                      if (location[1] < barHeight) {
+                          RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewLayout.getLayoutParams();
+                          params.topMargin = barHeight;
+                          viewLayout.setLayoutParams(params);
+                      }
+                  }
+              }
+          });
 
 **49、检测是否为模拟器的工具类**：EmulatorUtil.java
 
