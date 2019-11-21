@@ -19,8 +19,7 @@
 
 **6、HttpUtils 类**：Http请求类，是基于OKHttp3封装的，让使用起来变的很简单，一眼就知道怎么用。
 
-**7、WebImageView 类**：图片加载类。使用的是square 公司出品的picasso ，并做了简单的封装，封装的目的是以后可以方便的换其他的图片加载工具。封装为：WebImageView .
-     我已经写了支持GIF的方法，性能卓越。具体用法是一定要传入当前ImageView的宽和高，以便最大限度的节约内存空间，让滑动更流畅，并且避免OOM。
+**7、SmartImageLoader 类**：图片加载类。使用的Glide ，并做了简单的封装，轻松实现圆角，封装的目的是以后可以方便的换其他的图片加载工具。
 
 **8、PullToRefreshView 类**：实现了上拉加载更多，下拉刷新。封装自https://github.com/scwang90/SmartRefreshLayout ，它可以很随意的定制自己的header 和footer ，并有很多属性可以设置，极为好用。
 
