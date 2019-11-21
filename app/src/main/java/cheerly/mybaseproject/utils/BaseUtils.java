@@ -1,12 +1,14 @@
 package cheerly.mybaseproject.utils;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
@@ -51,6 +53,7 @@ public class BaseUtils {
     private static String mStrImei = null;
     private static String mVerCode = null;
     private static String mVerName = null;
+    private static int mStatusBarHeight = 0;
 
     /**
      * 判断手机是否联网
@@ -599,5 +602,41 @@ public class BaseUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 获取手机状态栏的高度
+     */
+    public static int getStatusBarHeight(Activity activity) {
+        if (mStatusBarHeight > 0) {
+            return mStatusBarHeight;
+        }
+
+        if (activity == null) {
+            return mStatusBarHeight;
+        }
+
+        Resources resources = activity.getResources();
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+        mStatusBarHeight = resources.getDimensionPixelSize(resourceId);
+
+        // 避免获取不到，再用另一种方法获取一遍
+        if (mStatusBarHeight < 10) {
+            Class<?> c = null;
+            Object obj = null;
+            Field field = null;
+            int x = 0, sbar = 0;
+            try {
+                c = Class.forName("com.android.internal.R$dimen");
+                obj = c.newInstance();
+                field = c.getField("status_bar_height");
+                x = Integer.parseInt(field.get(obj).toString());
+                mStatusBarHeight = activity.getResources().getDimensionPixelSize(x);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        return mStatusBarHeight;
     }
 }
