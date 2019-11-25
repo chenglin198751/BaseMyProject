@@ -44,5 +44,7 @@
             .setInitialDelay(2, TimeUnit.MILLISECONDS)
             .build();
     WorkManager.getInstance().enqueue(workRequest);
+    
+3、SystemClock.uptimeMillis()从开机到现在的毫秒数，不会因为用户修改了手机时间而受影响。
 
 
