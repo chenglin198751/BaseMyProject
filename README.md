@@ -177,5 +177,7 @@
 
 **61、集成各大push推送平台的库**：https://github.com/xuexiangjys/XPush/wiki
 
+**62、手机和电脑屏幕共享的库，里面的TouchUtils可以实现转换触摸手势**：https://github.com/android-notes/androidScreenShare
+
 
 
