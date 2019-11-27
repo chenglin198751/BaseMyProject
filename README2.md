@@ -64,3 +64,55 @@
     
     //4.2：在Activity或者Fragment中注册：
     getLifecycle().addObserver(new MyObserver());
+    
+5、View自带方法animate()实现动画的连续播放，先播放A动画，再播放B动画：
+
+        mImageView.animate().scaleX(2f).setDuration(3000).withStartAction(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.v("tag_3","withStartAction");
+                    }
+                });
+            }
+        }).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.v("tag_3","withEndAction");
+                        mImageView.animate().alpha(0f).setDuration(3000);
+                    }
+                });
+            }
+        }).start();
+        
+6、属性动画实现依次播放，连续播放，延迟播放：
+
+        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mImageView,"translationX", 150);
+        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mImageView,"alpha", 0.5f);
+        ObjectAnimator objectAnimator3 = ObjectAnimator.ofFloat(mImageView,"y", 100);
+        AnimatorSet set = new AnimatorSet();
+        set.setDuration(3000);
+        set.playSequentially(objectAnimator1,objectAnimator2,objectAnimator3);//animators依次执行
+        set.playTogether(objectAnimator1,objectAnimator2,objectAnimator3); //animators同时执行
+        set.setStartDelay(500); //在start()后delay
+        set.start();
+        
+        // 或者（这种不太好用）：
+        ObjectAnimator objectAnimator01 = ObjectAnimator.ofArgb(mImageView, "BackgroundColor",
+                getResources().getColor(R.color.colorPrimary),
+                getResources().getColor(R.color.purple_button),
+                getResources().getColor(R.color.holo_blue_light));
+        ObjectAnimator objectAnimator02 = ObjectAnimator.ofFloat(mImageView, "TranslationY", 0, 300);
+        ObjectAnimator objectAnimator03 = ObjectAnimator.ofFloat(mImageView, "TranslationX", 0, 400);
+        ObjectAnimator objectAnimator04 = ObjectAnimator.ofFloat(mImageView, "ScaleY", 1, 0.5f);
+        ObjectAnimator objectAnimator05 = ObjectAnimator.ofFloat(mImageView, "ScaleX", 1, 0.5f);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(objectAnimator01).with(objectAnimator02).with(objectAnimator03).before(objectAnimator04).before(objectAnimator05);
+        animatorSet.setDuration(2000);
+        animatorSet.start();
