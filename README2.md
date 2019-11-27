@@ -47,4 +47,20 @@
     
 3、SystemClock.uptimeMillis()从开机到现在的毫秒数，不会因为用户修改了手机时间而受影响。
 
+4、LifecycleObserver实现Activity生命周期监听：
 
+    //4.1：实现LifecycleObserver接口来定义监听器：
+    public class MyObserver implements LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+        public void onCreate() {
+            Log.v("tag_3","onCreate()");
+        }
+    
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        public void onDestroy() {
+            Log.v("tag_3","onDestroy()");
+        }
+    }
+    
+    //4.2：在Activity或者Fragment中注册：
+    getLifecycle().addObserver(new MyObserver());
