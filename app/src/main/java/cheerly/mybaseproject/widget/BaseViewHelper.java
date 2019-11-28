@@ -1,6 +1,6 @@
 package cheerly.mybaseproject.widget;
 
-import android.animation.ValueAnimator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,7 +16,7 @@ public class BaseViewHelper {
     private Context mContext;
     private View mView;
     private View mShadowView;
-    private ValueAnimator mValueAnimator;
+    private ObjectAnimator mValueAnimator;
     private View mLoadImg;
     private View.OnClickListener mTempClickListener;
 
@@ -56,17 +56,10 @@ public class BaseViewHelper {
             return;
         }
 
-        mValueAnimator = ValueAnimator.ofFloat(360f);
-        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float value = (float) animation.getAnimatedValue();
-                mLoadImg.setRotation(value);
-            }
-        });
+        mValueAnimator = ObjectAnimator.ofFloat(mLoadImg, "Rotation", 0f, 360f);
         mValueAnimator.setInterpolator(new LinearInterpolator());
+        mValueAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         mValueAnimator.setDuration(2 * 1000);
-        mValueAnimator.setRepeatCount(ValueAnimator.INFINITE);
         mValueAnimator.start();
     }
 
