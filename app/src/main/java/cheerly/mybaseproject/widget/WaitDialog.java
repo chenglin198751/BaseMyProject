@@ -1,5 +1,6 @@
 package cheerly.mybaseproject.widget;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.Context;
@@ -14,7 +15,7 @@ import cheerly.mybaseproject.R;
 public class WaitDialog extends Dialog {
     private View mView;
     private ImageView mLoadImg;
-    private ValueAnimator mValueAnimator;
+    private ObjectAnimator mValueAnimator;
 
     public WaitDialog(Context context) {
         this(context, R.style.dialogNullBg);
@@ -47,17 +48,10 @@ public class WaitDialog extends Dialog {
     protected void onStart() {
         super.onStart();
 
-        mValueAnimator = ValueAnimator.ofFloat(360f);
-        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float value = (float) animation.getAnimatedValue();
-                mLoadImg.setRotation(value);
-            }
-        });
+        mValueAnimator = ObjectAnimator.ofFloat(mLoadImg, "Rotation", 0f, 360f);
         mValueAnimator.setInterpolator(new LinearInterpolator());
-        mValueAnimator.setDuration(2 * 1000);
         mValueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        mValueAnimator.setDuration(2 * 1000);
         mValueAnimator.start();
     }
 
