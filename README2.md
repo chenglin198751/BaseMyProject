@@ -1,7 +1,7 @@
 ### 常用代码记录：
 
 1、
-注解表示枚举int型：@IntDef
+1.1、注解表示枚举int型：@IntDef
 注解表示枚举String型：@StringDef
 代码示例如下：
 
@@ -15,7 +15,7 @@
     
     public static void setScreenOrientation(@ScreenOrientation final int orientation) {}
 
-注解表示int型的范围：@IntRange(from = 0, to = 1)
+1.2、注解表示int型的范围：@IntRange(from = 0, to = 1)
 
 2、WorkManager
 参考博客：https://blog.csdn.net/fengyeNom1/article/details/90289700
