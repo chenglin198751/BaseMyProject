@@ -35,6 +35,7 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
      */
     public static void startForSingle(Context context) {
         Intent intent = new Intent(context, SelectPhotosActivity.class);
+        intent.putExtra("isStandard", true);
         context.startActivity(intent);
     }
 
@@ -44,6 +45,7 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
     public static void startForMultiple(Context context, int count) {
         Intent intent = new Intent(context, SelectPhotosActivity.class);
         intent.putExtra("count", count);
+        intent.putExtra("isStandard", true);
         context.startActivity(intent);
     }
 
@@ -80,6 +82,10 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
         setContentLayout(R.layout.publish_select_photos);
         getTitleHelper().hideTitleBar();
         requestReadExternalPermission();
+
+        if (!getIntent().hasExtra("isStandard")){
+            throw new RuntimeException("please invoke static method startForSingle() or startForMultiple()");
+        }
 
         if (getIntent().hasExtra("count")) {
             mCount = getIntent().getIntExtra("count", -1);
