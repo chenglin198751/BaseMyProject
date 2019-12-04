@@ -67,7 +67,7 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {//获取权限成功
                 init();
             } else {//用户拒绝授予权限
-                ToastUtils.show("请开启访问权限");
+                ToastUtils.show("请开启存储器访问权限");
             }
         }
     }
