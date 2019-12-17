@@ -65,7 +65,11 @@
     //4.2：在Activity或者Fragment中注册：
     getLifecycle().addObserver(new MyObserver());
     
-5、View自带方法animate()实现动画的连续播放，先播放A动画，再播放B动画：
+5、监听Application的生命周期，比如App在前台后台。在Application的onCreate()中注册：
+
+    ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver());
+    
+6、View自带方法animate()实现动画的连续播放，先播放A动画，再播放B动画：
 
         mImageView.animate().scaleX(2f).setDuration(3000).withStartAction(new Runnable() {
             @Override
@@ -90,7 +94,7 @@
             }
         }).start();
         
-6、属性动画实现依次播放，连续播放，延迟播放：
+7、属性动画实现依次播放，连续播放，延迟播放：
 
         ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(mImageView,"translationX", 150);
         ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(mImageView,"alpha", 0.5f);
