@@ -2,6 +2,7 @@ package cheerly.mybaseproject.base;
 
 import android.os.Bundle;
 import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,6 +81,11 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
             mContentView.addView(getContentView(), new RelativeLayout.LayoutParams(-1, -1));
         }
         onViewCreated(savedInstanceState, view);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     protected abstract int getContentLayout();
