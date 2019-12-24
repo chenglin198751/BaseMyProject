@@ -155,7 +155,7 @@ public class HttpUtils {
                 }
                 e.printStackTrace();
 
-                final HttpException httpEx = new HttpException(HttpConst.ERROR_UNKNOWN, e.toString());
+                final HttpException httpEx = new HttpException(HttpConst.ERROR_UNKNOWN, e);
 
                 if (e instanceof SSLException) {
                     httpEx.errorCode = HttpConst.ERROR_CODE_SSL;
@@ -201,7 +201,7 @@ public class HttpUtils {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onFailure(new HttpException(response.code(), response.toString()));
+                            httpCallback.onFailure(new HttpException(response.code(), new Exception(response.toString())));
                         }
                     });
                     return;
@@ -239,7 +239,7 @@ public class HttpUtils {
      */
     public static void postWithHeader(final Context context, final String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_INVALID, HttpConst.HTTP_INVALID));
+            httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_INVALID, new Exception(HttpConst.HTTP_INVALID)));
             return;
         }
 
@@ -606,7 +606,7 @@ public class HttpUtils {
                     httpCallback.onSuccess(result);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e.toString()));
+                    httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e));
                 }
             }
         });
@@ -615,16 +615,18 @@ public class HttpUtils {
     public static class HttpException {
         public int errorCode;
         public String errorMsg;
+        public Exception exception;
 
-        public HttpException(int code, String msg) {
+        public HttpException(int code, Exception e) {
             errorCode = code;
-            errorMsg = msg;
+            errorMsg = e.toString();
+            exception = e;
         }
 
         @NonNull
         @Override
         public String toString() {
-            return Constants.gson.toJson(HttpException.this);
+            return exception.toString();
         }
     }
 
