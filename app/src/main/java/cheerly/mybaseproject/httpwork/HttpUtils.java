@@ -146,7 +146,24 @@ public class HttpUtils {
     /**
      * 通用的okhttp3.Callback封装
      */
-    private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpCallback) {
+    private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpBack) {
+        final HttpCallback httpCallback = new HttpCallback() {
+            @Override
+            public void onSuccess(String result) {
+                if (httpBack != null) {
+                    httpBack.onSuccess(result);
+                }
+            }
+
+            @Override
+            public void onFailure(HttpException e) {
+                if (httpBack != null) {
+                    httpBack.onFailure(e);
+                }
+                LogUtils.v(TAG, "httpFailure:" + e.toString());
+            }
+        };
+
         return new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
