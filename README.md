@@ -183,5 +183,4 @@
 
 **64、开源的视频播放器**：https://github.com/CarGuo/GSYVideoPlayer
 
-
-
+**65、腾讯的多渠道打包**：https://github.com/Tencent/VasDolly
