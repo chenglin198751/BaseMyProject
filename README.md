@@ -181,3 +181,7 @@
 
 **63、滑动表格库：ScrollablePanel**：https://github.com/Kelin-Hong/ScrollablePanel
 
+**64、开源的视频播放器**：https://github.com/CarGuo/GSYVideoPlayer
+
+
+
