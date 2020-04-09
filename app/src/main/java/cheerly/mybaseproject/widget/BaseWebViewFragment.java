@@ -146,7 +146,7 @@ public class BaseWebViewFragment extends BaseFragment {
             public void onDownloadStart(final String url, final String userAgent,
                                         final String contentDisposition, final String mimetype,
                                         final long contentLength) {
-                MyDialog myDialog = new MyDialog(getActivity());
+                CommonDialog myDialog = new CommonDialog(getActivity());
                 myDialog.setLeftButton(getString(R.string.ok), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
