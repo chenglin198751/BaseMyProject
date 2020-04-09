@@ -16,7 +16,7 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.utils.BaseUtils;
 
 
-public class MyDialog extends Dialog {
+public class CommonDialog extends Dialog {
     private View mDialogView = null;
     private boolean isLeftVisible = false;
     private boolean isRightVisible = false;
@@ -24,7 +24,7 @@ public class MyDialog extends Dialog {
     private TextView mMessage;
 
 
-    public MyDialog(Context context) {
+    public CommonDialog(Context context) {
         this(context, R.style.dialog);
         mDialogView = View.inflate(context, R.layout.alert_dialog, null);
         mDialogView.findViewById(R.id.title_template).setVisibility(View.GONE);
@@ -33,7 +33,7 @@ public class MyDialog extends Dialog {
         mMessage = (TextView) mDialogView.findViewById(R.id.message);
     }
 
-    protected MyDialog(Context context, int theme) {
+    protected CommonDialog(Context context, int theme) {
         super(context, theme);
     }
 
