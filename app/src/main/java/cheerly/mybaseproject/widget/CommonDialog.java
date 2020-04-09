@@ -7,6 +7,7 @@ import androidx.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -28,9 +29,9 @@ public class CommonDialog extends Dialog {
         this(context, R.style.dialog);
         mDialogView = View.inflate(context, R.layout.alert_dialog, null);
         mDialogView.findViewById(R.id.title_template).setVisibility(View.GONE);
-        mLeftBtn = (Button) mDialogView.findViewById(R.id.button_ok);
-        mRightBtn = (Button) mDialogView.findViewById(R.id.button_cancel);
-        mMessage = (TextView) mDialogView.findViewById(R.id.message);
+        mLeftBtn = mDialogView.findViewById(R.id.button_ok);
+        mRightBtn =  mDialogView.findViewById(R.id.button_cancel);
+        mMessage =  mDialogView.findViewById(R.id.message);
     }
 
     protected CommonDialog(Context context, int theme) {
@@ -40,6 +41,14 @@ public class CommonDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.setContentView(mDialogView);
+
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        getWindow().getDecorView().setPadding(BaseUtils.dip2px(30f), 0, BaseUtils.dip2px(30f), 0);
+        getWindow().setAttributes(layoutParams);
     }
 
     @Override
@@ -69,7 +78,7 @@ public class CommonDialog extends Dialog {
             mDialogView.findViewById(R.id.buttonPanel).setVisibility(View.VISIBLE);
             mDialogView.findViewById(R.id.bottom_line).setVisibility(View.VISIBLE);
         }
-        this.setContentView(mDialogView);
+
         setScrollViewHeight();
     }
 
@@ -80,7 +89,7 @@ public class CommonDialog extends Dialog {
         mMessage.post(new Runnable() {
             @Override
             public void run() {
-                ScrollView scrollView = (ScrollView) mDialogView.findViewById(R.id.scrollView);
+                ScrollView scrollView =  mDialogView.findViewById(R.id.scrollView);
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) scrollView.getLayoutParams();
                 if (mMessage.getHeight() > BaseUtils.dip2px(330f)) {
                     params.height = BaseUtils.dip2px(330f);
@@ -102,10 +111,10 @@ public class CommonDialog extends Dialog {
         if (view == null) {
             return;
         }
-        ScrollView scrollView = (ScrollView) mDialogView.findViewById(R.id.scrollView);
+        ScrollView scrollView =  mDialogView.findViewById(R.id.scrollView);
         scrollView.setVisibility(View.GONE);
 
-        LinearLayout customLinear = (LinearLayout) mDialogView.findViewById(R.id.my_custom);
+        LinearLayout customLinear = mDialogView.findViewById(R.id.my_custom);
         customLinear.addView(view);
     }
 
@@ -148,7 +157,7 @@ public class CommonDialog extends Dialog {
     public void setTitle(String title) {
         mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
         if (!TextUtils.isEmpty(title)) {
-            TextView view = (TextView) mDialogView.findViewById(R.id.alertTitle);
+            TextView view =  mDialogView.findViewById(R.id.alertTitle);
             view.setText(title);
         }
     }

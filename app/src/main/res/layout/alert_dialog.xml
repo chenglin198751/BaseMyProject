@@ -66,10 +66,10 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:lineSpacingMultiplier="1.2"
-                    android:paddingBottom="18dp"
+                    android:paddingBottom="30dp"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:paddingTop="18dp"
+                    android:paddingTop="30dp"
                     android:textColor="@color/fc_1"
                     android:textSize="15dp"
                     tools:text="花褪残红青杏小" />
