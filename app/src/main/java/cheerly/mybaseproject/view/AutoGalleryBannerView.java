@@ -22,7 +22,7 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.utils.SmartImageLoader;
 
-public class AutoBannerView extends RelativeLayout {
+public class AutoGalleryBannerView extends RelativeLayout {
     private ViewPager mViewPager;
     private List<BannerDataItem> mDataList = new ArrayList<>();
     private BannerAdapter mAdapter;
@@ -30,12 +30,12 @@ public class AutoBannerView extends RelativeLayout {
     private boolean isFinish = false;
     private boolean isAutoPlay = true;
 
-    public AutoBannerView(Context context) {
+    public AutoGalleryBannerView(Context context) {
         super(context);
         init();
     }
 
-    public AutoBannerView(Context context, AttributeSet attrs) {
+    public AutoGalleryBannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -45,7 +45,7 @@ public class AutoBannerView extends RelativeLayout {
     }
 
     private void init() {
-        AutoBannerView.this.setClipChildren(false);
+        AutoGalleryBannerView.this.setClipChildren(false);
         mViewPager = new ViewPager(getContext());
         mViewPager.setPageMargin(-BaseUtils.dip2px(24f));
         mViewPager.setOffscreenPageLimit(2);
