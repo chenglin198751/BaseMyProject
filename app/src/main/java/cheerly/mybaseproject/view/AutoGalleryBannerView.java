@@ -63,7 +63,11 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
 
         mAdapter = new BannerAdapter(getContext());
         mViewPager.setAdapter(mAdapter);
+    }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    protected void onCreate() {
+        isFinish = false;
         startTimer(new Runnable() {
             @Override
             public void run() {
@@ -72,11 +76,6 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
                 }
             }
         });
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    protected void onCreate() {
-        isFinish = false;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
