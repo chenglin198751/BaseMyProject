@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="#ffffff">
+
+    <cheerly.mybaseproject.view.round.RoundedImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:riv_corner_radius="6dp"
+        tools:background="#00BFFF" />
+
+    <ImageView
+        android:id="@+id/child_img" android:minHeight="50dp"
+        android:layout_width="wrap_content" android:minWidth="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

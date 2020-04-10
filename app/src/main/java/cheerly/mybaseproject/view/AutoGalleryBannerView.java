@@ -1,6 +1,7 @@
 package cheerly.mybaseproject.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,12 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,10 +152,12 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.item_vp, null);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.auto_gallery_banner_item, null);
             int newPos = position % (mDataList.size());
             ImageView img = view.findViewById(R.id.image);
+            ImageView childImg = view.findViewById(R.id.child_img);
             SmartImageLoader.getInstance().load(img, mDataList.get(newPos).url, -1, -1);
+            setImageBitmap(childImg, mDataList.get(newPos).childUrl);
             container.addView(view);
             return view;
         }
@@ -159,12 +168,25 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
         }
     }
 
+    private void setImageBitmap(final ImageView img, String url) {
+        Glide.with(getContext())
+                .asBitmap()
+                .load(url)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NotNull Bitmap resource, Transition<? super Bitmap> transition) {
+                        img.setImageBitmap(resource);
+                    }
+                });
+    }
+
     public static final class BannerDataItem {
         public String url;
+        public String childUrl;
     }
 
 
-    public class ScaleTransformer implements ViewPager.PageTransformer {
+    private final class ScaleTransformer implements ViewPager.PageTransformer {
         private final float MINSCALE = 0.8f;//最小缩放值
 
         /**
@@ -178,8 +200,10 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
          */
         @Override
         public void transformPage(@NonNull View view, float v) {
-
+            View childImg = view.findViewById(R.id.child_img);
             float scale;
+
+
             if (v > 1 || v < -1) {
                 scale = MINSCALE;
             } else if (v < 0) {
@@ -189,6 +213,8 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
             }
             view.setScaleY(scale);
             view.setScaleX(scale);
+            childImg.setScaleY(scale);
+            childImg.setScaleX(scale);
         }
     }
 }
