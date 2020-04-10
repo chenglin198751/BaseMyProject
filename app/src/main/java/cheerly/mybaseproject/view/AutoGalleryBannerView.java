@@ -2,6 +2,7 @@ package cheerly.mybaseproject.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -22,7 +26,7 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.utils.BaseUtils;
 import cheerly.mybaseproject.utils.SmartImageLoader;
 
-public class AutoGalleryBannerView extends RelativeLayout {
+public class AutoGalleryBannerView extends RelativeLayout implements LifecycleObserver {
     private ViewPager mViewPager;
     private List<BannerDataItem> mDataList = new ArrayList<>();
     private BannerAdapter mAdapter;
@@ -63,20 +67,35 @@ public class AutoGalleryBannerView extends RelativeLayout {
         startTimer(new Runnable() {
             @Override
             public void run() {
-                if (isAutoPlay){
+                if (isAutoPlay) {
                     mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
                 }
             }
         });
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    protected void onCreate() {
+        isFinish = false;
+    }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestroy() {
         isFinish = true;
         if (mTimer != null) {
             mTimer.cancel();
             mTimer = null;
         }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void onPause() {
+        isAutoPlay = false;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    public void onResume() {
+        isAutoPlay = true;
     }
 
     @Override
