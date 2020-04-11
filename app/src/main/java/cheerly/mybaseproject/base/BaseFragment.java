@@ -164,6 +164,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
      */
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
+        hideNoNetView();
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
         addLoadView();
     }
@@ -181,6 +182,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
      */
     @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
+        hideEmptyView();
         mBaseViewHelper.showEmptyText(text, listener);
         addLoadView();
     }
