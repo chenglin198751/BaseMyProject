@@ -45,7 +45,9 @@ public class BaseViewHelper {
      * 设置加载中的View 的文字
      */
     public void setLoadingText(String text) {
-        mView = View.inflate(mContext, R.layout.base_loading_layout, null);
+        if (mView == null){
+            mView = View.inflate(mContext, R.layout.base_loading_layout, null);
+        }
         mLoadImg = mView.findViewById(R.id.image);
         TextView textView = mView.findViewById(R.id.text);
         textView.setText(text);
@@ -79,7 +81,9 @@ public class BaseViewHelper {
      * 设置空页面
      */
     public void showEmptyText(String text, View.OnClickListener listener) {
-        mView = View.inflate(mContext, R.layout.base_empty_layout, null);
+        if (mView == null){
+            mView = View.inflate(mContext, R.layout.base_empty_layout, null);
+        }
         ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
         View btnRefresh = mView.findViewById(R.id.btn_refresh);
         TextView textView = mView.findViewById(R.id.empty_text);
@@ -106,7 +110,9 @@ public class BaseViewHelper {
      * 设置无网页面
      */
     public void showNoNetView(String text, View.OnClickListener listener) {
-        mView = View.inflate(mContext, R.layout.base_empty_layout, null);
+        if (mView == null){
+            mView = View.inflate(mContext, R.layout.base_empty_layout, null);
+        }
         ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
 
         View btnRefresh = mView.findViewById(R.id.btn_refresh);
