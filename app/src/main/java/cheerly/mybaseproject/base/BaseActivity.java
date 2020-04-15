@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
@@ -27,6 +28,7 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.helper.MainTitleHelper;
 import cheerly.mybaseproject.httpwork.HttpUtils;
 import cheerly.mybaseproject.utils.Constants;
+import cheerly.mybaseproject.utils.statusbar.StatusBarCompat;
 import cheerly.mybaseproject.widget.BaseViewHelper;
 import cheerly.mybaseproject.widget.WaitDialog;
 
@@ -262,6 +264,16 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         hideEmptyView();
         mBaseViewHelper.showEmptyText(text, listener);
         addLoadView();
+    }
+
+    /**
+     * 设置状态栏文字和颜色，不兼容Android6.0以下
+     */
+    public void setStatusBarLightDark(boolean isLightBar) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int color = getColor(isLightBar ? R.color.white : R.color.black);
+            StatusBarCompat.setStatusBarColor(this, color, isLightBar);
+        }
     }
 
     /**
