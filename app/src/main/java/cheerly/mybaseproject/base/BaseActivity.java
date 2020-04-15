@@ -51,6 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarLightDark(true);
         registerBroadcastReceiver();
 
         setContentView(R.layout.base_activity_layout);
