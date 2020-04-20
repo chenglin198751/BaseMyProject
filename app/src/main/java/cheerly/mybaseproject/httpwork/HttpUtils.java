@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
 
 import cheerly.mybaseproject.utils.BaseUtils;
-import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.utils.LogUtils;
 import cheerly.mybaseproject.utils.SDCardUtils;
 import okhttp3.Cache;
@@ -543,6 +542,111 @@ public class HttpUtils {
                 }
             }
         });
+    }
+
+    /**
+     * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     *
+     * @param fileUrl  下载文件地址
+     * @param downPath 自定义文件下载路径
+     */
+    public static String syncDownloadFile(final String fileUrl, final String downPath) {
+        return syncDownloadFile(fileUrl, downPath, false);
+    }
+
+    /**
+     * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     *
+     * @param fileUrl     下载文件地址
+     * @param downPath    自定义文件下载路径
+     * @param isNeedCache 是否需要缓存，如果true ，那么此文件同样地址只下载一次
+     */
+    public static String syncDownloadFile(final String fileUrl, final String downPath, boolean isNeedCache) {
+        if (TextUtils.isEmpty(fileUrl)) {
+            return null;
+        } else if (TextUtils.isEmpty(downPath)) {
+            return null;
+        }
+
+        try {
+            File file = new File(downPath);
+            if (!file.exists()) {
+                File parent = file.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                if (!parent.exists()) {
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        final String defaultPath = HTTP_DOWNLOAD_PATH + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+        final String downLoadFilePath = TextUtils.isEmpty(downPath) ? defaultPath : downPath;
+        final String tempPath = downLoadFilePath + ".temp";
+
+        //防止下载时中断导致下载文件不全,但被使用了
+        File tempFile = new File(tempPath);
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
+
+        File cacheFile = new File(downLoadFilePath);
+        if (cacheFile.exists()) {
+            if (isNeedCache) {
+                return downLoadFilePath;
+            } else {
+                cacheFile.delete();
+            }
+        }
+
+        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
+        if (!isNeedCache) {
+            cacheBuilder.noCache();// 不使用缓存，全部走网络
+            cacheBuilder.noStore();// 不使用缓存，也不存储缓存
+        }
+        CacheControl cache = cacheBuilder.build();
+        Request request = new Request.Builder().cacheControl(cache).url(fileUrl).get().build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            InputStream inputStream = response.body().byteStream();
+            FileOutputStream fileOutputStream = null;
+
+            fileOutputStream = new FileOutputStream(new File(tempPath));
+            byte[] buffer = new byte[2048];
+            int len;
+            while ((len = inputStream.read(buffer)) != -1) {
+                fileOutputStream.write(buffer, 0, len);
+            }
+            fileOutputStream.flush();
+            inputStream.close();
+            fileOutputStream.close();
+
+            tempFile = new File(tempPath);
+            if (tempFile.exists()) {
+                boolean isSuccess = tempFile.renameTo(new File(downLoadFilePath));
+                if (isSuccess) {
+                    return downLoadFilePath;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            //防止下载时中断导致下载文件不全,但被使用了
+            tempFile = new File(tempPath);
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
+        } catch (Exception e) {
+            //防止下载时中断导致下载文件不全,但被使用了
+            tempFile = new File(tempPath);
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
+        return null;
     }
 
     /**
