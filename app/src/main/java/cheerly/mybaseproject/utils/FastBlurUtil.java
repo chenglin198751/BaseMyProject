@@ -63,7 +63,7 @@ public class FastBlurUtil {
     }
 
 
-    private static Bitmap doBlur(Bitmap sentBitmap, float scale, final int radius) {
+    public static Bitmap doBlur(Bitmap sentBitmap, float scale, final int radius) {
 //        final boolean canReuseInBitmap = false;
         if (scale <= 0 || scale > 1) {
             scale = 1;
