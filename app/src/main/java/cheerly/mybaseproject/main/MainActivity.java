@@ -1,5 +1,6 @@
 package cheerly.mybaseproject.main;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -85,17 +86,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return mFragHelper.mSelectedTab;
     }
 
+    //解决fragment回收后重建空指针的问题
+    @SuppressLint("MissingSuperCall")
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt("tab_index", getSelectedTab());
-        super.onSaveInstanceState(outState);
+    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedState) {
-        super.onRestoreInstanceState(savedState);
-        showTab(savedState.getInt("tab_index"));
-    }
 
     @Override
     protected void onDestroy() {
