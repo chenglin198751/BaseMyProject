@@ -19,8 +19,8 @@ public class M2Utils {
         }
         return "";
     }
-    
-    public static String getAndroidId(Context context) {
+
+    private static String getAndroidId(Context context) {
     	try{
     		  String androidId = Settings.System.getString(context.getContentResolver(), "android_id");
     	        return androidId;
@@ -28,8 +28,8 @@ public class M2Utils {
     	}
     	return "";
     }
-    
-    public static String getSerialNo() {
+
+    private static String getSerialNo() {
         String sNo = null;
         try{
             Class<?> localClass = Class.forName("android.os.SystemProperties");
@@ -53,7 +53,7 @@ public class M2Utils {
      */
     private static String ANDROID_IMEI;
     private static String ANDROID_IMEI_MD5;
-    public static String getAndroidImeiMd5(final Context context) {
+    private static String getAndroidImeiMd5(final Context context) {
     	   if ((ANDROID_IMEI_MD5 == null) && (context != null)) {
                ANDROID_IMEI_MD5 = MD5Util.md5LowerCase(getImei(context));
            }
@@ -61,7 +61,7 @@ public class M2Utils {
     }
     
     // getDeviceId or wifiMac Address
-    public static String getDeviceId(Context context) {
+    private static String getDeviceId(Context context) {
         String deviceId = null;
         if (context != null) {
             deviceId = getImei(context);
@@ -74,8 +74,8 @@ public class M2Utils {
         deviceId = TextUtils.isEmpty(deviceId) ? "default" : deviceId;
         return deviceId;
     }
-    
-    public static String getImei(Context context) {
+
+    private static String getImei(Context context) {
     	if (!TextUtils.isEmpty(ANDROID_IMEI)) {
 			return ANDROID_IMEI;
 		}
@@ -97,7 +97,7 @@ public class M2Utils {
         return imei;
     }
     
-    public static String getWifiMac(Context context) {
+    private static String getWifiMac(Context context) {
         String macAddr = null;
         if (context != null) {
             try {
