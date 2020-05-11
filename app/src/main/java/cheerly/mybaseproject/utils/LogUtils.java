@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import cheerly.mybaseproject.base.BaseApp;
+
 public class LogUtils {
     private static boolean isDebug = false;
 
@@ -34,6 +36,9 @@ public class LogUtils {
     }
 
     private static void writeLog(String tag, String msg) {
+        if (!BaseUtils.isDebuggable(BaseApp.getApp())) {
+            System.out.println(tag + ":" + msg);
+        }
         String str = getDate() + "<" + tag + ">" + msg;
         writeFile(getDebugFilePath(), str);
     }
