@@ -639,4 +639,18 @@ public class BaseUtils {
 
         return mStatusBarHeight;
     }
+
+    /**
+     * 判断是否为直接通过开发工具运行起来的状态
+     */
+    public static boolean isDebuggable(Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo packageInfo = pm.getPackageInfo(context.getPackageName(), 0);
+            return (0 != (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
