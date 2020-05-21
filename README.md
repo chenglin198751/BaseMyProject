@@ -184,3 +184,5 @@
 **64、开源的视频播放器**：https://github.com/CarGuo/GSYVideoPlayer
 
 **65、腾讯的多渠道打包**：https://github.com/Tencent/VasDolly
+
+**66、直接获取TextView的LineCount的工具类，需要传入width**：TextViewLinesUtils.getTextViewLines(TextView textView, int textViewWidth);
