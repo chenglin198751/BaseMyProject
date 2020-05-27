@@ -47,7 +47,7 @@ public class CommonDialog extends Dialog {
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getWindow().getDecorView().setPadding(BaseUtils.dip2px(30f), 0, BaseUtils.dip2px(30f), 0);
+        getWindow().getDecorView().setPadding(BaseUtils.dip2px(45f), 0, BaseUtils.dip2px(45f), 0);
         getWindow().setAttributes(layoutParams);
     }
 
