@@ -52,28 +52,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ScrollView
-                android:id="@+id/scrollView"
+            <TextView
+                android:id="@+id/message"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="2dp">
+                android:fadeScrollbars="false"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.2"
+                android:maxHeight="330dp"
+                android:paddingLeft="15dp"
+                android:paddingTop="30dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="30dp"
+                android:scrollbars="vertical"
+                android:textColor="@color/fc_1"
+                android:textSize="15dp"
+                tools:text="花褪残红青杏小" />
 
-                <TextView
-                    android:id="@+id/message"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:lineSpacingMultiplier="1.2"
-                    android:paddingBottom="30dp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:paddingTop="30dp"
-                    android:textColor="@color/fc_1"
-                    android:textSize="15dp"
-                    tools:text="花褪残红青杏小" />
-            </ScrollView>
         </LinearLayout>
 
         <View
