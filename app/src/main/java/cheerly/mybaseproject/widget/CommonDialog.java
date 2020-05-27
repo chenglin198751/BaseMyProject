@@ -3,15 +3,16 @@ package cheerly.mybaseproject.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.StringRes;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.annotation.StringRes;
 
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.utils.BaseUtils;
@@ -30,8 +31,9 @@ public class CommonDialog extends Dialog {
         mDialogView = View.inflate(context, R.layout.alert_dialog, null);
         mDialogView.findViewById(R.id.title_template).setVisibility(View.GONE);
         mLeftBtn = mDialogView.findViewById(R.id.button_ok);
-        mRightBtn =  mDialogView.findViewById(R.id.button_cancel);
-        mMessage =  mDialogView.findViewById(R.id.message);
+        mRightBtn = mDialogView.findViewById(R.id.button_cancel);
+        mMessage = mDialogView.findViewById(R.id.message);
+        mMessage.setMovementMethod(ScrollingMovementMethod.getInstance());
     }
 
     protected CommonDialog(Context context, int theme) {
@@ -79,30 +81,8 @@ public class CommonDialog extends Dialog {
             mDialogView.findViewById(R.id.bottom_line).setVisibility(View.VISIBLE);
         }
 
-        setScrollViewHeight();
     }
 
-    /**
-     * 当文字区域很大时，就固定文字区域外层的ScrollView的高度
-     */
-    private void setScrollViewHeight() {
-        mMessage.post(new Runnable() {
-            @Override
-            public void run() {
-                ScrollView scrollView =  mDialogView.findViewById(R.id.scrollView);
-                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) scrollView.getLayoutParams();
-                if (mMessage.getHeight() > BaseUtils.dip2px(330f)) {
-                    params.height = BaseUtils.dip2px(330f);
-                    scrollView.setLayoutParams(params);
-                } else {
-                    if (params.height != ViewGroup.LayoutParams.WRAP_CONTENT) {
-                        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                        scrollView.setLayoutParams(params);
-                    }
-                }
-            }
-        });
-    }
 
     /**
      * 设置自定义View
@@ -111,7 +91,7 @@ public class CommonDialog extends Dialog {
         if (view == null) {
             return;
         }
-        ScrollView scrollView =  mDialogView.findViewById(R.id.scrollView);
+        ScrollView scrollView = mDialogView.findViewById(R.id.scrollView);
         scrollView.setVisibility(View.GONE);
 
         LinearLayout customLinear = mDialogView.findViewById(R.id.my_custom);
@@ -157,7 +137,7 @@ public class CommonDialog extends Dialog {
     public void setTitle(String title) {
         mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
         if (!TextUtils.isEmpty(title)) {
-            TextView view =  mDialogView.findViewById(R.id.alertTitle);
+            TextView view = mDialogView.findViewById(R.id.alertTitle);
             view.setText(title);
         }
     }
