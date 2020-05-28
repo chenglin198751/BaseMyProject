@@ -91,8 +91,7 @@ public class CommonDialog extends Dialog {
         if (view == null) {
             return;
         }
-        ScrollView scrollView = mDialogView.findViewById(R.id.scrollView);
-        scrollView.setVisibility(View.GONE);
+        mDialogView.findViewById(R.id.message).setVisibility(View.GONE);
 
         LinearLayout customLinear = mDialogView.findViewById(R.id.my_custom);
         customLinear.addView(view);
