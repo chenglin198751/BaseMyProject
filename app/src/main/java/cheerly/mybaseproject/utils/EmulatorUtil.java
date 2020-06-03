@@ -174,7 +174,7 @@ public class EmulatorUtil {
     /**
      * 判断是否为模拟器
      */
-    public void isEmulator(final Context context, final OnFinishListener listener) {
+    public void isEmulator(final Context context, final OnFinishListener<PropertyInfo> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -43,7 +43,7 @@ public class FastBlurUtil {
      * @param radius 高斯模糊的程度：从1到100取值。值越小越清晰(速度快)，越大越模糊(速度慢)，建议值10~20
      * @return
      */
-    public static void doBlur(final View view, final float scale, final int radius, final OnFinishListener listener) {
+    public static void doBlur(final View view, final float scale, final int radius, final OnFinishListener<Bitmap> listener) {
         final Bitmap sentBitmap = BitmapUtils.createBitmapByView(view);
         new Thread() {
             @Override
