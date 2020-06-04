@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -652,5 +653,18 @@ public class BaseUtils {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 解决：Android 从 View 中获取 Activity 时遇到 TintContextWrapper cannot be cast to 的问题
+     */
+    public static Activity getActivity(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity) context;
+            }
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        throw new IllegalStateException("The Context is not an Activity");
     }
 }
