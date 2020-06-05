@@ -1,5 +1,6 @@
 package cheerly.mybaseproject.widget;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,10 @@ public class ToastUtils {
     }
 
     public static void show(final String text) {
+        if (TextUtils.isEmpty(text)){
+            return;
+        }
+
         if (BaseUtils.isUiThread()) {
             showToast(text);
         } else {
