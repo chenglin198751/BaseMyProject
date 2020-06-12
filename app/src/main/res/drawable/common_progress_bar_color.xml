@@ -1,14 +1,26 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--这里是设置progressbar的背景样式-->
     <item
         android:id="@android:id/background"
         android:drawable="@drawable/common_progress_bar_color_bottom" />
 
-    <!--这里是设置progressbar的进度条样式-->
     <item android:id="@android:id/progress">
         <scale
             android:drawable="@drawable/common_progress_bar_color_top"
             android:scaleWidth="100%" />
     </item>
+
+
+<!--    //这里是用.9.png来设置进度条样式-->
+<!--    <item android:id="@android:id/background">-->
+<!--        <nine-patch android:src="@drawable/progress_bg_drawable" >-->
+<!--        </nine-patch>-->
+<!--    </item>-->
+
+<!--    <item android:id="@android:id/progress">-->
+<!--        <clip>-->
+<!--            <nine-patch android:src="@drawable/progress_drawable" >-->
+<!--            </nine-patch>-->
+<!--        </clip>-->
+<!--    </item>-->
 
 </layer-list>

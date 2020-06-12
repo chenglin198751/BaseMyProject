@@ -25,7 +25,7 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:max="100"
-        android:progressDrawable="@drawable/my_progress_bar" />
+        android:progressDrawable="@drawable/common_progress_bar_color" />
 
     <TextView
         android:id="@+id/progress"
