@@ -2,18 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="15dp">
 
-    <cheerly.mybaseproject.view.pullrefresh.PullToRefreshView
-        android:id="@+id/swipe_refresh"
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="4dp"
+        android:progressDrawable="@drawable/common_progress_bar_color" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#ffffff" />
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-    </cheerly.mybaseproject.view.pullrefresh.PullToRefreshView>
 </LinearLayout>

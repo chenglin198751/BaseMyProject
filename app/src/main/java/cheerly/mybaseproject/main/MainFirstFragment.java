@@ -8,6 +8,7 @@ import android.view.View;
 import cheerly.mybaseproject.base.BaseFragment;
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.httpwork.HttpUtils;
+import cheerly.mybaseproject.test.TestActivity;
 import cheerly.mybaseproject.test.TestPullDownRefreshActivity;
 import cheerly.mybaseproject.widget.BaseWebViewActivity;
 import cheerly.mybaseproject.widget.ToastUtils;
@@ -31,7 +32,7 @@ public class MainFirstFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
 //                getData();
-                Intent intent = new Intent(getContext(), TestPullDownRefreshActivity.class);
+                Intent intent = new Intent(getContext(), TestActivity.class);
                 startActivity(intent);
             }
         });
