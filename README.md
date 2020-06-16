@@ -186,3 +186,6 @@
 **65、腾讯的多渠道打包**：https://github.com/Tencent/VasDolly
 
 **66、直接获取TextView的LineCount的工具类，需要传入width**：TextViewLinesUtils.getTextViewLines(TextView textView, int textViewWidth);
+
+**67、ConsecutiveScrollerLayout是Android下支持多个滑动布局**：(RecyclerView、WebView、ScrollView等)和普通控件(TextView、ImageView、LinearLayou、自定义View等)持续连贯滑动的容器,它使所有的子View像一个整体一样连续顺畅滑动。并且支持布局吸顶功能：https://github.com/donkingliang/ConsecutiveScroller
+
