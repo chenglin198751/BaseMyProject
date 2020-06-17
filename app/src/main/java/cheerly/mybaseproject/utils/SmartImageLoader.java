@@ -1,10 +1,12 @@
 package cheerly.mybaseproject.utils;
 
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.Keep;
 import android.text.TextUtils;
 import android.widget.ImageView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Keep;
 
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -116,6 +118,19 @@ public class SmartImageLoader {
      * @param placeholder 占位图，如果不设置，也会有默认占位图
      */
     public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, final Drawable placeholder) {
+        try {
+            loadRound2(imageView, object, imageWidth, imageHeight, radius, placeholder);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    private void loadRound2(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, final Drawable placeholder) {
+        Activity activity = BaseUtils.getActivity(imageView.getContext());
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return;
+        }
+
         Drawable centerDrawable = new CenterDrawable(R.drawable.image_loadding_icon, radius);
         if (placeholder != null) {
             centerDrawable = placeholder;
@@ -155,5 +170,4 @@ public class SmartImageLoader {
         }
         glideRequest.into(imageView);
     }
-
 }
