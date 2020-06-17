@@ -665,6 +665,6 @@ public class BaseUtils {
             }
             context = ((ContextWrapper) context).getBaseContext();
         }
-        throw new IllegalStateException("The Context is not an Activity");
+        return null;
     }
 }
