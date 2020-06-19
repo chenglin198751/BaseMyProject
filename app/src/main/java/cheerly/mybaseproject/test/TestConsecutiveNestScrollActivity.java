@@ -11,7 +11,7 @@ import java.util.List;
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseActivity;
 
-public class TestActivity extends BaseActivity {
+public class TestConsecutiveNestScrollActivity extends BaseActivity {
     private RecyclerView mRecyclerView1;
     private RecyclerView mRecyclerView3;
     private TestRecyclerAdapter adapter1;
@@ -22,7 +22,7 @@ public class TestActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.test_activity_layout);
+        setContentLayout(R.layout.test_consecutive_activity_layout);
 
         mRecyclerView1 = findViewById(R.id.recyclerView1);
         mRecyclerView3 = findViewById(R.id.recyclerView3);
