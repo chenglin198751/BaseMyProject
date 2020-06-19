@@ -1,21 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.donkingliang.consecutivescroller.ConsecutiveScrollerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
-    android:padding="15dp">
+    android:overScrollMode="never"
+    android:scrollbars="vertical">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleHorizontal"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:progressDrawable="@drawable/common_progress_bar_color" />
+        android:layout_height="200dp"
+        android:background="@color/test_color_5"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="我是顶部"
+            android:textColor="#333333"
+            android:textSize="20dp" />
+    </LinearLayout>
 
-</LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/test_color_6"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="吸顶1"
+        android:textColor="#333333"
+        android:textSize="14dp"
+        app:layout_isSticky="true" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/test_color_8" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/test_color_9"
+        android:orientation="vertical"
+        app:layout_isConsecutive="false">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/test_color_5"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="RecyclerView自己处理自己的滑动事件"
+            android:textColor="#333333"
+            android:textSize="14dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/test_color_7"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="吸顶2"
+        android:textColor="#333333"
+        android:textSize="14dp"
+        app:layout_isSticky="true" />
+
+    <!--  可以嵌套ConsecutiveScrollerLayout  -->
+    <com.donkingliang.consecutivescroller.ConsecutiveScrollerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/test_color_6"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="嵌套title"
+            android:textColor="#333333" app:layout_isSticky="true"
+            android:textSize="14dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_blue" />
+
+    </com.donkingliang.consecutivescroller.ConsecutiveScrollerLayout>
+</com.donkingliang.consecutivescroller.ConsecutiveScrollerLayout>
