@@ -39,4 +39,16 @@
     <color name="percent_black_60">#99000000</color>
     <color name="image_bg">#ededed</color>
 
+    <color name="test_color_1">#F8F8FF</color>
+    <color name="test_color_2">#E6E6FA</color>
+    <color name="test_color_3">#FFE4E1</color>
+    <color name="test_color_4">#00FA9A</color>
+    <color name="test_color_5">#EEE8AA</color>
+    <color name="test_color_6">#FFD700</color>
+    <color name="test_color_7">#F5DEB3</color>
+    <color name="test_color_8">#DDA0DD</color>
+    <color name="test_color_9">#E0FFFF</color>
+    <color name="test_color_10">#8B7B8B</color>
+
+
 </resources>
