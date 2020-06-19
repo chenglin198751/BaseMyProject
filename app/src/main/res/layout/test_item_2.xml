@@ -5,16 +5,17 @@
     android:layout_height="wrap_content"
     android:background="@drawable/item_selector"
     android:orientation="vertical"
-    android:paddingLeft="8dp"
+    android:paddingLeft="15dp"
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_marginRight="12dp"
         tools:background="#fdc" />
 
     <TextView
@@ -22,22 +23,22 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/image_view"
+        android:layout_marginTop="2dp"
         android:layout_toRightOf="@+id/image_view"
         android:gravity="left"
-        android:padding="5dp"
         android:text="标题"
         android:textColor="@color/text_gray_2"
-        android:textSize="@dimen/font_size_6" />
+        android:textSize="16dp" />
 
     <TextView
         android:id="@+id/content"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/image_view"
+        android:layout_marginBottom="2dp"
         android:layout_toRightOf="@+id/image_view"
         android:gravity="left"
-        android:padding="5dp"
         android:text="北风卷地白草折，胡天八月即飞雪"
         android:textColor="@color/text_gray_2"
-        android:textSize="@dimen/font_size_3" />
+        android:textSize="14dp" />
 </RelativeLayout>
