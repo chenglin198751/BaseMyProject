@@ -19,7 +19,7 @@
 
     <!-- 自定义个颜色 -->
     <color name="shadow_bg">#66000000</color>
-    <color name="view_bg">#f3f3f3</color>
+    <color name="view_bg">@color/white</color>
     <color name="select">#66dddddd</color>
     <color name="purple_button">#7b64a8</color>
     <color name="pink_color">#ff3a71</color>
