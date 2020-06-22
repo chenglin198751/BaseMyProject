@@ -1,4 +1,4 @@
-### 工程各个工具类说明
+# 工程各个工具类说明
 
 **1、BaseActivity 类** ：基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。
      好处：便于统一管理页面，比如可以在页面内部显示加载框，可以添加右侧菜单，添加空View，无网页面等等。
@@ -190,3 +190,6 @@
 **67、ConsecutiveScrollerLayout是Android下支持多个滑动布局**：(RecyclerView、WebView、ScrollView等)和普通控件(TextView、ImageView、LinearLayou、自定义View等)持续连贯滑动的容器,它使所有的子View像一个整体一样连续顺畅滑动。并且支持布局吸顶功能：https://github.com/donkingliang/ConsecutiveScroller
 
 **68、一款时间选择器**：https://github.com/loperSeven/DateTimePicker
+
+**69、GroupedRecyclerViewAdapter可以很方便的实现RecyclerView的分组显示，并且每个组都可以包含组头、组尾和子项；可以方便实现多种Type类型的列表，可以实现如QQ联系人的列表一样的列表展开收起功能，还可以实现头部悬浮吸顶功能等**：https://github.com/donkingliang/GroupedRecyclerViewAdapter
+
