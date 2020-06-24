@@ -658,7 +658,7 @@ public class BaseUtils {
     /**
      * 解决：Android 从 View 中获取 Activity 时遇到 TintContextWrapper cannot be cast to 的问题
      */
-    public static Activity getActivity(Context context) {
+    public static Activity getActivityFromContext(Context context) {
         while (context instanceof ContextWrapper) {
             if (context instanceof Activity) {
                 return (Activity) context;
