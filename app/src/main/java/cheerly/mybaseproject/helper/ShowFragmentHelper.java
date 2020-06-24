@@ -1,12 +1,13 @@
 package cheerly.mybaseproject.helper;
 
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import cheerly.mybaseproject.base.BaseFragment;
 import cheerly.mybaseproject.R;
+import cheerly.mybaseproject.base.BaseFragment;
 
 /**
  * Created by chenglin on 2017-11-28.
@@ -54,7 +55,7 @@ public class ShowFragmentHelper {
             try {
                 //非常重要，勿改：此处这么写是为了解决当Activity被回收后，重新onCreate()时会创建新的fragment的问题。
                 //具体分析见：https://mp.weixin.qq.com/s/mwTtxk4YfYWCG4m6n_ropw  --by chenglin 2018年7月2日
-                BaseFragment tempFragment = (BaseFragment) mFragmentManager.findFragmentByTag(index + "");
+                BaseFragment tempFragment = (BaseFragment) mFragmentManager.findFragmentByTag(FRAGMENTS[index].getName());
                 if (tempFragment != null) {
                     mFragArray[index] = tempFragment;
                 } else {
@@ -69,7 +70,7 @@ public class ShowFragmentHelper {
             }
         }
 
-        addFragment(mFragArray[index], ft, index);
+        addFragment(mFragArray[index], ft);
         showFragment(ft, index);
         ft.commitAllowingStateLoss();
         mSelectedTab = index;
@@ -88,9 +89,9 @@ public class ShowFragmentHelper {
         }
     }
 
-    private void addFragment(Fragment fragment, FragmentTransaction ft, int fragmentTag) {
+    private void addFragment(Fragment fragment, FragmentTransaction ft) {
         if (!fragment.isAdded() && fragment.getTag() == null) {
-            ft.add(R.id.fragment_base_id, fragment, fragmentTag + "");
+            ft.add(R.id.fragment_base_id, fragment, fragment.getClass().getName());
         }
     }
 }
