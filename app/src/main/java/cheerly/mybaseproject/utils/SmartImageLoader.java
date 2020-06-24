@@ -126,7 +126,7 @@ public class SmartImageLoader {
     }
 
     private void loadRound2(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, final Drawable placeholder) {
-        Activity activity = BaseUtils.getActivity(imageView.getContext());
+        Activity activity = BaseUtils.getActivityFromContext(imageView.getContext());
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return;
         }
