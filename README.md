@@ -197,3 +197,5 @@
       70.1、谷歌的弹性动画：implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0
             示例：http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0330/7757.html
       70.2、facebook的rebound：https://github.com/facebookarchive/rebound
+
+**71、输入法键盘切换平滑过渡**：https://github.com/YummyLau/PanelSwitchHelper
