@@ -119,13 +119,20 @@ http://x5.tencent.com/tbs/product/tbs.html
 
 16、List 不会出问题的遍历删除：
 
-Iterator<String> iter = list.iterator();
-while(iter.hasNext()){
-    String s = iter.next();
-    if(s.equals("two")){
-        iter.remove();
-    }
-}
+        Iterator<String> iter = list.iterator();
+        while(iter.hasNext()){
+            String s = iter.next();
+            if(s.equals("two")){
+                iter.remove();
+            }
+        }
+
+        //Map遍历：
+        Map<String, String> map = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+        }
 
 17、git Tips ：
 
