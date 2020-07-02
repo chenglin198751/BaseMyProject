@@ -1,5 +1,7 @@
 # 常用代码记录：
 
+查看签名文件的MD5、SHA1、SHA-256：右侧Gradle：app--Tasks--android--signingReport
+
 1、
 1.1、注解表示枚举int型：@IntDef
 注解表示枚举String型：@StringDef
