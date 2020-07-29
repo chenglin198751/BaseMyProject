@@ -707,7 +707,7 @@ public class HttpUtils {
         String tempUrl = url;
         int index = url.indexOf("?");
         if (index > 0 && index < url.length()) {
-            tempUrl = url.substring(0, index);
+            tempUrl = url.substring(index);
         }
 
         index = tempUrl.lastIndexOf(".");
