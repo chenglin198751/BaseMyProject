@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cheerly.mybaseproject;
+package cheerly.mybaseproject.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -23,6 +23,8 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+
+import cheerly.mybaseproject.R;
 
 /**
  * 该 layout 使子 View 类似 CSS 中的 float:left 效果, 从左到右排列子 View 并自动换行。支持以下特性：
