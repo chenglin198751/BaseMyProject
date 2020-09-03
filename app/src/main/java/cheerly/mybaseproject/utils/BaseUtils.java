@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,6 +26,8 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
+import android.view.TouchDelegate;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -666,5 +669,31 @@ public class BaseUtils {
             context = ((ContextWrapper) context).getBaseContext();
         }
         return null;
+    }
+
+    /**
+     * 扩展点击区域的范围
+     *
+     * @param view       需要扩展的元素，此元素必需要有父级元素
+     * @param expendSize 需要扩展的尺寸（以sp为单位的）
+     */
+    public static void expendTouchArea(final View view, final int expendSize) {
+        if (view != null) {
+            final View parentView = (View) view.getParent();
+
+            parentView.post(new Runnable() {
+                @Override
+                public void run() {
+                    Rect rect = new Rect();
+                    //如果太早执行本函数，会获取rect失败，因为此时UI界面尚未开始绘制，无法获得正确的坐标
+                    view.getHitRect(rect);
+                    rect.left -= expendSize;
+                    rect.top -= expendSize;
+                    rect.right += expendSize;
+                    rect.bottom += expendSize;
+                    parentView.setTouchDelegate(new TouchDelegate(rect, view));
+                }
+            });
+        }
     }
 }
