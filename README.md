@@ -199,3 +199,7 @@
       70.2、facebook的rebound：https://github.com/facebookarchive/rebound
 
 **71、输入法键盘切换平滑过渡**：https://github.com/YummyLau/PanelSwitchHelper
+
+**72、FlowLayout.java**：流式布局，来自腾讯团队的QMUIFloatLayout。 https://qmuiteam.com/android/documents/
+
+**73、VerticalTextView.java**：来自腾讯团队的竖向排版的TextView
