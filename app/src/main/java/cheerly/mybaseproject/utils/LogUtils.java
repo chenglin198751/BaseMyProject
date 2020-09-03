@@ -1,9 +1,6 @@
 package cheerly.mybaseproject.utils;
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -40,7 +37,7 @@ public class LogUtils {
             System.out.println(tag + ":" + msg);
         }
         String str = getDate() + "<" + tag + ">" + msg;
-        writeFile(getDebugFilePath(), str);
+        writeFile(new File(getDebugFilePath()), str);
     }
 
     public static void d(String tag, String msg) {
@@ -92,29 +89,27 @@ public class LogUtils {
         }
     }
 
-    public static void writeFile(String filePath, String value) {
-        if (TextUtils.isEmpty(filePath)) {
-            return;
-        }
-        File file = new File(filePath);
+    /**
+     * 把字符串写入文件
+     */
+    public static void writeFile(File file, String value) {
         if (!file.exists()) {
             return;
         }
 
         try {
             FileWriter fileWriter = new FileWriter(file, true);
-            fileWriter.write(value + "\r\n\n");
+            fileWriter.write(value);
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static String readFile(String filePath) {
-        if (TextUtils.isEmpty(filePath)) {
-            return null;
-        }
-        File file = new File(filePath);
+    /**
+     * 读取文件
+     */
+    public static String readFile(File file) {
         if (!file.exists()) {
             return null;
         }
@@ -146,5 +141,22 @@ public class LogUtils {
     private static String getDate() {
         SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss");
         return (sf.format(new Date()));
+    }
+
+    public static String getSdcardFilePath() {
+        boolean sdCardExist = false;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            //为真则SD卡已装入，
+            sdCardExist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+
+        }
+
+        if (sdCardExist) {
+            File sdDir = Environment.getExternalStorageDirectory();//获取跟目录
+            //查找SD卡根路径
+            return sdDir.getPath();
+        }
+
+        return null;
     }
 }
