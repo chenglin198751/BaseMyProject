@@ -194,6 +194,7 @@
 **69、GroupedRecyclerViewAdapter可以很方便的实现RecyclerView的分组显示，并且每个组都可以包含组头、组尾和子项；可以方便实现多种Type类型的列表，可以实现如QQ联系人的列表一样的列表展开收起功能，还可以实现头部悬浮吸顶功能等**：https://github.com/donkingliang/GroupedRecyclerViewAdapter 具体见DEMO:TestConsecutiveNestScrollActivity
 
 **70、弹性动画实现**：
+
       70.1、谷歌的弹性动画：implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0
             示例：http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0330/7757.html
       70.2、facebook的rebound：https://github.com/facebookarchive/rebound
@@ -203,3 +204,26 @@
 **72、FlowLayout.java**：流式布局，来自腾讯团队的QMUIFloatLayout。 https://qmuiteam.com/android/documents/
 
 **73、VerticalTextView.java**：来自腾讯团队的竖向排版的TextView
+
+**74、实现高斯模糊的库**：https://github.com/woshidasusu/base-module/tree/master/blur
+
+    引入：implementation 'com.dasu.image:blur:0.0.6'
+    用法：
+    //1、使用默认配置，最短调用链
+    Bitmap bitmap = DBlur.source(MainActivity.this).build().doBlurSync();
+    
+    //2、同步模糊，将imageView控制的视图进行模糊，完成后自动显示到 imageView1 控件上，以淡入动画方式
+    DBlur.source(imageView).intoTarget(imageView1).animAlpha().build().doBlurSync();
+    
+    //3、异步模糊，将drawable资源文件中的图片以 NATIVE 方式进行模糊，注册回调，完成时手动显示到 imageView1 控件上
+    DBlur.source(this, R.drawable.background).mode(BlurConfig.MODE_NATIVE).build()
+          .doBlur(new OnBlurListener() {
+                @Override
+                public void onBlurSuccess(Bitmap bitmap) {
+                    imageView1.setImageBitmap(bitmap);
+                }
+    
+                @Override
+                public void onBlurFailed() {
+                    //do something
+                }});
