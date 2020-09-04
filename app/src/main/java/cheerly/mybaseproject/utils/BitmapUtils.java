@@ -16,8 +16,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.qmuiteam.qmui.util.QMUIDrawableHelper;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -93,7 +91,7 @@ public class BitmapUtils {
      * 从一个view创建Bitmap。把view的区域截掉leftCrop/topCrop/rightCrop/bottomCrop
      */
     public static Bitmap createBitmapFromView(View view, int leftCrop, int topCrop, int rightCrop, int bottomCrop) {
-        Bitmap originBitmap = QMUIDrawableHelper.createBitmapFromView(view);
+        Bitmap originBitmap = createBitmapFromView(view);
         if (originBitmap == null) {
             return null;
         }
