@@ -208,6 +208,7 @@
 **74、实现高斯模糊的库**：https://github.com/woshidasusu/base-module/tree/master/blur
 
     引入：implementation 'com.dasu.image:blur:0.0.6'
+    ------------------------------------------------
     用法：
     //1、使用默认配置，最短调用链
     Bitmap bitmap = DBlur.source(MainActivity.this).build().doBlurSync();
