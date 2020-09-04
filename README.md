@@ -211,13 +211,13 @@
     ------------------------------------------------
     用法：
     //1、使用默认配置，最短调用链
-    Bitmap bitmap = DBlur.source(MainActivity.this).build().doBlurSync();
+    Bitmap bitmap = DBlur.source(MainActivity.this).radius(5).sampling(8).build().doBlurSync();
     
     //2、同步模糊，将imageView控制的视图进行模糊，完成后自动显示到 imageView1 控件上，以淡入动画方式
-    DBlur.source(imageView).intoTarget(imageView1).animAlpha().build().doBlurSync();
+    DBlur.source(imageView).intoTarget(imageView1).animAlpha().radius(5).sampling(8).build().doBlurSync();
     
     //3、异步模糊，将drawable资源文件中的图片以 NATIVE 方式进行模糊，注册回调，完成时手动显示到 imageView1 控件上
-    DBlur.source(this, R.drawable.background).mode(BlurConfig.MODE_NATIVE).build()
+    DBlur.source(this, R.drawable.background).mode(BlurConfig.MODE_NATIVE).radius(5).sampling(8).build()
           .doBlur(new OnBlurListener() {
                 @Override
                 public void onBlurSuccess(Bitmap bitmap) {
