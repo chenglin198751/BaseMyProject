@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -104,6 +105,7 @@ public class HttpUtils {
             .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
             .addInterceptor(new RetryInterceptor(2))
+//            .proxy(Proxy.NO_PROXY)
             .cache(new Cache(new File(HTTP_CACHE_PATH), 100 * 1024 * 1024));
     public static final OkHttpClient client = builder.build();
 
