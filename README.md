@@ -127,7 +127,7 @@
 **47、封装的易用数据库dbflow**：https://github.com/agrosner/DBFlow 、 https://joyrun.github.io/2016/08/02/dbflow/
 
 **48、  
-48.1：沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBar  
+48.1：沉浸式状态栏使用**：https://github.com/Zackratos/UltimateBarX  
 **48.2：设置状态栏颜色**：https://github.com/msdx/status-bar-compat  
 **48.3：判断刘海屏的工具类**：NotchUtils.class
       
