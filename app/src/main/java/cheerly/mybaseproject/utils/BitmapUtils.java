@@ -220,12 +220,12 @@ public class BitmapUtils {
     /**
      * 按原图比例缩放裁剪图片
      *
-     * @param activity   BaseActivity
+     * @param activity   Activity
      * @param imageUri   图片的Uri
      * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
      * @param callback   回调监听
      */
-    public static void createScaledBitmap(final BaseActivity activity, final Uri imageUri, int imageWidth, final OnCompressBitmapListener callback) {
+    public static void createScaledBitmap(final Activity activity, final Uri imageUri, int imageWidth, final OnCompressBitmapListener callback) {
         final String imagePath = getPathByUri(activity, imageUri);
         createScaledBitmap(activity, imagePath, imageWidth, callback);
     }
@@ -233,7 +233,7 @@ public class BitmapUtils {
     /**
      * 按原图比例缩放裁剪图片
      *
-     * @param activity   BaseActivity
+     * @param activity   Activity
      * @param imagePath  图片的路径
      * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
      * @param callback   回调监听
