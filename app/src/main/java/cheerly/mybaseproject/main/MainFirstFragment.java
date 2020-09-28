@@ -9,6 +9,7 @@ import cheerly.mybaseproject.base.BaseFragment;
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.httpwork.HttpUtils;
 import cheerly.mybaseproject.test.TestConsecutiveNestScrollActivity;
+import cheerly.mybaseproject.widget.BaseWebViewActivity;
 import cheerly.mybaseproject.widget.ToastUtils;
 
 /**
@@ -29,9 +30,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                getData();
-                Intent intent = new Intent(getContext(), TestConsecutiveNestScrollActivity.class);
-                startActivity(intent);
+                BaseWebViewActivity.start(getContext(),"https://x5.tencent.com/tbs/guide/sdkInit.html","test");
             }
         });
 
