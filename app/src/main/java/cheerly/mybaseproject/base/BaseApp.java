@@ -35,11 +35,11 @@ public class BaseApp extends Application {
         super.onCreate();
         application = this;
 
-        // 置入一个不设防的VmPolicy，用于解决某种情况下file://调用失败的问题
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-            StrictMode.setVmPolicy(builder.build());
-        }
+//        // 置入一个不设防的VmPolicy，用于解决某种情况下file://调用失败的问题
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+//            StrictMode.setVmPolicy(builder.build());
+//        }
 
         //只在应用主进程执行
         if (AppHelper.isAppMainProcess()) {
