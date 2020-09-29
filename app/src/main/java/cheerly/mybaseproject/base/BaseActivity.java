@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.githang.statusbar.StatusBarCompat;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.helper.MainTitleHelper;
 import cheerly.mybaseproject.httpwork.HttpUtils;
 import cheerly.mybaseproject.utils.Constants;
-import cheerly.mybaseproject.utils.statusbar.StatusBarCompat;
 import cheerly.mybaseproject.widget.BaseViewHelper;
 import cheerly.mybaseproject.widget.WaitDialog;
 
