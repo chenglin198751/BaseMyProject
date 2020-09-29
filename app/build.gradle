@@ -74,6 +74,7 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.githang:status-bar-compat:0.7'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.10.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
