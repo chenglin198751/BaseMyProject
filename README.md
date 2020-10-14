@@ -228,3 +228,6 @@
                 public void onBlurFailed() {
                     //do something
                 }});
+
+**75、各种ViewPager标题指示器效果**：https://github.com/hackware1993/MagicIndicator    
+               
