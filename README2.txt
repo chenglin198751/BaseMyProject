@@ -122,3 +122,21 @@
         animatorSet.play(objectAnimator01).with(objectAnimator02).with(objectAnimator03).before(objectAnimator04).before(objectAnimator05);
         animatorSet.setDuration(2000);
         animatorSet.start();
+
+8、RecyclerView监听childView被添加和剥离：
+        recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+            @Override
+            public void onChildViewAttachedToWindow(View view) {
+            }
+
+            @Override
+            public void onChildViewDetachedFromWindow(View view) {
+            }
+        });
+
+9、获取mView在当前parentView的可见区域，以及当前整个窗口的可见区域
+        Rect rect = new Rect();
+        mView.getLocalVisibleRect(rect);
+
+        Rect rect = new Rect();
+        mView.getGlobalVisibleRect(rect);
