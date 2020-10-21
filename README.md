@@ -230,4 +230,8 @@
                 }});
 
 **75、各种ViewPager标题指示器效果**：https://github.com/hackware1993/MagicIndicator    
+
+**76、支持列表中播放的视频播放器**：https://github.com/Jzvd/JZVideo
+
+
                
