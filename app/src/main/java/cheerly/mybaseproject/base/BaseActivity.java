@@ -43,7 +43,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private BaseViewHelper mBaseViewHelper = null;
     private WaitDialog mWaitDialog;
     private RelativeLayout mBaseRootView;
-    private HashMap<String, Object> mTagMap;
     private boolean isAddedView = false;
     private View mContentView = null;
 
@@ -138,9 +137,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         if (mBroadcastReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         }
-        if (mTagMap != null) {
-            mTagMap.clear();
-        }
     }
 
     /**
@@ -170,18 +166,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
                 }
             }
         }
-    }
-
-
-    public void addTag(String key, Object object) {
-        if (mTagMap == null) {
-            mTagMap = new HashMap<>();
-        }
-        mTagMap.put(key, object);
-    }
-
-    public HashMap<String, Object> getTagMap() {
-        return mTagMap;
     }
 
     /**
