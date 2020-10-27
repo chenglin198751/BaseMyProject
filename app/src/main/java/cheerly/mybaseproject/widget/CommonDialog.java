@@ -7,9 +7,7 @@ import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -22,13 +20,13 @@ public class CommonDialog extends Dialog {
     private View mDialogView = null;
     private boolean isLeftVisible = false;
     private boolean isRightVisible = false;
-    private Button mLeftBtn, mRightBtn;
+    private TextView mLeftBtn, mRightBtn;
     private TextView mMessage;
 
 
     public CommonDialog(Context context) {
         this(context, R.style.dialog);
-        mDialogView = View.inflate(context, R.layout.alert_dialog, null);
+        mDialogView = View.inflate(context, R.layout.common_alert_dialog, null);
         mDialogView.findViewById(R.id.title_template).setVisibility(View.GONE);
         mLeftBtn = mDialogView.findViewById(R.id.button_ok);
         mRightBtn = mDialogView.findViewById(R.id.button_cancel);
