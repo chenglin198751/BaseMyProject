@@ -1,5 +1,6 @@
 package cheerly.mybaseproject.utils;
 
+import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
@@ -18,6 +19,11 @@ public class SDCardUtils {
      */
     public static String getDataPath(int type) {
         String cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
+        //解决一加手机禁用了/Android/data目录导致数据无法访问的问题
+        if (Build.BRAND.equalsIgnoreCase("OnePlus")){
+            return cachePath + File.separator;
+        }
+
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
             File file = null;
             if (type == SDCardUtils.TYPE_CACHE) {
