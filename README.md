@@ -231,7 +231,14 @@
 
 **75、各种ViewPager标题指示器效果**：https://github.com/hackware1993/MagicIndicator    
 
-**76、支持列表中播放的视频播放器**：https://github.com/Jzvd/JZVideo
+**76、支持列表中播放的视频播放器饺子，支持替换为谷歌EXO内核**：https://github.com/Jzvd/JZVideo
+
+**77、B站开源播放器ijkplayer**：https://github.com/bilibili/ijkplayer
+
+**78、可以下拉头部放大的RecyclerView，参考其用法可以实现别的动效**：PullToZoomRecyclerView.java
+
+**79、PullScrollView**：重写overScrollBy()方法可以实现下拉交互特效
+
 
 
                
