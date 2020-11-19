@@ -478,4 +478,18 @@ public class BitmapUtils {
         return bmpScale;
     }
 
+    /**
+     * 把一个未附加在window上的View生成bitmap
+     */
+    public static Bitmap createMeasureViewBitmap(View itemView, int measureWidth) {
+        itemView.measure(
+                View.MeasureSpec.makeMeasureSpec(measureWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        itemView.layout(0, 0, itemView.getMeasuredWidth(),
+                itemView.getMeasuredHeight());
+        itemView.setDrawingCacheEnabled(true);
+        itemView.buildDrawingCache();
+        Bitmap drawingCache = itemView.getDrawingCache();
+        return drawingCache;
+    }
 }
