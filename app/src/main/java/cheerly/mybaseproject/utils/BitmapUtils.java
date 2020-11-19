@@ -189,10 +189,6 @@ public class BitmapUtils {
      * 保存图片到sdcard
      */
     public static void saveBitmap(final Bitmap bmp, final OnCompressBitmapListener<String> callback) {
-        if (callback != null) {
-            callback.onPrepare();
-        }
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -207,12 +203,12 @@ public class BitmapUtils {
                     e.printStackTrace();
 
                     if (callback != null) {
-                        callback.onError();
+                        callback.onSucceed(null);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     if (callback != null) {
-                        callback.onError();
+                        callback.onSucceed(null);
                     }
                 }
                 String path = file.getAbsolutePath();
@@ -252,10 +248,9 @@ public class BitmapUtils {
         if (callback == null) {
             throw new NullPointerException("OnCompressBitmapListener must not null");
         }
-        callback.onPrepare();
 
         if (TextUtils.isEmpty(imagePath) || !(new File(imagePath).exists())) {
-            callback.onError();
+            callback.onSucceed(null);
             return;
         }
 
@@ -280,29 +275,16 @@ public class BitmapUtils {
 
                 saveBitmap(targetBitmap, new OnCompressBitmapListener<String>() {
                     @Override
-                    public void onPrepare() {
-
-                    }
-
-                    @Override
                     public void onSucceed(final String path) {
                         if (activity != null && !activity.isFinishing()) {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onSucceed(path);
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onError() {
-                        if (activity != null && !activity.isFinishing()) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callback.onError();
+                                    if (!TextUtils.isEmpty(path)){
+                                        callback.onSucceed(path);
+                                    }else {
+                                        callback.onSucceed(null);
+                                    }
                                 }
                             });
                         }
