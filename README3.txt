@@ -260,3 +260,18 @@ gridView.setOnTouchListener(new View.OnTouchListener() {
        3、滴滴VirtualAPK：https://github.com/didi/VirtualAPK
 50、时间选择器：https://www.jianshu.com/p/337b48418a59
 51、仿抖音的评论框，可以下拉收回：用系统的BottomSheetDialogFragment
+52、滑动时标题渐变的万能解决方案：
+        int offset = BaseUtils.dip2px(200f);
+        Rect rect = new Rect();
+        headImg.getGlobalVisibleRect(rect);
+
+        if (rect.bottom > 0 && rect.bottom < offset) {
+            alpha = (offset * 1f / rect.bottom * 1f) - 1f;
+			//do something
+        } else if (rect.bottom <= 0) {
+			//do something
+        } else if (rect.bottom >= offset) {
+			//do something
+            alpha = 0f;
+        }
+    }
