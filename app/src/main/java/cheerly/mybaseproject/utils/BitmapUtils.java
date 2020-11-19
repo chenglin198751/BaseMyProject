@@ -7,19 +7,29 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.LruCache;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.listener.OnCompressBitmapListener;
@@ -308,4 +318,119 @@ public class BitmapUtils {
     public static int getBitmapBytes(Bitmap bitmap) {
         return bitmap.getByteCount();
     }
+
+    /**
+     * ScrollView截图方法
+     */
+    public static Bitmap shotScrollView(ScrollView scrollView) {
+        int h = 0;
+        Bitmap bitmap = null;
+        for (int i = 0; i < scrollView.getChildCount(); i++) {
+            h += scrollView.getChildAt(i).getHeight();
+            scrollView.getChildAt(i).setBackgroundColor(Color.parseColor("#ffffff"));
+        }
+        bitmap = Bitmap.createBitmap(scrollView.getWidth(), h, Bitmap.Config.RGB_565);
+        final Canvas canvas = new Canvas(bitmap);
+        scrollView.draw(canvas);
+        return bitmap;
+    }
+
+
+    /**
+     * ListView截图方法
+     */
+    public static Bitmap shotListView(ListView listview) {
+
+        ListAdapter adapter = listview.getAdapter();
+        int itemscount = adapter.getCount();
+        int allitemsheight = 0;
+        List<Bitmap> bmps = new ArrayList<Bitmap>();
+
+        for (int i = 0; i < itemscount; i++) {
+
+            View childView = adapter.getView(i, null, listview);
+            childView.measure(
+                    View.MeasureSpec.makeMeasureSpec(listview.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+            childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
+            childView.setDrawingCacheEnabled(true);
+            childView.buildDrawingCache();
+            bmps.add(childView.getDrawingCache());
+            allitemsheight += childView.getMeasuredHeight();
+        }
+
+        Bitmap bigbitmap =
+                Bitmap.createBitmap(listview.getMeasuredWidth(), allitemsheight, Bitmap.Config.ARGB_8888);
+        Canvas bigcanvas = new Canvas(bigbitmap);
+
+        Paint paint = new Paint();
+        int iHeight = 0;
+
+        for (int i = 0; i < bmps.size(); i++) {
+            Bitmap bmp = bmps.get(i);
+            bigcanvas.drawBitmap(bmp, 0, iHeight, paint);
+            iHeight += bmp.getHeight();
+
+            bmp.recycle();
+            bmp = null;
+        }
+
+        return bigbitmap;
+    }
+
+    /**
+     * RecyclerView截图方法
+     */
+    public static Bitmap shotRecyclerView(RecyclerView view) {
+        RecyclerView.Adapter adapter = view.getAdapter();
+        Bitmap bigBitmap = null;
+        if (adapter != null) {
+            int size = adapter.getItemCount();
+            int height = 0;
+            Paint paint = new Paint();
+            int iHeight = 0;
+            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+            // Use 1/8th of the available memory for this memory cache.
+            final int cacheSize = maxMemory / 8;
+            LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
+            for (int i = 0; i < size; i++) {
+                RecyclerView.ViewHolder holder = adapter.createViewHolder(view, adapter.getItemViewType(i));
+                adapter.onBindViewHolder(holder, i);
+                holder.itemView.measure(
+                        View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(),
+                        holder.itemView.getMeasuredHeight());
+                holder.itemView.setDrawingCacheEnabled(true);
+                holder.itemView.buildDrawingCache();
+                Bitmap drawingCache = holder.itemView.getDrawingCache();
+                if (drawingCache != null) {
+
+                    bitmaCache.put(String.valueOf(i), drawingCache);
+                }
+                height += holder.itemView.getMeasuredHeight();
+            }
+
+            bigBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
+            Canvas bigCanvas = new Canvas(bigBitmap);
+            Drawable lBackground = view.getBackground();
+            if (lBackground instanceof ColorDrawable) {
+                ColorDrawable lColorDrawable = (ColorDrawable) lBackground;
+                int lColor = lColorDrawable.getColor();
+                bigCanvas.drawColor(lColor);
+            }
+
+            for (int i = 0; i < size; i++) {
+                Bitmap bitmap = bitmaCache.get(String.valueOf(i));
+                bigCanvas.drawBitmap(bitmap, 0f, iHeight, paint);
+                iHeight += bitmap.getHeight();
+                bitmap.recycle();
+            }
+        }
+        return bigBitmap;
+    }
+
+
 }
