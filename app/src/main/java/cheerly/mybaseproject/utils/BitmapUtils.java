@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -31,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.listener.OnCompressBitmapListener;
 
 /**
@@ -280,9 +280,9 @@ public class BitmapUtils {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (!TextUtils.isEmpty(path)){
+                                    if (!TextUtils.isEmpty(path)) {
                                         callback.onSucceed(path);
-                                    }else {
+                                    } else {
                                         callback.onSucceed(null);
                                     }
                                 }
@@ -414,5 +414,68 @@ public class BitmapUtils {
         return bigBitmap;
     }
 
+
+    /**
+     * 拼接图片
+     */
+    public static Bitmap combineImage(Bitmap... bitmaps) {
+        boolean isMultiWidth = false;//是否为多宽度图片集
+        int width = 0;
+        int height = 0;
+
+        //获取图纸宽度
+        for (Bitmap bitmap : bitmaps) {
+            if (width != bitmap.getWidth()) {
+                if (width != 0) {//过滤掉第一次不同
+                    isMultiWidth = true;
+                }
+                width = width < bitmap.getWidth() ? bitmap.getWidth() : width;
+            }
+        }
+
+        //获取图纸高度
+        for (Bitmap bitmap : bitmaps) {
+            if (isMultiWidth) {
+                height = height + bitmap.getHeight() * width / bitmap.getWidth();
+            } else {
+                height = height + bitmap.getHeight();
+            }
+        }
+
+        //创建图纸
+        Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        //创建画布,并绑定图纸
+        Canvas canvas = new Canvas(newBitmap);
+        int tempHeight = 0;
+        //画图
+        for (int i = 0; i < bitmaps.length; i++) {
+            if (isMultiWidth) {
+                if (width != bitmaps[i].getWidth()) {
+                    int newSizeH = bitmaps[i].getHeight() * width / bitmaps[i].getWidth();
+                    Bitmap newSizeBmp = resizeBitmap(bitmaps[i], width, newSizeH);
+                    canvas.drawBitmap(newSizeBmp, 0, tempHeight, null);
+                    tempHeight = tempHeight + newSizeH;
+                    newSizeBmp.recycle();
+                } else {
+                    canvas.drawBitmap(bitmaps[i], 0, tempHeight, null);
+                    tempHeight = tempHeight + bitmaps[i].getHeight();
+                }
+            } else {
+                canvas.drawBitmap(bitmaps[i], 0, tempHeight, null);
+                tempHeight = tempHeight + bitmaps[i].getHeight();
+            }
+            bitmaps[i].recycle();
+        }
+        return newBitmap;
+    }
+
+    private static Bitmap resizeBitmap(Bitmap bitmap, int newWidth, int newHeight) {
+        float scaleWidth = ((float) newWidth) / bitmap.getWidth();
+        float scaleHeight = ((float) newHeight) / bitmap.getHeight();
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        Bitmap bmpScale = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return bmpScale;
+    }
 
 }
