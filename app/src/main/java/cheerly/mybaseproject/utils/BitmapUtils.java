@@ -178,7 +178,7 @@ public class BitmapUtils {
     /**
      * 保存图片到sdcard
      */
-    public static void saveBitmap(final Bitmap bmp, final OnCompressBitmapListener callback) {
+    public static void saveBitmap(final Bitmap bmp, final OnCompressBitmapListener<String> callback) {
         if (callback != null) {
             callback.onPrepare();
         }
@@ -225,7 +225,7 @@ public class BitmapUtils {
      * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
      * @param callback   回调监听
      */
-    public static void createScaledBitmap(final Activity activity, final Uri imageUri, int imageWidth, final OnCompressBitmapListener callback) {
+    public static void createScaledBitmap(final Activity activity, final Uri imageUri, int imageWidth, final OnCompressBitmapListener<String> callback) {
         final String imagePath = getPathByUri(activity, imageUri);
         createScaledBitmap(activity, imagePath, imageWidth, callback);
     }
@@ -238,7 +238,7 @@ public class BitmapUtils {
      * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
      * @param callback   回调监听
      */
-    public static void createScaledBitmap(final Activity activity, final String imagePath, final int imageWidth, final OnCompressBitmapListener callback) {
+    public static void createScaledBitmap(final Activity activity, final String imagePath, final int imageWidth, final OnCompressBitmapListener<String> callback) {
         if (callback == null) {
             throw new NullPointerException("OnCompressBitmapListener must not null");
         }
@@ -268,14 +268,14 @@ public class BitmapUtils {
                 options.inSampleSize = getOptionSize(scale);
                 Bitmap targetBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(imagePath, options), imageWidth, imageHeight, true);
 
-                saveBitmap(targetBitmap, new OnCompressBitmapListener() {
+                saveBitmap(targetBitmap, new OnCompressBitmapListener<String>() {
                     @Override
                     public void onPrepare() {
 
                     }
 
                     @Override
-                    public void onSucceed(final Object path) {
+                    public void onSucceed(final String path) {
                         if (activity != null && !activity.isFinishing()) {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
