@@ -153,7 +153,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.auto_gallery_banner_item, null);
-            int newPos = position % (mDataList.size());
+            int newPos = (position - 1) % (mDataList.size());
             ImageView img = view.findViewById(R.id.image);
             ImageView childImg = view.findViewById(R.id.child_img);
             SmartImageLoader.getInstance().load(img, mDataList.get(newPos).url, -1, -1);
