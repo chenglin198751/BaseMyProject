@@ -20,8 +20,10 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -44,12 +46,14 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.CRC32;
 
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseApp;
 import cheerly.mybaseproject.bean.ApkItem;
+import cheerly.mybaseproject.bean.UrlEntity;
 import cheerly.mybaseproject.widget.ToastUtils;
 
 public class BaseUtils {
@@ -695,5 +699,36 @@ public class BaseUtils {
                 }
             });
         }
+    }
+
+    /**
+     * 解析URL参数
+     */
+    public static UrlEntity parseUrlParams(String url) {
+        UrlEntity entity = new UrlEntity();
+        if (url == null) {
+            return entity;
+        }
+        url = url.trim();
+        if (url.equals("")) {
+            return entity;
+        }
+        String[] urlParts = url.split("\\?");
+        entity.baseUrl = urlParts[0];
+        //没有参数
+        if (urlParts.length == 1) {
+            return entity;
+        }
+        //有参数
+        String[] params = urlParts[1].split("&");
+        entity.params = new HashMap<>();
+        for (String param : params) {
+            String[] keyValue = param.split("=");
+            if (keyValue.length == 2) {
+                entity.params.put(keyValue[0], keyValue[1]);
+            }
+        }
+
+        return entity;
     }
 }
