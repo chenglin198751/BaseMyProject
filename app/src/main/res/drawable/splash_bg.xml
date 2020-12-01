@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item>
+        <bitmap
+            android:filter="true"
+            android:src="@drawable/splash_bg_0" />
+    </item>
+
+    <item android:top="130dp">
+        <bitmap
+            android:filter="true"
+            android:gravity="top|center_horizontal"
+            android:src="@drawable/splash_bg_1" />
+    </item>
+
+    <item android:bottom="80dp">
+        <bitmap
+            android:filter="true"
+            android:gravity="bottom|center_horizontal"
+            android:src="@drawable/splash_bg_2" />
+    </item>
+
+</layer-list>
