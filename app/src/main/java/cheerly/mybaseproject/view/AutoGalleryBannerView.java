@@ -156,7 +156,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
             int newPos = (position - 1) % (mDataList.size());
             ImageView img = view.findViewById(R.id.image);
             ImageView childImg = view.findViewById(R.id.child_img);
-            SmartImageLoader.getInstance().load(img, mDataList.get(newPos).url, -1, -1);
+            SmartImageLoader.load(img, mDataList.get(newPos).url, -1, -1, 0);
             setImageBitmap(childImg, mDataList.get(newPos).childUrl);
             container.addView(view);
             return view;

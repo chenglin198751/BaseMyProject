@@ -13,7 +13,7 @@ import cheerly.mybaseproject.utils.SmartImageLoader;
 public class BannerImageLoader extends com.youth.banner.loader.ImageLoader {
     @Override
     public void displayImage(Context context, Object path, ImageView imageView) {
-        SmartImageLoader.getInstance().load(imageView, (String) path, Constants.getScreenWidth(), Constants.getScreenWidth() / 2);
+        SmartImageLoader.load(imageView, path, Constants.getScreenWidth(), Constants.getScreenWidth() / 2, 0);
     }
 
     @Override

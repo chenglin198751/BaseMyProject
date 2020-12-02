@@ -50,7 +50,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
         @Override
         public void onBind(int position) {
-            SmartImageLoader.getInstance().loadRound(imageView, url, BaseUtils.dip2px(50f), BaseUtils.dip2px(50f), 15);
+            SmartImageLoader.load(imageView, url, BaseUtils.dip2px(50f), BaseUtils.dip2px(50f), 15);
             title.setText("标题 " + getData().get(position));
         }
 

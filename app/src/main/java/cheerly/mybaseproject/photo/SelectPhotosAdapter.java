@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -129,7 +131,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
             viewHolder.photoImg.setOnClickListener(imgClickListener);
 
             int width = BaseUtils.dip2px(100f);
-            SmartImageLoader.getInstance().load(viewHolder.photoImg, new File(photoItem.getPath()), width, width);
+            SmartImageLoader.load(viewHolder.photoImg, new File(photoItem.getPath()), width, width, 0);
 
             if (!mActivity.isSingleType) {
                 if (mSelectedList.contains(photoItem.getPath())) {
