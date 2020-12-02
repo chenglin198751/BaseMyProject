@@ -2,8 +2,10 @@ package cheerly.mybaseproject.test;
 
 import android.content.Context;
 import android.os.Bundle;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -159,7 +161,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
             @Override
             public void onBind(int position) {
-                SmartImageLoader.getInstance().load(imageView, getData().get(position).url, -1, -1);
+                SmartImageLoader.load(imageView, getData().get(position).url, -1, -1, 0);
             }
 
 

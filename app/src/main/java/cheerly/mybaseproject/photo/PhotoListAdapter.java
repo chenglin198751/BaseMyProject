@@ -65,7 +65,7 @@ public class PhotoListAdapter extends BaseAdapter {
 
         if (photoItem != null && !TextUtils.isEmpty(photoItem.getPath())) {
             int width = BaseUtils.dip2px(100);
-            SmartImageLoader.getInstance().load(holder.mImageView, new File(photoItem.getPath()), width, width);
+            SmartImageLoader.load(holder.mImageView, new File(photoItem.getPath()), width, width, 0);
 
         }
         holder.mAlbumName.setText(photoItem.getName());

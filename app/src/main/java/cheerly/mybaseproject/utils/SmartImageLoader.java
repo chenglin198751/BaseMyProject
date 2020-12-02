@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.Keep;
 
 import com.bumptech.glide.load.DecodeFormat;
@@ -23,66 +22,44 @@ import cheerly.mybaseproject.view.CenterDrawable;
  */
 @Keep
 public class SmartImageLoader {
-    private static SmartImageLoader INSTANCE;
-
     private SmartImageLoader() {
     }
 
-    public static SmartImageLoader getInstance() {
-        if (INSTANCE == null) {
-            synchronized (SmartImageLoader.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new SmartImageLoader();
-                }
-            }
+    /**
+     * 加载图片使其变为圆角或者圆形，radius传入的单位是px.
+     * 如果 radius <0  , 那么就是纯圆圈图片;
+     * 如果 radius = 0 , 那么就是直角图片;
+     * 如果 radius >0 , 是圆角图片
+     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
+     * 注意：图片默认显示类型为 CENTER_CROP
+     */
+    public static void load(ImageView imageView,
+                            Object object,
+                            int imageWidth,
+                            int imageHeight,
+                            int radius) {
+
+        ImageLoaderBuilder builder = new ImageLoaderBuilder();
+        builder.setUri(object);
+        builder.setImageWidth(imageWidth);
+        builder.setImageHeight(imageHeight);
+        builder.setScaleType(ImageLoaderBuilder.CENTER_CROP);
+        if (radius == 0) {
+            builder.setRadius(CenterDrawable.RECTANGLE);
+        } else {
+            builder.setRadius(radius);
         }
-        return INSTANCE;
+        load(imageView, builder);
     }
 
-    /**
-     * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
-     * 支持 gif 格式的图片，但是前提后缀名是.gif 才能解析
-     * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
-     *
-     * @param imageView   ImageView
-     * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度(单位px)
-     * @param imageHeight 图片的高度(单位px)
-     */
-    public void load(ImageView imageView, Object object, int imageWidth, int imageHeight) {
-        loadRound(imageView, object, imageWidth, imageHeight, CenterDrawable.RECTANGLE);
-    }
-
-    /**
-     * 加载图片，一定要传入 ImageView 的宽和高，因为这样可以很大的节约内存
-     * 支持 gif 格式的图片，但是前提后缀名是.gif 才能解析
-     * 如果图片宽度和高度都设置为-1 ，那么就是加载原图。不推荐，因为原图如果太大，很耗费内存。不过某种情况下确实需要加载原图
-     *
-     * @param imageView   ImageView
-     * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度(单位px)
-     * @param imageHeight 图片的高度(单位px)
-     * @param placeholder 占位图，如果不设置，也会有默认占位图
-     */
-    public void load(ImageView imageView, Object object, int imageWidth, int imageHeight, @DrawableRes int placeholder) {
-        loadRound(imageView, object, imageWidth, imageHeight, CenterDrawable.RECTANGLE, placeholder);
-    }
-
-    /**
-     * 加载图片使其变为圆角或者圆形，radius传入的单位是px.
-     * 如果 radius <0  , 那么就是纯圆圈图片;
-     * 如果 radius = 0 , 那么就是直角图片;
-     * 如果 radius >0 , 是圆角图片
-     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
-     *
-     * @param imageView   ImageView
-     * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度(单位px)
-     * @param imageHeight 图片的高度(单位px)
-     * @param radius      图片的圆角角度(单位px)
-     */
-    public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius) {
-        loadRound(imageView, object, imageWidth, imageHeight, radius, 0);
+    public static void load(ImageView imageView, ImageLoaderBuilder builder) {
+        loadRound(imageView,
+                builder.getUri(),
+                builder.getImageWidth(),
+                builder.getImageHeight(),
+                builder.getRadius(),
+                builder.getPlaceholder(),
+                builder.getScaleType());
     }
 
     /**
@@ -99,33 +76,28 @@ public class SmartImageLoader {
      * @param radius      图片的圆角角度(单位px)
      * @param placeholder 占位图，如果不设置，也会有默认占位图
      */
-    public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, int placeholder) {
-        loadRound(imageView, object, imageWidth, imageHeight, radius, placeholder <= 0 ? null : imageView.getResources().getDrawable(placeholder));
-    }
-
-    /**
-     * 加载图片使其变为圆角或者圆形，radius传入的单位是px.
-     * 如果 radius <0  , 那么就是纯圆圈图片;
-     * 如果 radius = 0 , 那么就是直角图片;
-     * 如果 radius >0 , 是圆角图片
-     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
-     *
-     * @param imageView   ImageView
-     * @param object      图片地址Url、图片文件file
-     * @param imageWidth  图片的宽度(单位px)
-     * @param imageHeight 图片的高度(单位px)
-     * @param radius      图片的圆角角度(单位px)
-     * @param placeholder 占位图，如果不设置，也会有默认占位图
-     */
-    public void loadRound(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, final Drawable placeholder) {
+    private static void loadRound(ImageView imageView,
+                                  Object object,
+                                  int imageWidth,
+                                  int imageHeight,
+                                  int radius,
+                                  final Drawable placeholder,
+                                  final int scaleType) {
         try {
-            loadRound2(imageView, object, imageWidth, imageHeight, radius, placeholder);
+            loadRound2(imageView, object, imageWidth, imageHeight, radius, placeholder, scaleType);
         } catch (Throwable t) {
             t.printStackTrace();
         }
     }
 
-    private void loadRound2(ImageView imageView, Object object, int imageWidth, int imageHeight, int radius, final Drawable placeholder) {
+    private static void loadRound2(ImageView imageView,
+                                   Object object,
+                                   int imageWidth,
+                                   int imageHeight,
+                                   int radius,
+                                   final Drawable placeholder,
+                                   final int scaleType) {
+
         Activity activity = BaseUtils.getActivityFromContext(imageView.getContext());
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return;
@@ -160,14 +132,19 @@ public class SmartImageLoader {
             glideRequest = glideRequest.override(imageWidth, imageHeight);
         }
 
-        if (radius == CenterDrawable.RECTANGLE) {
+        if (scaleType == ImageLoaderBuilder.CENTER_CROP) {
             glideRequest = glideRequest.centerCrop();
-        } else if (radius < 0) {
+        } else if (scaleType == ImageLoaderBuilder.CENTER_INSIDE) {
+            glideRequest = glideRequest.centerInside();
+        } else if (scaleType == ImageLoaderBuilder.FIT_CENTER) {
+            glideRequest = glideRequest.fitCenter();
+        } else if (scaleType == ImageLoaderBuilder.CIRCLE_CROP) {
             glideRequest = glideRequest.circleCrop();
-        } else {
+        } else if (scaleType == ImageLoaderBuilder.ROUNDED) {
             RoundedCorners roundedCorner = new RoundedCorners(radius);
             glideRequest = glideRequest.transform(new CenterCrop(), roundedCorner);
         }
+
         glideRequest.into(imageView);
     }
 }

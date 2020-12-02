@@ -149,7 +149,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             TextView title = (TextView) convertView.findViewById(R.id.title);
             ImageView webImageView = convertView.findViewById(R.id.image_view);
             title.setText("标题 - " + position);
-            SmartImageLoader.getInstance().load(webImageView, imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f));
+            SmartImageLoader.load(webImageView, imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f), 0);
 
             return convertView;
         }
