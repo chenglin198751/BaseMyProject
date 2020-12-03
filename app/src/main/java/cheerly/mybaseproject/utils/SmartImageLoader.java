@@ -43,10 +43,15 @@ public class SmartImageLoader {
         builder.setUri(object);
         builder.setImageWidth(imageWidth);
         builder.setImageHeight(imageHeight);
-        builder.setScaleType(ImageLoaderBuilder.CENTER_CROP);
+
         if (radius == 0) {
+            builder.setScaleType(ImageLoaderBuilder.CENTER_CROP);
             builder.setRadius(CenterDrawable.RECTANGLE);
+        } else if (radius > 0){
+            builder.setScaleType(ImageLoaderBuilder.ROUNDED);
+            builder.setRadius(radius);
         } else {
+            builder.setScaleType(ImageLoaderBuilder.CIRCLE_CROP);
             builder.setRadius(radius);
         }
         load(imageView, builder);
