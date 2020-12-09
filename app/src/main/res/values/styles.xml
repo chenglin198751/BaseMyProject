@@ -51,7 +51,7 @@
 
     <!-- 第一个启动的Activity，为了消除白屏或黑屏，设置了windowBackground -->
     <style name="FirstActivityTheme" parent="@style/AppBaseTheme">
-        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/splash_bg</item>
     </style>
