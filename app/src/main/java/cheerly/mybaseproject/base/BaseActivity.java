@@ -201,7 +201,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         hideProgress();
         mBaseViewHelper.setLoadingText(text);
         addLoadView();
-        mBaseViewHelper.addShadowView(mBaseRootView);
     }
 
     /**
@@ -218,7 +217,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private void clearLoadingView() {
         if (isAddedView) {
             mBaseRootView.removeView(mBaseViewHelper.getView());
-            mBaseViewHelper.removeShadowView(mBaseRootView);
             isAddedView = false;
         }
     }
