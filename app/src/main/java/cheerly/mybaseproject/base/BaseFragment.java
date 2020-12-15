@@ -29,7 +29,6 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     protected final static Gson gson = Constants.gson;
     private BaseViewHelper mBaseViewHelper = null;
     private RelativeLayout mContentView;
-    private boolean isAddedView = false;
     private ViewGroup mNestedParentLayout;
 
     public BaseActivity getContext() {
@@ -163,10 +162,13 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
         if (getView() == null) {
             return;
         }
-        if (isAddedView) {
-            mBaseViewHelper.clearLoadingView();
-            mContentView.removeView(mBaseViewHelper.getView());
-            isAddedView = false;
+
+        if (mBaseViewHelper.getView() == null) {
+            return;
+        }
+        ViewGroup parent = (ViewGroup) mBaseViewHelper.getView().getParent();
+        if (parent != null) {
+            parent.removeView(mBaseViewHelper.getView());
         }
     }
 
@@ -218,17 +220,14 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
         if (getView() == null) {
             return;
         }
-        if (!isAddedView) {
-            isAddedView = true;
-            mBaseViewHelper.getView().setClickable(true);
+        mBaseViewHelper.getView().setClickable(true);
 
-            if (mNestedParentLayout != null) {
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
-                mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
-            } else {
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-                mContentView.addView(mBaseViewHelper.getView(), params);
-            }
+        if (mNestedParentLayout != null) {
+            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
+            mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
+        } else {
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+            mContentView.addView(mBaseViewHelper.getView(), params);
         }
     }
 }
