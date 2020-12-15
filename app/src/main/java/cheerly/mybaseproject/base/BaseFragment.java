@@ -1,15 +1,14 @@
 package cheerly.mybaseproject.base;
 
 import android.os.Bundle;
-
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 
@@ -31,6 +30,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     private BaseViewHelper mBaseViewHelper = null;
     private RelativeLayout mContentView;
     private boolean isAddedView = false;
+    private ViewGroup mNestedParentLayout;
 
     public BaseActivity getContext() {
         return (BaseActivity) getActivity();
@@ -206,15 +206,29 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
         clearLoadingView();
     }
 
+    /**
+     * 设置空页面或者无网页面要附加的Parent Layout，不设置是整个父布局。
+     */
+    @Override
+    public void setNestedParentLayout(ViewGroup parent) {
+        mNestedParentLayout = parent;
+    }
+
     private void addLoadView() {
         if (getView() == null) {
             return;
         }
         if (!isAddedView) {
-            mBaseViewHelper.getView().setClickable(true);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            mContentView.addView(mBaseViewHelper.getView(), params);
             isAddedView = true;
+            mBaseViewHelper.getView().setClickable(true);
+
+            if (mNestedParentLayout != null) {
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
+                mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
+            } else {
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+                mContentView.addView(mBaseViewHelper.getView(), params);
+            }
         }
     }
 }

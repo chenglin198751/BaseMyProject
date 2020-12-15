@@ -6,22 +6,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.appcompat.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.githang.statusbar.StatusBarCompat;
 import com.google.gson.Gson;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private RelativeLayout mBaseRootView;
     private boolean isAddedView = false;
     private View mContentView = null;
+    private ViewGroup mNestedParentLayout;
 
     @CallSuper
     @Override
@@ -250,6 +249,14 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     /**
+     * 设置空页面或者无网页面要附加的Parent Layout，不设置是整个父布局。
+     */
+    @Override
+    public void setNestedParentLayout(ViewGroup parent) {
+        mNestedParentLayout = parent;
+    }
+
+    /**
      * 设置状态栏文字和颜色，不兼容Android6.0以下
      */
     public void setStatusBarLightDark(boolean isLightBar) {
@@ -271,9 +278,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         if (!isAddedView) {
             isAddedView = true;
             mBaseViewHelper.getView().setClickable(true);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            params.addRule(RelativeLayout.BELOW, R.id.main_title);
-            mBaseRootView.addView(mBaseViewHelper.getView(), params);
+
+            if (mNestedParentLayout != null) {
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
+                mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
+            } else {
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+                params.addRule(RelativeLayout.BELOW, R.id.main_title);
+                mBaseRootView.addView(mBaseViewHelper.getView(), params);
+            }
         }
     }
 
