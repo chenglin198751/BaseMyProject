@@ -1,6 +1,7 @@
 package cheerly.mybaseproject.base;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import cheerly.mybaseproject.widget.WaitDialog;
 
@@ -20,4 +21,6 @@ public interface ImplBaseView {
     WaitDialog showWaitDialog();
 
     void dismissWaitDialog();
+
+    void setNestedParentLayout(ViewGroup parent);
 }
