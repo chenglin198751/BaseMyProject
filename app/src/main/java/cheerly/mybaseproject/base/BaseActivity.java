@@ -41,7 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private BaseViewHelper mBaseViewHelper = null;
     private WaitDialog mWaitDialog;
     private RelativeLayout mBaseRootView;
-    private boolean isAddedView = false;
     private View mContentView = null;
     private ViewGroup mNestedParentLayout;
 
@@ -214,9 +213,12 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 清除contentView里面的加载进度
      */
     private void clearLoadingView() {
-        if (isAddedView) {
-            mBaseRootView.removeView(mBaseViewHelper.getView());
-            isAddedView = false;
+        if (mBaseViewHelper.getView() == null) {
+            return;
+        }
+        ViewGroup parent = (ViewGroup) mBaseViewHelper.getView().getParent();
+        if (parent != null) {
+            parent.removeView(mBaseViewHelper.getView());
         }
     }
 
@@ -275,18 +277,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     private void addLoadView() {
-        if (!isAddedView) {
-            isAddedView = true;
-            mBaseViewHelper.getView().setClickable(true);
+        mBaseViewHelper.getView().setClickable(true);
 
-            if (mNestedParentLayout != null) {
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
-                mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
-            } else {
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-                params.addRule(RelativeLayout.BELOW, R.id.main_title);
-                mBaseRootView.addView(mBaseViewHelper.getView(), params);
-            }
+        if (mNestedParentLayout != null) {
+            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
+            mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
+        } else {
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+            params.addRule(RelativeLayout.BELOW, R.id.main_title);
+            mBaseRootView.addView(mBaseViewHelper.getView(), params);
         }
     }
 
