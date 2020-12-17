@@ -20,10 +20,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -32,6 +28,9 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -726,6 +725,8 @@ public class BaseUtils {
             String[] keyValue = param.split("=");
             if (keyValue.length == 2) {
                 entity.params.put(keyValue[0], keyValue[1]);
+            } else if (keyValue.length == 1) {
+                entity.params.put(keyValue[0], null);
             }
         }
 
