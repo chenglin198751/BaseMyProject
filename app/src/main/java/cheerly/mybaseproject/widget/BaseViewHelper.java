@@ -12,7 +12,6 @@ import cheerly.mybaseproject.R;
 public class BaseViewHelper {
     private Context mContext;
     private View mView;
-    private View mShadowView;
     private View.OnClickListener mTempClickListener;
 
     private View.OnClickListener mClickListener = new View.OnClickListener() {
