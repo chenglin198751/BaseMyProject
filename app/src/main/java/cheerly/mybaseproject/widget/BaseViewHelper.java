@@ -52,7 +52,6 @@ public class BaseViewHelper {
      */
     public void showEmptyText(String text, View.OnClickListener listener) {
         mView = View.inflate(mContext, R.layout.base_empty_layout, null);
-        ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
         TextView textView = mView.findViewById(R.id.empty_text);
 
         if (!TextUtils.isEmpty(text)) {
@@ -64,18 +63,15 @@ public class BaseViewHelper {
         if (listener != null) {
             mTempClickListener = listener;
         }
-
-        emptyIcon.setImageResource(R.drawable.empty_icon);
     }
 
     /**
      * 设置无网页面
      */
     public void showNoNetView(String text, View.OnClickListener listener) {
-        mView = View.inflate(mContext, R.layout.base_empty_layout, null);
-        ImageView emptyIcon = mView.findViewById(R.id.empty_icon);
+        mView = View.inflate(mContext, R.layout.base_no_net_layout, null);
 
-        TextView textView = mView.findViewById(R.id.empty_text);
+        TextView textView = mView.findViewById(R.id.net_text);
         if (!TextUtils.isEmpty(text)) {
             textView.setText(text);
         }
@@ -83,7 +79,6 @@ public class BaseViewHelper {
         if (listener != null) {
             mTempClickListener = listener;
         }
-        emptyIcon.setImageResource(R.drawable.net_error_icon);
     }
 
 
