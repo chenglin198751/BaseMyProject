@@ -140,3 +140,6 @@
 
         Rect rect = new Rect();
         mView.getGlobalVisibleRect(rect);
+
+10、ConstraintLayout使用场景
+        https://mp.weixin.qq.com/s/Z_TnoyMRYZEQXvlqiKX8Uw
