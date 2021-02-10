@@ -143,3 +143,7 @@
 
 10、ConstraintLayout使用场景
         https://mp.weixin.qq.com/s/Z_TnoyMRYZEQXvlqiKX8Uw
+
+11、优化recyclerView嵌套时，view没服用导致的卡顿
+        RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
+        mRecyclerView.setRecycledViewPool(viewPool);
