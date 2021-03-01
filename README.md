@@ -239,6 +239,9 @@
 
 **79、PullScrollView**：重写overScrollBy()方法可以实现下拉交互特效
 
-
-
-               
+**80、App实现黑白模式**：在BaseActivity的onCreate()种实现：
+    Paint paint = new Paint();
+    ColorMatrix cm = new ColorMatrix();
+    cm.setSaturation(0);
+    paint.setColorFilter(new ColorMatrixColorFilter(cm));
+    getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE,paint);
