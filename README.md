@@ -245,3 +245,9 @@
     cm.setSaturation(0);
     paint.setColorFilter(new ColorMatrixColorFilter(cm));
     getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE,paint);
+
+**81、MMKV键值对存储，可替代SP使用**：https://github.com/Tencent/MMKV/blob/master/README_CN.md
+
+**82、安卓开源的图标库**：
+    https://github.com/danielgindi/Charts
+    https://github.com/PhilJay/MPAndroidChart
