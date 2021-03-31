@@ -25,7 +25,8 @@ public class IntegerDefault0Adapter implements JsonSerializer<Integer>, JsonDese
         try {
             return json.getAsInt();
         } catch (NumberFormatException e) {
-            throw new JsonSyntaxException(e);
+            //定义为int类型,如果后台返回""或者null,则返回0
+            return 0;
         }
     }
 

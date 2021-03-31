@@ -25,7 +25,8 @@ public class LongDefault0Adapter implements JsonSerializer<Long>, JsonDeserializ
         try {
             return json.getAsLong();
         } catch (NumberFormatException e) {
-            throw new JsonSyntaxException(e);
+            //定义为long类型,如果后台返回""或者null,则返回0
+            return 0L;
         }
     }
 
