@@ -25,7 +25,8 @@ public class FloatDefault0Adapter implements JsonSerializer<Float>, JsonDeserial
         try {
             return json.getAsFloat();
         } catch (NumberFormatException e) {
-            throw new JsonSyntaxException(e);
+            //定义为Float类型,如果后台返回""或者null,则返回0
+            return 0F;
         }
     }
 

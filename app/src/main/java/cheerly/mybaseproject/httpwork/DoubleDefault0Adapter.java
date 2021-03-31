@@ -25,7 +25,8 @@ public class DoubleDefault0Adapter implements JsonSerializer<Double>, JsonDeseri
         try {
             return json.getAsDouble();
         } catch (NumberFormatException e) {
-            throw new JsonSyntaxException(e);
+            //定义为double类型,如果后台返回""或者null,则返回0.00
+            return 0.00D;
         }
     }
 
