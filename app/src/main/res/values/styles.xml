@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- 对话框 -->
     <style name="dialog">
         <item name="android:windowFrame">@null</item>
@@ -47,6 +47,7 @@
         <item name="colorPrimary">@color/black</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
     <!-- 第一个启动的Activity，为了消除白屏或黑屏，设置了windowBackground -->
