@@ -248,6 +248,8 @@
 
 **81、MMKV键值对存储，可替代SP使用**：https://github.com/Tencent/MMKV/blob/master/README_CN.md
 
-**82、安卓开源的图标库**：
+**82、安卓开源的图表库**：
     https://github.com/danielgindi/Charts
     https://github.com/PhilJay/MPAndroidChart
+
+**83、监听键盘输入法弹出隐藏**：https://github.com/yshrsmz/KeyboardVisibilityEvent
