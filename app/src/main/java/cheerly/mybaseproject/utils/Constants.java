@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import cheerly.mybaseproject.base.BaseApp;
+import cheerly.mybaseproject.httpwork.BooleanDefaultAdapter;
 import cheerly.mybaseproject.httpwork.DoubleDefault0Adapter;
 import cheerly.mybaseproject.httpwork.FloatDefault0Adapter;
 import cheerly.mybaseproject.httpwork.IntegerDefault0Adapter;
@@ -29,6 +30,8 @@ public class Constants {
             .registerTypeAdapter(long.class, new LongDefault0Adapter())
             .registerTypeAdapter(Float.class, new FloatDefault0Adapter())
             .registerTypeAdapter(float.class, new FloatDefault0Adapter())
+            .registerTypeAdapter(Boolean.class, new BooleanDefaultAdapter())
+            .registerTypeAdapter(boolean.class, new BooleanDefaultAdapter())
             .create();
 
     public static final String ACTION_GET_PHOTO_LIST = "ACTION_GET_PHOTO_LIST";
