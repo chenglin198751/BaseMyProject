@@ -253,3 +253,5 @@
     https://github.com/PhilJay/MPAndroidChart
 
 **83、监听键盘输入法弹出隐藏**：https://github.com/yshrsmz/KeyboardVisibilityEvent
+
+**84、gson解析容错**：https://github.com/getActivity/GsonFactory
