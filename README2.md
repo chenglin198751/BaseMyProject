@@ -141,6 +141,9 @@
         Rect rect = new Rect();
         mView.getGlobalVisibleRect(rect);
 
+        int[] local = new int[2];
+        mBtnAdd.getLocationInWindow(local);
+
 10、ConstraintLayout使用场景
         https://mp.weixin.qq.com/s/Z_TnoyMRYZEQXvlqiKX8Uw
 
