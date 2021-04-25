@@ -150,3 +150,14 @@
 11、优化recyclerView嵌套recyclerView时，view没复用导致的卡顿
         RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
         mRecyclerView.setRecycledViewPool(viewPool);
+
+12、ViewPager执行假滑动：
+        if (!mViewPager.isFakeDragging()) {
+            mViewPager.beginFakeDrag();
+        }
+        if (mViewPager.isFakeDragging()) {
+            mViewPager.fakeDragBy(-1f);
+        }
+        if (mViewPager.isFakeDragging()){
+            mViewPager.endFakeDrag();
+        }
