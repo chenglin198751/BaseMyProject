@@ -6,9 +6,11 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -18,9 +20,11 @@ import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseRecyclerViewAdapter;
 import cheerly.mybaseproject.base.BaseRecyclerViewHolder;
+import cheerly.mybaseproject.listener.OnSingleClickListener;
 import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.utils.SmartImageLoader;
 import cheerly.mybaseproject.view.pullrefresh.PullToRefreshView;
+import cheerly.mybaseproject.widget.ToastUtils;
 import cheerly.mybaseproject.widget.ViewPagerLayoutManager;
 
 /**
@@ -84,27 +88,11 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
 
         mAdapter = new MyAdapter(this);
-        ViewPagerLayoutManager mLayoutManager = new ViewPagerLayoutManager(getContext(), LinearLayoutManager.VERTICAL);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         setData(13, true);
-
-        mLayoutManager.setOnViewPagerListener(new ViewPagerLayoutManager.OnViewPagerListener() {
-            @Override
-            public void onPageRelease(boolean isNext, int position) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position, boolean isBottom) {
-
-            }
-
-            @Override
-            public void onLayoutComplete() {
-
-            }
-        });
     }
 
     private void setData(int count, boolean isRefresh) {
@@ -148,22 +136,45 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
         class ListHolder extends BaseRecyclerViewHolder {
             ImageView imageView;
+            Button btnDelete;
 
             public ListHolder(View itemView) {
                 super(itemView);
                 imageView = itemView.findViewById(R.id.image_view);
-
-                ViewGroup.LayoutParams params = imageView.getLayoutParams();
-                params.width = Constants.getScreenWidth();
-                params.height = Constants.getScreenHeight();
-                imageView.setLayoutParams(params);
+                btnDelete = itemView.findViewById(R.id.btn_delete);
             }
 
             @Override
-            public void onBind(int position) {
+            public void onBind(final int position) {
+                Log.v("tag_5","position = " + position);
                 SmartImageLoader.load(imageView, getData().get(position).url, -1, -1, 0);
-            }
+                btnDelete.setText("删除 " + getAdapterPosition());
+                btnDelete.setTag(getData().get(position).url);
+                btnDelete.setOnClickListener(new OnSingleClickListener() {
+                    @Override
+                    public void onSingleClick(View v) {
+                        String url = (String) v.getTag();
+                        int index = 0;
+                        for (int i = 0; i < getData().size(); i++) {
+                            if (getData().get(i).url.equals(url)){
+                                index = i;
+                                break;
+                            }
+                        }
 
+                        Log.v("tag_999","index = " + index);
+                        getData().remove(index);
+                        notifyItemRemoved(index);
+                    }
+                });
+
+                imageView.setOnClickListener(new OnSingleClickListener() {
+                    @Override
+                    public void onSingleClick(View v) {
+                        ToastUtils.show("position = " + getAdapterPosition());
+                    }
+                });
+            }
 
         }
     }

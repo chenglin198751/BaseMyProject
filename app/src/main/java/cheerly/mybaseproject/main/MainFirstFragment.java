@@ -5,11 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import cheerly.mybaseproject.base.BaseFragment;
 import cheerly.mybaseproject.R;
+import cheerly.mybaseproject.base.BaseFragment;
 import cheerly.mybaseproject.httpwork.HttpUtils;
-import cheerly.mybaseproject.test.TestConsecutiveNestScrollActivity;
-import cheerly.mybaseproject.widget.BaseWebViewActivity;
+import cheerly.mybaseproject.test.TestRecyclerViewRefreshActivity;
 import cheerly.mybaseproject.widget.ToastUtils;
 
 /**
@@ -30,7 +29,8 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaseWebViewActivity.start(getContext(),"https://x5.tencent.com/tbs/guide/sdkInit.html","test");
+                Intent intent = new Intent(getContext(), TestRecyclerViewRefreshActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -46,19 +46,5 @@ public class MainFirstFragment extends BaseFragment {
         return R.layout.main_first_frag_layout;
     }
 
-    private void getData(){
-        String url = "http://wanandroid.com/wxarticle/chapters/json";
-        HttpUtils.get(getContext(), url, new HttpUtils.HttpCallback() {
-            @Override
-            public void onSuccess(String result) {
-                Log.v("tag_3","result = " + result);
-            }
-
-            @Override
-            public void onFailure(HttpUtils.HttpException e) {
-                ToastUtils.show(e.errorMsg);
-            }
-        });
-    }
 
 }
