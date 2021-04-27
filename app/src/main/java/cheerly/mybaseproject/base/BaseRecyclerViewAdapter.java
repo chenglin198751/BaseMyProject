@@ -17,36 +17,6 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         return list.size();
     }
 
-    public void add(T t) {
-        if (null != t) {
-            list.add(t);
-            notifyItemChanged(getItemPosition(t));
-        }
-    }
-
-    public void add(int pos, T t) {
-        if (null != t && pos >= 0 && pos <= list.size() - 1) {
-            list.add(pos, t);
-
-        } else if (null != t && pos == list.size()) {
-            list.add(t);
-        }
-        notifyItemChanged(pos);
-    }
-
-    public void remove(int pos) {
-        if (list != null && pos < list.size()) {
-            list.remove(pos);
-            notifyItemRemoved(pos);
-        }
-    }
-
-    public void remove(T t) {
-        if (null != t) {
-            notifyItemRemoved(getItemPosition(t));
-        }
-    }
-
     public void clear() {
         list.clear();
         notifyDataSetChanged();

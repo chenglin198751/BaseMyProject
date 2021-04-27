@@ -44,37 +44,6 @@ public abstract class BaseListViewAdapter<T> extends BaseAdapter {
     @Override
     public abstract View getView(int i, View view, ViewGroup viewGroup);
 
-    public void add(T t) {
-        if (null != t) {
-            list.add(t);
-            notifyDataSetChanged();
-        }
-    }
-
-    public void add(int pos, T t) {
-        if (null != t && pos >= 0 && pos <= list.size() - 1) {
-            list.add(pos, t);
-
-        } else if (null != t && pos == list.size()) {
-            list.add(t);
-        }
-        notifyDataSetChanged();
-    }
-
-    public void remove(int pos) {
-        if (list != null && pos < list.size()) {
-            list.remove(pos);
-            notifyDataSetChanged();
-        }
-    }
-
-    public void remove(T t) {
-        if (null != t) {
-            list.remove(t);
-            notifyDataSetChanged();
-        }
-    }
-
     public void clear() {
         list.clear();
         notifyDataSetChanged();
