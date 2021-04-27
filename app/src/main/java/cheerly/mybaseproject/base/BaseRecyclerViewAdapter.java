@@ -20,7 +20,7 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     public void add(T t) {
         if (null != t) {
             list.add(t);
-            notifyDataSetChanged();
+            notifyItemChanged(getItemPosition(t));
         }
     }
 
@@ -31,26 +31,34 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         } else if (null != t && pos == list.size()) {
             list.add(t);
         }
-        notifyDataSetChanged();
+        notifyItemChanged(pos);
     }
 
     public void remove(int pos) {
         if (list != null && pos < list.size()) {
             list.remove(pos);
-            notifyDataSetChanged();
+            notifyItemRemoved(pos);
         }
     }
 
     public void remove(T t) {
         if (null != t) {
-            list.remove(t);
-            notifyDataSetChanged();
+            notifyItemRemoved(getItemPosition(t));
         }
     }
 
     public void clear() {
         list.clear();
         notifyDataSetChanged();
+    }
+
+    private int getItemPosition(T t) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).equals(t)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public void appendDataList(Collection<? extends T> collection) {
