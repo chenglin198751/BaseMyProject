@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseFragment;
 
 /**
@@ -38,11 +37,11 @@ public class ShowFragmentHelper {
     private ShowFragmentHelper() {
     }
 
-    public BaseFragment showTabFragment(int index) {
-        return showTabFragment(null, index);
+    public BaseFragment showTabFragment(int viewId, int index) {
+        return showTabFragment(viewId, null, index);
     }
 
-    public BaseFragment showTabFragment(Bundle bundle, int index) {
+    public BaseFragment showTabFragment(int viewId, Bundle bundle, int index) {
         if (FRAGMENTS == null || FRAGMENTS.length <= 0) {
             throw new IllegalArgumentException("FRAGMENTS.length must >0");
         }
@@ -70,7 +69,7 @@ public class ShowFragmentHelper {
             }
         }
 
-        addFragment(mFragArray[index], ft);
+        addFragment(viewId, mFragArray[index], ft);
         showFragment(ft, index);
         ft.commitAllowingStateLoss();
         mSelectedTab = index;
@@ -89,9 +88,9 @@ public class ShowFragmentHelper {
         }
     }
 
-    private void addFragment(Fragment fragment, FragmentTransaction ft) {
+    private void addFragment(int viewId, Fragment fragment, FragmentTransaction ft) {
         if (!fragment.isAdded() && fragment.getTag() == null) {
-            ft.add(R.id.fragment_base_id, fragment, fragment.getClass().getName());
+            ft.add(viewId, fragment, fragment.getClass().getName());
         }
     }
 }

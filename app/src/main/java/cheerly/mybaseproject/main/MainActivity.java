@@ -74,7 +74,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 用来让某个tab显示
      */
     public void showTab(int selectedIndex) {
-        BaseFragment baseFragment = mFragHelper.showTabFragment(selectedIndex);
+        BaseFragment baseFragment = mFragHelper.showTabFragment(R.id.fragment_base_id, selectedIndex);
         for (int index = 0; index < TAB_BOTTOM_ID_ARRAY.length; index++) {
             if (selectedIndex == index) {
                 findViewById(TAB_BOTTOM_ID_ARRAY[index]).setSelected(true);
