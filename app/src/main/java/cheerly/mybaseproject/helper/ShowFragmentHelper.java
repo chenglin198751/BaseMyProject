@@ -69,28 +69,28 @@ public class ShowFragmentHelper {
             }
         }
 
-        addFragment(viewId, mFragArray[index], ft);
-        showFragment(ft, index);
+        addFragment(viewId, mFragArray[index]);
+        showFragment(index);
         ft.commitAllowingStateLoss();
         mSelectedTab = index;
         return mFragArray[index];
     }
 
-    private void showFragment(FragmentTransaction ft, final int index) {
+    private void showFragment(final int index) {
         for (int i = 0; i < mFragArray.length; i++) {
             if (mFragArray[i] != null) {
                 if (i == index) {
-                    ft.show(mFragArray[i]);
+                    mFragmentManager.beginTransaction().show(mFragArray[i]);
                 } else {
-                    ft.hide(mFragArray[i]);
+                    mFragmentManager.beginTransaction().hide(mFragArray[i]);
                 }
             }
         }
     }
 
-    private void addFragment(int viewId, Fragment fragment, FragmentTransaction ft) {
+    private void addFragment(int viewId, Fragment fragment) {
         if (!fragment.isAdded() && fragment.getTag() == null) {
-            ft.add(viewId, fragment, fragment.getClass().getName());
+            mFragmentManager.beginTransaction().add(viewId, fragment, fragment.getClass().getName());
         }
     }
 }
