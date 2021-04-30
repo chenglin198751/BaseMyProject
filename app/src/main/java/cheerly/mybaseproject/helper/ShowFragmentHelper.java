@@ -2,6 +2,7 @@ package cheerly.mybaseproject.helper;
 
 import android.os.Bundle;
 
+import androidx.annotation.IdRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -37,11 +38,11 @@ public class ShowFragmentHelper {
     private ShowFragmentHelper() {
     }
 
-    public BaseFragment showTabFragment(int viewId, int index) {
+    public BaseFragment showTabFragment(@IdRes int viewId, int index) {
         return showTabFragment(viewId, null, index);
     }
 
-    public BaseFragment showTabFragment(int viewId, Bundle bundle, int index) {
+    public BaseFragment showTabFragment(@IdRes int viewId, Bundle bundle, int index) {
         if (FRAGMENTS == null || FRAGMENTS.length <= 0) {
             throw new IllegalArgumentException("FRAGMENTS.length must >0");
         }
@@ -88,7 +89,7 @@ public class ShowFragmentHelper {
         }
     }
 
-    private void addFragment(int viewId, Fragment fragment, FragmentTransaction ft) {
+    private void addFragment(@IdRes int viewId, Fragment fragment, FragmentTransaction ft) {
         if (!fragment.isAdded() && fragment.getTag() == null) {
             ft.add(viewId, fragment, fragment.getClass().getName());
         }
