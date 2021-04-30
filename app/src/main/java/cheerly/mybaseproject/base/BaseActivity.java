@@ -54,7 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         if (onKeepSingleActivity()) {
             Bundle bundle = new Bundle();
             bundle.putString(BaseAction.Keys.ACTIVITY_NAME, this.getClass().getName());
-            BaseAction.sendBroadcast(BaseAction.ACTION_KEEP_SINGLE_ACTIVITY, bundle);
+            BaseAction.sendBroadcast(BaseAction.System.ACTION_KEEP_SINGLE_ACTIVITY, bundle);
         }
         registerBroadcastReceiver();
 
@@ -173,7 +173,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @CallSuper
     @Override
     public void onBroadcastReceiver(String action, Bundle bundle) {
-        if (BaseAction.ACTION_KEEP_SINGLE_ACTIVITY.equals(action)) {
+        if (BaseAction.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(action)) {
             //根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
             if (onKeepSingleActivity()) {
                 String className = this.getClass().getName();
@@ -181,7 +181,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
                     finish();
                 }
             }
-        } else if (BaseAction.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
+        } else if (BaseAction.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
             //只保留MainActivity不关闭
             if (!this.getClass().getSimpleName().equals(MainActivity.CLASS_NAME)) {
                 finish();
@@ -324,14 +324,14 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     private void registerBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BaseAction.ACTION_BASE_BROADCAST);
+        intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BaseAction.ACTION_BASE_BROADCAST)) {
+            if (intent.getAction().equals(BaseAction.System.ACTION_BASE_BROADCAST)) {
                 String myAction = intent.getStringExtra("action");
                 onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
             }
