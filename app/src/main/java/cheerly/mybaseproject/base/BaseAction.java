@@ -21,11 +21,12 @@ public class BaseAction {
         LocalBroadcastManager.getInstance(BaseApp.getApp()).sendBroadcast(intent);
     }
 
-    public interface Keys{
+    public interface Keys {
         String ACTIVITY_NAME = "activity_name";
     }
 
     public final static String ACTION_BASE_BROADCAST = "ACTION_BASE_BROADCAST";
     public final static String ACTION_KEEP_SINGLE_ACTIVITY = "ACTION_KEEP_SINGLE_ACTIVITY";
+    public final static String ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY = "ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY";
 
 }

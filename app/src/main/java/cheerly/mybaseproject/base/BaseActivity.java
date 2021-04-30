@@ -26,6 +26,7 @@ import java.util.Map;
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.helper.MainTitleHelper;
 import cheerly.mybaseproject.httpwork.HttpUtils;
+import cheerly.mybaseproject.main.MainActivity;
 import cheerly.mybaseproject.utils.Constants;
 import cheerly.mybaseproject.widget.BaseViewHelper;
 import cheerly.mybaseproject.widget.WaitDialog;
@@ -172,27 +173,30 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @CallSuper
     @Override
     public void onBroadcastReceiver(String action, Bundle bundle) {
-        //根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
         if (BaseAction.ACTION_KEEP_SINGLE_ACTIVITY.equals(action)) {
+            //根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
             if (onKeepSingleActivity()) {
                 String className = this.getClass().getName();
                 if (bundle != null && className.equals(bundle.getString(BaseAction.Keys.ACTIVITY_NAME))) {
                     finish();
                 }
             }
-            return;
-        }
-
-        //通知Activity里面所有的fragment接收广告
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        if (fragments.size() > 0) {
-            for (Fragment fragment : fragments) {
-                if (fragment instanceof BaseFragment) {
-                    ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
+        } else if (BaseAction.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
+            //只保留MainActivity不关闭
+            if (!this.getClass().getSimpleName().equals(MainActivity.CLASS_NAME)) {
+                finish();
+            }
+        } else {
+            //通知Activity里面所有的fragment接收广播
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            if (fragments.size() > 0) {
+                for (Fragment fragment : fragments) {
+                    if (fragment instanceof BaseFragment) {
+                        ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
+                    }
                 }
             }
         }
-
     }
 
     /**
