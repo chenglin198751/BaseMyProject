@@ -147,6 +147,11 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
         addLoadView();
     }
 
+    public void setShowStyle(int style) {
+        mBaseViewHelper.setShowStyle(style);
+    }
+
+
     /**
      * 清除嵌入式进度条
      */
