@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -230,7 +231,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     public final void showProgress(String text) {
         hideProgress();
-        mBaseViewHelper.setLoadingText(text);
+        if (!TextUtils.isEmpty(text)) {
+            mBaseViewHelper.setLoadingText(text);
+        } else {
+            mBaseViewHelper.setLoadingText(null);
+        }
         addLoadView();
     }
 

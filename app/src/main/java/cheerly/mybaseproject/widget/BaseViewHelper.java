@@ -53,7 +53,13 @@ public class BaseViewHelper {
         mView = View.inflate(mContext, R.layout.base_loading_layout, null);
         mLoadingLinear = mView.findViewById(R.id.loading_linear);
         TextView textView = mView.findViewById(R.id.text);
-        textView.setText(text);
+
+        if (text != null) {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        } else {
+            textView.setVisibility(View.GONE);
+        }
 
         if (mStyle == TOP_STYLE) {
             mLoadingLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
