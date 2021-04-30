@@ -105,7 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 设置Activity的内容布局，取代setContentView() 方法
      */
     public final void setContentLayout(@LayoutRes int layoutResID) {
-        if (mContentView != null) {
+        if (mContentView != null && mContentView.getParent() != null) {
             mBaseRootView.removeView(mContentView);
         }
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
