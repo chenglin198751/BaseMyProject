@@ -1,6 +1,7 @@
 package cheerly.mybaseproject.test;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -95,6 +96,11 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         setData(13, true);
     }
 
+    @Override
+    protected boolean onKeepSingleActivity() {
+        return true;
+    }
+
     private void setData(int count, boolean isRefresh) {
         List<ModelData> list = new ArrayList<ModelData>();
         for (int i = 0; i < count; i++) {
@@ -171,7 +177,8 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                 imageView.setOnClickListener(new OnSingleClickListener() {
                     @Override
                     public void onSingleClick(View v) {
-                        ToastUtils.show("position = " + getAdapterPosition());
+                        Intent intent = new Intent(v.getContext(), TestRecyclerViewRefreshActivity.class);
+                        v.getContext().startActivity(intent);
                     }
                 });
             }
