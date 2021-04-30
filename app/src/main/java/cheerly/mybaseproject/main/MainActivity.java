@@ -17,6 +17,7 @@ import cheerly.mybaseproject.helper.ShowFragmentHelper;
 import cheerly.mybaseproject.widget.ToastUtils;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
+    public static final String CLASS_NAME = "MainActivity";
     private final int TIME_LONG = 3 * 1000;
     private long mLastTime = 0;
     public static final int TAB_FIRST = 0;
