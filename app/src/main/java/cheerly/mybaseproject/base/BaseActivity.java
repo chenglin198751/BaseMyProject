@@ -49,6 +49,12 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarLightDark(true);
+
+        if (onKeepSingleActivity()) {
+            Bundle bundle = new Bundle();
+            bundle.putString(BaseAction.Keys.ACTIVITY_NAME, this.getClass().getName());
+            BaseAction.sendBroadcast(BaseAction.ACTION_KEEP_SINGLE_ACTIVITY, bundle);
+        }
         registerBroadcastReceiver();
 
         setContentView(R.layout.base_activity_layout);
@@ -59,6 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         if (getTitle() != null) {
             mTitleHelper.setTitle(getTitle().toString());
         }
+
     }
 
     public BaseActivity getContext() {
@@ -128,6 +135,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         mTitleHelper.setTitle(title.toString());
     }
 
+    /**
+     * 子类实现此方法，返回true就是：
+     * 设置是否保留此Activity只存在一个。
+     * 比如某个场景全部评论列表页被多次打开，那么只保留最后一次被打开的页面。
+     */
+    protected boolean onKeepSingleActivity() {
+        return false;
+    }
+
     @CallSuper
     @Override
     protected void onDestroy() {
@@ -156,6 +172,18 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @CallSuper
     @Override
     public void onBroadcastReceiver(String action, Bundle bundle) {
+        //根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
+        if (BaseAction.ACTION_KEEP_SINGLE_ACTIVITY.equals(action)) {
+            if (onKeepSingleActivity()) {
+                String className = this.getClass().getName();
+                if (bundle != null && className.equals(bundle.getString(BaseAction.Keys.ACTIVITY_NAME))) {
+                    finish();
+                }
+            }
+            return;
+        }
+
+        //通知Activity里面所有的fragment接收广告
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         if (fragments.size() > 0) {
             for (Fragment fragment : fragments) {
@@ -164,6 +192,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
                 }
             }
         }
+
     }
 
     /**
