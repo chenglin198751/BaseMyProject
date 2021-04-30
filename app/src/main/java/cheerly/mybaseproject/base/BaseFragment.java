@@ -1,6 +1,7 @@
 package cheerly.mybaseproject.base;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,10 +139,10 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     @Override
     public final void showProgress(String text) {
         clearLoadingView();
-        if (text != null) {
+        if (!TextUtils.isEmpty(text)) {
             mBaseViewHelper.setLoadingText(text);
         } else {
-            mBaseViewHelper.setLoadingText(getString(R.string.data_loading));
+            mBaseViewHelper.setLoadingText(null);
         }
 
         addLoadView();
