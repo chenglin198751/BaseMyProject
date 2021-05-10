@@ -161,3 +161,5 @@
         if (mViewPager.isFakeDragging()){
             mViewPager.endFakeDrag();
         }
+13、直接声明List并赋值：
+    final List<String> numbers = Arrays.asList("1", "2", "3");
