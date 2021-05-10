@@ -60,10 +60,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         showTab(TAB_FIRST);
-
-        //自定义不同环境下的编译输出
-        String test = BuildConfig.TEST;
-        Log.v("tag_999",test);
     }
 
     private void initView() {

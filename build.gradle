@@ -38,5 +38,4 @@ ext {
     //目标版本
     TARGET_SDK_VERSION = 29
 
-    TEST = ""
 }

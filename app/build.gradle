@@ -29,14 +29,14 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.release
-            buildConfigField 'String', 'TEST', '"' + 11111 + '"'
+            buildConfigField 'boolean', 'ENV_DEBUG', 'false'
         }
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
-            buildConfigField 'String', 'TEST', '"' + 22222 + '"'
+            buildConfigField 'boolean', 'ENV_DEBUG', 'true'
         }
     }
 
