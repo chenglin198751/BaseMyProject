@@ -5,11 +5,13 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import cheerly.mybaseproject.BuildConfig;
 import cheerly.mybaseproject.R;
 import cheerly.mybaseproject.base.BaseActivity;
 import cheerly.mybaseproject.base.BaseFragment;
@@ -58,6 +60,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         showTab(TAB_FIRST);
+
+        //自定义不同环境下的编译输出
+        String test = BuildConfig.TEST;
+        Log.v("tag_999",test);
     }
 
     private void initView() {
