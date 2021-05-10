@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import cheerly.mybaseproject.BuildConfig;
 import cheerly.mybaseproject.base.BaseApp;
 
 public class LogUtils {
@@ -23,7 +24,7 @@ public class LogUtils {
     }
 
     public static boolean isDebug() {
-        return isDebug;
+        return isDebug || BuildConfig.DEBUG;
     }
 
 
