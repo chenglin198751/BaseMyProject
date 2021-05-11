@@ -1,4 +1,4 @@
-# kontlin语法规则
+# kotlin语法规则
 
 **1、集合类创建** ：
      val numbers = listOf<Int>(1, 2, 3)
