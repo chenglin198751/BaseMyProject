@@ -39,6 +39,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
@@ -299,7 +300,7 @@ public class BaseUtils {
      */
     public static double formatDouble(double d, int scale) {
         BigDecimal b = new BigDecimal(d);
-        return b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return b.setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
@@ -307,7 +308,7 @@ public class BaseUtils {
      */
     public static float formatFloat(float f, int scale) {
         BigDecimal b = new BigDecimal(f);
-        return b.setScale(scale, BigDecimal.ROUND_HALF_UP).floatValue();
+        return b.setScale(scale, RoundingMode.HALF_UP).floatValue();
     }
 
 
