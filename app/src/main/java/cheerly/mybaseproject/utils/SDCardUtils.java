@@ -1,40 +1,23 @@
 package cheerly.mybaseproject.utils;
 
-import android.os.Build;
-import android.os.Environment;
-
 import java.io.File;
 
 import cheerly.mybaseproject.base.BaseApp;
 
 public class SDCardUtils {
-    public static final int TYPE_CACHE = 1;
-    public static final int TYPE_FILE = 2;
 
     /**
      * 现在的Android应用将文件放到SD卡上时总是随便创建一个目录，那这样有个问题就是卸载应用时，
      * 这些垃圾还留在用户的SD卡上导致占用存储空间（猎豹清理大师这样的工具由此应用而生）。
      * 其实Android系统已经帮我们提供了相关的API可以将文件缓存到data/data目录下，
      * 当APP卸载时，这些垃圾文件也跟着自动卸载清除了。
+     * <p>
+     * 2021-05-21 修正补充：
+     * 由于安卓11对文件存储有很大限制，导致sdcard/data/data无法正常使用，
+     * 所以存储统一改为使用app系统目录
      */
-    public static String getDataPath(int type) {
+    public static String getDataPath() {
         String cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
-        //解决一加手机禁用了/Android/data目录导致数据无法访问的问题
-        if (Build.BRAND.equalsIgnoreCase("OnePlus")){
-            return cachePath + File.separator;
-        }
-
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
-            File file = null;
-            if (type == SDCardUtils.TYPE_CACHE) {
-                file = BaseApp.getApp().getExternalCacheDir();
-            } else if (type == SDCardUtils.TYPE_FILE) {
-                file = BaseApp.getApp().getExternalFilesDir("");
-            }
-            if (file != null) {
-                cachePath = file.getAbsolutePath();
-            }
-        }
         return cachePath + File.separator;
     }
 
