@@ -29,7 +29,7 @@ public class LogUtils {
 
 
     public static String getDebugFilePath() {
-        File file = new File(SDCardUtils.getDataPath(SDCardUtils.TYPE_FILE));
+        File file = new File(SDCardUtils.getDataPath());
         return file.getParent() + File.separator + "debug.log";
     }
 
