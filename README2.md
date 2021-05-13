@@ -163,3 +163,5 @@
         }
 13、直接声明List并赋值：
     final List<String> numbers = Arrays.asList("1", "2", "3");
+
+14、复写View的 onSizeChanged() 方法可以得到宽高
