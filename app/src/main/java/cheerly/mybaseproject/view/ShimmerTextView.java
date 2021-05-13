@@ -18,6 +18,7 @@ public class ShimmerTextView extends AppCompatTextView {
     private Paint mPaint;
     private int mViewWidth = 0;
     private int mTranslate = 0;
+    private int mStartColor, mEndColor;
 
     private boolean mAnimating = true;
 
@@ -36,6 +37,11 @@ public class ShimmerTextView extends AppCompatTextView {
         mAnimating = false;
     }
 
+    public void setTextGradientColor(int startColor, int endColor) {
+        mStartColor = startColor;
+        mEndColor = endColor;
+    }
+
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -45,7 +51,7 @@ public class ShimmerTextView extends AppCompatTextView {
         if (mViewWidth > 0) {
             mPaint = getPaint();
             mLinearGradient = new LinearGradient(-mViewWidth, 0, 0, 0,
-                    new int[]{Color.parseColor("#A24D00"), Color.parseColor("#FFE500"), Color.parseColor("#A24D00")},
+                    new int[]{mStartColor, mEndColor, mStartColor},
                     new float[]{0, 0.5f, 1}, Shader.TileMode.CLAMP);
             mPaint.setShader(mLinearGradient);
             mGradientMatrix = new Matrix();
