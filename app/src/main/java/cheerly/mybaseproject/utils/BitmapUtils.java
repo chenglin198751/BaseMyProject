@@ -193,7 +193,7 @@ public class BitmapUtils {
             @Override
             public void run() {
                 String fileName = System.currentTimeMillis() + ".jpg";
-                File file = new File(SDCardUtils.getDataPath(SDCardUtils.TYPE_CACHE), fileName);
+                File file = new File(SDCardUtils.getDataPath(), fileName);
                 try {
                     FileOutputStream fos = new FileOutputStream(file);
                     bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
