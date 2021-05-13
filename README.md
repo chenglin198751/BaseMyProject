@@ -257,3 +257,4 @@
 **84、gson解析容错**：https://github.com/getActivity/GsonFactory
 
 **85、facebook开源的发光渐变文字效果**：http://facebook.github.io/shimmer-android/
+      ShimmerTextView ：简易版的发光渐变文字效果
