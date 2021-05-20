@@ -18,7 +18,7 @@ public class ShimmerTextView extends AppCompatTextView {
     private Paint mPaint;
     private int mViewWidth = 0;
     private int mTranslate = 0;
-    private int mStartColor, mEndColor;
+    private int mStartColor = 0, mEndColor = 0;
 
     private boolean mAnimating = true;
 
