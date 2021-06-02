@@ -258,3 +258,5 @@
 
 **85、facebook开源的发光渐变文字效果**：http://facebook.github.io/shimmer-android/
       ShimmerTextView ：简易版的发光渐变文字效果
+
+**86、ShapeableImageView**：谷歌官方material系列，实现圆形，圆角，等各种形状的ImageView
