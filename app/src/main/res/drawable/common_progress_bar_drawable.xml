@@ -1,0 +1,52 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--        1、普通drawable设置进度条样式：左右带圆角-->
+    <item
+        android:id="@android:id/background"
+        android:drawable="@drawable/common_progress_bar_color_bottom" />
+
+    <item android:id="@android:id/progress">
+        <scale
+            android:drawable="@drawable/common_progress_bar_color_top"
+            android:scaleWidth="100%" />
+    </item>
+
+
+    <!--    2、用.9.png 设置进度条样式-->
+    <!--    <item android:id="@android:id/background">-->
+    <!--        <nine-patch android:src="@drawable/progress_bg_drawable" >-->
+    <!--        </nine-patch>-->
+    <!--    </item>-->
+
+    <!--    <item android:id="@android:id/progress">-->
+    <!--        <clip>-->
+    <!--            <nine-patch android:src="@drawable/progress_drawable" >-->
+    <!--            </nine-patch>-->
+    <!--        </clip>-->
+    <!--    </item>-->
+
+
+    <!--    3、普通drawable设置进度条样式：左边带圆角，右边不带-->
+    <!--    <item android:id="@android:id/background">-->
+    <!--        <shape>-->
+    <!--            <corners android:radius="4dp" />-->
+    <!--            <gradient-->
+    <!--                android:angle="180"-->
+    <!--                android:centerColor="#dedede"-->
+    <!--                android:endColor="#dedede"-->
+    <!--                android:startColor="#dedede" />-->
+    <!--        </shape>-->
+    <!--    </item>-->
+    <!--    <item android:id="@android:id/progress">-->
+    <!--        <clip>-->
+    <!--            <shape>-->
+    <!--                <corners android:radius="4dp" />-->
+    <!--                <gradient-->
+    <!--                    android:centerColor="#ff7612"-->
+    <!--                    android:endColor="#ff7612"-->
+    <!--                    android:startColor="#ff7612" />-->
+    <!--            </shape>-->
+    <!--        </clip>-->
+    <!--    </item>-->
+
+
+</layer-list>
