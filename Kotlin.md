@@ -9,6 +9,7 @@ val url = "wotbox://client/market?jumpType=detail&goodsId=${item.product_code}"
 
 **3、判空操作** ：
 val size = pkgList?.size?:0
+mFragHelper!!.mSelectedTab(!!.符号表示，如果mFragHelper为空就不管，崩就崩)
 
 **4、协程使用** ：
         val job = GlobalScope.launch(Dispatchers.Default) {
@@ -24,5 +25,4 @@ val size = pkgList?.size?:0
 //绑定生命周期的协程：
         lifecycleScope.launch (Dispatchers.Default){
         }.start()
-        
         
