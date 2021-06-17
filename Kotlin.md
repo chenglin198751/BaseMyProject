@@ -6,3 +6,6 @@
 
 **2、字符连接** ：
 val url = "wotbox://client/market?jumpType=detail&goodsId=${item.product_code}"
+
+**3、判空操作** ：
+val size = pkgList?.size?:0
