@@ -1,31 +1,21 @@
-package cheerly.mybaseproject.main;
+package cheerly.mybaseproject.main
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import cheerly.mybaseproject.base.BaseFragment;
-import cheerly.mybaseproject.R;
+import android.os.Bundle
+import android.view.View
+import cheerly.mybaseproject.R
+import cheerly.mybaseproject.base.BaseFragment
 
 /**
  * Created by chenglin on 2017-9-14.
  */
-
-public class MainThirdFragment extends BaseFragment {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+class MainThirdFragment : BaseFragment() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 
-    @Override
-    protected int getContentLayout() {
-        return R.layout.main_third_frag_layout;
+    override fun getContentLayout(): Int {
+        return R.layout.main_third_frag_layout
     }
 
-    @Override
-    public void onViewCreated(Bundle savedInstanceState, View view) {
-
-    }
+    public override fun onViewCreated(savedInstanceState: Bundle?, view: View) {}
 }
