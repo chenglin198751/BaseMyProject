@@ -25,4 +25,19 @@ mFragHelper!!.mSelectedTab(!!.符号表示，如果mFragHelper为空就不管，
 //绑定生命周期的协程：
         lifecycleScope.launch (Dispatchers.Default){
         }.start()
-        
+
+**5、java get set 简写** ：
+    //---------java---------
+    public void setTitle(String titleStr) {
+        mTitleTv.setText(titleStr);
+    }
+    public String getTitle() {
+        return mTitleTv.getText().toString();
+    }
+
+    //---------kotlin---------
+    var title: String?
+        get() = mTitleTv.text.toString()
+        set(titleStr) {
+            mTitleTv.text = titleStr
+        }
