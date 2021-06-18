@@ -1,4 +1,7 @@
 # kotlin语法规则
+1、kotin语法中，方法里可以再写一个方法。把代码反编译后发现，原理就是用方法名生成了一个内部类，被嵌套的方法放在了内部类里。
+2、kotin语法中，可以对任何类实现扩展函数。把代码反编译后发现，原理就是生成了一个public static方法。
+
 
 **1、集合类创建** ：
      val numbers = listOf<Int>(1, 2, 3)
@@ -41,3 +44,9 @@ mFragHelper!!.mSelectedTab(!!.符号表示，如果mFragHelper为空就不管，
         set(titleStr) {
             mTitleTv.text = titleStr
         }
+
+**6、作用域** ：
+    public：默认，总是可见
+    internal：同模块可见
+    private：声明范围与同模块的子作用域可见
+    protected：类似于private，但对子类也可见
