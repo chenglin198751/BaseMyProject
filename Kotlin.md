@@ -50,6 +50,9 @@ mFragHelper!!.mSelectedTab(!!.符号表示，如果mFragHelper为空就不管，
     internal：同模块可见
     private：声明范围与同模块的子作用域可见
     protected：类似于private，但对子类也可见
-    
-**7、运算符** ： 
-Java中的与或运算符 |和&，kotlin中使用or和and关键字来替代
+
+**7、基础语法** ：
+1、Java中的与或运算符 |和&，kotlin中使用or和and关键字来替代
+2、const只能在companion object中使用：
+    2-1、const val 修饰的属性相当于java中的public final static修饰的常量，可以通过类名直接访问。
+    2-2、val 修饰的属性相当于java中private final static修饰的常量，由于可见行为private，所以只能通过生成getter方法访问
