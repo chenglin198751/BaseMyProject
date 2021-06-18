@@ -53,6 +53,7 @@ mFragHelper!!.mSelectedTab(!!.符号表示，如果mFragHelper为空就不管，
 
 **7、基础语法** ：
 1、Java中的与或运算符 |和&，kotlin中使用or和and关键字来替代
-2、const只能在companion object中使用：
-    2-1、const val 修饰的属性相当于java中的public final static修饰的常量，可以通过类名直接访问。
-    2-2、val 修饰的属性相当于java中private final static修饰的常量，由于可见行为private，所以只能通过生成getter方法访问
+2、关于companion object使用：
+    2-1、const只能在companion中被使用。
+    2-2、const val 修饰的属性相当于java中的public static final修饰的常量，可以通过类名直接访问(反编译会发现变成了public static final)。
+    2-3、val 修饰的属性相当于java中private static final修饰的常量，由于可见行为private，所以只能通过生成getter方法访问(反编译会发现变成了private static final)。
