@@ -1,114 +1,97 @@
-package cheerly.mybaseproject.helper;
+package cheerly.mybaseproject.helper
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import cheerly.mybaseproject.base.BaseActivity;
-import cheerly.mybaseproject.R;
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
+import cheerly.mybaseproject.R
+import cheerly.mybaseproject.base.BaseActivity
 
 /**
  * Created by chenglin on 2017-5-23.
  */
-
-public class MainTitleHelper {
-    private BaseActivity mBaseActivity;
-    private View mTitleView;
-    private RelativeLayout mMenuView;
-    private TextView mTitleTv;
-
-    public MainTitleHelper(BaseActivity baseActivity) {
-        mBaseActivity = baseActivity;
-        mTitleView = mBaseActivity.findViewById(R.id.main_title);
-        mMenuView = mTitleView.findViewById(R.id.menu_linear);
-        mTitleTv = mTitleView.findViewById(R.id.title_text);
-
-        mTitleView.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mBaseActivity.finish();
-            }
-        });
-    }
+class MainTitleHelper(private val mBaseActivity: BaseActivity) {
+    private val mTitleView: View
+    private val mMenuView: RelativeLayout
+    private val mTitleTv: TextView
 
     /**
      * 设置标题
      */
-    public void setTitle(String titleStr) {
-        mTitleTv.setText(titleStr);
-    }
-
-    public String getTitle() {
-        return mTitleTv.getText().toString();
-    }
+    public var title: String?
+        get() = mTitleTv.text.toString()
+        set(titleStr) {
+            mTitleTv.text = titleStr
+        }
 
     /**
      * 设置标题
      */
-    public void setTitle(int title_resId) {
-        mTitleTv.setText(title_resId);
+    fun setTitle(title_resId: Int) {
+        mTitleTv.setText(title_resId)
     }
 
     /**
      * 隐藏标题栏
      */
-    public void hideTitleBar() {
-        mTitleView.setVisibility(View.GONE);
+    fun hideTitleBar() {
+        mTitleView.visibility = View.GONE
     }
 
     /**
      * 设置左上角返回图片的点击监听事件
      */
-    public void setReturnListener(View.OnClickListener listener) {
-        mTitleView.findViewById(R.id.back_btn).setOnClickListener(listener);
+    fun setReturnListener(listener: View.OnClickListener?) {
+        mTitleView.findViewById<View>(R.id.back_btn).setOnClickListener(listener)
     }
-
 
     /**
      * 为右侧的菜单增加指定的view
      */
-    public void addMenuView(View view) {
-        mMenuView.setVisibility(View.VISIBLE);
-        mMenuView.removeAllViews();
-        mMenuView.addView(view, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    fun addMenuView(view: View?) {
+        mMenuView.visibility = View.VISIBLE
+        mMenuView.removeAllViews()
+        mMenuView.addView(view, RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
     }
 
     /**
      * 为右侧的第一个菜单图片设置点击监听
      */
-    public void addMenuIcon(int resId, View.OnClickListener listener) {
-        TextView menuTv = mTitleView.findViewById(R.id.menu_text);
-        ImageView menuIcon = mTitleView.findViewById(R.id.menu_icon);
-
-        mMenuView.setVisibility(View.VISIBLE);
-        menuTv.setVisibility(View.GONE);
-        menuIcon.setVisibility(View.VISIBLE);
-
-        menuIcon.setImageResource(resId);
-        menuIcon.setOnClickListener(listener);
+    fun addMenuIcon(resId: Int, listener: View.OnClickListener?) {
+        val menuTv = mTitleView.findViewById<TextView>(R.id.menu_text)
+        val menuIcon = mTitleView.findViewById<ImageView>(R.id.menu_icon)
+        mMenuView.visibility = View.VISIBLE
+        menuTv.visibility = View.GONE
+        menuIcon.visibility = View.VISIBLE
+        menuIcon.setImageResource(resId)
+        menuIcon.setOnClickListener(listener)
     }
 
     /**
      * 为右侧的第一个菜单文字设置点击监听
      */
-    public void addMenuText(String text, View.OnClickListener listener) {
-        TextView menuTv = mTitleView.findViewById(R.id.menu_text);
-        ImageView menuIcon = mTitleView.findViewById(R.id.menu_icon);
-
-        mMenuView.setVisibility(View.VISIBLE);
-        menuTv.setVisibility(View.VISIBLE);
-        menuIcon.setVisibility(View.GONE);
-
-        menuTv.setText(text);
-        menuTv.setOnClickListener(listener);
+    fun addMenuText(text: String?, listener: View.OnClickListener?) {
+        val menuTv = mTitleView.findViewById<TextView>(R.id.menu_text)
+        val menuIcon = mTitleView.findViewById<ImageView>(R.id.menu_icon)
+        mMenuView.visibility = View.VISIBLE
+        menuTv.visibility = View.VISIBLE
+        menuIcon.visibility = View.GONE
+        menuTv.text = text
+        menuTv.setOnClickListener(listener)
     }
 
     /**
      * 设置右侧的菜单隐藏还是显示
      */
-    public void setMenuVisible(int visible) {
-        mMenuView.setVisibility(visible);
+    fun setMenuVisible(visible: Int) {
+        mMenuView.visibility = visible
+    }
+
+    init {
+        mTitleView = mBaseActivity.findViewById(R.id.main_title)
+        mMenuView = mTitleView.findViewById(R.id.menu_linear)
+        mTitleTv = mTitleView.findViewById(R.id.title_text)
+        mTitleView.findViewById<View>(R.id.back_btn).setOnClickListener { mBaseActivity.finish() }
     }
 }
