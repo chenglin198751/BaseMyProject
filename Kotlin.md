@@ -50,3 +50,6 @@ mFragHelper!!.mSelectedTab(!!.符号表示，如果mFragHelper为空就不管，
     internal：同模块可见
     private：声明范围与同模块的子作用域可见
     protected：类似于private，但对子类也可见
+    
+**7、运算符** ： 
+Java中的与或运算符 |和&，kotlin中使用or和and关键字来替代
