@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:background="@color/black">
 
-    <cheerly.mybaseproject.view.CornerLinearLayout
+    <com.wcl.test.view.CornerLinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
@@ -80,5 +80,5 @@
                 android:textSize="15dp" />
         </LinearLayout>
 
-    </cheerly.mybaseproject.view.CornerLinearLayout>
+    </com.wcl.test.view.CornerLinearLayout>
 </LinearLayout>
