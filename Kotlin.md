@@ -57,3 +57,4 @@ mFragHelper!!.mSelectedTab(!!.符号表示，如果mFragHelper为空就不管，
     2-1、const只能在companion中被使用。
     2-2、const val 修饰的属性相当于java中的public static final修饰的常量，可以通过类名直接访问(反编译会发现变成了public static final)。
     2-3、val 修饰的属性相当于java中private static final修饰的常量，由于可见行为private，所以只能通过生成getter方法访问(反编译会发现变成了private static final)。
+3、Int.inc()自增,Int.dec()自减，但都不会改变原变量的值
