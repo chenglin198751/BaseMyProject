@@ -87,7 +87,7 @@ public class LongImageView extends WebView {
             return;
         }
 
-        HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback() {
+        HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback()  {
             @Override
             public void onSuccess(String filePath) {
                 if (isFinish()) {
@@ -100,7 +100,7 @@ public class LongImageView extends WebView {
             }
 
             @Override
-            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent) {
+            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent) {
                 if (httpCallback != null) {
                     httpCallback.onProgress(call, fileTotalSize, fileDowningSize, percent);
                 }

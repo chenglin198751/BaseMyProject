@@ -7,6 +7,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.LogUtils;
+import com.wcl.test.utils.SDCardUtils;
+
 import org.apache.http.conn.ConnectTimeoutException;
 
 import java.io.File;
@@ -21,9 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLException;
 
-import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.LogUtils;
-import com.wcl.test.utils.SDCardUtils;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
@@ -62,7 +63,7 @@ public class HttpUtils {
         //fileTotalSize  文件总大小
         //fileDowningSize  文件已经下载的大小
         //percent  文件下载的进度百分比
-        void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent);
+        void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent);
 
         void onFailure(IOException e);
     }
@@ -486,6 +487,7 @@ public class HttpUtils {
                     byte[] buffer = new byte[2048];
                     int len;
                     long sum = 0;
+                    long timeStamp = System.currentTimeMillis();
                     int lastProgress = 0;
                     while ((len = inputStream.read(buffer)) != -1) {
                         fileOutputStream.write(buffer, 0, len);
@@ -496,16 +498,21 @@ public class HttpUtils {
 
                             final long tempTotal = total;
                             final long tempSum = sum;
-                            final int tempProgress = progress;
-                            BaseUtils.getHandler().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    downloadCallback.onProgress(call, tempTotal, tempSum, tempProgress);
-                                }
-                            });
-                        }
 
+                            if (System.currentTimeMillis() - timeStamp > 1000L) {
+                                timeStamp = System.currentTimeMillis();
+                                BaseUtils.getHandler().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        float progress = (tempSum * 1f / tempTotal * 1f);
+                                        progress = BaseUtils.formatFloat(progress, 4);
+                                        downloadCallback.onProgress(call, tempTotal, tempSum, progress);
+                                    }
+                                });
+                            }
+                        }
                     }
+
                     fileOutputStream.flush();
                     inputStream.close();
                     fileOutputStream.close();
@@ -517,6 +524,7 @@ public class HttpUtils {
                             if (tempFile.exists()) {
                                 boolean isSuccess = tempFile.renameTo(new File(downLoadFilePath));
                                 if (isSuccess) {
+                                    downloadCallback.onProgress(call, tempFile.length(), tempFile.length(), 100f);
                                     downloadCallback.onSuccess(downLoadFilePath);
                                 } else {
                                     downloadCallback.onFailure(new IOException(tempPath + " rename to " + downLoadFilePath + " fail"));
