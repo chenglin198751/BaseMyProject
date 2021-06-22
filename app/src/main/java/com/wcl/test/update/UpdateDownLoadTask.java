@@ -43,9 +43,9 @@ public class UpdateDownLoadTask {
             }
 
             @Override
-            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, int percent) {
+            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent) {
                 isDownLoading = true;
-                showNotification(percent);
+                showNotification((int) (percent *100));
             }
 
             @Override
