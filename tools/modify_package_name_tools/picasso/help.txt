@@ -1,0 +1,4 @@
+命令格式如下：
+java -jar jarjar-1.4.jar process rule.txt old.jar new.jar
+
+或者将要修改的jar包，拖到modify.bat上

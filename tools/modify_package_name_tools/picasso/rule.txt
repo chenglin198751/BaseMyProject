@@ -1,0 +1,3 @@
+rule com.squareup.picasso.**  qihoo.com.squareup.picasso.@1
+rule okhttp3.**  qihoohttp.okhttp3.@1
+rule okio.**  qihoohttp.okio.@1
