@@ -739,14 +739,16 @@ public class BaseUtils {
             InputStreamReader inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
             BufferedReader bufReader = new BufferedReader(inputReader);
             String line = "";
-            StringBuilder Result = new StringBuilder();
+            StringBuilder result = new StringBuilder();
             while ((line = bufReader.readLine()) != null) {
-                Result.append(line);
+                result.append(line).append("\n");
             }
-
+            if (result.length() > 0) {
+                result.deleteCharAt(result.length() - 1);
+            }
             bufReader.close();
             inputReader.close();
-            return Result.toString();
+            return result.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
