@@ -20,6 +20,11 @@
         android:largeHeap="true"
         android:theme="@style/AppBaseTheme"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="TEST_APP_KEY"
+            android:value="${test_app_key}"/>
+
         <activity
             android:name="com.wcl.test.main.MainActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -74,6 +79,7 @@
             android:name="com.wcl.test.test.TestSnapNestViewPagerActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

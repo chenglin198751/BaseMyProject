@@ -32,6 +32,7 @@ android {
         debug {
             signingConfig signingConfigs.release
             buildConfigField 'boolean', 'ENV_DEBUG', 'false'
+            manifestPlaceholders.put("test_app_key","test_debug")
         }
         release {
             signingConfig signingConfigs.release
@@ -39,6 +40,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
             buildConfigField 'boolean', 'ENV_DEBUG', 'true'
+            manifestPlaceholders.put("test_app_key","test_release")
         }
     }
 
