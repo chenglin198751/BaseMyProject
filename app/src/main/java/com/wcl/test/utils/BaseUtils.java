@@ -32,6 +32,12 @@ import android.widget.EditText;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import com.wcl.test.base.BaseActivity;
+import com.wcl.test.base.BaseApp;
+import com.wcl.test.bean.ApkItem;
+import com.wcl.test.bean.UrlEntity;
+import com.wcl.test.widget.ToastUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -49,12 +55,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.zip.CRC32;
-
-import com.wcl.test.base.BaseActivity;
-import com.wcl.test.base.BaseApp;
-import com.wcl.test.bean.ApkItem;
-import com.wcl.test.bean.UrlEntity;
-import com.wcl.test.widget.ToastUtils;
 
 public class BaseUtils {
     private static Handler mHandler;
@@ -732,5 +732,20 @@ public class BaseUtils {
         }
 
         return entity;
+    }
+
+    public static String getFromAssets(Context context, String fileName) {
+        try {
+            InputStreamReader inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
+            BufferedReader bufReader = new BufferedReader(inputReader);
+            String line = "";
+            String Result = "";
+            while ((line = bufReader.readLine()) != null)
+                Result += line;
+            return Result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
