@@ -17,9 +17,10 @@ public class CommonFragmentViewPagerAdapter extends FragmentPagerAdapter {
     public List<String> mTitleList = new ArrayList<>();
 
     public CommonFragmentViewPagerAdapter(FragmentManager fm, List<Fragment> list) {
-        super(fm);
+        super(fm,FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mFragments = list;
     }
+
 
     @Override
     public Fragment getItem(int position) {
