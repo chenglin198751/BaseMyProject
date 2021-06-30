@@ -168,3 +168,4 @@
 
 15、混淆规则讲解：https://juejin.cn/post/6966526844552085512
 
+16、安卓共享元素动画：ActivityOptions.makeSceneTransitionAnimation
