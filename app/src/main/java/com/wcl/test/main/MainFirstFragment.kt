@@ -1,9 +1,11 @@
 package com.wcl.test.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.wcl.test.R
 import com.wcl.test.base.BaseFragment
+import com.wcl.test.test.TestViewPager2Activity
 import kotlinx.android.synthetic.main.main_first_frag_layout.*
 
 
@@ -17,7 +19,8 @@ class MainFirstFragment : BaseFragment() {
 
     override fun onViewCreated(savedInstanceState: Bundle?, view: View) {
         button_1.setOnClickListener {
-
+            val intent = Intent(context, TestViewPager2Activity::class.java)
+            startActivity(intent)
         }
     }
 

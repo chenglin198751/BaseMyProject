@@ -62,6 +62,10 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.wcl.test.test.TestViewPager2Activity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.wcl.test.test.TestPullDownRefreshActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
