@@ -1,0 +1,1 @@
+rule okio.**  qihoohttp.okio.@1

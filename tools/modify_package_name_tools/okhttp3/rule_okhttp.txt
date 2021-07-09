@@ -1,0 +1,1 @@
+rule okhttp3.**  qihoohttp.okhttp3.@1

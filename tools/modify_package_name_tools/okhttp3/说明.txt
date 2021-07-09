@@ -1,0 +1,14 @@
+okhttp3合并并修改包名
+
+解决游戏接入的okhttp和360SDK.jar中okhttp冲突问题，因为okhttp和okio是关联使用的所以采用以下方法解决:
+步骤一、合并okhttp3.jar和okio.jar文件;
+步骤二、修改okio和okhttp包体结构;
+
+使用方法，将okhttp-3.10.0.jar和okio-1.14.0.jar拷贝到该目录下。（ps:如果jar名称有变化，则修改merge_okhttp3_okio.bat里的jar文件名字即可）
+
+然后直接双击运行merge_okhttp3_okio.bat即可，最终会生成360_sdk_okhttp3.jar
+
+注意：
+1、rule_okhttp.txt和rule_okio.txt是修改包名的规则文件;
+2、360_sdk_okhttp3.jar是最终我们使用到工程中的jar文件;
+3、修改了包体结构后注意在使用的工程中更新混淆路径。
