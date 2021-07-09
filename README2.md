@@ -169,3 +169,5 @@
 15、混淆规则讲解：https://juejin.cn/post/6966526844552085512
 
 16、安卓共享元素动画：ActivityOptions.makeSceneTransitionAnimation
+
+17、apk转化为aab工具：https://github.com/37sy/build_aab_tool
