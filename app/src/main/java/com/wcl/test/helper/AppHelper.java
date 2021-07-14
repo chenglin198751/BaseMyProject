@@ -46,4 +46,13 @@ public class AppHelper {
         }
         return "";
     }
+
+    /**
+     * 获取当前进程名
+     */
+    public static String getCurProcessName(Context context) {
+        int pid = android.os.Process.myPid();
+        return getAppNameByPID(context, pid);
+    }
+
 }
