@@ -171,3 +171,17 @@
 16、安卓共享元素动画：ActivityOptions.makeSceneTransitionAnimation
 
 17、apk转化为aab工具：https://github.com/37sy/build_aab_tool
+
+18、java给文件签名：
+
+jarsigner -verbose -keystore 密钥库位置 -signedjar 签名后的apk 签名前的apk 别名
+注意：给Testunsign.apk签名密匙库文件及别名必须要验证的apk一致。否则会导致验证不能通过。
+ 
+例如：
+要对Testunsign.apk 文件签名 希望签名后的文件名为 Testsign.apk
+ 
+密匙库文件为 d:\project\Wallpaper.keystore
+别名(Alias)为Test123
+ 
+那么签名的命令为:
+jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsign.apk d:\Testunsign.apk Test123
