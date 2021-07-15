@@ -185,3 +185,5 @@ jarsigner -verbose -keystore 密钥库位置 -signedjar 签名后的apk 签名�
  
 那么签名的命令为:
 jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsign.apk d:\Testunsign.apk Test123
+
+19、glide图片变换效果，黑白模式，模糊等：implementation 'jp.wasabeef:glide-transformations:4.1.0'//变换效果
