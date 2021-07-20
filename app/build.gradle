@@ -79,7 +79,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0-alpha01'
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
-    implementation 'com.squareup.okio:okio:2.8.0'
+    implementation 'com.squareup.okio:okio:2.10.0'
 //    implementation 'org.conscrypt:conscrypt-openjdk-uber:2.2.1'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.android:flexbox:2.0.1'
@@ -93,6 +93,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     implementation 'com.github.donkingliang:ConsecutiveScroller:2.6.2'
     implementation 'com.dasu.image:blur:0.0.6'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
 }
