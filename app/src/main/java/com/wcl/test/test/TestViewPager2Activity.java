@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by chenglin on 2017-9-14.
+ * Created by chenglin on 2021-07-23.
  */
 
 public class TestViewPager2Activity extends BaseActivity {
@@ -92,15 +92,7 @@ public class TestViewPager2Activity extends BaseActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            Fragment fragment = null;
-            try {
-                fragment = (Fragment) mFragList.get(position);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            return fragment;
+            return mFragList.get(position);
         }
 
         @Override
