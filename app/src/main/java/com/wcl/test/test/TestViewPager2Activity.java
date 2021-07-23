@@ -20,12 +20,16 @@ import java.util.List;
 
 /**
  * Created by chenglin on 2021-07-23.
+ * 使用ViewPager2来加载fragment
+ * 优点：
+ * 1、可以notifyChanged，增加一个，删除一个，改变一个等，并且传入的参数也会跟着变
+ * 2、可以实现懒加载，因为默认只加载当前页
  */
 
 public class TestViewPager2Activity extends BaseActivity {
     private ViewPager2 mViewPager;
     private TestAdapter mFragmentAdapter;
-//    private List<Class> mFragList = Arrays.asList(TestTabLayoutFragment.class, TestTabLayoutFragment.class, TestTabLayoutFragment.class, TestTabLayoutFragment.class);
+    //    private List<Class> mFragList = Arrays.asList(TestTabLayoutFragment.class, TestTabLayoutFragment.class, TestTabLayoutFragment.class, TestTabLayoutFragment.class);
     private final List<Fragment> mFragList = new ArrayList<>();
     private String url = "";
 
@@ -41,7 +45,7 @@ public class TestViewPager2Activity extends BaseActivity {
         for (int i = 0; i < 4; i++) {
             TestTabLayoutFragment fragment = new TestTabLayoutFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("index",i +"");
+            bundle.putString("index", i + "");
             fragment.setArguments(bundle);
             mFragList.add(fragment);
         }
@@ -59,7 +63,7 @@ public class TestViewPager2Activity extends BaseActivity {
                 for (int i = 0; i < 4; i++) {
                     TestTabLayoutFragment fragment = new TestTabLayoutFragment();
                     Bundle bundle = new Bundle();
-                    bundle.putString("index",i +"ddd");
+                    bundle.putString("index", i + "ddd");
                     fragment.setArguments(bundle);
                     mFragList.add(fragment);
                 }
@@ -67,11 +71,11 @@ public class TestViewPager2Activity extends BaseActivity {
                 mFragmentAdapter = new TestAdapter(getContext());
                 mViewPager.setAdapter(mFragmentAdapter);
                 mFragmentAdapter.notifyDataSetChanged();
-                Log.v("tag_99","size2 = " + getSupportFragmentManager().getFragments().size());
+                Log.v("tag_99", "size2 = " + getSupportFragmentManager().getFragments().size());
             }
         });
 
-        Log.v("tag_99","size1 = " + getSupportFragmentManager().getFragments().size());
+        Log.v("tag_99", "size1 = " + getSupportFragmentManager().getFragments().size());
     }
 
     private class TestAdapter extends FragmentStateAdapter {
