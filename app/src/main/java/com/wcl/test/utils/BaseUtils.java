@@ -403,16 +403,8 @@ public class BaseUtils {
      */
     public static String getDeviceId() {
         if (TextUtils.isEmpty(mStrImei)) {
-            try {
-                if (ActivityCompat.checkSelfPermission(BaseApp.getApp(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                    TelephonyManager telephonyManager = (TelephonyManager) BaseApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
-                    mStrImei = telephonyManager.getDeviceId();
-                }
-                if (TextUtils.isEmpty(mStrImei)) {
-                    mStrImei = Settings.Secure.getString(BaseApp.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (TextUtils.isEmpty(mStrImei)) {
+                mStrImei = Settings.Secure.getString(BaseApp.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
             }
         }
         return mStrImei;
@@ -748,7 +740,14 @@ public class BaseUtils {
             }
             bufReader.close();
             inputReader.close();
-            return result.toString();
+
+            //有时服务端返回json带了bom头，会导致解析生效
+            String tempStr = result.toString();
+            if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
+                tempStr = tempStr.substring(1);
+            }
+
+            return tempStr;
         } catch (Exception e) {
             e.printStackTrace();
         }
