@@ -187,3 +187,8 @@ jarsigner -verbose -keystore 密钥库位置 -signedjar 签名后的apk 签名�
 jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsign.apk d:\Testunsign.apk Test123
 
 19、glide图片变换效果，黑白模式，模糊等：implementation 'jp.wasabeef:glide-transformations:4.1.0'//变换效果
+
+20、java 8 接口默认方法实现：
+    default void onFinish(T t){
+        Log.v("tag_666","ddd");
+    }
