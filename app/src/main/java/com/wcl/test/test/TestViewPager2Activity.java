@@ -29,7 +29,6 @@ import java.util.List;
 public class TestViewPager2Activity extends BaseActivity {
     private ViewPager2 mViewPager;
     private TestAdapter mFragmentAdapter;
-    //    private List<Class> mFragList = Arrays.asList(TestTabLayoutFragment.class, TestTabLayoutFragment.class, TestTabLayoutFragment.class, TestTabLayoutFragment.class);
     private final List<Fragment> mFragList = new ArrayList<>();
     private String url = "";
 
@@ -37,13 +36,8 @@ public class TestViewPager2Activity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        mFragList.add(new TestTabLayoutFragment());
-//        mFragList.add(new TestTabLayoutFragment());
-//        mFragList.add(new TestTabLayoutFragment());
-//        mFragList.add(new TestTabLayoutFragment());
-
-        for (int i = 0; i < 4; i++) {
-            TestTabLayoutFragment fragment = new TestTabLayoutFragment();
+        for (int i = 0; i < 1; i++) {
+            TestViewPager2Fragment fragment = new TestViewPager2Fragment();
             Bundle bundle = new Bundle();
             bundle.putString("index", i + "");
             fragment.setArguments(bundle);
@@ -61,7 +55,7 @@ public class TestViewPager2Activity extends BaseActivity {
 
                 mFragList.clear();
                 for (int i = 0; i < 4; i++) {
-                    TestTabLayoutFragment fragment = new TestTabLayoutFragment();
+                    TestViewPager2Fragment fragment = new TestViewPager2Fragment();
                     Bundle bundle = new Bundle();
                     bundle.putString("index", i + "ddd");
                     fragment.setArguments(bundle);
