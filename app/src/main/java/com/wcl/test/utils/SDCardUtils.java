@@ -85,4 +85,41 @@ public class SDCardUtils {
         return flag;
     }
 
+
+
+//    public static void copyDirectory(File fromDir, File toDir) {
+//        try {
+//            if (!fromDir.isDirectory()) {
+//                return;
+//            }
+//
+//            if (!toDir.exists()) {
+//                toDir.mkdirs();
+//            }
+//
+//            File[] files = fromDir.listFiles();
+//            for (File file : files) {
+//                String strFrom = fromDir + File.separator + file.getName();
+//                String strTo = toDir + File.separator + file.getName();
+//                if (file.isDirectory()) {
+//                    copyDirectory(new File(strFrom), new File(strTo));
+//                }
+//                if (file.isFile()) {
+//                    copy(new File(strFrom), new File(strTo));
+//                }
+//            }
+//        } catch (Exception e) {
+//            System.out.println("copy Directory error = " + e.toString());
+//        }
+//
+//    }
+//
+//    public static void copy(File source, File dest) {
+//        try {
+//            Files.copy(source.toPath(), dest.toPath());
+//        } catch (Exception e) {
+//            System.out.println("copy file error = " + e.toString());
+//        }
+//
+//    }
 }
