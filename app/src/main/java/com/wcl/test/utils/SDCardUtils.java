@@ -40,14 +40,14 @@ public class SDCardUtils {
     /**
      * 删文件或者目录
      */
-    public static void deleteFile(File file) {
+    public static void deleteDirectory(File file) {
         if (file.exists()) {
             if (file.isFile()) {
                 file.delete();
             } else if (file.isDirectory()) {
                 File files[] = file.listFiles();
                 for (int i = 0; i < files.length; i++) {
-                    deleteFile(files[i]);
+                    deleteDirectory(files[i]);
                 }
             }
             file.delete();
@@ -57,7 +57,7 @@ public class SDCardUtils {
     /**
      * 清空文件夹下的文件，而不删除文件夹
      */
-    public static boolean clearFolder(String path) {
+    public static boolean clearDirectory(String path) {
         boolean flag = false;
         File file = new File(path);
         if (!file.exists()) {
@@ -78,7 +78,7 @@ public class SDCardUtils {
                 temp.delete();
             }
             if (temp.isDirectory()) {
-                clearFolder(path + File.separator + tempList[i]);
+                clearDirectory(path + File.separator + tempList[i]);
                 flag = true;
             }
         }
