@@ -201,3 +201,11 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
         final View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
+
+22、当消息队列空闲时会执行IdelHandler的queueIdle()方法，如果为false则执行完毕之后移除这条消息，如果为true则保留，等到下次空闲时会再次执行，
+    Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
+        public boolean queueIdle() {
+            Log.v("tag_99","11111");
+            return false;
+        }
+    });
