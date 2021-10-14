@@ -213,3 +213,5 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
 23、用Android Studio创建的jks签名文件，使用时报错，解决办法：
     1、点击右上角 Project Structure 按钮，打开 SDK location
     2、把JDK location 修改为AS自带的jre，比如：D:\Android\Android Studio\jre
+
+24、移除Handler中所有的消息：mHandler.removeCallbacksAndMessages(null);
