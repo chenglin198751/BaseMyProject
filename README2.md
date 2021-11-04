@@ -223,3 +223,5 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
         java -jar apksigner.jar sign --ks keystore_debug.jks --ks-key-alias young_debug --ks-pass pass:123abc --key-pass pass:123abc --out output.apk unsign.apk
     3、查看签名是v1还是v2：
         java -jar apksigner.jar verify -v xxx.apk
+    4、bat传入参数写法，1234表示传入参数：
+        java -jar apksigner.jar sign --ks %1 --ks-key-alias %2 --ks-pass pass:%3 --key-pass pass:%4 --out %5 %6
