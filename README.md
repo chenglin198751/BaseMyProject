@@ -262,3 +262,10 @@
 **86、ShapeableImageView**：谷歌官方material系列，实现圆形，圆角，等各种形状的ImageView
 
 **87、APK反编译**：反编译工具：https://github.com/skylot/jadx/releases/tag/v1.2.0  源码：https://github.com/skylot/jadx
+
+**88、计算签名的工具类 SignUtils.java**：
+    final String appSecret = "c97d25b2518745b4a02fa43934e951b5";
+    Map<String, String> orderParam = new HashMap<>();
+    orderParam.put("order_id","163549389998541021");
+    orderParam.put("product_name","vipCool");
+    String sign = SignUtils.getSign(orderParam, appSecret);

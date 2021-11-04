@@ -216,9 +216,3 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
 
 24、移除Handler中所有的消息：mHandler.removeCallbacksAndMessages(null);
 
-25、计算签名的工具类：
-    final String appSecret = "c97d25b2518745b4a02fa43934e951b5";
-    Map<String, String> orderParam = new HashMap<>();
-    orderParam.put("order_id","163549389998541021");
-    orderParam.put("product_name","vipCool");
-    String sign = SignUtils.getSign(orderParam, appSecret);
