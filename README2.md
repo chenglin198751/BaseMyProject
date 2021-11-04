@@ -216,3 +216,10 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
 
 24、移除Handler中所有的消息：mHandler.removeCallbacksAndMessages(null);
 
+25、签名工具：
+    1、jarsigner.exe签名(v1)(位于...\jdk\bin\jarsigner.exe)：
+        jarsigner -verbose -keystore keystore_debug.jks -signedjar output.apk unsign.apk young_debug
+    2、apksigner.jar签名(v1+v2+v3)(位于...\Android\Sdk\build-tools\30.0.3\lib\apksigner.jar)：
+        java -jar apksigner.jar sign --ks keystore_debug.jks --ks-key-alias young_debug --ks-pass pass:123abc --key-pass pass:123abc --out output.apk unsign.apk
+    3、查看签名是v1还是v2：
+        java -jar apksigner.jar verify -v xxx.apk
