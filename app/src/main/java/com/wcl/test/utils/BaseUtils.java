@@ -58,7 +58,6 @@ import java.util.zip.CRC32;
 
 public class BaseUtils {
     private static Handler mHandler;
-    private static String mStrImei = null;
     private static String mVerCode = null;
     private static String mVerName = null;
     private static int mStatusBarHeight = 0;
@@ -396,18 +395,6 @@ public class BaseUtils {
             }
         }
         return mVerName;
-    }
-
-    /**
-     * 得到设备的串号
-     */
-    public static String getDeviceId() {
-        if (TextUtils.isEmpty(mStrImei)) {
-            if (TextUtils.isEmpty(mStrImei)) {
-                mStrImei = Settings.Secure.getString(BaseApp.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
-            }
-        }
-        return mStrImei;
     }
 
     public static String getChannel() {
