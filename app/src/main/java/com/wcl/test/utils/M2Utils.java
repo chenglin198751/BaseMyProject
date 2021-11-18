@@ -1,18 +1,23 @@
 package com.wcl.test.utils;
 
-import java.lang.reflect.Method;
-
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.wcl.test.base.BaseApp;
+
 public class M2Utils {
-    public static String getM2(Context context) {
+    private static String androidId = null;
+    private static String m2 = null;
+
+    public static String getM2() {
+        Context context = BaseApp.getApp();
         try {
-            String m2 = MD5Util.md5LowerCase(getDeviceId(context) + getAndroidId(context) + getSerialNo());
+            if (TextUtils.isEmpty(m2)) {
+                m2 = MD5Util.md5LowerCase(getWifiMac(context) + getAndroidId(context));
+            }
             return m2;
         } catch (Throwable tr) {
             tr.printStackTrace();
@@ -21,82 +26,16 @@ public class M2Utils {
     }
 
     private static String getAndroidId(Context context) {
-    	try{
-    		  String androidId = Settings.System.getString(context.getContentResolver(), "android_id");
-    	        return androidId;
-    	}catch(Exception e){
-    	}
-    	return "";
-    }
-
-    private static String getSerialNo() {
-        String sNo = null;
-        try{
-            Class<?> localClass = Class.forName("android.os.SystemProperties");
-            Method localMethod = localClass.getMethod("get", new Class[] {
-                String.class
-            });
-            sNo = (String) localMethod.invoke(localClass, new Object[] {
-                "ro.serialno"
-            });
-        } catch (Exception localException){
-            sNo = "";
-        }
-        return sNo;
-    }
-    
-    /**
-     * 返回IMEI的MD5
-     * 
-     * @param context
-     * @return
-     */
-    private static String ANDROID_IMEI;
-    private static String ANDROID_IMEI_MD5;
-    private static String getAndroidImeiMd5(final Context context) {
-    	   if ((ANDROID_IMEI_MD5 == null) && (context != null)) {
-               ANDROID_IMEI_MD5 = MD5Util.md5LowerCase(getImei(context));
-           }
-           return ANDROID_IMEI_MD5;
-    }
-    
-    // getDeviceId or wifiMac Address
-    private static String getDeviceId(Context context) {
-        String deviceId = null;
-        if (context != null) {
-            deviceId = getImei(context);
-
-            if (TextUtils.isEmpty(deviceId)) {
-                deviceId = getWifiMac(context);
+        try {
+            if (TextUtils.isEmpty(androidId)) {
+                androidId = Settings.System.getString(context.getContentResolver(), "android_id");
             }
+            return androidId;
+        } catch (Exception e) {
         }
-
-        deviceId = TextUtils.isEmpty(deviceId) ? "default" : deviceId;
-        return deviceId;
+        return "";
     }
 
-    private static String getImei(Context context) {
-    	if (!TextUtils.isEmpty(ANDROID_IMEI)) {
-			return ANDROID_IMEI;
-		}
-    	
-        String imei = null;
-        if (context != null) {
-            
-            try{
-            	TelephonyManager telManager = (TelephonyManager) context
-                        .getSystemService(Context.TELEPHONY_SERVICE);
-                if (telManager != null) {
-                    imei = telManager.getDeviceId();
-                    ANDROID_IMEI = imei;
-                }
-            }catch(Exception e){
-
-            }
-        }
-        return imei;
-    }
-    
     private static String getWifiMac(Context context) {
         String macAddr = null;
         if (context != null) {
@@ -108,7 +47,6 @@ public class M2Utils {
                         macAddr = wifiInfo.getMacAddress();
                     }
                 }
-            } catch (Exception e) {
             } catch (Error e) {
             }
         }
