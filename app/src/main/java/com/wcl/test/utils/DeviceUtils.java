@@ -8,11 +8,11 @@ import android.text.TextUtils;
 
 import com.wcl.test.base.BaseApp;
 
-public class M2Utils {
+public class DeviceUtils {
     private static String androidId = null;
     private static String m2 = null;
 
-    public static String getM2() {
+    public static String getDeviceId() {
         Context context = BaseApp.getApp();
         try {
             if (TextUtils.isEmpty(m2)) {

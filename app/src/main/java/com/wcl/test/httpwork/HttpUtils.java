@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.LogUtils;
-import com.wcl.test.utils.M2Utils;
+import com.wcl.test.utils.DeviceUtils;
 import com.wcl.test.utils.SDCardUtils;
 
 import org.apache.http.conn.ConnectTimeoutException;
@@ -663,7 +663,7 @@ public class HttpUtils {
      * 通用字段
      */
     private static void addCommonData(Map<String, Object> params) {
-        params.put("IMEI", M2Utils.getM2());
+        params.put("deviceId", DeviceUtils.getDeviceId());
         params.put("product", Build.MODEL);
         params.put("brand", Build.BRAND);
         params.put("sdkVer", Build.VERSION.SDK_INT);
