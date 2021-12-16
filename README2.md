@@ -228,26 +228,26 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
 
 26、设置手机旋转事件，并且内容layout发生了变化：
     boolean isLeftLandscape = true;
-    public void setOrientationEventListener(){
+    public void setOrientationEventListener() {
         OrientationEventListener mOrientationListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_NORMAL) {
             @Override
             public void onOrientationChanged(int orientation) {
-                if (orientation > 260 && orientation < 280) {
-                    if (!isLeftLandscape) {
-                        Log.v("tag_rotation", "向左横屏");
-                        if (getScreenRotation(getActivity()) == Surface.ROTATION_90) {
-                            Log.v("tag_rotation", "向左横屏 -- layout发生了旋转的显示变化");
+                if (orientation > 250 && orientation < 290) {
+                    Log.v("tag_rotation", "向左横屏--缺口屏在左边");
+                    if (getScreenRotation(getActivity()) == Surface.ROTATION_90) {
+                        if (!isLeftLandscape) {
+                            Log.v("tag_rotation", "向左横屏--缺口屏在左边-- layout发生了旋转的显示变化");
+                            isLeftLandscape = true;
                         }
                     }
-                    isLeftLandscape = true;
-                } else if (orientation > 80 && orientation < 100) {
-                    if (isLeftLandscape) {
-                        Log.d("tag_rotation", "向右横屏");
-                        if (getScreenRotation(getActivity()) == Surface.ROTATION_270) {
-                            Log.d("tag_rotation", "向右横屏 -- layout发生了旋转的显示变化");
+                } else if (orientation > 70 && orientation < 110) {
+                    Log.d("tag_rotation", "向右横屏--缺口屏在右边");
+                    if (getScreenRotation(getActivity()) == Surface.ROTATION_270) {
+                        if (isLeftLandscape) {
+                            Log.d("tag_rotation", "向右横屏--缺口屏在右边-- layout发生了旋转的显示变化");
+                            isLeftLandscape = false;
                         }
                     }
-                    isLeftLandscape = false;
                 }
             }
         };
