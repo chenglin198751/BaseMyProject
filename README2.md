@@ -225,3 +225,44 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
         java -jar apksigner.jar verify -v xxx.apk
     4、bat传入参数写法，1234表示传入参数：
         java -jar apksigner.jar sign --ks %1 --ks-key-alias %2 --ks-pass pass:%3 --key-pass pass:%4 --out %5 %6
+
+26、设置手机旋转事件，并且内容layout发生了变化：
+    boolean isLeftLandscape = true;
+    public void setOrientationEventListener(){
+        OrientationEventListener mOrientationListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_NORMAL) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if (orientation > 260 && orientation < 280) {
+                    if (!isLeftLandscape) {
+                        Log.v("tag_rotation", "向左横屏");
+                        if (getScreenRotation(getActivity()) == Surface.ROTATION_90) {
+                            Log.v("tag_rotation", "向左横屏 -- layout发生了旋转的显示变化");
+                        }
+                    }
+                    isLeftLandscape = true;
+                } else if (orientation > 80 && orientation < 100) {
+                    if (isLeftLandscape) {
+                        Log.d("tag_rotation", "向右横屏");
+                        if (getScreenRotation(getActivity()) == Surface.ROTATION_270) {
+                            Log.d("tag_rotation", "向右横屏 -- layout发生了旋转的显示变化");
+                        }
+                    }
+                    isLeftLandscape = false;
+                }
+            }
+        };
+
+        if (mOrientationListener.canDetectOrientation()) {
+            mOrientationListener.enable();
+        } else {
+            mOrientationListener.disable();
+        }
+    }
+
+    private int getScreenRotation(Context context) {
+        WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager.getDefaultDisplay() != null){
+            return windowManager.getDefaultDisplay().getRotation();
+        }
+        return Surface.ROTATION_0;
+    }
