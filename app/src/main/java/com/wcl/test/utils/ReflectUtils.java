@@ -27,14 +27,34 @@ public class ReflectUtils {
         throw new RuntimeException("getDeclaredMethod exception, object = " + object + ", methodName = " + methodName);
     }
 
-    public static Object invokeMethod(Object receiver, String methodName, Class<?>[] parameterTypes, Object... parameters) {
+
+    /**
+     * 反射一个类的调用方法
+     *
+     * @param clazz          类（如baseUtils.getClass()）
+     * @param methodName     原方法的方法名
+     * @param parameterTypes 原方法参数的数据类型，数组类型的类名（如{String.class}）
+     * @param parameters     原方法的参数值，数据类型
+     * @return object原方法返回值
+     * 用法如下：
+     * Class<?>[] parameterTypes = {String.class};
+     * Object[] parameters = {"version name value"};
+     * BaseUtils baseUtils = new BaseUtils();
+     * baseUtils.getClass();
+     * ReflectUtils.invokeMethod(baseUtils.getClass(),"setTestMethod",parameterTypes,parameters);
+     */
+    public static Object invokeMethod(Class clazz, String methodName, Class<?>[] parameterTypes, Object... parameters) {
         try {
-            Method method = getDeclaredMethod(receiver, methodName, parameterTypes);
-            method.setAccessible(true);
-            return method.invoke(receiver, parameters);
-        } catch (Exception var5) {
-            throw new RuntimeException("invokeMethod exception, receiver = " + receiver + ", methodName = " + methodName, var5);
+            Method method = clazz.getDeclaredMethod(methodName, parameterTypes);
+            if (parameters != null && parameters.length > 0) {
+                return method.invoke(clazz.newInstance(), parameters);
+            } else {
+                return method.invoke(clazz.newInstance());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     public static Field getDeclaredField(Object object, String fieldName) {
@@ -65,6 +85,10 @@ public class ReflectUtils {
         }
     }
 
+    /**
+     * 获取对象的Object类型属性值
+     * 参数：对象、属性名
+     */
     public static Object getFieldValue(Object object, String fieldName) {
         try {
             Field field = getDeclaredField(object, fieldName);
@@ -137,36 +161,9 @@ public class ReflectUtils {
         return method;
     }
 
-    public static Object invoke(Object receiver, Method method, Object... paremeters) {
-        Object result = null;
-
-        try {
-            result = method.invoke(receiver, paremeters);
-        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException var5) {
-            if (LogUtils.isDebug()) {
-                var5.printStackTrace();
-            }
-        }
-
-        return result;
-    }
-
-    public static String getSystemProperties(String propertyName, String defaultValue) {
-        String result = defaultValue;
-
-        try {
-            Class<?> className = Class.forName("android.os.SystemProperties");
-            Method method = className.getDeclaredMethod("get", String.class, String.class);
-            result = (String) method.invoke((Object) null, propertyName, defaultValue);
-        } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException var5) {
-            if (LogUtils.isDebug()) {
-                var5.printStackTrace();
-            }
-        }
-
-        return result;
-    }
-
+    /**
+     * 获取当前的Application对象
+     */
     public static Context getApplicationContext() {
         LogUtils.d("ReflectUtil", "must be MainThread!" + (Thread.currentThread().getId() != Looper.getMainLooper().getThread().getId()));
         Context context = null;
