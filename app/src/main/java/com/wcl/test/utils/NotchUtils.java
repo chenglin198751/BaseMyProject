@@ -3,14 +3,41 @@ package com.wcl.test.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.WindowInsets;
 
 public class NotchUtils {
 	/**
 	 * 是否是刘海屏
 	 */
-	public static boolean isNotch(Context context) {
+	public static boolean isNotch(Activity activity) {
+		if (Build.VERSION.SDK_INT >= 28) {
+			View decorView = activity.getWindow().getDecorView();
+			Class clazz = null;
+			try {
+				clazz = decorView.getClass();
+				Method getRootWindowInsetsM = clazz.getMethod("getRootWindowInsets");
+				getRootWindowInsetsM.setAccessible(true);
+				Object result1 = getRootWindowInsetsM.invoke(decorView);
+
+				WindowInsets windowInsets = (WindowInsets) result1;
+				Class windowInsetsClazz = windowInsets.getClass();
+				Method getDisplayCutoutM = windowInsetsClazz.getMethod("getDisplayCutout");
+				getDisplayCutoutM.setAccessible(true);
+
+				Object result2 = getDisplayCutoutM.invoke(windowInsets);
+				if (result2 != null){
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		String brand = android.os.Build.BRAND;
 
 		if (TextUtils.isEmpty(brand)) {
@@ -18,15 +45,15 @@ public class NotchUtils {
 		}
 
 		if (brand.equalsIgnoreCase("xiaomi")) {
-			return isXiaomiNotch(context);
+			return isXiaomiNotch(activity);
 		} else if (brand.equalsIgnoreCase("HONOR") || brand.equalsIgnoreCase("HUAWEI")) {
-			return isHuaWeiNotch(context);
+			return isHuaWeiNotch(activity);
 		} else if (brand.equalsIgnoreCase("OPPO")) {
-			return isOppoNotch(context);
+			return isOppoNotch(activity);
 		} else if (brand.equalsIgnoreCase("vivo")) {
-			return isVivoNotch(context);
+			return isVivoNotch(activity);
 		} else if (brand.equalsIgnoreCase("Meizu")) {
-			return isMeizuNotch(context);
+			return isMeizuNotch(activity);
 		}
 
 		return false;
