@@ -16,7 +16,7 @@ android {
 
         ndk {
             // 设置支持的CPU架构，目前只支持armeabi-v7a架构（该架构兼容armeabi、arm64-v8a、x86、x86_64架构）
-            abiFilters "arm64-v8a"
+            abiFilters 'arm64-v8a','armeabi-v7a'
         }
     }
 
