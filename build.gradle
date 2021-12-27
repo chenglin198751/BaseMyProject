@@ -34,10 +34,10 @@ task clean(type: Delete) {
 
 ext {
     //用于编译的SDK版本
-    COMPILE_SDK_VERSION = 29
+    COMPILE_SDK_VERSION = 31
 
     //用于Gradle编译项目的工具版本
-    BUILD_TOOLS_VERSION = "29.0.2"
+    BUILD_TOOLS_VERSION = "32.0.0"
 
     //最低支持Android版本
     MIN_SDK_VERSION = 21
