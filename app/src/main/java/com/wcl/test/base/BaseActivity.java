@@ -187,7 +187,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             if (!this.getClass().getSimpleName().equals(MainActivity.CLASS_NAME)) {
                 finish();
             }
-        } else {
+        } else if (BaseAction.System.ACTION_BASE_BROADCAST.equals(action)) {
             //通知Activity里面所有的fragment接收广播
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             if (fragments.size() > 0) {
