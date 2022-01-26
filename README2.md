@@ -225,6 +225,8 @@ jarsigner -verbose -keystore d:\project\Wallpaper.keystore -signedjar d:\Testsig
         java -jar apksigner.jar verify -v xxx.apk
     4、bat传入参数写法，1234表示传入参数：
         java -jar apksigner.jar sign --ks %1 --ks-key-alias %2 --ks-pass pass:%3 --key-pass pass:%4 --out %5 %6
+    5、查看apk签名：
+       解压apk，在META-INF下找到后缀名为.RSA文件，执行：keytool -printcert -file CERT.RSA
 
 26、设置手机旋转事件，并且内容layout发生了变化：
     boolean isLeftLandscape = true;
