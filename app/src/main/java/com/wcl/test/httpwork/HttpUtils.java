@@ -214,16 +214,16 @@ public class HttpUtils {
         };
     }
 
-    public static void post(final Context context, String url, Map<String, Object> map, final HttpUtils.HttpCallback httpCallback) {
+    public static void post(final Context context, String url, Map<String, Object> params, final HttpUtils.HttpCallback httpCallback) {
         HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
         builder.setCache(false);
-        HttpUtils.postWithHeader(context, url, null, map, builder, httpCallback);
+        HttpUtils.postWithHeader(context, url, null, params, builder, httpCallback);
     }
 
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void postWithHeader(final Context context, final String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void postWithHeader(final Context context, final String url, Map<String, String> headersMap, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             httpCallback.onResponse(false, (url + " 不是有效的URL"));
             return;
@@ -234,12 +234,12 @@ public class HttpUtils {
             builder = new HttpBuilder();
         }
 
-        if (hashMap == null) {
-            hashMap = new HashMap<>();
+        if (params == null) {
+            params = new HashMap<>();
         }
-        addCommonData(hashMap);
+        addCommonData(params);
 
-        for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             FormBuilder.add(key, value + "");
@@ -313,15 +313,15 @@ public class HttpUtils {
     /**
      * 同步post请求，必须放到线程中
      */
-    public static String syncPost(final String url, Map<String, Object> hashMap) {
+    public static String syncPost(final String url, Map<String, Object> params) {
         FormBody.Builder FormBuilder = new FormBody.Builder();
 
-        if (hashMap == null) {
-            hashMap = new HashMap<>();
+        if (params == null) {
+            params = new HashMap<>();
         }
-        addCommonData(hashMap);
+        addCommonData(params);
 
-        for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             FormBuilder.add(key, value + "");
@@ -722,35 +722,35 @@ public class HttpUtils {
     /**
      * 构建get请求参数
      */
-    public static String buildGetParams(Map<String, Object> hashMap) {
-        return buildGetParams(null, hashMap);
+    public static String buildGetParams(Map<String, Object> params) {
+        return buildGetParams(null, params);
     }
 
     /**
      * 构建get请求参数
      */
-    public static String buildGetParams(String url, Map<String, Object> hashMap) {
-        if (hashMap == null) {
-            hashMap = new HashMap<>();
+    public static String buildGetParams(String url, Map<String, Object> params) {
+        if (params == null) {
+            params = new HashMap<>();
         }
-        addCommonData(hashMap);
+        addCommonData(params);
 
-        StringBuilder params = new StringBuilder();
-        for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
+        StringBuilder params2 = new StringBuilder();
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
-            if (params.length() <= 0 && !url.contains("?")) {
-                params.append("?" + key + "=" + value);
+            if (params2.length() <= 0 && !url.contains("?")) {
+                params2.append("?" + key + "=" + value);
             } else {
-                params.append("&" + key + "=" + value);
+                params2.append("&" + key + "=" + value);
             }
         }
 
         if (!TextUtils.isEmpty(url)) {
-            return url + params.toString();
+            return url + params2.toString();
         } else {
-            return params.toString();
+            return params2.toString();
         }
     }
 
