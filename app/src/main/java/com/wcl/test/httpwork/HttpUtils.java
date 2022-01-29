@@ -47,9 +47,7 @@ import okhttp3.Response;
 public class HttpUtils {
 
     public interface HttpCallback {
-        void onSuccess(String result);
-
-        void onFailure(Exception e);
+        void onResponse(boolean isSuccessful, String result);
     }
 
     public interface HttpDownloadCallback {
@@ -145,19 +143,26 @@ public class HttpUtils {
     private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpBack) {
         final HttpCallback httpCallback = new HttpCallback() {
             @Override
-            public void onSuccess(String result) {
+            public void onResponse(boolean isSuccessful, String result) {
                 if (httpBack != null) {
-                    httpBack.onSuccess(result);
+                    httpBack.onResponse(true, result);
                 }
             }
 
-            @Override
-            public void onFailure(Exception e) {
-                if (httpBack != null) {
-                    httpBack.onFailure(e);
-                }
-                LogUtils.v(TAG, "httpFailure:" + e.toString());
-            }
+//            @Override
+//            public void onSuccess(String result) {
+//                if (httpBack != null) {
+//                    httpBack.onSuccess(result);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                if (httpBack != null) {
+//                    httpBack.onFailure(e);
+//                }
+//                LogUtils.v(TAG, "httpFailure:" + e.toString());
+//            }
         };
 
         return new okhttp3.Callback() {
@@ -174,7 +179,7 @@ public class HttpUtils {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                httpCallback.onFailure(e);
+                                httpCallback.onResponse(false, e.toString());
                             }
                         });
                     }
@@ -182,7 +187,7 @@ public class HttpUtils {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onFailure(e);
+                            httpCallback.onResponse(false, e.toString());
                         }
                     });
                 }
@@ -198,7 +203,7 @@ public class HttpUtils {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onFailure(new Exception(""));
+                            httpCallback.onResponse(false, response.toString());
                         }
                     });
                     return;
@@ -236,7 +241,7 @@ public class HttpUtils {
      */
     public static void postWithHeader(final Context context, final String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            httpCallback.onFailure(new IOException(url + " 不是有效的URL"));
+            httpCallback.onResponse(false, (url + " 不是有效的URL"));
             return;
         }
 
@@ -709,14 +714,16 @@ public class HttpUtils {
         BaseUtils.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                //这里try catch的唯一目的就是防止在回调结果时，json解析错误、之类的crash没处理。
-                //如果你觉得回调结果的crash不要try，要直接暴露，你可以注释调我这里的try catch
-                try {
-                    httpCallback.onSuccess(result);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    httpCallback.onFailure(e);
-                }
+                httpCallback.onResponse(true, result);
+
+//                //这里try catch的唯一目的就是防止在回调结果时，json解析错误、之类的crash没处理。
+//                //如果你觉得回调结果的crash不要try，要直接暴露，你可以注释调我这里的try catch
+//                try {
+//                    httpCallback.onResponse(true, result);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    httpCallback.onResponse(false, e.toString());
+//                }
             }
         });
     }
