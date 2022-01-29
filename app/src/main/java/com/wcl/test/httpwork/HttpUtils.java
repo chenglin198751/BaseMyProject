@@ -5,26 +5,19 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.LogUtils;
 import com.wcl.test.utils.DeviceUtils;
+import com.wcl.test.utils.LogUtils;
 import com.wcl.test.utils.SDCardUtils;
-
-import org.apache.http.conn.ConnectTimeoutException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLException;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
@@ -52,10 +45,11 @@ import okhttp3.Response;
  * 资料：http://liuwangshu.cn/application/network/6-okhttp3.html
  */
 public class HttpUtils {
+
     public interface HttpCallback {
         void onSuccess(String result);
 
-        void onFailure(HttpException e);
+        void onFailure(Exception e);
     }
 
     public interface HttpDownloadCallback {
@@ -158,7 +152,7 @@ public class HttpUtils {
             }
 
             @Override
-            public void onFailure(HttpException e) {
+            public void onFailure(Exception e) {
                 if (httpBack != null) {
                     httpBack.onFailure(e);
                 }
@@ -174,29 +168,13 @@ public class HttpUtils {
                 }
                 e.printStackTrace();
 
-                final HttpException httpEx = new HttpException(HttpConst.ERROR_UNKNOWN, e);
-
-                if (e instanceof SSLException) {
-                    httpEx.errorCode = HttpConst.ERROR_CODE_SSL;
-                    httpEx.errorMsg = HttpConst.HTTP_SSL_EXCEPTION;
-                } else if (e instanceof ConnectTimeoutException) {
-                    httpEx.errorCode = HttpConst.ERROR_CODE_TIME_OUT;
-                    httpEx.errorMsg = HttpConst.HTTP_TIME_OUT;
-                } else if (e instanceof SocketTimeoutException) {
-                    httpEx.errorCode = HttpConst.ERROR_CODE_TIME_OUT;
-                    httpEx.errorMsg = HttpConst.HTTP_TIME_OUT_RESPONSE;
-                } else if (e instanceof UnknownHostException) {
-                    httpEx.errorCode = HttpConst.ERROR_CODE_NO_NET_WORK;
-                    httpEx.errorMsg = HttpConst.HTTP_NO_NET;
-                }
-
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                httpCallback.onFailure(httpEx);
+                                httpCallback.onFailure(e);
                             }
                         });
                     }
@@ -204,7 +182,7 @@ public class HttpUtils {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onFailure(httpEx);
+                            httpCallback.onFailure(e);
                         }
                     });
                 }
@@ -216,11 +194,11 @@ public class HttpUtils {
                     return;
                 }
 
-                if (response.code() != 200) {
+                if (response.code() != HttpURLConnection.HTTP_OK) {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallback.onFailure(new HttpException(response.code(), new Exception(response.toString())));
+                            httpCallback.onFailure(new Exception(""));
                         }
                     });
                     return;
@@ -258,7 +236,7 @@ public class HttpUtils {
      */
     public static void postWithHeader(final Context context, final String url, Map<String, String> headersMap, Map<String, Object> hashMap, HttpBuilder builder, final HttpCallback httpCallback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_INVALID, new Exception(HttpConst.HTTP_INVALID)));
+            httpCallback.onFailure(new IOException(url + " 不是有效的URL"));
             return;
         }
 
@@ -469,7 +447,7 @@ public class HttpUtils {
 
             @Override
             public void onResponse(final Call call, final Response response) {
-                if (response.code() != 200) {
+                if (response.code() != HttpURLConnection.HTTP_OK) {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
@@ -737,42 +715,10 @@ public class HttpUtils {
                     httpCallback.onSuccess(result);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    httpCallback.onFailure(new HttpException(HttpConst.ERROR_CODE_CATCH, e));
+                    httpCallback.onFailure(e);
                 }
             }
         });
     }
 
-    public static class HttpException {
-        public int errorCode;
-        public String errorMsg;
-        public Exception exception;
-
-        public HttpException(int code, Exception e) {
-            errorCode = code;
-            errorMsg = e.toString();
-            exception = e;
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            return exception.toString();
-        }
-    }
-
-    private static class HttpConst {
-        static final int ERROR_UNKNOWN = 100;
-        static final int ERROR_CODE_SSL = 200;
-        static final int ERROR_CODE_TIME_OUT = 300;
-        static final int ERROR_CODE_NO_NET_WORK = 400;
-        static final int ERROR_CODE_CATCH = 500;
-        static final int ERROR_CODE_INVALID = 600;
-
-        static String HTTP_TIME_OUT = "请求超时，请稍后再试...";
-        static String HTTP_TIME_OUT_RESPONSE = "响应超时，请稍后再试...";
-        static String HTTP_SSL_EXCEPTION = "连接服务器失败，请正确设置手机日期或稍后重试";
-        static String HTTP_NO_NET = "网络已断开";
-        static String HTTP_INVALID = "非法的URL";
-    }
 }
