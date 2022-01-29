@@ -488,7 +488,7 @@ public class HttpUtils {
                                 BaseUtils.getHandler().post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        float progress = (tempSum * 1f / tempTotal * 1f);
+                                        float progress = (tempSum * 1f / tempTotal);
                                         progress = BaseUtils.formatFloat(progress, 4);
                                         downloadCallback.onProgress(call, tempTotal, tempSum, progress);
                                     }
