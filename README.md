@@ -269,3 +269,5 @@
     orderParam.put("order_id","163549389998541021");
     orderParam.put("product_name","vipCool");
     String sign = SignUtils.getSign(orderParam, appSecret);
+
+**89、用HttpURLConnection封装的一套网络访问工具**：https://github.com/guozhengXia/UrlHttpUtils
