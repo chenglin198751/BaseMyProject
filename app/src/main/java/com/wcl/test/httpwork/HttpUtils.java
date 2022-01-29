@@ -148,21 +148,6 @@ public class HttpUtils {
                     httpBack.onResponse(true, result);
                 }
             }
-
-//            @Override
-//            public void onSuccess(String result) {
-//                if (httpBack != null) {
-//                    httpBack.onSuccess(result);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Exception e) {
-//                if (httpBack != null) {
-//                    httpBack.onFailure(e);
-//                }
-//                LogUtils.v(TAG, "httpFailure:" + e.toString());
-//            }
         };
 
         return new okhttp3.Callback() {
@@ -295,6 +280,83 @@ public class HttpUtils {
 
         Call call = client.newCall(request);
         call.enqueue(createOkhttp3Callback(context, httpCallback));
+    }
+
+    /**
+     * 同步get请求，必须放到线程中
+     */
+    public static String syncGet(final String url) {
+        final CacheControl.Builder builder = new CacheControl.Builder();
+        builder.noCache();//不使用缓存，全部走网络
+        builder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = builder.build();
+        Request request = new Request.Builder().cacheControl(cache).url(url).get().build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+                //有时服务端返回json带了bom头，会导致解析生效
+                String tempStr = response.body().string();
+                if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
+                    tempStr = tempStr.substring(1);
+                }
+                return tempStr;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * 同步post请求，必须放到线程中
+     */
+    public static String syncPost(final String url, Map<String, Object> hashMap) {
+        FormBody.Builder FormBuilder = new FormBody.Builder();
+
+        if (hashMap == null) {
+            hashMap = new HashMap<>();
+        }
+        addCommonData(hashMap);
+
+        for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            FormBuilder.add(key, value + "");
+        }
+
+        RequestBody body = FormBuilder.build();
+
+        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
+        cacheBuilder.noCache();//不使用缓存，全部走网络
+        cacheBuilder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = cacheBuilder.build();
+
+        Request.Builder requestBuilder = new Request.Builder()
+                .cacheControl(cache)
+                .url(url)
+                .post(body);
+        Request request = requestBuilder.build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+                //有时服务端返回json带了bom头，会导致解析生效
+                String tempStr = response.body().string();
+                if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
+                    tempStr = tempStr.substring(1);
+                }
+                return tempStr;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
