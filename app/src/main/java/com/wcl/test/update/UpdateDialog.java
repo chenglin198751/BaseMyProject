@@ -119,10 +119,10 @@ public class UpdateDialog extends Dialog {
      * 检查更新
      */
     public void checkUpdate() {
-        mActivity.post(HttpUrls.check_update, null, new HttpUtils.HttpCallback() {
+        HttpUtils.post(mActivity, HttpUrls.check_update, null, new HttpUtils.HttpCallback() {
             @Override
             public void onResponse(boolean isSuccessful, String result) {
-                if (isSuccessful){
+                if (isSuccessful) {
                     HcxUpdateModel model = Constants.gson.fromJson(result, HcxUpdateModel.class);
                     if (model == null || model.data == null) {
                         return;
@@ -145,7 +145,7 @@ public class UpdateDialog extends Dialog {
                     mVersionModel.title = infoModel.title;
                     mVersionModel.versionName = infoModel.version;
                     setData(mVersionModel);
-                }else {
+                } else {
 
                 }
             }

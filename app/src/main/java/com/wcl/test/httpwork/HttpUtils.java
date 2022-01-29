@@ -214,11 +214,10 @@ public class HttpUtils {
         };
     }
 
-    /**
-     * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
-     */
-    public static void post(final Context context, String url, Map<String, Object> paramsHashMap, final HttpBuilder builder, final HttpCallback httpCallback) {
-        postWithHeader(context, url, null, paramsHashMap, builder, httpCallback);
+    public static void post(final Context context, String url, Map<String, Object> map, final HttpUtils.HttpCallback httpCallback) {
+        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
+        builder.setCache(false);
+        HttpUtils.postWithHeader(context, url, null, map, builder, httpCallback);
     }
 
     /**
