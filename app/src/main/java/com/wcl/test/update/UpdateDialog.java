@@ -121,17 +121,13 @@ public class UpdateDialog extends Dialog {
     public void checkUpdate() {
         mActivity.post(HttpUrls.check_update, null, new HttpUtils.HttpCallback() {
             @Override
-            public void onFailure(Exception e) {
-
-            }
-
-            @Override
-            public void onSuccess(String result) {
-                HcxUpdateModel model = Constants.gson.fromJson(result, HcxUpdateModel.class);
-                if (model == null || model.data == null) {
-                    return;
-                }
-                HcxVersionModel infoModel = model.data;
+            public void onResponse(boolean isSuccessful, String result) {
+                if (isSuccessful){
+                    HcxUpdateModel model = Constants.gson.fromJson(result, HcxUpdateModel.class);
+                    if (model == null || model.data == null) {
+                        return;
+                    }
+                    HcxVersionModel infoModel = model.data;
 
 //                //ToDo
 //                infoModel.url = "http://w.tinydonuts.cn/download/Android/EatEquity/1.0.0/huichixia_1.0.0_test_9.apk";
@@ -141,14 +137,17 @@ public class UpdateDialog extends Dialog {
 //                infoModel.version = "3.0.0";
 //                //ToDo
 
-                //用MVVM模式，中转一下
-                mVersionModel = new VersionUpdateModel();
-                mVersionModel.url = infoModel.url;
-                mVersionModel.setUpdateType(infoModel.forceUpgrade);
-                mVersionModel.content = infoModel.content;
-                mVersionModel.title = infoModel.title;
-                mVersionModel.versionName = infoModel.version;
-                setData(mVersionModel);
+                    //用MVVM模式，中转一下
+                    mVersionModel = new VersionUpdateModel();
+                    mVersionModel.url = infoModel.url;
+                    mVersionModel.setUpdateType(infoModel.forceUpgrade);
+                    mVersionModel.content = infoModel.content;
+                    mVersionModel.title = infoModel.title;
+                    mVersionModel.versionName = infoModel.version;
+                    setData(mVersionModel);
+                }else {
+
+                }
             }
         });
     }
