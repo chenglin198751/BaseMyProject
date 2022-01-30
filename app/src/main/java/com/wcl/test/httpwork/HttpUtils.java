@@ -62,17 +62,8 @@ public class HttpUtils {
     }
 
     public static class HttpBuilder {
-        private boolean cache = false;
-
-        //返回是否用缓存
-        public boolean isCache() {
-            return cache;
-        }
-
-        //设置是否用缓存
-        public void setCache(boolean cache) {
-            this.cache = cache;
-        }
+        public boolean isCache = false;
+        public Map<String, String> headersMap = null;
     }
 
     private final static String TAG = "HttpUtils";
@@ -214,16 +205,17 @@ public class HttpUtils {
         };
     }
 
-    public static void post(final Context context, String url, Map<String, Object> params, final HttpUtils.HttpCallback httpCallback) {
-        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
-        builder.setCache(false);
-        HttpUtils.postWithHeader(context, url, null, params, builder, httpCallback);
-    }
-
     /**
      * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void postWithHeader(final Context context, final String url, Map<String, String> headersMap, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void post(final Context context, String url, Map<String, Object> params, final HttpUtils.HttpCallback httpCallback) {
+        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
+        builder.isCache = false;
+        builder.headersMap = null;
+        HttpUtils.post2(context, url, params, builder, httpCallback);
+    }
+
+    public static void post2(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             httpCallback.onResponse(false, (url + " 不是有效的URL"));
             return;
@@ -248,7 +240,7 @@ public class HttpUtils {
         RequestBody body = FormBuilder.build();
 
         final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-        if (!builder.isCache()) {
+        if (!builder.isCache) {
             cacheBuilder.noCache();//不使用缓存，全部走网络
             cacheBuilder.noStore();//不使用缓存，也不存储缓存
         }
@@ -258,8 +250,8 @@ public class HttpUtils {
                 .cacheControl(cache)
                 .url(url)
                 .post(body);
-        if (headersMap != null && headersMap.size() > 0) {
-            requestBuilder.headers(Headers.of(headersMap));
+        if (builder.headersMap != null && builder.headersMap.size() > 0) {
+            requestBuilder.headers(Headers.of(builder.headersMap));
         }
         Request request = requestBuilder.build();
 
