@@ -61,6 +61,7 @@ public class HttpUtils {
         void onFailure(IOException e);
     }
 
+    //用于扩展一些网络功能，比如写入header,写入cookies等操作
     public static class HttpBuilder {
         public Map<String, String> headersMap = null;
     }
@@ -88,7 +89,7 @@ public class HttpUtils {
             .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
             .addInterceptor(new RetryInterceptor(2))
-//            .proxy(Proxy.NO_PROXY)
+//            .proxy(Proxy.NO_PROXY) //禁用抓包工具抓包
             .cache(new Cache(new File(HTTP_CACHE_PATH), 100 * 1024 * 1024));
     public static final OkHttpClient client = builder.build();
 
