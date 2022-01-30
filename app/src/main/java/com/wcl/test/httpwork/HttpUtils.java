@@ -90,7 +90,7 @@ public class HttpUtils {
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
             .addInterceptor(new RetryInterceptor(2))
 //            .proxy(Proxy.NO_PROXY) //禁用抓包工具抓包
-            .cache(new Cache(new File(HTTP_CACHE_PATH), 100 * 1024 * 1024));
+            .cache(new Cache(new File(HTTP_CACHE_PATH), 300 * 1024 * 1024));
     public static final OkHttpClient client = builder.build();
 
 
@@ -211,10 +211,10 @@ public class HttpUtils {
     public static void post(final Context context, String url, Map<String, Object> params, final HttpUtils.HttpCallback httpCallback) {
         HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
         builder.headersMap = null;
-        HttpUtils.postWithHttpBuilder(context, url, params, builder, httpCallback);
+        HttpUtils.postWithBuilder(context, url, params, builder, httpCallback);
     }
 
-    public static void postWithHttpBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void postWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             httpCallback.onResponse(false, (url + " 不是有效的URL"));
             return;
@@ -242,10 +242,7 @@ public class HttpUtils {
         cacheBuilder.noStore();//不使用缓存，也不存储缓存
         CacheControl cache = cacheBuilder.build();
 
-        Request.Builder requestBuilder = new Request.Builder()
-                .cacheControl(cache)
-                .url(url)
-                .post(body);
+        Request.Builder requestBuilder = new Request.Builder().cacheControl(cache).url(url).post(body);
         if (builder.headersMap != null && builder.headersMap.size() > 0) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
@@ -258,12 +255,24 @@ public class HttpUtils {
     /**
      * 通用的异步get请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
      */
-    public static void get(final Context context, final String url, final HttpCallback httpCallback) {
-        final CacheControl.Builder builder = new CacheControl.Builder();
-        builder.noCache();//不使用缓存，全部走网络
-        builder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = builder.build();
-        Request request = new Request.Builder().cacheControl(cache).url(url).get().build();
+    public static void get(final Context context, final String url, Map<String, Object> params, final HttpCallback httpCallback) {
+        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
+        builder.headersMap = null;
+        HttpUtils.getWithBuilder(context, url, params, builder, httpCallback);
+    }
+
+    public static void getWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
+        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
+        cacheBuilder.noCache();//不使用缓存，全部走网络
+        cacheBuilder.noStore();//不使用缓存，也不存储缓存
+        CacheControl cache = cacheBuilder.build();
+
+        final String url2 = buildGetParams(url, params);
+        Request.Builder requestBuilder = new Request.Builder().cacheControl(cache).url(url2).get();
+        if (builder.headersMap != null && builder.headersMap.size() > 0) {
+            requestBuilder.headers(Headers.of(builder.headersMap));
+        }
+        Request request = requestBuilder.build();
 
         Call call = client.newCall(request);
         call.enqueue(createOkhttp3Callback(context, httpCallback));
@@ -705,13 +714,6 @@ public class HttpUtils {
         params.put("phone", "android");
         params.put("channel", BaseUtils.getChannel());
         params.put("packageName", BaseUtils.getPackageName());
-    }
-
-    /**
-     * 构建get请求参数
-     */
-    public static String buildGetParams(Map<String, Object> params) {
-        return buildGetParams(null, params);
     }
 
     /**
