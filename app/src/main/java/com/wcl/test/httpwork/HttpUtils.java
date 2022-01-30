@@ -212,10 +212,10 @@ public class HttpUtils {
         HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
         builder.isCache = false;
         builder.headersMap = null;
-        HttpUtils.post2(context, url, params, builder, httpCallback);
+        HttpUtils.postWithHttpBuilder(context, url, params, builder, httpCallback);
     }
 
-    public static void post2(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void postWithHttpBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             httpCallback.onResponse(false, (url + " 不是有效的URL"));
             return;
