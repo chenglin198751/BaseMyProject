@@ -62,7 +62,6 @@ public class HttpUtils {
     }
 
     public static class HttpBuilder {
-        public boolean isCache = false;
         public Map<String, String> headersMap = null;
     }
 
@@ -210,7 +209,6 @@ public class HttpUtils {
      */
     public static void post(final Context context, String url, Map<String, Object> params, final HttpUtils.HttpCallback httpCallback) {
         HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
-        builder.isCache = false;
         builder.headersMap = null;
         HttpUtils.postWithHttpBuilder(context, url, params, builder, httpCallback);
     }
@@ -238,12 +236,9 @@ public class HttpUtils {
         }
 
         RequestBody body = FormBuilder.build();
-
         final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-        if (!builder.isCache) {
-            cacheBuilder.noCache();//不使用缓存，全部走网络
-            cacheBuilder.noStore();//不使用缓存，也不存储缓存
-        }
+        cacheBuilder.noCache();//不使用缓存，全部走网络
+        cacheBuilder.noStore();//不使用缓存，也不存储缓存
         CacheControl cache = cacheBuilder.build();
 
         Request.Builder requestBuilder = new Request.Builder()
