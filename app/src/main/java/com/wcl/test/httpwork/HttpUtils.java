@@ -90,7 +90,7 @@ public class HttpUtils {
             .readTimeout(TIME_OUT, TimeUnit.SECONDS)
             .addInterceptor(new RetryInterceptor(1))
 //            .proxy(Proxy.NO_PROXY) //禁用抓包工具抓包
-            .cache(new Cache(new File(HTTP_CACHE_PATH), 300 * 1024 * 1024));
+            .cache(new Cache(new File(HTTP_CACHE_PATH), 150 * 1024 * 1024));
     public static final OkHttpClient client = builder.build();
 
 
