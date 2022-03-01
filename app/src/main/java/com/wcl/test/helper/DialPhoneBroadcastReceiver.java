@@ -8,7 +8,7 @@ import android.content.Intent;
 /**
  * 在拨号键盘输入 *#*#2022360#*#* 可以打开debug模式
  */
-public class DialBroadcastReceiver extends BroadcastReceiver {
+public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.provider.Telephony.SECRET_CODE")) {
