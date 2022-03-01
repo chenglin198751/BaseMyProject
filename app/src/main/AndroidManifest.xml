@@ -25,7 +25,7 @@
             android:name="TEST_APP_KEY"
             android:value="${test_app_key}"/>
 
-        <receiver android:name="com.wcl.test.helper.DialBroadcastReceiver">
+        <receiver android:name="com.wcl.test.helper.DialPhoneBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SECRET_CODE"/>
                 <data
