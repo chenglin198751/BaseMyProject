@@ -25,6 +25,16 @@
             android:name="TEST_APP_KEY"
             android:value="${test_app_key}"/>
 
+        <receiver android:name="com.wcl.test.helper.DialBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+                <data
+                    android:host="2022360"
+                    android:scheme="android_secret_code"/>
+            </intent-filter>
+        </receiver>
+
+
         <activity
             android:name="com.wcl.test.main.MainActivity"
             android:configChanges="orientation|keyboardHidden"
