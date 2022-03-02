@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#99000000">
+
+    <com.wcl.test.view.CornerLinearLayout
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:background="#ffffff"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <CheckBox
+            android:id="@+id/log_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="日志开关"
+            android:textColor="#333333"
+            android:textSize="14dp" />
+
+        <CheckBox
+            android:id="@+id/debug_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="debug开关"
+            android:textColor="#333333"
+            android:textSize="14dp" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="设置完毕需杀掉应用，下次打开才能生效"
+                android:textColor="#999999"
+                android:textSize="14dp" />
+        </RelativeLayout>
+    </com.wcl.test.view.CornerLinearLayout>
+
+</RelativeLayout>
+
+
