@@ -140,9 +140,7 @@ public class ReflectUtils {
             Class<?> mClass = Class.forName(calssName);
             method = mClass.getDeclaredMethod(methodName, paremerters);
         } catch (SecurityException | NoSuchMethodException | ClassNotFoundException var5) {
-            if (LogUtils.isDebug()) {
-                var5.printStackTrace();
-            }
+            var5.printStackTrace();
         }
 
         return method;
@@ -173,9 +171,7 @@ public class ReflectUtils {
             Method method = clazz.getDeclaredMethod("currentApplication");
             context = (Context) method.invoke((Object) null);
         } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | ClassNotFoundException var3) {
-            if (LogUtils.isDebug()) {
-                var3.printStackTrace();
-            }
+            var3.printStackTrace();
         }
 
         return context;
