@@ -5,5 +5,5 @@ package com.wcl.test.listener;
  */
 
 public interface OnFinishListener<T> {
-    void onFinish(T t);
+    void onFinished(T t);
 }
