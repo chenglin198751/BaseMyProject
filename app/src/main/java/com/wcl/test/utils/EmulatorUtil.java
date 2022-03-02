@@ -261,7 +261,7 @@ public class EmulatorUtil {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onFinish(info);
+                        listener.onFinished(info);
                     }
                 });
             }

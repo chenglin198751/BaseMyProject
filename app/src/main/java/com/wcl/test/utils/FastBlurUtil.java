@@ -22,12 +22,12 @@ public class FastBlurUtil {
                 .doBlur(new OnBlurListener() {
                     @Override
                     public void onBlurSuccess(Bitmap bitmap) {
-                        listener.onFinish(bitmap);
+                        listener.onFinished(bitmap);
                     }
 
                     @Override
                     public void onBlurFailed() {
-                        listener.onFinish(null);
+                        listener.onFinished(null);
                     }
                 });
     }
@@ -43,12 +43,12 @@ public class FastBlurUtil {
                 .doBlur(new OnBlurListener() {
                     @Override
                     public void onBlurSuccess(Bitmap bitmap) {
-                        listener.onFinish(bitmap);
+                        listener.onFinished(bitmap);
                     }
 
                     @Override
                     public void onBlurFailed() {
-                        listener.onFinish(null);
+                        listener.onFinished(null);
                     }
                 });
     }
