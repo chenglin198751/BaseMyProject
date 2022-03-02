@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.wcl.test.listener.OnFinishListener;
+import com.wcl.test.listener.OnFinishedListener;
 
 public class EmulatorUtil {
     private EmulatorUtil() {
@@ -174,7 +174,7 @@ public class EmulatorUtil {
     /**
      * 判断是否为模拟器
      */
-    public void isEmulator(final Context context, final OnFinishListener<PropertyInfo> listener) {
+    public void isEmulator(final Context context, final OnFinishedListener<PropertyInfo> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
