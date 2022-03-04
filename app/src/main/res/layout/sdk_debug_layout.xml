@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#99000000">
+    android:background="#99000000"
+    android:clickable="true">
 
     <com.wcl.test.view.CornerLinearLayout
+        android:id="@+id/corner"
         android:layout_width="300dp"
         android:layout_height="200dp"
         android:layout_centerInParent="true"
@@ -44,6 +46,17 @@
                 android:textSize="14dp" />
         </RelativeLayout>
     </com.wcl.test.view.CornerLinearLayout>
+
+    <TextView
+        android:id="@+id/close_"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/corner"
+        android:layout_alignRight="@+id/corner"
+        android:padding="10dp"
+        android:text="关闭"
+        android:textColor="#000000"
+        android:textSize="14dp" />
 
 </RelativeLayout>
 
