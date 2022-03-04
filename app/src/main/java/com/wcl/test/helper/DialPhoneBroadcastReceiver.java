@@ -50,7 +50,7 @@ public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
             }
         });
 
-        view.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.close_).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (view.getParent() != null) {
