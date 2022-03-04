@@ -51,7 +51,7 @@
 
         <activity
             android:name="com.wcl.test.widget.BaseWebViewActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+              android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
