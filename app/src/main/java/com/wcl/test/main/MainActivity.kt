@@ -11,13 +11,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.wcl.test.R
 import com.wcl.test.base.BaseActivity
+import com.wcl.test.helper.DialPhoneBroadcastReceiver
 import com.wcl.test.helper.ShowFragmentHelper
 import com.wcl.test.widget.ToastUtils
 
 class MainActivity : BaseActivity(), View.OnClickListener {
     private val TIME_LONG = 3 * 1000
     private var mLastTime: Long = 0
-    private val FRAGMENTS = arrayOf<Class<*>>(MainFirstFragment::class.java, MainSecondFragment::class.java, MainThirdFragment::class.java, MainFourthFragment::class.java)
+    private val FRAGMENTS = arrayOf<Class<*>>(
+        MainFirstFragment::class.java,
+        MainSecondFragment::class.java,
+        MainThirdFragment::class.java,
+        MainFourthFragment::class.java
+    )
     private var mFragHelper: ShowFragmentHelper? = null
     private var mMainFirstFragment: MainFirstFragment? = null
     private var mMainSecondFragment: MainSecondFragment? = null
@@ -30,7 +36,8 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         //由于Manifest的style v27中设置了使用缺口屏，所以这里恢复为默认不使用缺口屏
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val layoutParams = window.attributes
-            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+            layoutParams.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
             window.attributes = layoutParams
         }
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -45,8 +52,10 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     private fun initView() {
         for (index in TAB_BOTTOM_ID_ARRAY.indices) {
             findViewById<View>(TAB_BOTTOM_ID_ARRAY[index]).setOnClickListener(this)
-            val imageView = findViewById<View>(TAB_BOTTOM_ID_ARRAY[index]).findViewById<View>(R.id.image_view) as ImageView
-            val textView = findViewById<View>(TAB_BOTTOM_ID_ARRAY[index]).findViewById<View>(R.id.text_view) as TextView
+            val imageView =
+                findViewById<View>(TAB_BOTTOM_ID_ARRAY[index]).findViewById<View>(R.id.image_view) as ImageView
+            val textView =
+                findViewById<View>(TAB_BOTTOM_ID_ARRAY[index]).findViewById<View>(R.id.text_view) as TextView
             imageView.setImageResource(TAB_BOTTOM_ICON_ARRAY[index])
             textView.setText(TAB_BOTTOM_NAME_ARRAY[index])
         }
@@ -94,8 +103,11 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    override fun onBroadcastReceiver(myAction: String, bundle: Bundle) {
-        super.onBroadcastReceiver(myAction, bundle)
+    override fun onBroadcastReceiver(action: String, bundle: Bundle) {
+        super.onBroadcastReceiver(action, bundle)
+        if (DialPhoneBroadcastReceiver.SECRET_CODE == action) {
+            DialPhoneBroadcastReceiver.showDebugView(this)
+        }
     }
 
     override fun onClick(v: View) {
@@ -113,10 +125,15 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         const val TAB_SECOND = 1
         const val TAB_THIRD = 2
         const val TAB_FOURTH = 3
-        private val TAB_BOTTOM_ID_ARRAY = intArrayOf(R.id.tab_first, R.id.tab_second, R.id.tab_third, R.id.tab_fourth)
-        private val TAB_BOTTOM_ICON_ARRAY = intArrayOf(R.drawable.main_first_icon_selector, R.drawable.main_second_icon_selector,
-                R.drawable.main_third_icon_selector, R.drawable.main_fourth_icon_selector)
-        private val TAB_BOTTOM_NAME_ARRAY = intArrayOf(R.string.host_first_tab, R.string.host_second_tab,
-                R.string.host_third_tab, R.string.host_fourth_tab)
+        private val TAB_BOTTOM_ID_ARRAY =
+            intArrayOf(R.id.tab_first, R.id.tab_second, R.id.tab_third, R.id.tab_fourth)
+        private val TAB_BOTTOM_ICON_ARRAY = intArrayOf(
+            R.drawable.main_first_icon_selector, R.drawable.main_second_icon_selector,
+            R.drawable.main_third_icon_selector, R.drawable.main_fourth_icon_selector
+        )
+        private val TAB_BOTTOM_NAME_ARRAY = intArrayOf(
+            R.string.host_first_tab, R.string.host_second_tab,
+            R.string.host_third_tab, R.string.host_fourth_tab
+        )
     }
 }
