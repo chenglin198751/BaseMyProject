@@ -40,7 +40,7 @@
 
 
     <!-- 通用的基础的没有标题的Activity -->
-    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.NoActionBar">
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
