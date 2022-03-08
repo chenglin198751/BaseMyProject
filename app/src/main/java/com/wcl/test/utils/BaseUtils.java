@@ -740,4 +740,17 @@ public class BaseUtils {
         }
         return null;
     }
+
+    /**
+     * 根据类名获取当前类。适用于SDK获取母体类。
+     */
+    public static Object getClassInstance(String clzName) {
+        try {
+            Class localClass = Class.forName(clzName);
+            return localClass.newInstance();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
 }
