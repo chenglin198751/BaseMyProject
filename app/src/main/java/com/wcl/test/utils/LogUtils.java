@@ -11,14 +11,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.wcl.test.BuildConfig;
 import com.wcl.test.EnvToggle;
 import com.wcl.test.base.BaseApp;
 
 public class LogUtils {
 
     public static String getDebugFilePath() {
-        File file = new File(SDCardUtils.getDataPath());
+        File file = new File(FileUtils.getDataPath());
         return file.getParent() + File.separator + "debug.log";
     }
 
