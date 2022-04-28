@@ -23,7 +23,7 @@ import com.wcl.test.base.BaseAction;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.Constants;
 import com.wcl.test.utils.SmartImageLoader;
-import com.wcl.test.utils.SDCardUtils;
+import com.wcl.test.utils.FileUtils;
 import com.wcl.test.widget.ToastUtils;
 
 /**
@@ -163,7 +163,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
     }
 
     private String getImagePath() {
-        String path = SDCardUtils.getDataPath();
+        String path = FileUtils.getDataPath();
         return path + System.currentTimeMillis() + ".jpg";
     }
 

@@ -13,7 +13,7 @@ import com.wcl.test.R;
 import com.wcl.test.httpwork.HttpUtils;
 import okhttp3.Call;
 import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.SDCardUtils;
+import com.wcl.test.utils.FileUtils;
 import com.wcl.test.widget.ToastUtils;
 
 public class UpdateDownLoadTask {
@@ -135,6 +135,6 @@ public class UpdateDownLoadTask {
     }
 
     public static String getApkPath() {
-        return SDCardUtils.getDataPath() + BaseUtils.getPackageName() + ".apk";
+        return FileUtils.getDataPath() + BaseUtils.getPackageName() + ".apk";
     }
 }

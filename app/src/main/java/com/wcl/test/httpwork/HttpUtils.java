@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.DeviceUtils;
 import com.wcl.test.utils.LogUtils;
-import com.wcl.test.utils.SDCardUtils;
+import com.wcl.test.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,8 +69,8 @@ public class HttpUtils {
     private final static String TAG = "HttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
-    private static final String HTTP_CACHE_PATH = SDCardUtils.getDataPath() + "httpCache" + File.separator;
-    private static final String HTTP_DOWNLOAD_PATH = SDCardUtils.getDataPath() + "download" + File.separator;
+    private static final String HTTP_CACHE_PATH = FileUtils.getDataPath() + "httpCache" + File.separator;
+    private static final String HTTP_DOWNLOAD_PATH = FileUtils.getDataPath() + "download" + File.separator;
 
     static {
         File cacheDir = new File(HTTP_CACHE_PATH);
