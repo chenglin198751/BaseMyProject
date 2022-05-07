@@ -174,7 +174,7 @@ public class EmulatorUtil {
     /**
      * 判断是否为模拟器
      */
-    public void isEmulator(final Context context, final OnFinishedListener<PropertyInfo> listener) {
+    public void isEmulator(final Context context, final OnFinishedListener<Boolean, PropertyInfo> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -261,7 +261,7 @@ public class EmulatorUtil {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onFinished(info);
+                        listener.onFinished(true, info);
                     }
                 });
             }
