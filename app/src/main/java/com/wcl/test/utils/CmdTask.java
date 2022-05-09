@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 public class CmdTask {
+	private final static String TYPE_INPUT = "input";
+	private final static String TYPE_error = "error";
 
 	public static void exe(String command, OnFinishedListener<Boolean, String> listener) {
 		CmdTask cmdTask = new CmdTask(command, listener);
@@ -36,8 +38,8 @@ public class CmdTask {
 			process = Runtime.getRuntime().exec(mCommand);
 			// Runtime.exec()创建的子进程公用父进程的流，不同平台上，父进程的stream buffer可能被打满导致子进程阻塞，从而永远无法返回。
 			// 针对这种情况，我们只需要将子进程的stream重定向出来即可。
-			new RedirCmdStreamThread(process, process.getInputStream()).start();
-			new RedirCmdStreamThread(process, process.getErrorStream()).start();
+			new RedirCmdStreamThread(process, process.getInputStream(), TYPE_INPUT).start();
+			new RedirCmdStreamThread(process, process.getErrorStream(), TYPE_error).start();
 
 			exitVal = process.waitFor();
 		} catch (IOException | InterruptedException e) {
@@ -57,10 +59,12 @@ public class CmdTask {
 	class RedirCmdStreamThread extends Thread {
 		InputStream is;
 		Process process;
+		String type;
 
-		RedirCmdStreamThread(Process process, InputStream is) {
+		RedirCmdStreamThread(Process process, InputStream is, String type) {
 			this.is = is;
 			this.process = process;
+			this.type = type;
 		}
 
 		public void run() {
@@ -76,11 +80,15 @@ public class CmdTask {
 					}
 				}
 				if (mListener != null) {
-					mListener.onFinished(true, line2);
+					if (type.equals(TYPE_INPUT)) {
+						mListener.onFinished(true, line2);
+					}
 				}
 			} catch (IOException ioe) {
 				if (mListener != null) {
-					mListener.onFinished(false, ioe.toString());
+					if (type.equals(TYPE_INPUT)) {
+						mListener.onFinished(false, ioe.toString());
+					}
 				}
 				ioe.printStackTrace();
 			}
