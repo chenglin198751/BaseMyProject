@@ -271,3 +271,16 @@
     String sign = SignUtils.getSign(orderParam, appSecret);
 
 **89、用HttpURLConnection封装的一套网络访问工具**：https://github.com/guozhengXia/UrlHttpUtils
+
+**90、SDK demo或者aar 引入外部路径jar或者aar的方法：**
+    1、引入外部路径jar：
+        implementation fileTree(dir: '../../tools/exclude_libs', include: ['*.jar'])
+
+    2、引入别的module的aar：
+        repositories {
+            flatDir {
+                dirs 'libs'
+                dirs project(':BaseSdk').file('libs')
+            }
+        }
+        implementation(name: 'analyse_sdk_v_100008', ext: 'aar')
