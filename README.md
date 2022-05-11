@@ -303,3 +303,32 @@
                 copyMainPluginApk("assembleRelease")
             }
         }
+
+        //gradle各种生命周期：详细见：https://www.jianshu.com/p/2e19268bf387
+        gradle.settingsEvaluated {
+            println "settings：执行settingsEvaluated..."
+        }
+
+        gradle.projectsLoaded {
+            println "settings：执行projectsLoaded..."
+        }
+
+        gradle.projectsEvaluated {
+            println "settings: 执行projectsEvaluated..."
+        }
+
+        gradle.beforeProject { proj ->
+            println "settings：执行${proj.name} beforeProject"
+        }
+
+        gradle.afterProject { proj ->
+            println "settings：执行${proj.name} afterProject"
+        }
+
+        gradle.buildStarted {
+            println "构建开始..."
+        }
+
+        gradle.buildFinished {
+            println "构建结束..."
+        }
