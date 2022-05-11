@@ -284,3 +284,22 @@
             }
         }
         implementation(name: 'analyse_sdk_v_100008', ext: 'aar')
+
+**90、gradle编译完成之后做事情，比如执行复制apk之类的操作：**
+        def copyMainPluginApk(final String build_type) {
+            //$project.buildDir是当前build路径
+            def from_path = "$project.buildDir/outputs/apk/release/"
+
+            //this.getRootDir()是当前工程路径，是个File
+            File file = this.getRootDir()
+        }
+
+        //在assembleDebug或者assembleRelease执行之后，再执行方法copyMainPluginApk()
+        afterEvaluate {
+            assembleDebug.doLast {
+                copyMainPluginApk("assembleDebug")
+            }
+            assembleRelease.doLast {
+                copyMainPluginApk("assembleRelease")
+            }
+        }
