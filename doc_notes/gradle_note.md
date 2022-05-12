@@ -79,3 +79,18 @@
         sdk_plat = sdk_plat.replace('\n','')
         return sdk_plat;
     }
+
+**5、gradle 加载文件内容为数组map：**
+
+    1、定义的文件内容：
+    keyAlias=xxxxx
+    keyPassword=bbbbbbbb
+    storePassword=aaaaaaaaaaaaaa
+
+    2、读取文件：
+    def keystorePropertiesFile = rootProject.file("../key.properties")
+    def keystoreProperties = new Properties()
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+    3、使用keystoreProperties：
+    keystoreProperties['storeFile']
