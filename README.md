@@ -286,6 +286,7 @@
         implementation(name: 'analyse_sdk_v_100008', ext: 'aar')
 
 **90、gradle编译完成之后做事情，比如执行复制apk之类的操作：**
+
         def copyMainPluginApk(final String build_type) {
             //$project.buildDir是当前build路径
             def from_path = "$project.buildDir/outputs/apk/release/"
@@ -332,3 +333,8 @@
         gradle.buildFinished {
             println "构建结束..."
         }
+
+**91、gradle build 控制台输出中文乱码：**
+
+    1、在gradle-wrapper.properties添加下面内容： org.gradle.jvmargs=-Dfile.encoding=UTF-8
+    2、点击help -> edit custom vm options -> 打开sutdio64.exe.vmoptions -> 添加：-Dfile.encoding=UTF-8
