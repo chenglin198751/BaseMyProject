@@ -295,7 +295,7 @@
         }
 
         //在assembleDebug或者assembleRelease执行之后，再执行方法copyMainPluginApk()
-        afterEvaluate {
+        project.afterEvaluate {
             assembleDebug.doLast {
                 copyMainPluginApk("assembleDebug")
             }
