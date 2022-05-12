@@ -1,6 +1,7 @@
 # gradle知识记录
 
 **1、SDK demo或者aar 引入外部路径jar或者aar的方法：**
+
     1、引入外部路径jar：
         implementation fileTree(dir: '../../tools/exclude_libs', include: ['*.jar'])
 
