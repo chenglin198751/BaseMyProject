@@ -1,6 +1,6 @@
 # 工程各个工具类说明
 
-* [App 架构模式（MVC / MVP / MVVM）](doc_notes/gradle.note.md)
+* [App 架构模式（MVC / MVP / MVVM）](doc_notes/gradle_note.md)
 
 **1、BaseActivity 类** ：基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。
      好处：便于统一管理页面，比如可以在页面内部显示加载框，可以添加右侧菜单，添加空View，无网页面等等。
