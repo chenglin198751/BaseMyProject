@@ -66,3 +66,16 @@
 
     1、在gradle-wrapper.properties添加下面内容： org.gradle.jvmargs=-Dfile.encoding=UTF-8
     2、点击help -> edit custom vm options -> 打开sutdio64.exe.vmoptions -> 添加：-Dfile.encoding=UTF-8
+
+**4、gradle 读取文件内容：**
+
+    def sdk_plat = getSdkPlat()
+    def getSdkPlat() {
+        def file = file('../build_variants')
+        String sdk_plat = ''
+        file.eachLine { line ->
+            sdk_plat = line
+        }
+        sdk_plat = sdk_plat.replace('\n','')
+        return sdk_plat;
+    }
