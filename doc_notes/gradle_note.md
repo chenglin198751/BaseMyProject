@@ -94,3 +94,46 @@
 
     3、使用keystoreProperties：
     keystoreProperties['storeFile']
+
+**6、gradle 编译添加监听：**
+
+    // beforeEvaluate()要想生效，代码必须方到settings.gradle中
+    gradle.addProjectEvaluationListener(new ProjectEvaluationListener() {
+        @Override
+        void beforeEvaluate(Project project) {
+            println("${project.name} 项目配置之前调用")
+        }
+
+        @Override
+        void afterEvaluate(Project project, ProjectState state) {
+            println("${project.name} 项目配置之后调用")
+        }
+    })
+
+    // gradle 监听项目的生命周期
+    gradle.addBuildListener(new BuildListener() {
+        @Override
+        void buildStarted(Gradle gradle) {
+            // println('构建开始')
+        }
+
+        @Override
+        void settingsEvaluated(Settings settings) {
+            // println('settings 文件解析完成')
+        }
+
+        @Override
+        void projectsLoaded(Gradle gradle) {
+            // println('项目加载完成')
+        }
+
+        @Override
+        void projectsEvaluated(Gradle gradle) {
+            // println('项目解析完成')
+        }
+
+        @Override
+        void buildFinished(BuildResult result) {
+            // println('构建完成')
+        }
+    })
