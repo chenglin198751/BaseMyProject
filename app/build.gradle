@@ -56,9 +56,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
@@ -69,6 +66,10 @@ android {
     buildFeatures {
         viewBinding true
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.wcl.test'
 }
 
 dependencies {
