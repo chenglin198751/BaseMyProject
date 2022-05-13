@@ -138,3 +138,11 @@
             // println('构建完成')
         }
     })
+
+**7、gradle 执行命令行：**
+
+        exec {
+            def mCommand = ["cmd", "/c","jar","-xvf", sdk_jar]
+            workingDir "../sdk/config"
+            commandLine mCommand
+        }
