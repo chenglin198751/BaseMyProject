@@ -146,3 +146,16 @@
             workingDir "../sdk/config"
             commandLine mCommand
         }
+
+**8、gradle 执行执行压缩和解压缩：**
+
+    task zip(type: Zip){
+        from 'C:/work/AndroidCode/BaseMyProject/app/libs'
+        archiveFileName = 'libs.zip'
+        destinationDirectory = file('C:/work/AndroidCode/BaseMyProject/app/src')
+    }
+    
+    task unzip(type: Copy) {
+        from zipTree('C:/work/AndroidCode/BaseMyProject/app/src/libs.zip')
+        into 'C:/work/AndroidCode/BaseMyProject/test'
+    }
