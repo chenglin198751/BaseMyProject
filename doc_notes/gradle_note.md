@@ -149,6 +149,9 @@
 
 **8、gradle 执行执行压缩和解压缩：**
 
+    传递参数：gradlew zip -Pparams=123
+    获取参数：project.getProperty("params")
+
     task zip(type: Zip){
         from 'C:/work/AndroidCode/BaseMyProject/app/libs'
         archiveFileName = 'libs.zip'
