@@ -150,7 +150,7 @@
 **8、gradle 执行执行压缩和解压缩：**
 
     执行任务并传递参数：gradlew zip -Pparams=123
-    在任务内获取参数：project.getProperty("params")
+    在任务内获取参数：project.getProperty("params") 或者 "$params"
 
     task zip(type: Zip){
         from 'C:/work/AndroidCode/BaseMyProject/app/libs'
