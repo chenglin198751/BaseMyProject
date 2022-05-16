@@ -1,0 +1,7 @@
+task zip(type: Zip) {
+    if (project.hasProperty('from_dir')) {
+        from "$from_dir"
+        archiveFileName = "$zip_name"
+        destinationDirectory = file("$to_dir")
+    }
+}

@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
 }
+apply from: '../common.gradle'
 
 android {
     compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
