@@ -5,12 +5,12 @@ plugins {
 apply from: '../common.gradle'
 
 android {
-    compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
-    buildToolsVersion rootProject.ext.BUILD_TOOLS_VERSION
+    compileSdkVersion project.ext.COMPILE_SDK_VERSION
+    buildToolsVersion project.ext.BUILD_TOOLS_VERSION
     defaultConfig {
         applicationId "com.wcl.test"
-        minSdkVersion rootProject.ext.MIN_SDK_VERSION
-        targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
+        minSdkVersion project.ext.MIN_SDK_VERSION
+        targetSdkVersion project.ext.TARGET_SDK_VERSION
         versionCode 1
         versionName "1.0.0.1"
         multiDexEnabled true
