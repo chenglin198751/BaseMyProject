@@ -245,6 +245,7 @@
 **79、PullScrollView**：重写overScrollBy()方法可以实现下拉交互特效
 
 **80、App实现黑白模式**：在BaseActivity的onCreate()种实现：
+
     Paint paint = new Paint();
     ColorMatrix cm = new ColorMatrix();
     cm.setSaturation(0);
@@ -261,14 +262,14 @@
 
 **84、gson解析容错**：https://github.com/getActivity/GsonFactory
 
-**85、facebook开源的发光渐变文字效果**：http://facebook.github.io/shimmer-android/
-      ShimmerTextView ：简易版的发光渐变文字效果
+**85、facebook开源的发光渐变文字效果**：http://facebook.github.io/shimmer-android/ ; ShimmerTextView ：简易版的发光渐变文字效果
 
 **86、ShapeableImageView**：谷歌官方material系列，实现圆形，圆角，等各种形状的ImageView
 
 **87、APK反编译**：反编译工具：https://github.com/skylot/jadx/releases/tag/v1.2.0  源码：https://github.com/skylot/jadx
 
 **88、计算签名的工具类 SignUtils.java**：
+
     final String appSecret = "c97d25b2518745b4a02fa43934e951b5";
     Map<String, String> orderParam = new HashMap<>();
     orderParam.put("order_id","163549389998541021");
@@ -276,3 +277,9 @@
     String sign = SignUtils.getSign(orderParam, appSecret);
 
 **89、用HttpURLConnection封装的一套网络访问工具**：https://github.com/guozhengXia/UrlHttpUtils
+
+**90、用HttpURLConnection封装的一套网络访问工具**：
+横屏模式下，EditText唤起键盘时，键盘全屏，导致无法看到输入页面。加如下属性禁止键盘全屏：
+    
+    android:imeOptions="flagNoExtractUi"
+    mUserNameText.setImeOptions(|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
