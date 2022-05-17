@@ -48,6 +48,11 @@
 #保持泛型
 -keepattributes Signature
 
+-obfuscationdictionary proguard-custom-map.txt #外部字典
+-classobfuscationdictionary proguard-custom-map.txt #类字典
+-packageobfuscationdictionary proguard-custom-map.txt #包字典
+-ignorewarnings#屏蔽警告
+
 #保持所有实现 Serializable 接口的类成员
 -keepclassmembers class * implements java.io.Serializable {
     static final long serialVersionUID;
