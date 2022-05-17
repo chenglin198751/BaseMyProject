@@ -9,25 +9,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-public class ZipUtils {
+public class ZipByJava {
 
-    public static String unZip(String inputFile) {
-        String destDirPath = null;
+    public static void unZip(String inputZip,String destDir) {
         try {
-            File srcFile = new File(inputFile);
+            File srcFile = new File(inputZip);
             if (!srcFile.exists()) {
                 System.out.println(srcFile.getAbsolutePath() + " not exist");
-                return null;
             }
 
-            final String aar = ".aar";
-            if (inputFile.toLowerCase().endsWith(aar)) {
-                destDirPath = inputFile.substring(0, inputFile.length() - aar.length());
-            }
-
-            File temp = new File(destDirPath);
-            if (temp.exists()) {
-                deleteDirectory(temp);
+            File destDirF = new File(destDir);
+            if (destDirF.exists()) {
+                deleteDirectory(destDirF);
             }
 
             ZipFile zipFile = new ZipFile(srcFile);
@@ -37,7 +30,7 @@ public class ZipUtils {
                 if (entry.isDirectory()) {
                     srcFile.mkdirs();
                 } else {
-                    File targetFile = new File(destDirPath + File.separator + entry.getName());
+                    File targetFile = new File(destDir + File.separator + entry.getName());
 
                     if (!targetFile.getParentFile().exists()) {
                         targetFile.getParentFile().mkdirs();
@@ -60,19 +53,14 @@ public class ZipUtils {
         } catch (Exception e) {
             System.out.println("zipUncompress error = " + e.toString());
         }
-        return destDirPath;
     }
 
     public static void fileToZip(String srcFile, String zipFile) {
         try {
             File file = new File(srcFile);
-            // 取出文件名
             String name = file.getName();
-            // 读取文件
             FileInputStream inputStream = new FileInputStream(file);
-            // 输出流
             ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-            // ZipEnter:表示压缩文件的条目(文件目录)
             zipOutputStream.putNextEntry(new ZipEntry("Image\\01.jpg"));
 
             int temp = 0;
