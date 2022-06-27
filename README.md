@@ -283,3 +283,5 @@
     
     android:imeOptions="flagNoExtractUi"
     mUserNameText.setImeOptions(|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+
+**91、通过标签直接生成shape，无需再写shape.xml**：https://github.com/JavaNoober/BackgroundLibrary
