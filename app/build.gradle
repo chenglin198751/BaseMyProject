@@ -89,4 +89,5 @@ dependencies {
     implementation 'com.dasu.image:blur:0.0.6'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'androidx.lifecycle:lifecycle-process:2.6.0-alpha01'
 }
