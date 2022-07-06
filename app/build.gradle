@@ -90,4 +90,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
     implementation 'androidx.lifecycle:lifecycle-process:2.6.0-alpha01'
+    implementation 'com.github.JavaNoober.BackgroundLibrary:libraryx:1.7.4'
 }
