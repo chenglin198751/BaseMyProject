@@ -63,10 +63,7 @@
             println "构建结束..."
         }
 
-**3、gradle build 控制台输出中文乱码：**
-
-    1、在gradle-wrapper.properties添加下面内容： org.gradle.jvmargs=-Dfile.encoding=UTF-8
-    2、点击help -> edit custom vm options -> 打开sutdio64.exe.vmoptions -> 添加：-Dfile.encoding=UTF-8
+**3、空白**
 
 **4、gradle 读取文件内容：**
 
