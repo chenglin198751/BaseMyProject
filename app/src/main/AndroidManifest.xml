@@ -97,7 +97,11 @@
             android:name="com.wcl.test.test.TestSelectedPhotoActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
-
+        <provider
+            android:name="com.wcl.test.CustomInitProvider"
+            android:authorities="${applicationId}.backgroundLibrary"
+            android:exported="false"
+            android:multiprocess="true" />
     </application>
 
 </manifest>

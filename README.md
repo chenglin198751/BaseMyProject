@@ -285,3 +285,5 @@
     mUserNameText.setImeOptions(|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
 **91、通过标签直接生成shape，无需再写shape.xml**：https://github.com/JavaNoober/BackgroundLibrary
+
+**92、aar接入方式开发SDK可以使用自定义的ContentProvider初始化SDK**：com.wcl.test.CustomInitProvider，其onCreate()方法，晚于Application的attachBaseContext()，早于Application的onCreate()。
