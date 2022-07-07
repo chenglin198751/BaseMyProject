@@ -24,7 +24,7 @@ public abstract class OnMultipleClickListener implements View.OnClickListener {
     public OnMultipleClickListener(
             @IntRange(from = 1, to = 10) long interval,
             @IntRange(from = 1, to = 100) int count) {
-        this.timeInterval = interval;
+        this.timeInterval = interval * 1000;
         this.totalCount = count;
     }
 
