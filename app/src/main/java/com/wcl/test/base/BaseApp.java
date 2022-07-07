@@ -23,6 +23,7 @@ public class BaseApp extends Application {
     @CallSuper
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        application = this;
     }
 
     @Override

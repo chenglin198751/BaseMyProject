@@ -9,9 +9,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.wcl.test.EnvToggle;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseAction;
-import com.wcl.test.preferences.PreferAppSettings;
+import com.wcl.test.preferences.ToggleSettings;
 
 
 /**
@@ -33,20 +34,20 @@ public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
         viewGroup.addView(view);
         CheckBox logToggle = view.findViewById(R.id.log_toggle);
         CheckBox debugToggle = view.findViewById(R.id.debug_toggle);
-        logToggle.setChecked(PreferAppSettings.getLogEnable());
-        debugToggle.setChecked(PreferAppSettings.getDebugEnable());
+        logToggle.setChecked(EnvToggle.isLog());
+        debugToggle.setChecked(EnvToggle.isDebug());
 
         logToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                PreferAppSettings.setLogEnable(isChecked);
+                ToggleSettings.setLogEnable(isChecked);
             }
         });
 
         debugToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                PreferAppSettings.setDebugEnable(isChecked);
+                ToggleSettings.setDebugEnable(isChecked);
             }
         });
 

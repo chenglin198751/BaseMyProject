@@ -1,6 +1,10 @@
 package com.wcl.test.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import com.wcl.test.base.BaseApp;
 
@@ -86,6 +90,54 @@ public class FileUtils {
     }
 
 
+    /**
+     * 把字符串写入文件
+     */
+    public static void writeFile(File file, String value) {
+        if (!file.exists()) {
+            return;
+        }
+
+        try {
+            FileWriter fileWriter = new FileWriter(file, true);
+            fileWriter.write(value);
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 读取文件
+     */
+    public static String readFile(File file) {
+        if (!file.exists()) {
+            return null;
+        }
+
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new FileReader(file));
+            String readString = "";
+            String currentLine;
+            while ((currentLine = in.readLine()) != null) {
+                currentLine += '\n';
+                readString += currentLine;
+            }
+            return readString;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
 //    public static void copyDirectory(File fromDir, File toDir) {
 //        try {
