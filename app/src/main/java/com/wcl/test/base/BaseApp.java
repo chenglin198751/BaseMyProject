@@ -1,6 +1,5 @@
 package com.wcl.test.base;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
@@ -9,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
-import androidx.multidex.MultiDex;
 
 import com.tencent.smtt.sdk.QbSdk;
 import com.wcl.test.helper.AppHelper;
@@ -25,7 +23,6 @@ public class BaseApp extends Application {
     @CallSuper
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     @Override
