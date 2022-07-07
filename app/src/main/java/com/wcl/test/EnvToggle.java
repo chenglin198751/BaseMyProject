@@ -1,9 +1,18 @@
 package com.wcl.test;
 
 
-import com.wcl.test.preferences.PreferAppSettings;
+import com.wcl.test.preferences.ToggleSettings;
+import com.wcl.test.utils.BaseUtils;
 
 public class EnvToggle {
-    public static final boolean isLog = PreferAppSettings.getLogEnable();
-    public static final boolean isDebug = PreferAppSettings.getDebugEnable();
+    private static final boolean isDebug = ToggleSettings.getDebugEnable();
+    private static final boolean isLog = BaseUtils.isDebuggable() || ToggleSettings.getLogEnable();
+
+    public static boolean isLog() {
+        return isLog;
+    }
+
+    public static boolean isDebug() {
+        return isDebug;
+    }
 }
