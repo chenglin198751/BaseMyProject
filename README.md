@@ -287,3 +287,11 @@
 **91、通过标签直接生成shape，无需再写shape.xml**：https://github.com/JavaNoober/BackgroundLibrary
 
 **92、aar接入方式开发SDK可以使用自定义的ContentProvider初始化SDK**：com.wcl.test.CustomInitProvider，其onCreate()方法，晚于Application的attachBaseContext()，早于Application的onCreate()。
+
+**93、glide自定义各种变换形状，灰度，黑白等**： implementation 'jp.wasabeef:glide-transformations:4.3.0'
+    
+    //比如，这个是图片从顶部开始展示
+    Glide.with(getContext())
+    .load(url)
+    .transform(new CropTransformation(100,100, CropTransformation.CropType.TOP))
+    .into(image);

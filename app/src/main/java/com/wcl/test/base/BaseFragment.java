@@ -8,19 +8,17 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
-
-import java.util.List;
-import java.util.Map;
-
 import com.wcl.test.R;
-import com.wcl.test.httpwork.HttpUtils;
 import com.wcl.test.utils.Constants;
 import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
+
+import java.util.List;
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -32,7 +30,11 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     private RelativeLayout mContentView;
     private ViewGroup mNestedParentLayout;
 
+    @NonNull
     public BaseActivity getContext() {
+        if (getActivity() == null) {
+            throw new NullPointerException("getActivity() is NullPointerException");
+        }
         return (BaseActivity) getActivity();
     }
 
