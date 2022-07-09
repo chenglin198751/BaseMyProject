@@ -1,13 +1,24 @@
 package com.wcl.test.main;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.Transformation;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.test.TestRecyclerViewRefreshActivity;
+import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.SmartImageLoader;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropTransformation;
 
 
 /**
@@ -30,8 +41,12 @@ public class MainFirstFragment extends BaseFragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), TestRecyclerViewRefreshActivity.class);
                 startActivity(intent);
+                Log.v("tag_99","11");
             }
         });
+
+        final String url = "http://sjbz.fd.zol-img.com.cn/t_s1080x1920c/g7/M00/03/03/ChMkK2IhwkuIQrMuAA44okS-NnMAABM7gD2hrgADji6794.jpg";
+
 
     }
 

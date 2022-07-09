@@ -1,0 +1,16 @@
+*.iml
+.gradle
+/.idea
+/local.properties
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+/loadingballs
+/release
+/debug
+/.settings
+/bin
+/.project
+/.classpath
+
