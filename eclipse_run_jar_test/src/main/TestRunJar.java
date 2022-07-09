@@ -6,7 +6,7 @@ import java.util.List;
 
 public class TestRunJar {
 	private static ArrayList<String> classList = new ArrayList<>();
-	
+
 	public static void main(String[] args) {
 		String new_360SDK = "C:\\Users\\weichenglin1\\Desktop\\aaa\\new_360SDK";
 		String old_360SDK = "C:\\Users\\weichenglin1\\Desktop\\aaa\\old_360SDK";
@@ -25,12 +25,11 @@ public class TestRunJar {
 		List<String> subList = subList(list_new_360SDK, list_old_360SDK);
 		for (int i = 0; i < subList.size(); i++) {
 			String path2 = subList.get(i);
-			if (!isProguard1(path2) && !isProguard2(path2)) {
+			if (!isProguardRule1(path2) && !isProguardRule2(path2)) {
 				System.out.println(subList.get(i));
 			}
 		}
 	}
-
 
 	public static void filesDirs(File file) {
 		if (file.isDirectory()) {
@@ -40,7 +39,9 @@ public class TestRunJar {
 			}
 		} else {
 			String path2 = file.getAbsolutePath().replace("new_360SDK", "360SDK").replace("old_360SDK", "360SDK");
-			classList.add(path2);
+			if (path2.endsWith(".class")) {
+				classList.add(path2);
+			}
 		}
 	}
 
@@ -49,36 +50,38 @@ public class TestRunJar {
 		return list1;
 	}
 
-	public static boolean isProguard1(String path) {
+	public static boolean isProguardRule1(String path) {
 		if (!path.endsWith(".class")) {
 			return true;
 		}
 
+		String className = new File(path).getName();
+
 		String[] maping = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 		for (int i = 0; i < maping.length; i++) {
-			String str = File.separator + maping[i] + ".class";
-			if (path.endsWith(str)) {
+			String className2 = maping[i] + ".class";
+			if (className.equals(className2)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static boolean isProguard2(String path) {
+	public static boolean isProguardRule2(String path) {
 		File file = new File(path);
-		String lastStr = file.getName().replace(".class", "");
-		boolean isLength1 = true;
-		if (lastStr.contains("$")) {
-			String[] arrays2 = lastStr.replace("$", "#").split("#");
+		String className = file.getName().replace(".class", "");
+		boolean isProguard = true;
+		if (className.contains("$")) {
+			String[] arrays2 = className.replace("$", "#").split("#");
 			for (int i = 0; i < arrays2.length; i++) {
 				if (arrays2[i].length() > 1) {
-					isLength1 = false;
+					isProguard = false;
 				}
 			}
 		} else {
-			isLength1 = false;
+			isProguard = false;
 		}
-		return isLength1;
+		return isProguard;
 	}
 
 }
