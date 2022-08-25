@@ -163,7 +163,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
     }
 
     private String getImagePath() {
-        String path = FileUtils.getDataPath();
+        String path = FileUtils.getExternalPath();
         return path + System.currentTimeMillis() + ".jpg";
     }
 

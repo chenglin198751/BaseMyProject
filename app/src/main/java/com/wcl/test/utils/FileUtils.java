@@ -1,12 +1,12 @@
 package com.wcl.test.utils;
 
+import com.wcl.test.base.BaseApp;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import com.wcl.test.base.BaseApp;
 
 public class FileUtils {
 
@@ -22,6 +22,14 @@ public class FileUtils {
      */
     public static String getDataPath() {
         String cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
+        return cachePath + File.separator;
+    }
+
+    /**
+     * 获取外部存储卡路径：比如：sdcard/Android/data/data/包名/cache
+     */
+    public static String getExternalPath() {
+        String cachePath = BaseApp.getApp().getExternalCacheDir().getAbsolutePath();
         return cachePath + File.separator;
     }
 

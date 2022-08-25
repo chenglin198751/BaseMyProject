@@ -135,6 +135,6 @@ public class UpdateDownLoadTask {
     }
 
     public static String getApkPath() {
-        return FileUtils.getDataPath() + BaseUtils.getPackageName() + ".apk";
+        return FileUtils.getExternalPath() + BaseUtils.getPackageName() + ".apk";
     }
 }
