@@ -199,13 +199,7 @@ public class BitmapUtils {
                     bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     fos.flush();
                     fos.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-
-                    if (callback != null) {
-                        callback.onSucceed(null);
-                    }
-                } catch (IOException e) {
+                }catch (Exception e) {
                     e.printStackTrace();
                     if (callback != null) {
                         callback.onSucceed(null);
