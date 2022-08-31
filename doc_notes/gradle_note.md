@@ -159,3 +159,7 @@
         from zipTree('C:/work/AndroidCode/BaseMyProject/app/src/libs.zip')
         into 'C:/work/AndroidCode/BaseMyProject/test'
     }
+
+**9、gradle 下载的aar路径：**
+
+    C:\Users\weichenglin1\.gradle\caches\modules-2\files-2.1\androidx.viewpager2\viewpager2\1.0.0\91c378a09ddff66e1bb73e90edeac53487d2832b\viewpager2-1.0.0.aar
