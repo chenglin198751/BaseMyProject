@@ -16,6 +16,7 @@ import com.wcl.test.base.BaseFragment;
 import com.wcl.test.test.TestRecyclerViewRefreshActivity;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.SmartImageLoader;
+import com.wcl.test.widget.BaseWebViewActivity;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropTransformation;
@@ -40,9 +41,7 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), TestRecyclerViewRefreshActivity.class);
-                startActivity(intent);
-                Log.v("tag_99","11");
+                BaseWebViewActivity.start(getContext(),"https://www.baidu.com","百度");
             }
         });
 
