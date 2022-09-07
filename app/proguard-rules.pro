@@ -82,10 +82,18 @@
 -dontskipnonpubliclibraryclasses
 -dontskipnonpubliclibraryclassmembers
 -dontwarn dalvik.**
+
+-dontwarn dalvik.**
 -dontwarn com.tencent.smtt.**
 
--keep class com.tencent.tbs.** {*;}
--keep class com.tencent.tbs.video.interfaces.** {*;}
+-keep class com.tencent.smtt.** {
+    *;
+}
+
+-keep class com.tencent.tbs.** {
+    *;
+}
+
 -keep class com.google.gson.** {*;}
 
 -keep public class * implements com.bumptech.glide.module.GlideModule

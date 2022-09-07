@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.wcl.test">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wcl.test">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -22,17 +23,16 @@
 
         <meta-data
             android:name="TEST_APP_KEY"
-            android:value="${test_app_key}"/>
+            android:value="${test_app_key}" />
 
         <receiver android:name="com.wcl.test.helper.DialPhoneBroadcastReceiver">
             <intent-filter>
-                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+                <action android:name="android.provider.Telephony.SECRET_CODE" />
                 <data
                     android:host="2022360"
-                    android:scheme="android_secret_code"/>
+                    android:scheme="android_secret_code" />
             </intent-filter>
         </receiver>
-
 
         <activity
             android:name="com.wcl.test.main.MainActivity"
@@ -50,7 +50,7 @@
 
         <activity
             android:name="com.wcl.test.widget.BaseWebViewActivity"
-              android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode"
+            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
@@ -97,6 +97,7 @@
             android:name="com.wcl.test.test.TestSelectedPhotoActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
+
         <provider
             android:name="com.wcl.test.CustomInitProvider"
             android:authorities="${applicationId}.backgroundLibrary"

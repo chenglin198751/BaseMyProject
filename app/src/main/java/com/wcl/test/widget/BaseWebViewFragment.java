@@ -6,17 +6,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieSyncManager;
+import android.webkit.DownloadListener;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
-import com.tencent.smtt.export.external.interfaces.JsResult;
-import com.tencent.smtt.sdk.CookieSyncManager;
-import com.tencent.smtt.sdk.DownloadListener;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm;
-import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
 
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.R;
@@ -127,11 +125,6 @@ public class BaseWebViewFragment extends BaseFragment {
             }
 
             @Override
-            public void onShowCustomView(View view, IX5WebChromeClient.CustomViewCallback customViewCallback) {
-
-            }
-
-            @Override
             public void onHideCustomView() {
             }
 
@@ -168,7 +161,7 @@ public class BaseWebViewFragment extends BaseFragment {
 
         WebSettings webSetting = mWebView.getSettings();
         webSetting.setAllowFileAccess(true);
-        webSetting.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
+        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         webSetting.setSupportZoom(true);
         webSetting.setBuiltInZoomControls(true);
         webSetting.setUseWideViewPort(true);

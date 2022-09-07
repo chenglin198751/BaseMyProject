@@ -9,8 +9,6 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
-import com.tencent.smtt.sdk.QbSdk;
-import com.wcl.test.helper.AppHelper;
 
 public class BaseApp extends Application {
     private static BaseApp application = null;
@@ -32,10 +30,6 @@ public class BaseApp extends Application {
         super.onCreate();
         application = this;
 
-        //只在应用主进程执行
-        if (AppHelper.isAppMainProcess()) {
-            QbSdk.initX5Environment(getApplicationContext(), null);
-        }
 
         //监测app位于前台还是后台
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new DefaultLifecycleObserver() {
