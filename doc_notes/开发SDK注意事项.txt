@@ -16,3 +16,108 @@
 
 5、对外提供的方法，越精简越好。所有的方法，最好都有回调，回调用json格式。比如初始化方法，无论任何原因的初始化失败，都要回调给接入方；
    一个小技巧，初始化可以用CustomInitProvider实现，这样第一是方便接入方，第二是防止接入方初始化的太晚引起SDK异常。
+
+
+
+最后附上一些常用的混淆代码：
+
+# 不混淆某个类的类名，及类中的内容
+-keep class cn.coderpig.myapp.example.Test { *; }
+
+# 不混淆指定包名下的类名，不包括子包下的类名
+-keep class cn.coderpig.myapp*
+
+# 不混淆指定包名下的类名，及类里的内容
+-keep class cn.coderpig.myapp* {*;}
+
+# 不混淆指定包名下的类名，包括子包下的类名
+-keep class cn.coderpig.myapp**
+
+# 不混淆某个类的子类
+-keep public class * extends cn.coderpig.myapp.base.BaseFragment
+
+# 不混淆实现了某个接口的类
+-keep class * implements cn.coderpig.myapp.dao.DaoImp
+
+# 不混淆类名中包含了"entity"的类，及类中内容
+-keep class **.*entity*.** {*;}
+
+# 不混淆内部类中的所有public内容
+-keep class cn.coderpig.myapp.widget.CustomView$OnClickInterface {
+    public *;
+}
+
+# 不混淆指定类的所有方法
+-keep cn.coderpig.myapp.example.Test {
+    public <methods>;
+}
+
+# 不混淆指定类的所有字段
+-keep cn.coderpig.myapp.example.Test {
+    public <fields>;
+}
+
+# 不混淆指定类的所有构造方法
+-keep cn.coderpig.myapp.example.Test {
+    public <init>;
+}
+
+# 不混淆指定参数作为形参的方法
+-keep cn.coderpig.myapp.example.Test {
+    public <methods>(java.lang.String);
+}
+
+# 不混淆类的特定方法
+-keep cn.coderpig.myapp.example.Test {
+    public test(java.lang.String);
+}
+
+# 不混淆native方法
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# 不混淆枚举类
+-keepclassmembers enum * {
+  public static **[] values();
+  public static ** valueOf(java.lang.String);
+}
+
+#不混淆资源类
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+
+# 不混淆自定义控件
+-keep public class * entends android.view.View {
+    *** get*();
+    void set*(***);
+    public <init>;
+}
+
+# 不混淆实现了Serializable接口的类成员，此处只是演示，也可以直接 *;
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+
+# 不混淆实现了parcelable接口的类成员
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+# 注意事项：
+#
+# ① jni方法不可混淆，方法名需与native方法保持一致；
+# ② 反射用到的类不混淆，否则反射可能出问题；
+# ③ 四大组件、Application子类、Framework层下的类、自定义的View默认不会被混淆，无需另外配置；
+# ④ WebView的JS调用接口方法不可混淆；
+# ⑤ 注解相关的类不混淆；
+# ⑥ GSON、Fastjson等解析的Bean数据类不可混淆；
+# ⑦ 枚举enum类中的values和valuesof这两个方法不可混淆(反射调用)；
+# ⑧ 继承Parceable和Serializable等可序列化的类不可混淆；
+# ⑨ 第三方库或SDK，请参考第三方提供的混淆规则，没提供的话，建议第三方包全部不混淆；
