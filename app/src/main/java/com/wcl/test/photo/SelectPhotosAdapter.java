@@ -21,7 +21,7 @@ import java.util.List;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseAction;
 import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.Constants;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.utils.FileUtils;
 import com.wcl.test.widget.ToastUtils;
@@ -173,8 +173,8 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
                 ArrayList<String> list = new ArrayList<>();
                 list.add(mPicPath);
                 Bundle bundle = new Bundle();
-                bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, list);
-                BaseAction.sendBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
+                bundle.putStringArrayList(AppConstants.KEY_PHOTO_LIST, list);
+                BaseAction.sendBroadcast(AppConstants.ACTION_GET_PHOTO_LIST, bundle);
                 mActivity.finish();
             }
         }
@@ -216,7 +216,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
 
         private int getItemSize() {
             if (mItemSize < 0) {
-                mItemSize = Constants.screenWidth / SelectPhotosActivity.GRID_COLUMN;
+                mItemSize = AppConstants.screenWidth / SelectPhotosActivity.GRID_COLUMN;
             }
 
             return mItemSize;

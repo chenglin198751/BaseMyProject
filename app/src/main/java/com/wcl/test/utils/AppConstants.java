@@ -14,7 +14,7 @@ import com.wcl.test.base.BaseApp;
 /**
  * 公共常量类
  */
-public class Constants {
+public class AppConstants {
     public static int screenWidth = BaseApp.getApp().getResources().getDisplayMetrics().widthPixels;
     public static int screenHeight = BaseApp.getApp().getResources().getDisplayMetrics().heightPixels;
 

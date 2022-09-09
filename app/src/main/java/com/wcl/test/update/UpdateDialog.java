@@ -15,7 +15,7 @@ import com.wcl.test.httpwork.HttpUrls;
 import com.wcl.test.httpwork.HttpUtils;
 import com.wcl.test.preferences.PreferAppSettings;
 import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.Constants;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.ToastUtils;
 
 /**
@@ -123,7 +123,7 @@ public class UpdateDialog extends Dialog {
             @Override
             public void onResponse(boolean isSuccessful, String result) {
                 if (isSuccessful) {
-                    HcxUpdateModel model = Constants.gson.fromJson(result, HcxUpdateModel.class);
+                    HcxUpdateModel model = AppConstants.gson.fromJson(result, HcxUpdateModel.class);
                     if (model == null || model.data == null) {
                         return;
                     }

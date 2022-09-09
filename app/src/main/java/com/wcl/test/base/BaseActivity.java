@@ -22,13 +22,11 @@ import com.githang.statusbar.StatusBarCompat;
 import com.google.gson.Gson;
 
 import java.util.List;
-import java.util.Map;
 
 import com.wcl.test.R;
 import com.wcl.test.helper.MainTitleHelper;
-import com.wcl.test.httpwork.HttpUtils;
 import com.wcl.test.main.MainActivity;
-import com.wcl.test.utils.Constants;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
 
@@ -38,7 +36,7 @@ import com.wcl.test.widget.WaitDialog;
  * @author weiChengLin 2013-06-20
  */
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
-    protected final static Gson gson = Constants.gson;
+    protected final static Gson gson = AppConstants.gson;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper = null;
     private WaitDialog mWaitDialog;
