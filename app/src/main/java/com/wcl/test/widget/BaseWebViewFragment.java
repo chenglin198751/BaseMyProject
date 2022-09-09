@@ -168,13 +168,13 @@ public class BaseWebViewFragment extends BaseFragment {
         webSetting.setSupportMultipleWindows(false);
         // webSetting.setLoadWithOverviewMode(true);
         webSetting.setDomStorageEnabled(true);
-        webSetting.setAppCacheEnabled(true);
+//        webSetting.setAppCacheEnabled(true);
         // webSetting.setDatabaseEnabled(true);
         webSetting.setDomStorageEnabled(true);
         webSetting.setJavaScriptEnabled(true);
         webSetting.setGeolocationEnabled(true);
-        webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
-        webSetting.setAppCachePath(getActivity().getDir("appcache", 0).getPath());
+//        webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
+//        webSetting.setAppCachePath(getActivity().getDir("appcache", 0).getPath());
         webSetting.setDatabasePath(getActivity().getDir("databases", 0).getPath());
         webSetting.setGeolocationDatabasePath(getActivity().getDir("geolocation", 0).getPath());
         webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);

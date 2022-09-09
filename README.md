@@ -295,3 +295,5 @@
     .load(url)
     .transform(new CropTransformation(100,100, CropTransformation.CropType.TOP))
     .into(image);
+
+**94、Gson的容错兼容库**：https://github.com/getActivity/GsonFactory
