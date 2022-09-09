@@ -16,7 +16,7 @@ import java.util.List;
 
 import com.wcl.test.R;
 import com.wcl.test.test.TestRecyclerAdapter;
-import com.wcl.test.utils.Constants;
+import com.wcl.test.utils.AppConstants;
 
 
 /**
@@ -44,7 +44,7 @@ public class BottomDialogFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_listview, container, false);
-        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Constants.screenHeight / 3 * 2));
+        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppConstants.screenHeight / 3 * 2));
         return view;
     }
 

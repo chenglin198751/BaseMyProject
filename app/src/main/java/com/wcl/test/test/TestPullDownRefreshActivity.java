@@ -20,7 +20,7 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseListViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.Constants;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
 
@@ -51,7 +51,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         banner.setBannerAnimation(Transformer.ZoomOutSlide);
         banner.start();
 
-        AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, Constants.screenWidth / 2);
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, AppConstants.screenWidth / 2);
         banner.setLayoutParams(params);
         mListView.addHeaderView(banner);
 

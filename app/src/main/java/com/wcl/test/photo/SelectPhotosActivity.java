@@ -13,7 +13,7 @@ import android.view.View;
 
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.R;
-import com.wcl.test.utils.Constants;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.base.BaseAction;
 import com.wcl.test.widget.ToastUtils;
 
@@ -136,8 +136,8 @@ public class SelectPhotosActivity extends BaseActivity implements View.OnClickLi
         } else if (i == R.id.next_btn) {
             if (mAdapter.getSelectedPhotoList() != null && mAdapter.getSelectedPhotoList().size() > 0) {
                 Bundle bundle = new Bundle();
-                bundle.putStringArrayList(Constants.KEY_PHOTO_LIST, mAdapter.getSelectedPhotoList());
-                BaseAction.sendBroadcast(Constants.ACTION_GET_PHOTO_LIST, bundle);
+                bundle.putStringArrayList(AppConstants.KEY_PHOTO_LIST, mAdapter.getSelectedPhotoList());
+                BaseAction.sendBroadcast(AppConstants.ACTION_GET_PHOTO_LIST, bundle);
                 finish();
             } else {
                 ToastUtils.show(R.string.publish_selected_single_photo);

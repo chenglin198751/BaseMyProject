@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 import com.wcl.test.R;
-import com.wcl.test.utils.Constants;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
 
@@ -25,7 +25,7 @@ import java.util.List;
  */
 
 public abstract class BaseFragment extends Fragment implements ImplBaseView, OnBroadcastListener {
-    protected final static Gson gson = Constants.gson;
+    protected final static Gson gson = AppConstants.gson;
     private BaseViewHelper mBaseViewHelper = null;
     private RelativeLayout mContentView;
     private ViewGroup mNestedParentLayout;
