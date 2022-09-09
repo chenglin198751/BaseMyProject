@@ -13,7 +13,7 @@ import com.wcl.test.utils.SmartImageLoader;
 public class BannerImageLoader extends com.youth.banner.loader.ImageLoader {
     @Override
     public void displayImage(Context context, Object path, ImageView imageView) {
-        SmartImageLoader.load(imageView, path, Constants.getScreenWidth(), Constants.getScreenWidth() / 2, 0);
+        SmartImageLoader.load(imageView, path, Constants.screenWidth, Constants.screenWidth / 2, 0);
     }
 
     @Override

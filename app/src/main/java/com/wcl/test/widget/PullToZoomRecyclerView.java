@@ -50,7 +50,7 @@ public class PullToZoomRecyclerView extends RecyclerView {
         mScale = viewScale;
         mScaleRatio = scaleRatio;
         //获取屏幕宽度
-        screenWidth = Constants.getScreenWidth();
+        screenWidth = Constants.screenWidth;
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) zoomView.getLayoutParams();
         //获取屏幕宽度
         lp.width = screenWidth;
