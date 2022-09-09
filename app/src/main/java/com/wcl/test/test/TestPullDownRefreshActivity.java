@@ -51,7 +51,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         banner.setBannerAnimation(Transformer.ZoomOutSlide);
         banner.start();
 
-        AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, Constants.getScreenWidth() / 2);
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, Constants.screenWidth / 2);
         banner.setLayoutParams(params);
         mListView.addHeaderView(banner);
 

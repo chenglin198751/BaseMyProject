@@ -72,7 +72,7 @@
 //        mRootFrameLayout.addView(mAdsView, new ViewGroup.LayoutParams(-1, -1));
 //
 //        ViewGroup.LayoutParams params = mAdsImg.getLayoutParams();
-//        params.width = Constants.getScreenWidth();
+//        params.width = Constants.screenWidth;
 //        params.height = (int) (params.width * IMG_RATIO);
 //        mAdsImg.setLayoutParams(params);
 //
