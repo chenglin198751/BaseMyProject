@@ -11,9 +11,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -32,7 +33,7 @@ import com.wcl.test.R;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.SmartImageLoader;
 
-public class AutoGalleryBannerView extends RelativeLayout implements LifecycleObserver {
+public class AutoGalleryBannerView extends RelativeLayout implements DefaultLifecycleObserver {
     private ViewPager mViewPager;
     private List<BannerDataItem> mDataList = new ArrayList<>();
     private BannerAdapter mAdapter;
@@ -55,6 +56,11 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
     }
 
     private void init() {
+        FragmentActivity activity = (FragmentActivity) BaseUtils.getActivityFromContext(getContext());
+        if (activity != null){
+            activity.getLifecycle().addObserver(this);
+        }
+
         AutoGalleryBannerView.this.setClipChildren(false);
         mViewPager = new ViewPager(getContext());
         mViewPager.setPageMargin(-BaseUtils.dip2px(24f));
@@ -71,8 +77,8 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
         mViewPager.setAdapter(mAdapter);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    protected void onCreate() {
+    @Override
+    public void onCreate(@NonNull LifecycleOwner owner) {
         isFinish = false;
         startTimer(new Runnable() {
             @Override
@@ -84,8 +90,8 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
         });
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void onDestroy() {
+    @Override
+    public void onDestroy(@NonNull LifecycleOwner owner) {
         isFinish = true;
         if (mTimer != null) {
             mTimer.cancel();
@@ -93,13 +99,13 @@ public class AutoGalleryBannerView extends RelativeLayout implements LifecycleOb
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void onPause() {
+    @Override
+    public void onPause(@NonNull LifecycleOwner owner) {
         isAutoPlay = false;
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void onResume() {
+    @Override
+    public void onResume(@NonNull LifecycleOwner owner) {
         isAutoPlay = true;
     }
 
