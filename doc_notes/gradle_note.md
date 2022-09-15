@@ -175,3 +175,22 @@
     1、定义变量：def str = 'aaa' ，def是弱类型的，groovy会自动根据情况来给变量赋予对应的类型 2、当然也可以直接用java定义：String str = 'aaa'
     1、定义一个集合：def list = ['a','b']  2、往list中添加元素：list << 'c'  3、取出list中第三个元素：list.get(2)
     1、定义一个map：def map = ['key1':'value1','key2':'value2'] 2、向map中添加键值对：map.key3 = 'value3' 3、取出key3的值：map.get('key3')
+
+**11、gradle 遍历文件目录的方法：**
+
+    1、
+    def sdk_jar_parent_dir = 'D:/aaaa'
+    files(file(sdk_jar_parent_dir).listFiles()).each { file ->
+        println('xxxx=' + file)
+    }
+
+    2、用FileTree遍历，include表示包含的文件类型，exclude表示排除的文件类型
+    def sdk_jar_parent_dir = 'D:/aaaa'
+    FileTree tree = fileTree(dir: sdk_jar_parent_dir, include: ['**/*.java', '**/*.xml'], exclude: '**/*aapt*/**')
+    tree.each { File file ->
+        println('xxxx=' + file)
+    }
+    或者：
+    tree.visit {element ->
+        println "$element.relativePath => $element.file"
+    }
