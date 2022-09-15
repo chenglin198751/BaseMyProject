@@ -109,15 +109,24 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     /**
-     * 设置Activity的内容布局，取代setContentView() 方法
+     * 设置Activity的内容布局，取代系统的 setContentView() 方法
      */
     public final void setContentLayout(@LayoutRes int layoutResID) {
+        View layoutView = View.inflate(this, layoutResID, null);
+        setContentLayout(layoutView);
+    }
+
+    /**
+     * 设置Activity的内容布局，取代系统的 setContentView() 方法
+     */
+    public final void setContentLayout(final View layoutView) {
         if (mContentView != null && mContentView.getParent() != null) {
             mBaseRootView.removeView(mContentView);
+            mContentView = null;
         }
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
         params.addRule(RelativeLayout.BELOW, R.id.main_title);
-        mContentView = View.inflate(this, layoutResID, null);
+        mContentView = layoutView;
         mBaseRootView.addView(mContentView, params);
     }
 

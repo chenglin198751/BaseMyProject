@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.wcl.test.R
 import com.wcl.test.base.BaseActivity
+import com.wcl.test.databinding.ActivityMainBinding
 import com.wcl.test.helper.DialPhoneBroadcastReceiver
 import com.wcl.test.helper.ShowFragmentHelper
 import com.wcl.test.widget.ToastUtils
@@ -30,6 +31,8 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     private var mMainThirdFragment: MainThirdFragment? = null
     private var mMainFourthFragment: MainFourthFragment? = null
 
+    private var binding: ActivityMainBinding? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,7 +45,9 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         }
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        setContentLayout(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentLayout(binding?.root)
         titleHelper.hideTitleBar()
         mFragHelper = ShowFragmentHelper(supportFragmentManager, FRAGMENTS)
         initView()
