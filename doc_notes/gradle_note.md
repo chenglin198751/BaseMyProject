@@ -93,6 +93,12 @@
     3、使用keystoreProperties：
     keystoreProperties['storeFile']
 
+    4、按行读取文件：
+    def file = file(file_pah)
+    file.eachLine { line ->
+        println(line)
+    }
+
 **6、gradle 编译添加监听：**
 
     // beforeEvaluate()要想生效，代码必须方到settings.gradle中
@@ -163,3 +169,9 @@
 **9、gradle 下载的aar路径：**
 
     C:\Users\weichenglin1\.gradle\caches\modules-2\files-2.1\androidx.viewpager2\viewpager2\1.0.0\91c378a09ddff66e1bb73e90edeac53487d2832b\viewpager2-1.0.0.aar
+
+**10、gradle 定义变量，集合，map等：**
+
+    1、定义变量：def str = 'aaa' ，def是弱类型的，groovy会自动根据情况来给变量赋予对应的类型 2、当然也可以直接用java定义：String str = 'aaa'
+    1、定义一个集合：def list = ['a','b']  2、往list中添加元素：list << 'c'  3、取出list中第三个元素：list.get(2)
+    1、定义一个map：def map = ['key1':'value1','key2':'value2'] 2、向map中添加键值对：map.key3 = 'value3' 3、取出key3的值：map.get('key3')
