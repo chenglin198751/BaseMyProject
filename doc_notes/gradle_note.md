@@ -191,6 +191,6 @@
         println('xxxx=' + file)
     }
     或者：
-    tree.visit {element ->
+    tree.visit {FileTreeElement element ->
         println "$element.relativePath => $element.file"
     }
