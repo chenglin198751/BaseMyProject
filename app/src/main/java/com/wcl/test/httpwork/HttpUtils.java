@@ -69,8 +69,8 @@ public class HttpUtils {
     private final static String TAG = "HttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
-    private static final String HTTP_CACHE_PATH = FileUtils.getDataPath() + "httpCache" + File.separator;
-    private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + "download" + File.separator;
+    private static final String HTTP_CACHE_PATH = FileUtils.getExternalPath() + "/httpCache";
+    private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalDownloadPath() + File.separator + BaseUtils.getPackageName() + "/download";
 
     static {
         File cacheDir = new File(HTTP_CACHE_PATH);
@@ -468,7 +468,7 @@ public class HttpUtils {
             }
         }
 
-        final String defaultPath = HTTP_DOWNLOAD_PATH + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+        final String defaultPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
         final String downLoadFilePath = TextUtils.isEmpty(downPath) ? defaultPath : downPath;
         final String tempPath = downLoadFilePath + ".temp";
 
@@ -634,7 +634,7 @@ public class HttpUtils {
             e.printStackTrace();
         }
 
-        final String defaultPath = HTTP_DOWNLOAD_PATH + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+        final String defaultPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
         final String downLoadFilePath = TextUtils.isEmpty(downPath) ? defaultPath : downPath;
         final String tempPath = downLoadFilePath + ".temp";
 
