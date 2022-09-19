@@ -1,5 +1,7 @@
 package com.wcl.test.utils;
 
+import android.os.Environment;
+
 import com.wcl.test.base.BaseApp;
 
 import java.io.BufferedReader;
@@ -24,16 +26,21 @@ public class FileUtils {
      */
     @Deprecated
     public static String getDataPath() {
-        String cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
-        return cachePath + File.separator;
+        return BaseApp.getApp().getFilesDir().getAbsolutePath();
     }
 
     /**
      * 获取外部存储卡路径：比如：sdcard/Android/data/data/包名/cache
      */
     public static String getExternalPath() {
-        String cachePath = BaseApp.getApp().getExternalCacheDir().getAbsolutePath();
-        return cachePath + File.separator;
+        return BaseApp.getApp().getExternalCacheDir().getAbsolutePath();
+    }
+
+    /**
+     * 获取外部存储卡下载路径：比如：/storage/emulated/0/Download/
+     */
+    public static String getExternalDownloadPath() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
     }
 
     /**

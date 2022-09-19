@@ -28,6 +28,7 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -206,10 +207,52 @@ public class BaseUtils {
      * 安装一个APK包
      */
     public static void installApk(Context context, String path) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setDataAndType(Uri.fromFile(new File(path)), "application/vnd.android.package-archive");
-        context.startActivity(intent);
+        try {
+            installApk2(context, path);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void installApk2(Context context, String path) {
+        Activity activity = (Activity) context;
+        if (activity == null) {
+            return;
+        }
+        File file = new File(path);
+        if (file.exists()) {
+            Intent installApkIntent = new Intent();
+            installApkIntent.setAction(Intent.ACTION_VIEW);
+            installApkIntent.addCategory(Intent.CATEGORY_DEFAULT);
+            installApkIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //适配8.0需要有权限
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                boolean hasInstallPermission = context.getPackageManager().canRequestPackageInstalls();
+                if (hasInstallPermission) {
+                    //安装应用
+//                    installApkIntent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".QGameFileProvider", file), "application/vnd.android.package-archive");
+                    installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    if (context.getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
+                        context.startActivity(installApkIntent);
+                    }
+                } else {
+                    //跳转至“安装未知应用”权限界面，引导用户开启权限
+                    Uri selfPackageUri = Uri.parse("package:" + context.getPackageName());
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, selfPackageUri);
+                    activity.startActivityForResult(intent, 10098);
+                }
+            } else {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+//                    installApkIntent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".QGameFileProvider", file), "application/vnd.android.package-archive");
+                    installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } else {
+                    installApkIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                }
+                if (context.getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
+                    context.startActivity(installApkIntent);
+                }
+            }
+        }
     }
 
     /**
