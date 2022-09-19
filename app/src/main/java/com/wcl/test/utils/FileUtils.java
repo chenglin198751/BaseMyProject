@@ -17,9 +17,12 @@ public class FileUtils {
      * 当APP卸载时，这些垃圾文件也跟着自动卸载清除了。
      * <p>
      * 2021-05-21 修正补充：
-     * 由于安卓11对文件存储有很大限制，导致sdcard/data/data无法正常使用，
-     * 所以存储统一改为使用app系统目录
+     * 由于安卓11对文件存储有很大限制，导致sdcard/data/data无法正常使用。故此方法弃用.
+     * 所以存储统一改为使用 getExternalPath() 方法
+     *
+     * @see com.wcl.test.utils.FileUtils#getExternalPath
      */
+    @Deprecated
     public static String getDataPath() {
         String cachePath = BaseApp.getApp().getFilesDir().getAbsolutePath();
         return cachePath + File.separator;
