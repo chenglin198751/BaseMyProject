@@ -49,33 +49,11 @@ public class MainFirstFragment extends BaseFragment {
         view.findViewById(R.id.button_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-//                HttpUtils.downloadFile(apk_path,FileUtils.getExternalDownloadPath() + "/dd.apk",true, new HttpUtils.HttpDownloadCallback() {
-                HttpUtils.downloadFile(apk_path, new HttpUtils.HttpDownloadCallback() {
-                    @Override
-                    public void onSuccess(String filePath) {
-                        Log.v("tag_99","filePath111 = " + filePath);
-                        BaseUtils.installApk(getContext(),filePath);
-                    }
-
-                    @Override
-                    public void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent) {
-                        Log.v("tag_99","percent = " + percent);
-                    }
-
-                    @Override
-                    public void onFailure(IOException e) {
-                        Log.v("tag_99","onFailure = " + e);
-                    }
-                });
-
-                String path = FileUtils.getExternalDownloadPath();
-
-                Log.v("tag_99",path);
+                Intent intent = new Intent(getActivity(),TestRecyclerViewRefreshActivity.class);
+                startActivity(intent);
             }
         });
 
-        final String url = "http://sjbz.fd.zol-img.com.cn/t_s1080x1920c/g7/M00/03/03/ChMkK2IhwkuIQrMuAA44okS-NnMAABM7gD2hrgADji6794.jpg";
 
 
     }
