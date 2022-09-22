@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,20 +15,20 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.githang.statusbar.StatusBarCompat;
 import com.google.gson.Gson;
-
-import java.util.List;
-
 import com.wcl.test.R;
 import com.wcl.test.helper.MainTitleHelper;
 import com.wcl.test.main.MainActivity;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
+
+import java.util.List;
 
 /**
  * Activity的基类
@@ -48,7 +48,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarLightDark(true);
+        setStatusBarColor();
 
         if (onKeepSingleActivity()) {
             Bundle bundle = new Bundle();
@@ -288,14 +288,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         mNestedParentLayout = parent;
     }
 
-    /**
-     * 设置状态栏文字和颜色，不兼容Android6.0以下
-     */
-    public void setStatusBarLightDark(boolean isLightBar) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int color = getColor(isLightBar ? R.color.white : R.color.black);
-            StatusBarCompat.setStatusBarColor(this, color, isLightBar);
-        }
+    // 设置状态栏底色和文字颜色
+    private void setStatusBarColor() {
+        WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        //设置状态栏底色为白色
+        getWindow().setStatusBarColor(Color.WHITE);
+        //设置是否沉浸状态栏，false 表示沉浸，true表示不沉浸
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        // 控制导航栏字体显示为黑色，true为黑色，false为白色
+        insetsController.setAppearanceLightStatusBars(true);
     }
 
     /**
