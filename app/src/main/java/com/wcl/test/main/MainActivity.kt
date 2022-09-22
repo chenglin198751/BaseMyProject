@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.WindowCompat
 import com.wcl.test.R
 import com.wcl.test.base.BaseActivity
 import com.wcl.test.databinding.ActivityMainBinding
@@ -36,7 +37,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //由于Manifest的style v27中设置了使用缺口屏，所以这里恢复为默认不使用缺口屏
+        //由于Manifest的style v28中设置了使用缺口屏，所以这里恢复为默认不使用缺口屏
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val layoutParams = window.attributes
             layoutParams.layoutInDisplayCutoutMode =
@@ -45,6 +46,8 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         }
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //设置是否沉浸状态栏，false 表示沉浸，true表示不沉浸
+        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentLayout(binding?.root)
