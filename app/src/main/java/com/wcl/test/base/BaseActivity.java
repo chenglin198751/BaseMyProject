@@ -43,12 +43,16 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private RelativeLayout mBaseRootView;
     private View mContentView = null;
     private ViewGroup mNestedParentLayout;
+    protected WindowInsetsControllerCompat windowInsetsController;
 
     @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarColor();
+        windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        setLightStatusBarColor(true);
+        //设置是否沉浸状态栏，false 表示沉浸，true表示不沉浸
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
 
         if (onKeepSingleActivity()) {
             Bundle bundle = new Bundle();
@@ -288,15 +292,14 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         mNestedParentLayout = parent;
     }
 
-    // 设置状态栏底色和文字颜色
-    private void setStatusBarColor() {
-        WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+    /**
+     * 设置状态栏底色和文字颜色，true为黑色，false为白色
+     */
+    protected void setLightStatusBarColor(boolean isLightBar) {
         //设置状态栏底色为白色
         getWindow().setStatusBarColor(Color.WHITE);
-        //设置是否沉浸状态栏，false 表示沉浸，true表示不沉浸
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-        // 控制导航栏字体显示为黑色，true为黑色，false为白色
-        insetsController.setAppearanceLightStatusBars(true);
+        // 控制状态栏字体颜色，true为黑色，false为白色
+        windowInsetsController.setAppearanceLightStatusBars(isLightBar);
     }
 
     /**
