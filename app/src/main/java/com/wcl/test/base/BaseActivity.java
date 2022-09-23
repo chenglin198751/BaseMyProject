@@ -43,7 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private RelativeLayout mBaseRootView;
     private View mContentView = null;
     private ViewGroup mNestedParentLayout;
-    protected WindowInsetsControllerCompat windowInsetsController;
+    public WindowInsetsControllerCompat windowInsetsController;
 
     @CallSuper
     @Override
