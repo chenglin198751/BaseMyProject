@@ -297,3 +297,8 @@
     .into(image);
 
 **94、Gson的容错兼容库**：https://github.com/getActivity/GsonFactory
+
+**95、WindowInsetsControllerCompat隐藏显示键盘**：
+
+    windowInsetsControllerCompat.show(WindowInsetsCompat.Type.ime());
+    windowInsetsControllerCompat.hide(WindowInsetsCompat.Type.ime());
