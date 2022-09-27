@@ -1,20 +1,23 @@
-apply plugin: 'com.android.application'
-apply plugin: 'org.jetbrains.kotlin.android'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 apply from: '../common.gradle'
 
 android {
-    compileSdkVersion project.ext.COMPILE_SDK_VERSION
+    namespace 'com.wcl.test'
+    compileSdk project.ext.COMPILE_SDK_VERSION
     buildToolsVersion project.ext.BUILD_TOOLS_VERSION
+
     defaultConfig {
         applicationId "com.wcl.test"
-        minSdkVersion project.ext.MIN_SDK_VERSION
-        targetSdkVersion project.ext.TARGET_SDK_VERSION
+        minSdk project.ext.MIN_SDK_VERSION
+        targetSdk project.ext.TARGET_SDK_VERSION
         versionCode 1
         versionName "1.0.0.1"
         multiDexEnabled true
 
         ndk {
-            // 设置支持的CPU架构，目前只支持armeabi-v7a架构（该架构兼容armeabi、arm64-v8a、x86、x86_64架构）
             abiFilters 'arm64-v8a','armeabi-v7a'
         }
     }
