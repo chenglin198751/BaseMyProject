@@ -17,6 +17,6 @@ project.ext {
     MIN_SDK_VERSION = 21
 
     //目标版本
-    TARGET_SDK_VERSION = 30
+    TARGET_SDK_VERSION = 31
 
 }

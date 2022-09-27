@@ -21,7 +21,8 @@
             android:name="TEST_APP_KEY"
             android:value="${test_app_key}" />
 
-        <receiver android:name="com.wcl.test.helper.DialPhoneBroadcastReceiver">
+        <receiver android:name="com.wcl.test.helper.DialPhoneBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SECRET_CODE" />
                 <data
@@ -35,7 +36,8 @@
             android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/FirstActivityTheme">
+            android:theme="@style/FirstActivityTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
