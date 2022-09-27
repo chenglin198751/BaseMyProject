@@ -8,10 +8,13 @@ import androidx.lifecycle.Observer;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import java.util.concurrent.TimeUnit;
 
 public class TestWorkManager extends Worker {
     private static int index = 0;
@@ -51,6 +54,12 @@ public class TestWorkManager extends Worker {
 //            }
 //        });
 
+
+//        //还可以设置周期任务，需要注意的是：周期性任务的间隔时间不能小于15分钟。
+//        PeriodicWorkRequest testWorkRequest = new PeriodicWorkRequest.Builder(TestWorkManager.class, 16, TimeUnit.MINUTES)
+//                .setConstraints(constraints)
+//                .addTag("tag_test_worker")
+//                .build();
 
         if (index < 1){
             index++;
