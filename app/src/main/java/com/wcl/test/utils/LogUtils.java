@@ -42,17 +42,19 @@ public class LogUtils {
      * 如果日志超过4K就截断打印
      */
     private static void print(String tag, String msg, int level) {
-        int segmentSize = 4000;
-        long length = msg.length();
+        final int segmentSize = 4000;
+        final int length = msg.length();
 
-        if (length <= segmentSize) {
-            print2(tag, msg, level);
-        } else {
-            while (msg.length() > segmentSize) {
-                String log2 = msg.substring(0, segmentSize);
-                msg = msg.replace(log2, "");
-                print2(tag, log2, level);
+        if (length > segmentSize) {
+            for (int i = 0; i < length; i += segmentSize) {
+                if (i + segmentSize < length) {
+                    print2(tag, msg.substring(i, i + segmentSize), level);
+                } else {
+                    print2(tag, msg.substring(i, length), level);
+                }
             }
+        } else {
+            print2(tag, msg, level);
         }
     }
 
