@@ -306,4 +306,5 @@
 **96、WorkManager**：实现看TestWorkManager.java ; 参考文档：https://www.jianshu.com/p/284700112f37
 
     特点： 1、针对不需要及时完成的任务 2、保证任务一定会被执行（只要提交了任务，任务如果返回的是retry，那么就会一直重试，保证一定被执行，不管杀掉程序还是重启手机）
-    
+
+**97、解决Android P以上不让反射调用hide api的问题**：implementation "com.github.tiann:FreeReflection:3.1.0"
