@@ -46,6 +46,7 @@ public class LogUtils {
         final int length = msg.length();
 
         if (length > segmentSize) {
+            print2(tag, "----------------------------log长度超过了" + segmentSize + "，分段打印start----------------------------", level);
             for (int i = 0; i < length; i += segmentSize) {
                 if (i + segmentSize < length) {
                     print2(tag, msg.substring(i, i + segmentSize), level);
@@ -53,6 +54,7 @@ public class LogUtils {
                     print2(tag, msg.substring(i, length), level);
                 }
             }
+            print2(tag, "----------------------------log长度超过了" + segmentSize + "，分段打印end----------------------------", level);
         } else {
             print2(tag, msg, level);
         }
