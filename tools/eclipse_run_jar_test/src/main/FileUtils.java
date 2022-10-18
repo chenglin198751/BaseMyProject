@@ -31,7 +31,7 @@ public class FileUtils {
 		toDir2 = replacePath(toDir2);
 
 		if (toDir2.contains(fromDir2)) {
-			PackTools.Error_Msg = "copy dir has entered an endless loop";
+			PackTools.Error_Msg = "copy dir has entered an endless loop:fromDir2=" + fromDir2 + ", toDir2=" + toDir2;
 			throw new RuntimeException("package sdk failed:" + PackTools.Error_Msg);
 		}
 
