@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 public class FileUtils {
@@ -28,6 +29,12 @@ public class FileUtils {
 	public static void copyDirectory(String fromDir2, String toDir2) {
 		fromDir2 = replacePath(fromDir2);
 		toDir2 = replacePath(toDir2);
+
+		if (toDir2.contains(fromDir2)) {
+			PackTools.Error_Msg = "copy dir has entered an endless loop";
+			throw new RuntimeException("package sdk failed:" + PackTools.Error_Msg);
+		}
+
 		try {
 			File fromDir = new File(fromDir2);
 			File toDir = new File(toDir2);
@@ -48,17 +55,17 @@ public class FileUtils {
 					copyDirectory(strFrom, strTo);
 				}
 				if (file.isFile()) {
-					copy(strFrom, strTo);
+					copyFile(strFrom, strTo);
 				}
 			}
 		} catch (Exception e) {
 			PackTools.Printer.print("copy Directory error:" + e.toString());
-			throw new RuntimeException("copy Directory error:" + e.toString());
+			PackTools.Error_Msg = "copy Directory error:" + e.toString();
 		}
 
 	}
 
-	public static void copy(String source2, String dest2) {
+	public static void copyFile(String source2, String dest2) {
 		source2 = replacePath(source2);
 		dest2 = replacePath(dest2);
 		try {
@@ -72,7 +79,7 @@ public class FileUtils {
 			Files.copy(source.toPath(), dest.toPath());
 		} catch (Exception e) {
 			PackTools.Printer.print("copy file error:" + e.toString());
-			throw new RuntimeException("copy file error:" + e.toString());
+			PackTools.Error_Msg = "copy file error:" + e.toString();
 		}
 	}
 
@@ -83,10 +90,10 @@ public class FileUtils {
 		if (!file.exists()) {
 			return;
 		}
-		
+
 		// 清空内容
 		try {
-			FileWriter fileWriter = new FileWriter(file);
+			FileWriter fileWriter = new FileWriter(file, Charset.forName("UTF-8"));
 			fileWriter.write("");
 			fileWriter.flush();
 			fileWriter.close();
@@ -96,10 +103,11 @@ public class FileUtils {
 
 		// 写入文件
 		try {
-			FileWriter fileWriter = new FileWriter(file, true);
+			FileWriter fileWriter = new FileWriter(file, Charset.forName("UTF-8"), true);
 			fileWriter.write(value);
 			fileWriter.close();
 		} catch (Exception e) {
+			PackTools.Error_Msg = e.toString();
 			e.printStackTrace();
 		}
 	}
@@ -114,7 +122,7 @@ public class FileUtils {
 
 		BufferedReader in = null;
 		try {
-			in = new BufferedReader(new FileReader(file));
+			in = new BufferedReader(new FileReader(file, Charset.forName("UTF-8")));
 			String readString = "";
 			String currentLine;
 			while ((currentLine = in.readLine()) != null) {
@@ -123,6 +131,7 @@ public class FileUtils {
 			}
 			return readString;
 		} catch (IOException e) {
+			PackTools.Error_Msg = e.toString();
 			e.printStackTrace();
 			return null;
 		} finally {
@@ -130,6 +139,7 @@ public class FileUtils {
 				try {
 					in.close();
 				} catch (IOException e) {
+					PackTools.Error_Msg = e.toString();
 					e.printStackTrace();
 				}
 			}
@@ -142,5 +152,14 @@ public class FileUtils {
 		} else {
 			return path.replace("/", File.separator);
 		}
+	}
+
+	public static void rename(String from, String to) {
+		File fromFile = new File(from);
+		File toFile = new File(to);
+		if (!fromFile.exists()) {
+			throw new NullPointerException("file not exists:" + from);
+		}
+		fromFile.renameTo(toFile);
 	}
 }
