@@ -1,12 +1,10 @@
 package main;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileUtils {
 
@@ -60,7 +58,8 @@ public class FileUtils {
 			}
 		} catch (Exception e) {
 			PackTools.Printer.print("copy Directory error:" + e.toString());
-			PackTools.Error_Msg = "copy Directory error:" + e.toString();
+			PackTools.Error_Msg = e.toString();
+			throw new RuntimeException("copy Directory error:" + e.toString());
 		}
 
 	}
@@ -73,42 +72,28 @@ public class FileUtils {
 			File dest = new File(dest2);
 
 			if (dest.exists()) {
-//				PackTools.Printer.print("duplicate file name is " + source.getAbsolutePath());
 				dest.delete();
 			}
 			Files.copy(source.toPath(), dest.toPath());
 		} catch (Exception e) {
 			PackTools.Printer.print("copy file error:" + e.toString());
-			PackTools.Error_Msg = "copy file error:" + e.toString();
+			PackTools.Error_Msg = e.toString();
+			throw new RuntimeException("copy file error:" + e.toString());
 		}
 	}
 
-	/**
-	 * 把字符串写入文件
-	 */
-	public static void writeFile(File file, String value) {
-		if (!file.exists()) {
-			return;
-		}
-
-		// 清空内容
+	public static void copyFileToDir(File source, String destDir) {
+		destDir = replacePath(destDir);
 		try {
-			FileWriter fileWriter = new FileWriter(file, Charset.forName("UTF-8"));
-			fileWriter.write("");
-			fileWriter.flush();
-			fileWriter.close();
+			File dest = new File(destDir + File.separator + source.getName());
+			if (dest.exists()) {
+				dest.delete();
+			}
+			Files.copy(source.toPath(), dest.toPath());
 		} catch (Exception e) {
-			PackTools.Printer.print(e.toString());
-		}
-
-		// 写入文件
-		try {
-			FileWriter fileWriter = new FileWriter(file, Charset.forName("UTF-8"), true);
-			fileWriter.write(value);
-			fileWriter.close();
-		} catch (Exception e) {
+			PackTools.Printer.print("copy file error:" + e.toString());
 			PackTools.Error_Msg = e.toString();
-			e.printStackTrace();
+			throw new RuntimeException("copy file error:" + e.toString());
 		}
 	}
 
@@ -120,29 +105,33 @@ public class FileUtils {
 			return null;
 		}
 
-		BufferedReader in = null;
 		try {
-			in = new BufferedReader(new FileReader(file, Charset.forName("UTF-8")));
-			String readString = "";
-			String currentLine;
-			while ((currentLine = in.readLine()) != null) {
-				currentLine += '\n';
-				readString += currentLine;
-			}
+			Path path = Paths.get(file.getAbsolutePath());
+			Files.readAllBytes(path);
+			String readString = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 			return readString;
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			PackTools.Error_Msg = e.toString();
 			e.printStackTrace();
 			return null;
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					PackTools.Error_Msg = e.toString();
-					e.printStackTrace();
-				}
-			}
+		}
+	}
+
+	/**
+	 * 把字符串写入文件
+	 */
+	public static void writeFile(File file, String value) {
+		if (!file.exists()) {
+			return;
+		}
+
+		// 写入文件
+		try {
+			Path path = Paths.get(file.getAbsolutePath());
+			Files.write(path, value.getBytes(StandardCharsets.UTF_8));
+		} catch (Throwable e) {
+			PackTools.Error_Msg = e.toString();
+			e.printStackTrace();
 		}
 	}
 
@@ -158,6 +147,7 @@ public class FileUtils {
 		File fromFile = new File(from);
 		File toFile = new File(to);
 		if (!fromFile.exists()) {
+			PackTools.Error_Msg = "file not exists:" + from;
 			throw new NullPointerException("file not exists:" + from);
 		}
 		fromFile.renameTo(toFile);
