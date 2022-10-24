@@ -69,6 +69,11 @@ android {
     }
 }
 
+task clean2(dependsOn: 'clean') {
+    delete rootProject.getProjectDir().absolutePath + "/app/debug"
+    delete rootProject.getProjectDir().absolutePath + "/app/release"
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation fileTree(dir: 'libs', include: ['*.aar'])
@@ -99,9 +104,4 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-process:2.6.0-alpha02'
     implementation 'com.github.JavaNoober.BackgroundLibrary:libraryx:1.7.4'
     implementation 'androidx.work:work-runtime:2.7.1'
-}
-
-task clean2(dependsOn: 'clean') {
-    delete rootProject.getProjectDir().absolutePath + "/app/debug"
-    delete rootProject.getProjectDir().absolutePath + "/app/release"
 }
