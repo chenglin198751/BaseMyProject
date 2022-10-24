@@ -18,7 +18,7 @@ android {
         multiDexEnabled true
 
         ndk {
-            abiFilters 'arm64-v8a','armeabi-v7a'
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
         }
     }
 
@@ -35,7 +35,7 @@ android {
         debug {
             signingConfig signingConfigs.release
             buildConfigField 'boolean', 'ENV_DEBUG', 'false'
-            manifestPlaceholders.put("test_app_key","test_debug")
+            manifestPlaceholders.put("test_app_key", "test_debug")
         }
         release {
             signingConfig signingConfigs.release
@@ -43,7 +43,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
             buildConfigField 'boolean', 'ENV_DEBUG', 'true'
-            manifestPlaceholders.put("test_app_key","test_release")
+            manifestPlaceholders.put("test_app_key", "test_release")
         }
     }
 
@@ -99,4 +99,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-process:2.6.0-alpha02'
     implementation 'com.github.JavaNoober.BackgroundLibrary:libraryx:1.7.4'
     implementation 'androidx.work:work-runtime:2.7.1'
+}
+
+task clean2(dependsOn: 'clean') {
+    delete rootProject.getProjectDir().absolutePath + "/app/debug"
+    delete rootProject.getProjectDir().absolutePath + "/app/release"
 }
