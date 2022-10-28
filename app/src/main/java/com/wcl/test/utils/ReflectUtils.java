@@ -163,7 +163,7 @@ public class ReflectUtils {
      * 获取当前的Application对象
      */
     public static Context getApplicationContext() {
-        LogUtils.d("ReflectUtil", "must be MainThread!" + (Thread.currentThread().getId() != Looper.getMainLooper().getThread().getId()));
+        AppLogUtils.d("ReflectUtil", "must be MainThread!" + (Thread.currentThread().getId() != Looper.getMainLooper().getThread().getId()));
         Context context = null;
 
         try {

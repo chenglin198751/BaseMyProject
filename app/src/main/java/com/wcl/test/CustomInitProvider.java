@@ -8,7 +8,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.wcl.test.utils.LogUtils;
+import com.wcl.test.utils.AppLogUtils;
 
 
 /**
@@ -18,7 +18,7 @@ import com.wcl.test.utils.LogUtils;
 public class CustomInitProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
-        LogUtils.v("tag_88", "CustomInitProvider onCreate = " + getContext());
+        AppLogUtils.v("tag_88", "CustomInitProvider onCreate = " + getContext());
         return true;
     }
 

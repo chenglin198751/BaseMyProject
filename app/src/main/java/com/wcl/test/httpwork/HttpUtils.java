@@ -7,7 +7,7 @@ import android.text.TextUtils;
 
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.DeviceUtils;
-import com.wcl.test.utils.LogUtils;
+import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.FileUtils;
 
 import java.io.File;
@@ -116,13 +116,13 @@ public class HttpUtils {
             Response response = chain.proceed(request);
             long end = System.currentTimeMillis();
             final String url = response.request().url().toString();
-            LogUtils.v(TAG, "网络请求时间：" + url + " -- " + (end - start) + "毫秒");
+            AppLogUtils.v(TAG, "网络请求时间：" + url + " -- " + (end - start) + "毫秒");
 
             while (!response.isSuccessful() && retryNum < maxRetry) {
                 retryNum++;
                 response.close();
                 response = chain.proceed(request);
-                LogUtils.v(TAG, "第 " + retryNum + " 次重试");
+                AppLogUtils.v(TAG, "第 " + retryNum + " 次重试");
             }
             return response;
         }

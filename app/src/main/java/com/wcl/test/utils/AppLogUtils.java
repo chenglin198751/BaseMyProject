@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.wcl.test.EnvToggle;
 
-public class LogUtils {
+public class AppLogUtils {
 
     public static void d(String tag, String msg) {
         if (EnvToggle.isLog()) {
