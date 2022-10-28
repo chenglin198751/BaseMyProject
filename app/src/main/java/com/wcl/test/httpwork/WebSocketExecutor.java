@@ -3,7 +3,7 @@ package com.wcl.test.httpwork;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.wcl.test.utils.LogUtils;
+import com.wcl.test.utils.AppLogUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -96,7 +96,7 @@ public class WebSocketExecutor {
             mTimer.cancel();
             mTimer = null;
         }
-        LogUtils.d("socket", "断开连接");
+        AppLogUtils.d("socket", "断开连接");
     }
 
     /**
@@ -218,7 +218,7 @@ public class WebSocketExecutor {
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             super.onOpen(webSocket, response);
-            LogUtils.d("socket", "webSocket onOpen");
+            AppLogUtils.d("socket", "webSocket onOpen");
             mSocket = webSocket;
             isConnect = true;
             mReconnectIndex = 0;
@@ -232,7 +232,7 @@ public class WebSocketExecutor {
         @Override
         public void onMessage(WebSocket webSocket, ByteString bytes) {
             super.onMessage(webSocket, bytes);
-            LogUtils.d("socket", "webSocket ByteString onMessage");
+            AppLogUtils.d("socket", "webSocket ByteString onMessage");
             mSocket = webSocket;
             isConnect = true;
 
@@ -246,7 +246,7 @@ public class WebSocketExecutor {
             super.onMessage(webSocket, text);
             mSocket = webSocket;
             isConnect = true;
-            LogUtils.d("socket", "webSocket String onMessage = " + text);
+            AppLogUtils.d("socket", "webSocket String onMessage = " + text);
 
             if (mSocketListener != null) {
                 mSocketListener.onMessage(webSocket, text);
@@ -274,7 +274,7 @@ public class WebSocketExecutor {
         @Override
         public void onFailure(WebSocket webSocket, Throwable t, Response response) {
             super.onFailure(webSocket, t, response);
-            LogUtils.d("socket", "webSocket connect onFailure");
+            AppLogUtils.d("socket", "webSocket connect onFailure");
             mSocket = webSocket;
             isConnect = false;
 

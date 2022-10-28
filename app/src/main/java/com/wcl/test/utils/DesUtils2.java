@@ -40,7 +40,7 @@ public class DesUtils2 {
             ret = new String(Base64.encode(encryptDES(input.getBytes(), key.getBytes()), Base64.DEFAULT));
         } catch (Throwable e) {
         }
-        LogUtils.d(TAG, "[encryptString] ret:" + ret);
+        AppLogUtils.d(TAG, "[encryptString] ret:" + ret);
         return ret;
     }
 
@@ -67,7 +67,7 @@ public class DesUtils2 {
     }
 
     public static String decryptString(String input, String key) {
-        LogUtils.d(TAG, "[decryptString] input:" + input + ", key=" + key);
+        AppLogUtils.d(TAG, "[decryptString] input:" + input + ", key=" + key);
         if (TextUtils.isEmpty(input) || TextUtils.isEmpty(key)) {
             return "";
         }
@@ -75,9 +75,9 @@ public class DesUtils2 {
         try {
             ret = new String(decryptDES(Base64.decode(input.getBytes(), Base64.DEFAULT), key.getBytes()));
         } catch (Throwable e) {
-            LogUtils.e(TAG, ""+ e.toString());
+            AppLogUtils.e(TAG, ""+ e.toString());
         }
-        LogUtils.d(TAG, "[decryptString] ret:" + ret);
+        AppLogUtils.d(TAG, "[decryptString] ret:" + ret);
         return ret;
     }
 
