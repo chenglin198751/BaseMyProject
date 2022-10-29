@@ -23,9 +23,9 @@ public class MyUriUtils {
         }
         if (uri.toLowerCase().startsWith("mls://")) {
             Uri data = Uri.parse(uri);
-            LogUtils.v("tag_99", "host=" + data.getHost() + ",path=" + data.getPath() + ",query=" + data.getQuery());
+            AppLogUtils.v("tag_99", "host=" + data.getHost() + ",path=" + data.getPath() + ",query=" + data.getQuery());
             String goodsId = data.getQueryParameter("goodsId");
-            LogUtils.v("tag_99", "goodsId = " + goodsId);
+            AppLogUtils.v("tag_99", "goodsId = " + goodsId);
         } else if (uri.toLowerCase().startsWith("http://") || uri.toLowerCase().startsWith("https://")) {
             BaseWebViewActivity.start(context, uri, null);
         }

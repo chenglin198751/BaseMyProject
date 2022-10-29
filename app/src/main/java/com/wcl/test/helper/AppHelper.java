@@ -7,7 +7,7 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.LogUtils;
+import com.wcl.test.utils.AppLogUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -38,21 +38,21 @@ public class AppHelper {
     private static String getCurrentProcessName(Context context) {
         //1)通过Application的API获取当前进程名
         String currentProcessName = getCurrentProcessNameByApplication();
-        LogUtils.v("AppHelper", "111 = " + currentProcessName);
+        AppLogUtils.v("AppHelper", "111 = " + currentProcessName);
         if (!TextUtils.isEmpty(currentProcessName)) {
             return currentProcessName;
         }
 
         //2)通过反射ActivityThread获取当前进程名
         currentProcessName = getCurrentProcessNameByActivityThread();
-        LogUtils.v("AppHelper", "222 = " + currentProcessName);
+        AppLogUtils.v("AppHelper", "222 = " + currentProcessName);
         if (!TextUtils.isEmpty(currentProcessName)) {
             return currentProcessName;
         }
 
         //3)通过ActivityManager获取当前进程名
         currentProcessName = getCurrentProcessNameByActivityManager(context);
-        LogUtils.v("AppHelper", "333 = " + currentProcessName);
+        AppLogUtils.v("AppHelper", "333 = " + currentProcessName);
         return currentProcessName;
     }
 
