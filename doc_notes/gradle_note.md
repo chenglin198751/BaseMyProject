@@ -142,6 +142,15 @@
         }
     })
 
+    project.afterEvaluate {
+        assembleDebug.doLast {
+            copyMainPluginApk("assembleDebug")
+        }
+        assembleRelease.doLast {
+            copyMainPluginApk("assembleRelease")
+        }
+    }
+
 **7、gradle 执行命令行：**
 
         exec {
