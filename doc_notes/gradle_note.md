@@ -154,6 +154,7 @@
 
     执行任务并传递参数：gradlew zip -Pparams=123
     在任务内获取参数：project.getProperty("params") 或者 "$params"
+    判断是否有参数：project.hasProperty("apk_name")
 
     task zip(type: Zip){
         from 'C:/work/AndroidCode/BaseMyProject/app/libs'
