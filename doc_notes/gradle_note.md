@@ -141,7 +141,8 @@
             // println('构建完成')
         }
     })
-
+    
+    // 打包完成之后 To do
     project.afterEvaluate {
         assembleDebug.doLast {
             copyMainPluginApk("assembleDebug")
@@ -150,6 +151,11 @@
             copyMainPluginApk("assembleRelease")
         }
     }
+
+    // 获取当前Module执行的任务名，只有真正运行工程产出apk时才会有值，点击Sync Project With Gradle Files返回空数组[]
+    def runTasks = gradle.startParameter.taskNames
+    // 有值时的返回结果：
+    [:sdk_social_pay_demo_online:assembleDebug]
 
 **7、gradle 执行命令行：**
 
