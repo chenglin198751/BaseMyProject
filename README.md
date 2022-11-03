@@ -310,3 +310,12 @@
 **97、解决Android P以上不让反射调用hide api的问题**：implementation "com.github.tiann:FreeReflection:3.1.0"
 
 **98、滴滴开源的字节码替换工具**：https://github.com/didi/DroidAssist
+
+**99、TextClock可以监听系统时间**：https://github.com/didi/DroidAssist
+
+        textClock.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence time, int start, int before, int count) {
+                Log.v("tag_99","time = " + time);
+            }
+        });
