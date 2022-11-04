@@ -319,3 +319,13 @@
                 Log.v("tag_99","time = " + time);
             }
         });
+
+        //还可以监听系统时间广播
+        BroadcastReceiver mTimeUpdateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
+                    Log.v("tag_99","系统每1分钟发送一次广播");
+                } 
+            }
+        };
