@@ -10,6 +10,7 @@ import com.dasu.blur.OnBlurListener;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.listener.OnFinishedListener;
 
+//使用开源库 DBlur 实现的
 public class FastBlurUtil {
 
     /**

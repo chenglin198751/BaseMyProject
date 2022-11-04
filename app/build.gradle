@@ -101,6 +101,7 @@ dependencies {
     implementation 'com.dasu.image:blur:0.0.6'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation 'androidx.lifecycle:lifecycle-process:2.6.0-alpha02'
     implementation 'com.github.JavaNoober.BackgroundLibrary:libraryx:1.7.4'
     implementation 'androidx.work:work-runtime:2.7.1'
