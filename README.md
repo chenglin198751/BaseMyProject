@@ -329,3 +329,16 @@
                 } 
             }
         };
+
+**100、google官方推荐的单例写法**：
+
+    public class SdkActivityLife{
+        private SdkActivityLife() {
+        }
+        private static final class InstanceHolder {
+            static final SdkActivityLife INSTANCE = new SdkActivityLife();
+        }
+        public static SdkActivityLife getInstance() {
+            return InstanceHolder.INSTANCE;
+        }
+    }
