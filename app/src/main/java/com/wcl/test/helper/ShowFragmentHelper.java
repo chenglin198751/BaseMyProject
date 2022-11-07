@@ -16,7 +16,7 @@ import com.wcl.test.base.BaseFragment;
 public class ShowFragmentHelper {
     private BaseFragment[] mFragArray;
     private FragmentManager mFragmentManager;
-    private Class[] FRAGMENTS;
+    private Class<?>[] FRAGMENTS;
     public int mSelectedTab;
 
     /**
@@ -25,7 +25,7 @@ public class ShowFragmentHelper {
      * 如果是在嵌套的fragment里面需要调用getChildFragmentManager();
      * 否则会出问题。
      */
-    public ShowFragmentHelper(FragmentManager fragmentManager, Class[] fragments) {
+    public ShowFragmentHelper(FragmentManager fragmentManager, Class<?>[] fragments) {
         if (fragments == null || fragments.length <= 0) {
             throw new IllegalArgumentException("FRAGMENTS.length must >0");
         }
