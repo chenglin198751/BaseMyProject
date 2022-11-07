@@ -311,8 +311,9 @@
 
 **98、滴滴开源的字节码替换工具**：https://github.com/didi/DroidAssist
 
-**99、TextClock可以监听系统时间**：https://github.com/didi/DroidAssist
-
+**99、TextClock可以监听系统时间**：
+        
+        //1、Activity不可见时TextClock绘制停止，监听也会停止
         textClock.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence time, int start, int before, int count) {
@@ -320,7 +321,7 @@
             }
         });
 
-        //还可以监听系统时间广播
+        //2、还可以监听系统时间广播
         BroadcastReceiver mTimeUpdateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
