@@ -342,3 +342,12 @@
             return InstanceHolder.INSTANCE;
         }
     }
+
+**101、Collections类的功能**：
+
+    1、列表元素随机：Collections.shuffle(list)
+    2、合并两个list：Collections.addAll(list,list);
+    3、对列表排序：Collections.sort(list,Comparator);
+    4、查找某个元素的位置：Collections.binarySearch(list,"55555");
+    5、把第0个元素和第2个元素交换位置：Collections.swap(list,0,2);
+    6、把一个list复制到另一个list：Collections.copy(list,list);
