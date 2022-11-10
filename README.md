@@ -278,9 +278,8 @@
 
 **89、用HttpURLConnection封装的一套网络访问工具**：https://github.com/guozhengXia/UrlHttpUtils
 
-**90、用HttpURLConnection封装的一套网络访问工具**：
-横屏模式下，EditText唤起键盘时，键盘全屏，导致无法看到输入页面。加如下属性禁止键盘全屏：
-    
+**90、横屏模式下，EditText唤起键盘时，键盘全屏，导致无法看到输入页面。加如下属性禁止键盘全屏：**：
+
     android:imeOptions="flagNoExtractUi"
     mUserNameText.setImeOptions(|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
