@@ -27,6 +27,7 @@
 
 	1、sudo apt-cache search jdk
 	2、sudo apt-get install openjdk-11-jdk-headless
+    3、java --version
 
 **4、Windows的子Linux系统设置字符编码 ：**
 
