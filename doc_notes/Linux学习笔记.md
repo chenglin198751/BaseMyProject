@@ -40,4 +40,7 @@
 **5、[Windows的子Linux系统] ：把windows文件的字符编码设置为Linux的字符编码 ：**
 
     sudo apt install dos2unix
-    使用说明：dos2unix /mnt/e/360portalgamesdk/portal-sdk-tool/tool/linux/d8 
+	
+    把windows文件转为linux文件的使用说明，下面两种任选其一：
+	1、dos2unix /mnt/e/360portalgamesdk/portal-sdk-tool/tool/linux/d8 
+	2、notepad++ -- 设置 -- 首选项 -- 新建 -- 格式(行尾)，选择Unix(LF)
