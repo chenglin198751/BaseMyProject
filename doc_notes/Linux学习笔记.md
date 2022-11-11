@@ -1,6 +1,6 @@
 # Windows装Linux子系统
 
-**1、ubuntu系统安装 ：**
+**1、[ubuntu系统安装] ：**
 
     1、Microsoft Store 搜索：ubuntu 下载安装
     2、Microsoft Store 搜索：Windows Terminal 下载安装
@@ -13,7 +13,7 @@
     1、修改配色方案：Ubuntu -- 外观 -- 配色方案：Tango Dark
     2、路径是这种：/mnt/e/AndroidCode/360_android_mobile_game_sdk
 
-**2、Windows的子Linux系统安装Python2.7 ：**
+**2、[Windows的子Linux系统] ：Python2.7 ：**
 
     1、sudo add-apt-repository universe
     2、sudo apt update
@@ -23,13 +23,13 @@
     6、pip install Pillow
     7、python2.7 --version
 
-**3、Windows的子Linux系统搜索并安装 Java JDK ：**
+**3、[Windows的子Linux系统] ： Java JDK ：**
 
 	1、sudo apt-cache search jdk
 	2、sudo apt-get install openjdk-11-jdk-headless
     3、java --version
 
-**4、Windows的子Linux系统设置字符编码 ：**
+**4、[Windows的子Linux系统] ：设置字符编码 ：**
 
     1、sudo localedef -i en_US -f UTF-8 en_US.UTF-8
     2、sudo localedef -i en_US -f UTF-8 en_US.utf-8
@@ -37,7 +37,7 @@
     4、sudo localedef -i zh_CN -f UTF-8 zh_CN.utf-8
     5、source ~/.bashrc
 
-**5、Windows的子Linux系统安装把windows文件的字符编码设置为Linux的字符编码 ：**
+**5、[Windows的子Linux系统] ：把windows文件的字符编码设置为Linux的字符编码 ：**
 
     sudo apt install dos2unix
     使用说明：dos2unix /mnt/e/360portalgamesdk/portal-sdk-tool/tool/linux/d8 
