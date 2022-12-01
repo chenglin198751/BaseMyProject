@@ -23,5 +23,9 @@ public class AppConstants {
     public static final String ACTION_GET_PHOTO_LIST = "ACTION_GET_PHOTO_LIST";
     public static final String KEY_PHOTO_LIST = "KEY_PHOTO_LIST";
 
+    public static class Toggle {
+        //app是否展示黑白模式
+        public static boolean isGrayscale = false;
+    }
 
 }

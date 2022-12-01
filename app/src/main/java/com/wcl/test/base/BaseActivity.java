@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -49,6 +52,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (AppConstants.Toggle.isGrayscale) {
+            Paint paint = new Paint();
+            ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.setSaturation(0f);
+            paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+            getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
+        }
+
         windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         setLightStatusBarColor(true);
         //设置是否沉浸状态栏，false 表示沉浸，true表示不沉浸
