@@ -1,6 +1,5 @@
 package com.wcl.test.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
@@ -20,7 +19,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
@@ -28,10 +26,8 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseApp;
@@ -230,11 +226,8 @@ public class BaseUtils {
                 boolean hasInstallPermission = context.getPackageManager().canRequestPackageInstalls();
                 if (hasInstallPermission) {
                     //安装应用
-//                    installApkIntent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".QGameFileProvider", file), "application/vnd.android.package-archive");
                     installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    if (context.getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-                        context.startActivity(installApkIntent);
-                    }
+                    context.startActivity(installApkIntent);
                 } else {
                     //跳转至“安装未知应用”权限界面，引导用户开启权限
                     Uri selfPackageUri = Uri.parse("package:" + context.getPackageName());
@@ -243,17 +236,15 @@ public class BaseUtils {
                 }
             } else {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-//                    installApkIntent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".QGameFileProvider", file), "application/vnd.android.package-archive");
                     installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } else {
                     installApkIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
                 }
-                if (context.getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-                    context.startActivity(installApkIntent);
-                }
+                context.startActivity(installApkIntent);
             }
         }
     }
+
 
     /**
      * 得到APK包的信息
