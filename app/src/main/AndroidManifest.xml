@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
         android:name="com.wcl.test.base.MainApp"
@@ -21,7 +21,8 @@
             android:name="TEST_APP_KEY"
             android:value="${test_app_key}" />
 
-        <receiver android:name="com.wcl.test.helper.DialPhoneBroadcastReceiver"
+        <receiver
+            android:name="com.wcl.test.helper.DialPhoneBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SECRET_CODE" />
@@ -34,10 +35,10 @@
         <activity
             android:name="com.wcl.test.main.MainActivity"
             android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
+            android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/FirstActivityTheme"
-            android:exported="true">
+            android:theme="@style/FirstActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -59,7 +60,7 @@
         <activity
             android:name="com.wcl.test.test.TestRecyclerViewRefreshActivity"
             android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.wcl.test.test.TestFlexBoxActivity"
             android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
@@ -101,6 +102,17 @@
             android:authorities="${applicationId}.backgroundLibrary"
             android:exported="false"
             android:multiprocess="true" />
+
+        <provider
+            android:name="com.wcl.test.CustomTorchFileProvider"
+            android:authorities="com.wcl.test.custom.file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/app_torch_file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.wcl.test.main;
+package com.wcl.test;
 
 
 import androidx.core.content.FileProvider;
