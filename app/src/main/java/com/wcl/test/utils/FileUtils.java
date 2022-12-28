@@ -40,14 +40,6 @@ public class FileUtils {
     }
 
     /**
-     * 需要存储权限
-     * 获取外部存储卡下载路径：比如：/storage/emulated/0/Download/
-     */
-    public static String getExternalDownloadPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-    }
-
-    /**
      * 得到文件夹大小
      */
     public static long getFolderSize(java.io.File file) throws Exception {
