@@ -14,11 +14,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
@@ -198,9 +196,6 @@ public class BaseUtils {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
     }
-
-
-
 
     /**
      * 得到APK包的信息
