@@ -15,6 +15,9 @@ import java.io.File;
 public class ApkInstallUtils {
     private static final String DATA_TYPE_APK = "application/vnd.android.package-archive";
 
+    /**
+     * 安装一个APK包，此方法不需要获取安装权限，原理是调用系统安装包管理打开apk。建议优先使用此方法。
+     */
     public static void openApk(Context context, String filePath) {
         File file = new File(filePath);
         if (!file.exists()) {
@@ -51,7 +54,7 @@ public class ApkInstallUtils {
     }
 
     /**
-     * 安装一个APK包
+     * 安装一个APK包，此方法需要获取安装权限
      */
     public static void installApk(Context context, String path) {
         try {
