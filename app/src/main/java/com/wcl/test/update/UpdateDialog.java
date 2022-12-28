@@ -14,6 +14,7 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.httpwork.HttpUrls;
 import com.wcl.test.httpwork.HttpUtils;
 import com.wcl.test.preferences.PreferAppSettings;
+import com.wcl.test.utils.ApkInstallUtils;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.ToastUtils;
@@ -91,7 +92,7 @@ public class UpdateDialog extends Dialog {
                     if (mVersionModel != null) {
                         boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName);
                         if (isExist) {
-                            BaseUtils.installApk(mActivity, UpdateDownLoadTask.getApkPath());
+                            ApkInstallUtils.openApk(mActivity, UpdateDownLoadTask.getApkPath());
                         } else {
                             ToastUtils.show("安装失败，请立即更新");
                             mRightBtn.setText(R.string.update_version_update);
