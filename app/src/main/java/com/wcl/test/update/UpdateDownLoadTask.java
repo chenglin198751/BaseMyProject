@@ -12,6 +12,8 @@ import com.wcl.test.bean.ApkItem;
 import com.wcl.test.R;
 import com.wcl.test.httpwork.HttpUtils;
 import okhttp3.Call;
+
+import com.wcl.test.utils.ApkInstallUtils;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.FileUtils;
 import com.wcl.test.widget.ToastUtils;
@@ -38,7 +40,7 @@ public class UpdateDownLoadTask {
             public void onSuccess(String filePath) {
                 mUpdateDialog.downloadSuccess();
                 cancelNotify();
-                BaseUtils.installApk(BaseApp.getApp(), filePath);
+                ApkInstallUtils.openApk(BaseApp.getApp(), filePath);
                 isDownLoading = false;
             }
 
