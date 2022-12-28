@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 public class BaseUtils {
-    private static Handler mHandler;
     private static String mVerCode = null;
     private static String mVerName = null;
     private static int mStatusBarHeight = 0;
@@ -208,38 +207,35 @@ public class BaseUtils {
 
         PackageManager mPackageManager = context.getPackageManager();
         ApkItem apkItem = new ApkItem();
-        PackageInfo ApkInfor = mPackageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
+        PackageInfo ApkInfo = mPackageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
 
-        if (ApkInfor == null) {
+        if (ApkInfo == null) {
             return null;
         }
 
         apkItem.appSize = file.length();
-        apkItem.appVersion = ApkInfor.versionName;
-        apkItem.versionCode = ApkInfor.versionCode;
+        apkItem.appVersion = ApkInfo.versionName;
+        apkItem.versionCode = ApkInfo.versionCode;
 
-        ApplicationInfo appInfo = ApkInfor.applicationInfo;
+        ApplicationInfo appInfo = ApkInfo.applicationInfo;
         appInfo.sourceDir = path;
         appInfo.publicSourceDir = path;
 
         apkItem.appName = appInfo.loadLabel(mPackageManager).toString().trim();
         apkItem.image = appInfo.loadIcon(mPackageManager);
-        apkItem.packageName = ApkInfor.applicationInfo.packageName;
+        apkItem.packageName = ApkInfo.applicationInfo.packageName;
         return apkItem;
+    }
+
+    private static final class MHandlerHolder {
+        private static final Handler mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
      * 创建一个全局Handler，可以用来执行一些post任务等
      */
     public static Handler getHandler() {
-        if (mHandler == null) {
-            synchronized (BaseUtils.class) {
-                if (mHandler == null) {
-                    mHandler = new Handler(Looper.getMainLooper());
-                }
-            }
-        }
-        return mHandler;
+        return MHandlerHolder.mHandler;
     }
 
     //利用BigDecimal做除法
