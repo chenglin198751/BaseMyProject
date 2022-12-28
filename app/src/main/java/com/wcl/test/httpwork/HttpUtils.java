@@ -70,7 +70,7 @@ public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
     private static final String HTTP_CACHE_PATH = FileUtils.getExternalPath() + "/httpCache";
-    private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalDownloadPath() + File.separator + BaseUtils.getPackageName() + "/download";
+    private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + File.separator + BaseUtils.getPackageName() + "/download";
 
     static {
         File cacheDir = new File(HTTP_CACHE_PATH);
