@@ -13,7 +13,7 @@ import com.wcl.test.R;
 import com.wcl.test.httpwork.HttpUtils;
 import okhttp3.Call;
 
-import com.wcl.test.utils.ApkInstallUtils;
+import com.wcl.test.utils.ApkInstaller;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.FileUtils;
 import com.wcl.test.widget.ToastUtils;
@@ -40,7 +40,7 @@ public class UpdateDownLoadTask {
             public void onSuccess(String filePath) {
                 mUpdateDialog.downloadSuccess();
                 cancelNotify();
-                ApkInstallUtils.openApk(BaseApp.getApp(), filePath);
+                ApkInstaller.openApk(BaseApp.getApp(), filePath);
                 isDownLoading = false;
             }
 
