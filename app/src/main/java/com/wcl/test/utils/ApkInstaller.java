@@ -14,6 +14,7 @@ import java.io.File;
 
 public class ApkInstaller {
     private static final String DATA_TYPE_APK = "application/vnd.android.package-archive";
+    private static final String FILE_PROVIDER_NAME = ".custom.file_provider";
 
     /**
      * 安装一个APK包，此方法不需要获取安装权限，原理是调用系统安装包管理打开apk。建议优先使用此方法。
@@ -45,7 +46,7 @@ public class ApkInstaller {
     private static Uri getUri(Context context, Intent intent, File file) {
         Uri uri = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = FileProvider.getUriForFile(context, context.getPackageName() + ".custom.file_provider", file);
+            uri = FileProvider.getUriForFile(context, context.getPackageName() + FILE_PROVIDER_NAME, file);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } else {
             uri = Uri.fromFile(file);
