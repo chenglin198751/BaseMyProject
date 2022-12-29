@@ -12,7 +12,7 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 
-public class ApkInstallUtils {
+public class ApkInstaller {
     private static final String DATA_TYPE_APK = "application/vnd.android.package-archive";
 
     /**
