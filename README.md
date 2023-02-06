@@ -356,3 +356,9 @@
     6、把一个list复制到另一个list：Collections.copy(list,list);
 
 **102、腾讯性能监测开源工具**：https://github.com/Tencent/matrix#matrix_cn
+
+**103、android官方百分比布局**：implementation 'androidx.percentlayout:percentlayout:1.0.0'
+
+    app:layout_heightPercent="30%"
+    app:layout_marginTopPercent="10%"
+    app:layout_widthPercent="100%"
