@@ -37,3 +37,12 @@
             android:layout_height="wrap_content"
             app:barrierDirection="top"
             app:constraint_referenced_ids="TextView1,TextView2,TextView2" />
+
+**6、Group，把一些view设置为一组，一般用来隐藏显示一组view**
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/count_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:constraint_referenced_ids="TextView1,TextView2,TextView2" />
