@@ -1,4 +1,4 @@
-# gradle知识记录
+# AndroidStudio技巧
 
 **1、gradle build 控制台输出中文乱码：**
 
