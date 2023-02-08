@@ -46,3 +46,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:constraint_referenced_ids="TextView1,TextView2,TextView2" />
+
+**7、等分布局的两种方式：**
+
+        第1种：这种方式是把当前屏幕宽度设置为1，然后每个view占据百分比：
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintWidth_percent="0.3"
+
+        第2种：这种方式是把当前屏幕宽度按照比重分配：
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintHorizontal_weight="1"
