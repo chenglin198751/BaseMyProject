@@ -44,7 +44,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
 
         //由于Manifest的style v27中设置了使用缺口屏，所以这里恢复为默认不使用缺口屏
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -57,7 +56,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        setContentLayout(R.layout.activity_main);
+        mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentLayout(mViewBinding.getRoot());
+
         getTitleHelper().hideTitleBar();
         mFragHelper = new ShowFragmentHelper(getSupportFragmentManager(), FRAGMENTS);
 
