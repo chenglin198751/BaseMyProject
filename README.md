@@ -1,12 +1,12 @@
 # 工程各个工具类说明
 
-* [gradle知识记录](doc_notes/gradle_note.md)
-* [Kotlin知识记录](doc_notes/Kotlin.md)
-* [常用代码记录1](doc_notes/常用代码记录1.md)
-* [常用代码记录2](doc_notes/常用代码记录2.md)
-* [Linux学习笔记](doc_notes/Linux学习笔记.md)
-* [Kotlin](doc_notes/Kotlin.md)
 * [AndroidStudio技巧](doc_notes/AndroidStudio技巧.md)
+* [ConstraintLayout学习.md](doc_notes/ConstraintLayout学习.md)
+* [gradle_note.md](doc_notes/gradle_note.md)
+* [Kotlin.md](doc_notes/Kotlin.md)
+* [Linux学习笔记.md](doc_notes/Linux学习笔记.md)
+* [常用代码记录1.md](doc_notes/常用代码记录1.md)
+* [常用代码记录2.md](doc_notes/常用代码记录2.md)
 * [开发SDK注意事项.txt](doc_notes/开发SDK注意事项.txt)
 
 **1、BaseActivity 类** ：基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。
