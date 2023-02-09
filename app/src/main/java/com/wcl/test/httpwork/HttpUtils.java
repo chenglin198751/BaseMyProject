@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.DeviceUtils;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
@@ -599,105 +601,116 @@ public class HttpUtils {
      * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      *
      * @param fileUrl  下载文件地址
-     * @param downPath 自定义文件下载路径
      */
-    public static String syncDownloadFile(final String fileUrl, final String downPath) {
-        return syncDownloadFile(fileUrl, downPath, false);
+    public static String syncDownloadFile(final String fileUrl) {
+        return syncDownloadFile(fileUrl, false);
     }
 
     /**
-     * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，支持断点续传
      *
      * @param fileUrl     下载文件地址
-     * @param downPath    自定义文件下载路径
      * @param isNeedCache 是否需要缓存，如果true ，那么此文件同样地址只下载一次
      */
-    public static String syncDownloadFile(final String fileUrl, final String downPath, boolean isNeedCache) {
-        if (TextUtils.isEmpty(fileUrl)) {
-            return null;
-        } else if (TextUtils.isEmpty(downPath)) {
-            return null;
+    public static String syncDownloadFile(final String fileUrl, boolean isNeedCache) {
+        if (BaseUtils.isUiThread()) {
+            throw new RuntimeException("Synchronized download file cannot be in UI thread");
+        } else if (TextUtils.isEmpty(fileUrl)) {
+            throw new RuntimeException("fileUrl is null");
         }
-
         try {
-            File file = new File(downPath);
-            if (!file.exists()) {
-                File parent = file.getParentFile();
-                if (!parent.exists()) {
-                    parent.mkdirs();
-                }
-                if (!parent.exists()) {
-                    return null;
+            final String downPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+            final String tempPath = downPath + ".temp";
+
+            File downFile = new File(downPath);
+            File tempFile = new File(tempPath);
+
+            if (downFile.exists()) {
+                if (isNeedCache) {
+                    return downPath;
+                } else {
+                    downFile.delete();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        final String defaultPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
-        final String downLoadFilePath = TextUtils.isEmpty(downPath) ? defaultPath : downPath;
-        final String tempPath = downLoadFilePath + ".temp";
+            long downloadLength = 0;
+            long contentLength = getContentLength(fileUrl);
 
-        //防止下载时中断导致下载文件不全,但被使用了
-        File tempFile = new File(tempPath);
-        if (tempFile.exists()) {
-            tempFile.delete();
-        }
-
-        File cacheFile = new File(downLoadFilePath);
-        if (cacheFile.exists()) {
-            if (isNeedCache) {
-                return downLoadFilePath;
-            } else {
-                cacheFile.delete();
+            if (tempFile.exists()) {
+                downloadLength = tempFile.length();
             }
-        }
 
-        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-        if (!isNeedCache) {
-            cacheBuilder.noCache();// 不使用缓存，全部走网络
-            cacheBuilder.noStore();// 不使用缓存，也不存储缓存
-        }
-        CacheControl cache = cacheBuilder.build();
-        Request request = new Request.Builder().cacheControl(cache).url(fileUrl).get().build();
+            if (downloadLength == contentLength) {
+                boolean isSuccess = tempFile.renameTo(downFile);
+                if (isSuccess) {
+                    return downPath;
+                }else{
+                    if (tempFile.delete()){
+                        downloadLength = 0;
+                    }
+                }
+            }
 
-        try {
+            Request.Builder builder = new Request.Builder().url(fileUrl).get();
+            RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rwd");
+
+            //跳过已经下载的字节
+            if (downloadLength > 0) {
+                savedFile.seek(downloadLength);
+
+                // HTTP请求是有一个Header的，里面有个Range属性是定义下载区域的，它接收的值是一个区间范围，
+                // 比如：Range:bytes=0-10000。这样我们就可以按照一定的规则，将一个大文件拆分为若干很小的部分，
+                // 然后分批次的下载，每个小块下载完成之后，再合并到文件中；这样即使下载中断了，重新下载时，
+                // 也可以通过文件的字节长度来判断下载的起始点，然后重启断点续传的过程，直到最后完成下载过程。
+                if (contentLength > downloadLength){
+                    builder.addHeader("RANGE", "bytes=" + downloadLength + "-" + contentLength);
+                }
+            }
+            Request request = builder.build();
+
+            //开始启动下载
             Response response = client.newCall(request).execute();
             InputStream inputStream = response.body().byteStream();
-            FileOutputStream fileOutputStream = null;
-
-            fileOutputStream = new FileOutputStream(new File(tempPath));
-            byte[] buffer = new byte[2048];
+            byte[] buffer = new byte[1024];
             int len;
             while ((len = inputStream.read(buffer)) != -1) {
-                fileOutputStream.write(buffer, 0, len);
+                savedFile.write(buffer, 0, len);
             }
-            fileOutputStream.flush();
             inputStream.close();
-            fileOutputStream.close();
+            savedFile.close();
+            response.body().close();
 
-            tempFile = new File(tempPath);
+            //下载完成后把.temp的文件重命名为原文件
             if (tempFile.exists()) {
-                boolean isSuccess = tempFile.renameTo(new File(downLoadFilePath));
+                boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    return downLoadFilePath;
+                    Log.d("tag_2", "下载成功downPath=" + downPath);
+                    return downPath;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            //防止下载时中断导致下载文件不全,但被使用了
-            tempFile = new File(tempPath);
-            if (tempFile.exists()) {
-                tempFile.delete();
-            }
-        } catch (Exception e) {
-            //防止下载时中断导致下载文件不全,但被使用了
-            tempFile = new File(tempPath);
-            if (tempFile.exists()) {
-                tempFile.delete();
-            }
+
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 获取被下载的文件的长度
+     */
+    private static long getContentLength(String downloadUrl) {
+        Request request = new Request.Builder().url(downloadUrl).build();
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                long contentLength = response.body().contentLength();
+                response.body().close();
+                return contentLength;
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return 0;
     }
 
     /**
