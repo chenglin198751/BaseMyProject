@@ -7,6 +7,7 @@
 * [Linux学习笔记](doc_notes/Linux学习笔记.md)
 * [Kotlin](doc_notes/Kotlin.md)
 * [AndroidStudio技巧](doc_notes/AndroidStudio技巧.md)
+* [开发SDK注意事项.txt](doc_notes/开发SDK注意事项.txt)
 
 **1、BaseActivity 类** ：基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。
      好处：便于统一管理页面，比如可以在页面内部显示加载框，可以添加右侧菜单，添加空View，无网页面等等。
