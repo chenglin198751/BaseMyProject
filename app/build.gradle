@@ -105,4 +105,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-process:2.6.0-alpha03'
     implementation 'com.github.JavaNoober.BackgroundLibrary:libraryx:1.7.4'
     implementation 'androidx.work:work-runtime:2.7.1'
+//    implementation'com.android.support:percent:28.0.0'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
 }
