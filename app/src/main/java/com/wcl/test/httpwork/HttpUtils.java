@@ -670,6 +670,11 @@ public class HttpUtils {
 
             //开始启动下载
             Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                response.body().close();
+                return null;
+            }
+
             InputStream inputStream = response.body().byteStream();
             byte[] buffer = new byte[1024];
             int len;
