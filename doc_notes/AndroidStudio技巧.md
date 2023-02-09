@@ -14,3 +14,10 @@
     1-5、ctrl + D 复制一行
 
 **3、新版AS无法使用git提交代码解决：** Version Control - Git - 勾选 Use credential helper
+
+**4、显示上方的ToolBar：** View - Appearance - ToolBar
+
+**5、用Android Studio创建的jks签名文件，使用时报错，解决办法：**
+
+    1、点击右上角 Project Structure 按钮，打开 SDK location
+    2、把JDK location 修改为AS自带的jre，比如：D:\Android\Android Studio\jre
