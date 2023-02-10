@@ -4,19 +4,17 @@ import android.app.Notification;
 import android.content.Context;
 import android.widget.RemoteViews;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.wcl.test.R;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;
-import com.wcl.test.R;
 import com.wcl.test.httpwork.HttpUtils;
-import okhttp3.Call;
-
 import com.wcl.test.utils.ApkInstaller;
 import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.FileUtils;
 import com.wcl.test.widget.ToastUtils;
+
+import java.io.IOException;
+
+import okhttp3.Call;
 
 public class UpdateDownLoadTask {
     private static final int DOWN_NOTIFY_ID = 0;
@@ -32,7 +30,6 @@ public class UpdateDownLoadTask {
 
     public void start(final String url) {
         isDownLoading = true;
-        clearTempFile();
         showNotification(0);
 
         final HttpUtils.HttpDownloadCallback downloadCallback = new HttpUtils.HttpDownloadCallback() {
@@ -47,19 +44,18 @@ public class UpdateDownLoadTask {
             @Override
             public void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent) {
                 isDownLoading = true;
-                showNotification((int) (percent *100));
+                showNotification((int) (percent * 100));
             }
 
             @Override
             public void onFailure(IOException e) {
                 isDownLoading = false;
                 suddenBreadNet();
-                clearTempFile();
                 ToastUtils.show(R.string.net_error);
             }
         };
 
-        HttpUtils.downloadFile(url, getApkPath(), false, downloadCallback);
+        HttpUtils.downloadFile(url, true, downloadCallback);
     }
 
 
@@ -116,14 +112,8 @@ public class UpdateDownLoadTask {
         });
     }
 
-    private void clearTempFile() {
-        File myFile = new File(getApkPath());
-        myFile.delete();
-    }
-
-
-    public static boolean apkExist(Context context, String versionName) {
-        ApkItem apkItem = BaseUtils.getApkInfo(context, getApkPath());
+    public static boolean apkExist(Context context, String versionName, String apk_path) {
+        ApkItem apkItem = BaseUtils.getApkInfo(context, apk_path);
 
         if (apkItem == null) {
             return false;
@@ -134,9 +124,5 @@ public class UpdateDownLoadTask {
         } else {
             return false;
         }
-    }
-
-    public static String getApkPath() {
-        return FileUtils.getExternalPath() + BaseUtils.getPackageName() + ".apk";
     }
 }
