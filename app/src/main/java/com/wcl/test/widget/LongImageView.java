@@ -99,14 +99,14 @@ public class LongImageView extends WebView {
             }
 
             @Override
-            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent) {
+            public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
                 if (httpCallback != null) {
-                    httpCallback.onProgress(call, fileTotalSize, fileDowningSize, percent);
+                    httpCallback.onProgress(fileTotalSize, fileDowningSize, percent);
                 }
             }
 
             @Override
-            public void onFailure(IOException e) {
+            public void onFailure(Exception e) {
                 if (httpCallback != null) {
                     httpCallback.onFailure(e);
                 }

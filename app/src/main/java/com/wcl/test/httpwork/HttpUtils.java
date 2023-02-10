@@ -12,7 +12,6 @@ import com.wcl.test.utils.DeviceUtils;
 import com.wcl.test.utils.FileUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -57,9 +56,9 @@ public class HttpUtils {
         //fileTotalSize  文件总大小
         //fileDowningSize  文件已经下载的大小
         //percent  文件下载的进度百分比
-        void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent);
+        void onProgress(long fileTotalSize, long fileDowningSize, float percent);
 
-        void onFailure(IOException e);
+        void onFailure(Exception e);
     }
 
     //用于扩展一些网络功能，比如写入header,写入cookies等操作
@@ -412,8 +411,158 @@ public class HttpUtils {
     }
 
     /**
-     * 可以自定义下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
-     * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
+     * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，支持断点续传
+     * 必须在非UI线程下载
+     *
+     * @param fileUrl     下载文件URL地址
+     * @param isNeedCache 是否需要缓存，如果true ，那么此文件如果已经下载，就不再重复下载
+     */
+    public static String syncDownloadFile(final String fileUrl, boolean isNeedCache) {
+        return syncDownloadFile(fileUrl, isNeedCache, null);
+    }
+
+    private static String syncDownloadFile(final String fileUrl, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
+        if (BaseUtils.isUiThread()) {
+            throw new RuntimeException("Synchronized download file cannot be in UI thread");
+        } else if (TextUtils.isEmpty(fileUrl)) {
+            throw new RuntimeException("fileUrl is null");
+        }
+
+        try {
+            final String downPath = getDownLoadFilePath(fileUrl);
+            final String tempPath = downPath + ".temp";
+
+            final File downFile = new File(downPath);
+            final File tempFile = new File(tempPath);
+
+            if (downFile.exists()) {
+                if (isNeedCache) {
+                    if (downloadCallback != null) {
+                        downloadCallback.onSuccess(downPath);
+                    }
+                    return downPath;
+                } else {
+                    downFile.delete();
+                }
+            }
+
+            if (isFileDownloading(fileUrl)) {
+                String error = fileUrl + " is being downloaded, do not download it again";
+                AppLogUtils.w(TAG, error);
+                if (downloadCallback != null) {
+                    downloadCallback.onFailure(new Exception(error));
+                }
+                return null;
+            }
+
+            long downloadLength = 0;
+            final long contentLength = getContentLength(fileUrl);
+            if (tempFile.exists()) {
+                downloadLength = tempFile.length();
+            }
+            if (downloadLength == contentLength) {
+                boolean isSuccess = tempFile.renameTo(downFile);
+                if (isSuccess) {
+                    if (downloadCallback != null) {
+                        downloadCallback.onSuccess(downPath);
+                    }
+                    return downPath;
+                } else {
+                    if (tempFile.delete()) {
+                        downloadLength = 0;
+                    }
+                }
+            }
+
+            final Request.Builder builder = new Request.Builder().url(fileUrl).get();
+            final RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rws");
+
+            //跳过已经下载的字节，实现断点续传
+            if (downloadLength > 0) {
+                savedFile.seek(downloadLength);
+
+                // HTTP请求是有一个Header的，里面有个Range属性是定义下载区域的，它接收的值是一个区间范围，
+                // 比如：Range:bytes=0-10000。这样我们就可以按照一定的规则，将一个大文件拆分为若干很小的部分，
+                // 然后分批次的下载，每个小块下载完成之后，再合并到文件中；这样即使下载中断了，重新下载时，
+                // 也可以通过文件的字节长度来判断下载的起始点，然后重启断点续传的过程，直到最后完成下载过程。
+                if (contentLength > downloadLength) {
+                    builder.addHeader("RANGE", "bytes=" + downloadLength + "-" + contentLength);
+                }
+            }
+
+            //开始启动下载
+            final Request request = builder.build();
+            final Response response = mOkHttpClient.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                if (downloadCallback != null) {
+                    downloadCallback.onFailure(new Exception(response.message()));
+                }
+                response.body().close();
+                return null;
+            }
+
+            InputStream inputStream = response.body().byteStream();
+            byte[] buffer = new byte[1024];
+            int len;
+            long sum = downloadLength;
+            long timeStamp = System.currentTimeMillis();
+            int lastProgress = 0;
+
+            while ((len = inputStream.read(buffer)) != -1) {
+                savedFile.write(buffer, 0, len);
+
+                //计算下载进度
+                sum += len;
+                int progress = (int) (sum * 1.0f / contentLength * 100f);
+                if (lastProgress != progress) {
+                    lastProgress = progress;
+                    final long tempSum = sum;
+
+                    if (System.currentTimeMillis() - timeStamp > 1000L) {
+                        timeStamp = System.currentTimeMillis();
+                        BaseUtils.getHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                float progress = (tempSum * 1f / contentLength);
+                                progress = BaseUtils.formatFloat(progress, 4);
+                                downloadCallback.onProgress(contentLength, tempSum, progress);
+                            }
+                        });
+                    }
+                }
+
+            }
+            inputStream.close();
+            savedFile.close();
+            response.body().close();
+
+            //下载完成后把.temp的文件重命名为原文件
+            if (tempFile.exists()) {
+                boolean isSuccess = tempFile.renameTo(downFile);
+                if (isSuccess) {
+                    if (downloadCallback != null) {
+                        downloadCallback.onSuccess(downPath);
+                    }
+                    return downPath;
+                }
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            String error = t.toString();
+            AppLogUtils.w(TAG, "download failed:" + error);
+            if (downloadCallback != null) {
+                downloadCallback.onFailure(new Exception(error));
+            }
+        }
+
+        if (downloadCallback != null) {
+            downloadCallback.onFailure(new Exception("download failed:unknown"));
+        }
+        return null;
+    }
+
+    /**
+     * 可以自定义下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，支持断点续传
      *
      * @param fileUrl          下载文件地址
      * @param isNeedCache      是否需要缓存，如果true ，那么此文件同样地址只下载一次
@@ -430,223 +579,15 @@ public class HttpUtils {
             return;
         }
 
-        final String downLoadFilePath = getDownLoadFilePath(fileUrl);
-        final String tempPath = downLoadFilePath + ".temp";
-
-        //防止下载时中断导致下载文件不全,但被使用了
-        File tempFile = new File(tempPath);
-        if (tempFile.exists()) {
-            tempFile.delete();
-        }
-
-        File cacheFile = new File(downLoadFilePath);
-        if (cacheFile.exists()) {
-            if (isNeedCache && cacheFile.length() > 0) {
-                downloadCallback.onSuccess(downLoadFilePath);
-                return;
-            } else {
-                cacheFile.delete();
-            }
-        }
-
-        Request request = new Request.Builder().url(fileUrl).get().build();
-
-        mOkHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
+        new Thread() {
             @Override
-            public void onFailure(Call call, final IOException e) {
-                e.printStackTrace();
-                BaseUtils.getHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        downloadCallback.onFailure(e);
-                    }
-                });
+            public void run() {
+                super.run();
+                syncDownloadFile(fileUrl, isNeedCache, downloadCallback);
             }
-
-            @Override
-            public void onResponse(final Call call, final Response response) {
-                if (!response.isSuccessful()) {
-                    BaseUtils.getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadCallback.onFailure(new IOException("下载失败：" + response.toString()));
-                        }
-                    });
-                    return;
-                }
-
-                InputStream inputStream = response.body().byteStream();
-                FileOutputStream fileOutputStream = null;
-
-                try {
-                    fileOutputStream = new FileOutputStream(new File(tempPath));
-                    long total = response.body().contentLength();
-                    byte[] buffer = new byte[2048];
-                    int len;
-                    long sum = 0;
-                    long timeStamp = System.currentTimeMillis();
-                    int lastProgress = 0;
-                    while ((len = inputStream.read(buffer)) != -1) {
-                        fileOutputStream.write(buffer, 0, len);
-                        sum += len;
-                        int progress = (int) (sum * 1.0f / total * 100f);
-                        if (lastProgress != progress) {
-                            lastProgress = progress;
-
-                            final long tempTotal = total;
-                            final long tempSum = sum;
-
-                            if (System.currentTimeMillis() - timeStamp > 1000L) {
-                                timeStamp = System.currentTimeMillis();
-                                BaseUtils.getHandler().post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        float progress = (tempSum * 1f / tempTotal);
-                                        progress = BaseUtils.formatFloat(progress, 4);
-                                        downloadCallback.onProgress(call, tempTotal, tempSum, progress);
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                    fileOutputStream.flush();
-                    inputStream.close();
-                    fileOutputStream.close();
-
-                    BaseUtils.getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            File tempFile = new File(tempPath);
-                            if (tempFile.exists()) {
-                                boolean isSuccess = tempFile.renameTo(new File(downLoadFilePath));
-                                if (isSuccess) {
-                                    downloadCallback.onProgress(call, tempFile.length(), tempFile.length(), 100f);
-                                    downloadCallback.onSuccess(downLoadFilePath);
-                                } else {
-                                    downloadCallback.onFailure(new IOException(tempPath + " rename to " + downLoadFilePath + " fail"));
-                                }
-                            } else {
-                                downloadCallback.onFailure(new IOException(tempPath + " not exists "));
-                            }
-                        }
-                    });
-
-                } catch (final IOException e) {
-                    e.printStackTrace();
-                    //防止下载时中断导致下载文件不全,但被使用了
-                    File tempFile = new File(tempPath);
-                    if (tempFile.exists()) {
-                        tempFile.delete();
-                    }
-                    BaseUtils.getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadCallback.onFailure(e);
-                        }
-                    });
-                }
-            }
-        });
+        }.start();
     }
 
-    /**
-     * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，支持断点续传
-     *
-     * @param fileUrl     下载文件URL地址
-     * @param isNeedCache 是否需要缓存，如果true ，那么此文件如果已经下载，就不再重复下载
-     */
-    public static String syncDownloadFile(final String fileUrl, boolean isNeedCache) {
-        if (BaseUtils.isUiThread()) {
-            throw new RuntimeException("Synchronized download file cannot be in UI thread");
-        } else if (TextUtils.isEmpty(fileUrl)) {
-            throw new RuntimeException("fileUrl is null");
-        }
-
-        try {
-            final String downPath = getDownLoadFilePath(fileUrl);
-            final String tempPath = downPath + ".temp";
-
-            File downFile = new File(downPath);
-            File tempFile = new File(tempPath);
-
-            if (downFile.exists()) {
-                if (isNeedCache) {
-                    return downPath;
-                } else {
-                    downFile.delete();
-                }
-            }
-
-            if (isFileDownloading(tempFile)) {
-                AppLogUtils.w(TAG, fileUrl + " is being downloaded, do not download it again");
-                return null;
-            }
-
-            long downloadLength = 0;
-            final long contentLength = getContentLength(fileUrl);
-            if (tempFile.exists()) {
-                downloadLength = tempFile.length();
-            }
-            if (downloadLength == contentLength) {
-                boolean isSuccess = tempFile.renameTo(downFile);
-                if (isSuccess) {
-                    return downPath;
-                } else {
-                    if (tempFile.delete()) {
-                        downloadLength = 0;
-                    }
-                }
-            }
-
-            Request.Builder builder = new Request.Builder().url(fileUrl).get();
-            RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rws");
-
-            //跳过已经下载的字节，实现断点续传
-            if (downloadLength > 0) {
-                savedFile.seek(downloadLength);
-
-                // HTTP请求是有一个Header的，里面有个Range属性是定义下载区域的，它接收的值是一个区间范围，
-                // 比如：Range:bytes=0-10000。这样我们就可以按照一定的规则，将一个大文件拆分为若干很小的部分，
-                // 然后分批次的下载，每个小块下载完成之后，再合并到文件中；这样即使下载中断了，重新下载时，
-                // 也可以通过文件的字节长度来判断下载的起始点，然后重启断点续传的过程，直到最后完成下载过程。
-                if (contentLength > downloadLength) {
-                    builder.addHeader("RANGE", "bytes=" + downloadLength + "-" + contentLength);
-                }
-            }
-
-            //开始启动下载
-            Request request = builder.build();
-            Response response = mOkHttpClient.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                response.body().close();
-                return null;
-            }
-
-            InputStream inputStream = response.body().byteStream();
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) != -1) {
-                savedFile.write(buffer, 0, len);
-            }
-            inputStream.close();
-            savedFile.close();
-            response.body().close();
-
-            //下载完成后把.temp的文件重命名为原文件
-            if (tempFile.exists()) {
-                boolean isSuccess = tempFile.renameTo(downFile);
-                if (isSuccess) {
-                    return downPath;
-                }
-            }
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-            AppLogUtils.w(TAG, "download failed:" + t);
-        }
-        return null;
-    }
 
     /**
      * 获取被下载的文件的长度
@@ -667,11 +608,14 @@ public class HttpUtils {
     }
 
     /**
-     * 判断文件是否下载中
+     * 根据文件下载URL判断文件是否下载中
      */
-    private static boolean isFileDownloading(File tempFile) {
+    public static boolean isFileDownloading(String fileUrl) {
+        final String tempPath = getDownLoadFilePath(fileUrl) + ".temp";
+        final File tempFile = new File(tempPath);
         boolean isDownloading = false;
-        if (tempFile != null && tempFile.exists()) {
+
+        if (tempFile.exists()) {
             long lastModified = tempFile.lastModified();
             long current = System.currentTimeMillis();
             //如果3秒内文件有被更改，那么证明正在下载中
@@ -727,7 +671,7 @@ public class HttpUtils {
     }
 
     /**
-     * 根据下载文件地址得到文件的后缀名
+     * 根据下载文件URL得到文件的后缀名
      */
     private static String getSuffixNameByHttpUrl(final String url) {
         int index = url.lastIndexOf(".");
@@ -737,6 +681,9 @@ public class HttpUtils {
         return "";
     }
 
+    /**
+     * 根据下载文件URL得到文件的下载路径
+     */
     public static String getDownLoadFilePath(String fileUrl) {
         final String downPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
         return downPath;
