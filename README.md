@@ -363,3 +363,5 @@
     app:layout_heightPercent="30%"
     app:layout_marginTopPercent="10%"
     app:layout_widthPercent="100%"
+
+**103、使用android SDK的HttpURLConnection实现的断点续传的下载工具：**：https://github.com/yaowen369/DownloadHelper
