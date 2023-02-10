@@ -425,7 +425,12 @@ public class HttpUtils {
         if (BaseUtils.isUiThread()) {
             throw new RuntimeException("Synchronized download file cannot be in UI thread");
         } else if (TextUtils.isEmpty(fileUrl)) {
-            throw new RuntimeException("fileUrl is null");
+            throw new NullPointerException("fileUrl is null");
+        } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
+            String error = fileUrl + " 不是有效的URL";
+            AppLogUtils.e(TAG, error);
+            downloadCallback.onFailure(new Exception(fileUrl + " 不是有效的URL"));
+            return null;
         }
 
         try {
@@ -572,7 +577,7 @@ public class HttpUtils {
         if (downloadCallback == null) {
             throw new NullPointerException("HttpDownloadCallback 不能为空");
         } else if (TextUtils.isEmpty(fileUrl)) {
-            downloadCallback.onFailure(new IOException("下载URL不能为空"));
+            downloadCallback.onFailure(new NullPointerException("下载URL不能为空"));
             return;
         } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
             downloadCallback.onFailure(new IOException(fileUrl + " 不是有效的URL"));
