@@ -71,7 +71,6 @@ public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
     private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + "/download";
-    private static final OkHttpClient.Builder builder;
     public static final OkHttpClient client;
 
     static {
@@ -80,7 +79,7 @@ public class HttpUtils {
             downloadDir.mkdirs();
         }
 
-        builder = new OkHttpClient
+        final OkHttpClient.Builder builder = new OkHttpClient
                 .Builder()
                 .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
