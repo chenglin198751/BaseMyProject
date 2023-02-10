@@ -512,6 +512,7 @@ public class HttpUtils {
             long sum = downloadLength;
             long timeStamp = System.currentTimeMillis();
             int lastProgress = 0;
+            downloadCallback.onProgress(contentLength, 0, 0);
 
             while ((len = inputStream.read(buffer)) != -1) {
                 savedFile.write(buffer, 0, len);
