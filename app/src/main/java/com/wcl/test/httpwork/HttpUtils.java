@@ -104,7 +104,7 @@ public class HttpUtils {
      */
     public static class RetryInterceptor implements Interceptor {
         //最大重试次数。假如设置为3次重试的话，则最大可能请求4次（默认1次+3次重试）
-        private int maxRetry;
+        private final int maxRetry;
 
         public RetryInterceptor(int maxRetry) {
             this.maxRetry = maxRetry;
