@@ -450,13 +450,7 @@ public class HttpUtils {
             }
         }
 
-        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-        if (!isNeedCache) {
-            cacheBuilder.noCache();// 不使用缓存，全部走网络
-            cacheBuilder.noStore();// 不使用缓存，也不存储缓存
-        }
-        CacheControl cache = cacheBuilder.build();
-        Request request = new Request.Builder().cacheControl(cache).url(fileUrl).get().build();
+        Request request = new Request.Builder().url(fileUrl).get().build();
 
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
