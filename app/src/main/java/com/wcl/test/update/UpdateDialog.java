@@ -90,9 +90,10 @@ public class UpdateDialog extends Dialog {
                     ToastUtils.show(BaseUtils.getString(R.string.update_version_downloading));
                 } else if (mRightBtn.getText().equals(BaseUtils.getString(R.string.update_version_install))) {
                     if (mVersionModel != null) {
-                        boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName);
+                        String apk_path = HttpUtils.getDownLoadFilePath(mVersionModel.url);
+                        boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName, apk_path);
                         if (isExist) {
-                            ApkInstaller.openApk(mActivity, UpdateDownLoadTask.getApkPath());
+                            ApkInstaller.openApk(mActivity, apk_path);
                         } else {
                             ToastUtils.show("安装失败，请立即更新");
                             mRightBtn.setText(R.string.update_version_update);
@@ -202,11 +203,12 @@ public class UpdateDialog extends Dialog {
                 setCancelable(false);
             }
 
-            boolean isExist = UpdateDownLoadTask.apkExist(mActivity, infoModel.versionName);
+            String apk_path = HttpUtils.getDownLoadFilePath(mVersionModel.url);
+            boolean isExist = UpdateDownLoadTask.apkExist(mActivity, infoModel.versionName, apk_path);
             if (isExist) {
                 mRightBtn.setText(R.string.update_version_install);
             } else {
-                File apkFile = new File(UpdateDownLoadTask.getApkPath());
+                File apkFile = new File(apk_path);
                 if (apkFile.exists()) {
                     apkFile.delete();
                 }

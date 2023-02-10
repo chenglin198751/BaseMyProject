@@ -71,7 +71,7 @@ public class HttpUtils {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
     private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + "/download";
-    public static final OkHttpClient client;
+    public static final OkHttpClient mOkHttpClient;
 
     static {
         File downloadDir = new File(HTTP_DOWNLOAD_PATH);
@@ -90,7 +90,7 @@ public class HttpUtils {
             //禁用抓包工具抓包
             builder.proxy(Proxy.NO_PROXY);
         }
-        client = builder.build();
+        mOkHttpClient = builder.build();
     }
 
     private HttpUtils() {
@@ -247,7 +247,7 @@ public class HttpUtils {
         }
         Request request = requestBuilder.build();
 
-        Call call = client.newCall(request);
+        Call call = mOkHttpClient.newCall(request);
         call.enqueue(createOkhttp3Callback(context, httpCallback));
     }
 
@@ -273,7 +273,7 @@ public class HttpUtils {
         }
         Request request = requestBuilder.build();
 
-        Call call = client.newCall(request);
+        Call call = mOkHttpClient.newCall(request);
         call.enqueue(createOkhttp3Callback(context, httpCallback));
     }
 
@@ -288,7 +288,7 @@ public class HttpUtils {
         Request request = new Request.Builder().cacheControl(cache).url(url).get().build();
 
         try {
-            Response response = client.newCall(request).execute();
+            Response response = mOkHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 //有时服务端返回json带了bom头，会导致解析生效
                 String tempStr = response.body().string();
@@ -338,7 +338,7 @@ public class HttpUtils {
         Request request = requestBuilder.build();
 
         try {
-            Response response = client.newCall(request).execute();
+            Response response = mOkHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 //有时服务端返回json带了bom头，会导致解析生效
                 String tempStr = response.body().string();
@@ -396,7 +396,7 @@ public class HttpUtils {
         RequestBuilder.post(requestBody);
         Request request = RequestBuilder.build();
 
-        client.newCall(request).enqueue(new okhttp3.Callback() {
+        mOkHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
@@ -430,7 +430,7 @@ public class HttpUtils {
             return;
         }
 
-        final String downLoadFilePath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+        final String downLoadFilePath = getDownLoadFilePath(fileUrl);
         final String tempPath = downLoadFilePath + ".temp";
 
         //防止下载时中断导致下载文件不全,但被使用了
@@ -451,7 +451,7 @@ public class HttpUtils {
 
         Request request = new Request.Builder().url(fileUrl).get().build();
 
-        client.newCall(request).enqueue(new okhttp3.Callback() {
+        mOkHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
@@ -564,7 +564,7 @@ public class HttpUtils {
         }
 
         try {
-            final String downPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+            final String downPath = getDownLoadFilePath(fileUrl);
             final String tempPath = downPath + ".temp";
 
             File downFile = new File(downPath);
@@ -617,7 +617,7 @@ public class HttpUtils {
 
             //开始启动下载
             Request request = builder.build();
-            Response response = client.newCall(request).execute();
+            Response response = mOkHttpClient.newCall(request).execute();
             if (!response.isSuccessful()) {
                 response.body().close();
                 return null;
@@ -654,7 +654,7 @@ public class HttpUtils {
     private static long getContentLength(String downloadUrl) {
         Request request = new Request.Builder().url(downloadUrl).build();
         try {
-            Response response = client.newCall(request).execute();
+            Response response = mOkHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 long contentLength = response.body().contentLength();
                 response.body().close();
@@ -735,6 +735,11 @@ public class HttpUtils {
             return url.substring(index);
         }
         return "";
+    }
+
+    public static String getDownLoadFilePath(String fileUrl) {
+        final String downPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+        return downPath;
     }
 
     private static void handleHttpSuccessOnUiThread(final HttpCallback httpCallback, final String result) {
