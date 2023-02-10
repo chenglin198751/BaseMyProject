@@ -42,13 +42,13 @@ public class UpdateDownLoadTask {
             }
 
             @Override
-            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent) {
+            public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
                 isDownLoading = true;
                 showNotification((int) (percent * 100));
             }
 
             @Override
-            public void onFailure(IOException e) {
+            public void onFailure(Exception e) {
                 isDownLoading = false;
                 suddenBreadNet();
                 ToastUtils.show(R.string.net_error);
