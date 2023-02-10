@@ -530,7 +530,7 @@ public class HttpUtils {
                             @Override
                             public void run() {
                                 float progress = (tempSum * 1f / contentLength);
-                                progress = BaseUtils.formatFloat(progress, 4);
+                                progress = BaseUtils.formatFloat(progress, 2);
                                 downloadCallback.onProgress(contentLength, tempSum, progress);
                             }
                         });
