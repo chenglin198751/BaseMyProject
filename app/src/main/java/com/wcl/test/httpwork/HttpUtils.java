@@ -440,13 +440,17 @@ public class HttpUtils {
             final File downFile = new File(downPath);
             final File tempFile = new File(tempPath);
 
-            if (downFile.exists()) {
-                if (isNeedCache) {
+            if (isNeedCache) {
+                if (downFile.exists()) {
                     if (downloadCallback != null) {
                         downloadCallback.onSuccess(downPath);
                     }
-                    return downPath;
-                } else {
+                }
+            } else {
+                if (tempFile.exists()) {
+                    tempFile.delete();
+                }
+                if (downFile.exists()) {
                     downFile.delete();
                 }
             }
