@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.DeviceUtils;
-import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.FileUtils;
 
 import java.io.File;
@@ -598,19 +597,10 @@ public class HttpUtils {
     }
 
     /**
-     * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
-     *
-     * @param fileUrl  下载文件地址
-     */
-    public static String syncDownloadFile(final String fileUrl) {
-        return syncDownloadFile(fileUrl, false);
-    }
-
-    /**
      * 可以自定义下载路径的通用的同步下载文件的方法，返回文件下载成功之后的所在路径，支持断点续传
      *
-     * @param fileUrl     下载文件地址
-     * @param isNeedCache 是否需要缓存，如果true ，那么此文件同样地址只下载一次
+     * @param fileUrl     下载文件URL地址
+     * @param isNeedCache 是否需要缓存，如果true ，那么此文件如果已经下载，就不再重复下载
      */
     public static String syncDownloadFile(final String fileUrl, boolean isNeedCache) {
         if (BaseUtils.isUiThread()) {
@@ -618,6 +608,7 @@ public class HttpUtils {
         } else if (TextUtils.isEmpty(fileUrl)) {
             throw new RuntimeException("fileUrl is null");
         }
+
         try {
             final String downPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
             final String tempPath = downPath + ".temp";
@@ -633,28 +624,31 @@ public class HttpUtils {
                 }
             }
 
-            long downloadLength = 0;
-            long contentLength = getContentLength(fileUrl);
+            if (isFileDownloading(tempFile)) {
+                AppLogUtils.w(TAG, fileUrl + " is being downloaded, do not download it again");
+                return null;
+            }
 
+            long downloadLength = 0;
+            final long contentLength = getContentLength(fileUrl);
             if (tempFile.exists()) {
                 downloadLength = tempFile.length();
             }
-
             if (downloadLength == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
                     return downPath;
-                }else{
-                    if (tempFile.delete()){
+                } else {
+                    if (tempFile.delete()) {
                         downloadLength = 0;
                     }
                 }
             }
 
             Request.Builder builder = new Request.Builder().url(fileUrl).get();
-            RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rwd");
+            RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rws");
 
-            //跳过已经下载的字节
+            //跳过已经下载的字节，实现断点续传
             if (downloadLength > 0) {
                 savedFile.seek(downloadLength);
 
@@ -662,13 +656,13 @@ public class HttpUtils {
                 // 比如：Range:bytes=0-10000。这样我们就可以按照一定的规则，将一个大文件拆分为若干很小的部分，
                 // 然后分批次的下载，每个小块下载完成之后，再合并到文件中；这样即使下载中断了，重新下载时，
                 // 也可以通过文件的字节长度来判断下载的起始点，然后重启断点续传的过程，直到最后完成下载过程。
-                if (contentLength > downloadLength){
+                if (contentLength > downloadLength) {
                     builder.addHeader("RANGE", "bytes=" + downloadLength + "-" + contentLength);
                 }
             }
-            Request request = builder.build();
 
             //开始启动下载
+            Request request = builder.build();
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
                 response.body().close();
@@ -689,13 +683,13 @@ public class HttpUtils {
             if (tempFile.exists()) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    Log.d("tag_2", "下载成功downPath=" + downPath);
                     return downPath;
                 }
             }
 
         } catch (Throwable t) {
             t.printStackTrace();
+            AppLogUtils.w(TAG, "download failed:" + t);
         }
         return null;
     }
@@ -716,6 +710,22 @@ public class HttpUtils {
             t.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * 判断文件是否下载中
+     */
+    private static boolean isFileDownloading(File tempFile) {
+        boolean isDownloading = false;
+        if (tempFile != null && tempFile.exists()) {
+            long lastModified = tempFile.lastModified();
+            long current = System.currentTimeMillis();
+            //如果3秒内文件有被更改，那么证明正在下载中
+            if (current - lastModified <= 3 * 1000) {
+                isDownloading = true;
+            }
+        }
+        return isDownloading;
     }
 
     /**
@@ -766,15 +776,9 @@ public class HttpUtils {
      * 根据下载文件地址得到文件的后缀名
      */
     private static String getSuffixNameByHttpUrl(final String url) {
-        String tempUrl = url;
-        int index = url.indexOf("?");
-        if (index > 0 && index < url.length()) {
-            tempUrl = url.substring(index);
-        }
-
-        index = tempUrl.lastIndexOf(".");
-        if (index > 0 && index < tempUrl.length()) {
-            return tempUrl.substring(index);
+        int index = url.lastIndexOf(".");
+        if (index > 0) {
+            return url.substring(index);
         }
         return "";
     }
