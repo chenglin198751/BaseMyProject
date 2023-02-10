@@ -16,13 +16,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -415,19 +413,7 @@ public class HttpUtils {
     }
 
     /**
-     * 默认下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
-     * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
-     *
-     * @param fileUrl          下载文件地址
-     * @param downloadCallback 下载的回调监听
-     */
-    public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
-        downloadFile(fileUrl, null, false, downloadCallback);
-    }
-
-
-    /**
-     * 默认下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
+     * 可以自定义下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
      * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
      *
      * @param fileUrl          下载文件地址
@@ -435,19 +421,6 @@ public class HttpUtils {
      * @param downloadCallback 下载的回调监听
      */
     public static void downloadFile(final String fileUrl, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
-        downloadFile(fileUrl, null, isNeedCache, downloadCallback);
-    }
-
-    /**
-     * 可以自定义下载路径的通用的异步下载文件的方法，返回文件下载成功之后的所在路径，不支持断点续传
-     * 注意：不建议在 Activity 里开启下载，因为很容易造成内存泄漏，建议放到 service 或者 intentService 里面
-     *
-     * @param fileUrl          下载文件地址
-     * @param downPath         自定义文件下载路径
-     * @param isNeedCache      是否需要缓存，如果true ，那么此文件同样地址只下载一次
-     * @param downloadCallback 下载的回调监听
-     */
-    public static void downloadFile(final String fileUrl, final String downPath, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
         if (downloadCallback == null) {
             throw new NullPointerException("HttpDownloadCallback 不能为空");
         } else if (TextUtils.isEmpty(fileUrl)) {
@@ -458,22 +431,7 @@ public class HttpUtils {
             return;
         }
 
-        if (!TextUtils.isEmpty(downPath)) {
-            File file = new File(downPath);
-            if (!file.exists()) {
-                File parent = file.getParentFile();
-                if (!parent.exists()) {
-                    parent.mkdirs();
-                }
-                if (!parent.exists()) {
-                    downloadCallback.onFailure(new IOException("文件目录不存在"));
-                    return;
-                }
-            }
-        }
-
-        final String defaultPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
-        final String downLoadFilePath = TextUtils.isEmpty(downPath) ? defaultPath : downPath;
+        final String downLoadFilePath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
         final String tempPath = downLoadFilePath + ".temp";
 
         //防止下载时中断导致下载文件不全,但被使用了
