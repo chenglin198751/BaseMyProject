@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.wcl.test.EnvToggle;
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.utils.DeviceUtils;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -70,30 +72,29 @@ public class HttpUtils {
     private final static String TAG = "HttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
-    private static final String HTTP_CACHE_PATH = FileUtils.getExternalPath() + "/httpCache";
     private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + "/download";
+    private static final OkHttpClient.Builder builder;
+    public static final OkHttpClient client;
 
     static {
-        File cacheDir = new File(HTTP_CACHE_PATH);
-        if (!cacheDir.exists()) {
-            cacheDir.mkdirs();
-        }
-
         File downloadDir = new File(HTTP_DOWNLOAD_PATH);
         if (!downloadDir.exists()) {
             downloadDir.mkdirs();
         }
+
+        builder = new OkHttpClient
+                .Builder()
+                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .addInterceptor(new RetryInterceptor(1));
+
+        if (!EnvToggle.isDebug()) {
+            //禁用抓包工具抓包
+            builder.proxy(Proxy.NO_PROXY);
+        }
+        client = builder.build();
     }
-
-    private static final OkHttpClient.Builder builder = new OkHttpClient.Builder()
-            .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
-            .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
-            .readTimeout(TIME_OUT, TimeUnit.SECONDS)
-            .addInterceptor(new RetryInterceptor(1))
-//            .proxy(Proxy.NO_PROXY) //禁用抓包工具抓包
-            .cache(new Cache(new File(HTTP_CACHE_PATH), 150 * 1024 * 1024));
-    public static final OkHttpClient client = builder.build();
-
 
     private HttpUtils() {
     }
