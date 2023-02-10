@@ -177,7 +177,7 @@ public class HttpUtils {
                     return;
                 }
 
-                if (response.code() != HttpURLConnection.HTTP_OK) {
+                if (!response.isSuccessful()) {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
@@ -192,7 +192,7 @@ public class HttpUtils {
                 if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
                     tempStr = tempStr.substring(1);
                 }
-
+                response.body().close();
                 final String result = tempStr;
 
                 if (context instanceof Activity) {
@@ -292,12 +292,13 @@ public class HttpUtils {
 
         try {
             Response response = client.newCall(request).execute();
-            if (response.code() == HttpURLConnection.HTTP_OK) {
+            if (response.isSuccessful()) {
                 //有时服务端返回json带了bom头，会导致解析生效
                 String tempStr = response.body().string();
                 if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
                     tempStr = tempStr.substring(1);
                 }
+                response.body().close();
                 return tempStr;
             } else {
                 return null;
@@ -341,12 +342,13 @@ public class HttpUtils {
 
         try {
             Response response = client.newCall(request).execute();
-            if (response.code() == HttpURLConnection.HTTP_OK) {
+            if (response.isSuccessful()) {
                 //有时服务端返回json带了bom头，会导致解析生效
                 String tempStr = response.body().string();
                 if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
                     tempStr = tempStr.substring(1);
                 }
+                response.body().close();
                 return tempStr;
             } else {
                 return null;
@@ -512,7 +514,7 @@ public class HttpUtils {
 
             @Override
             public void onResponse(final Call call, final Response response) {
-                if (response.code() != HttpURLConnection.HTTP_OK) {
+                if (!response.isSuccessful()) {
                     BaseUtils.getHandler().post(new Runnable() {
                         @Override
                         public void run() {
