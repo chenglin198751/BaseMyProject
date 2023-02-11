@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import com.wcl.test.listener.OnFinishedListener;
-import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.BitmapUtils;
 
 
 /**
@@ -55,7 +53,7 @@ public class FastBlurUtil2 {
             public void run() {
                 super.run();
                 final Bitmap bitmap = doBlur(sentBitmap, scale, radius);
-                BaseUtils.getHandler().post(new Runnable() {
+                BaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         if (listener != null) {

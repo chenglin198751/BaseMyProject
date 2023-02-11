@@ -158,7 +158,7 @@ public class HttpUtils {
                         });
                     }
                 } else {
-                    BaseUtils.getHandler().post(new Runnable() {
+                    BaseUtils.getUiHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             httpCallback.onResponse(false, e.toString());
@@ -174,7 +174,7 @@ public class HttpUtils {
                 }
 
                 if (!response.isSuccessful()) {
-                    BaseUtils.getHandler().post(new Runnable() {
+                    BaseUtils.getUiHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             httpCallback.onResponse(false, response.toString());
@@ -605,7 +605,7 @@ public class HttpUtils {
     private static class HttpDownloadCallback2 {
         public static void onSuccess(HttpDownloadCallback downloadCallback, String filePath) {
             if (downloadCallback != null) {
-                BaseUtils.getHandler().post(new Runnable() {
+                BaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         downloadCallback.onSuccess(filePath);
@@ -616,7 +616,7 @@ public class HttpUtils {
 
         public static void onProgress(HttpDownloadCallback downloadCallback, long fileTotalSize, long fileDowningSize, float percent) {
             if (downloadCallback != null) {
-                BaseUtils.getHandler().post(new Runnable() {
+                BaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         downloadCallback.onProgress(fileTotalSize, fileDowningSize, percent);
@@ -627,7 +627,7 @@ public class HttpUtils {
 
         public static void onFailure(HttpDownloadCallback downloadCallback, Exception e) {
             if (downloadCallback != null) {
-                BaseUtils.getHandler().post(new Runnable() {
+                BaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         downloadCallback.onFailure(e);
@@ -720,7 +720,7 @@ public class HttpUtils {
     }
 
     private static void handleHttpSuccessOnUiThread(final HttpCallback httpCallback, final String result) {
-        BaseUtils.getHandler().post(new Runnable() {
+        BaseUtils.getUiHandler().post(new Runnable() {
             @Override
             public void run() {
                 httpCallback.onResponse(true, result);
