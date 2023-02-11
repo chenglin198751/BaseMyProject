@@ -521,22 +521,24 @@ public class HttpUtils {
                 savedFile.write(buffer, 0, len);
 
                 //计算下载进度
-                sum += len;
-                int progress = (int) (sum * 1.0f / contentLength * 100f);
-                if (lastProgress != progress) {
-                    lastProgress = progress;
-                    final long tempSum = sum;
+                if (downloadCallback != null) {
+                    sum += len;
+                    int progress = (int) (sum * 1.0f / contentLength * 100f);
+                    if (lastProgress != progress) {
+                        lastProgress = progress;
+                        final long tempSum = sum;
 
-                    if (System.currentTimeMillis() - timeStamp > 1000L) {
-                        timeStamp = System.currentTimeMillis();
-                        BaseUtils.getHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                float progress = (tempSum * 1f / contentLength);
-                                progress = BaseUtils.formatFloat(progress, 2);
-                                downloadCallback.onProgress(contentLength, tempSum, progress);
-                            }
-                        });
+                        if (System.currentTimeMillis() - timeStamp > 1000L) {
+                            timeStamp = System.currentTimeMillis();
+                            BaseUtils.getHandler().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    float progress = (tempSum * 1f / contentLength);
+                                    progress = BaseUtils.formatFloat(progress, 2);
+                                    downloadCallback.onProgress(contentLength, tempSum, progress);
+                                }
+                            });
+                        }
                     }
                 }
 
