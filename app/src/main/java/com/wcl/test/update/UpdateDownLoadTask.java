@@ -12,10 +12,6 @@ import com.wcl.test.utils.ApkInstaller;
 import com.wcl.test.utils.BaseUtils;
 import com.wcl.test.widget.ToastUtils;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-
 public class UpdateDownLoadTask {
     private static final int DOWN_NOTIFY_ID = 0;
     private boolean isDownLoading = false;
@@ -103,7 +99,7 @@ public class UpdateDownLoadTask {
      * 突然断网，取消下载进度
      */
     public void suddenBreadNet() {
-        BaseUtils.getHandler().post(new Runnable() {
+        BaseUtils.getUiHandler().post(new Runnable() {
             @Override
             public void run() {
                 cancelNotify();

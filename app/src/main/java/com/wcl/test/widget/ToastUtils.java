@@ -28,7 +28,7 @@ public class ToastUtils {
         if (BaseUtils.isUiThread()) {
             showToast(text);
         } else {
-            BaseUtils.getHandler().post(new Runnable() {
+            BaseUtils.getUiHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     showToast(text);

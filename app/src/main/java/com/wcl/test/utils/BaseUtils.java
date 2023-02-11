@@ -234,7 +234,7 @@ public class BaseUtils {
     /**
      * 创建一个全局Handler，可以用来执行一些post任务等
      */
-    public static Handler getHandler() {
+    public static Handler getUiHandler() {
         return MHandlerHolder.mHandler;
     }
 

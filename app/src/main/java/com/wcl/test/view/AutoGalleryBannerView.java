@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -127,7 +126,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
         mTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (!isFinish) {
-                    BaseUtils.getHandler().post(runnable);
+                    BaseUtils.getUiHandler().post(runnable);
                 } else {
                     cancel();
                     mTimer.cancel();
