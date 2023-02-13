@@ -537,6 +537,13 @@ public class HttpUtils {
             }
         }
 
+        if (isFileDownloading(fileUrl)) {
+            String error = fileUrl + " is being downloaded, do not download it again";
+            AppLogUtils.w(TAG, error);
+            downloadCallback.onFailure(new Exception(error));
+            return;
+        }
+
         new Thread() {
             @Override
             public void run() {
