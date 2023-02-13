@@ -54,10 +54,6 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <activity
-            android:name="com.wcl.test.photo.SelectPhotosActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.wcl.test.test.TestRecyclerViewRefreshActivity"
             android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
             android:screenOrientation="portrait" />
