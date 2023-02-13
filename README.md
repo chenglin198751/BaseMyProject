@@ -80,23 +80,36 @@
 
     基于腾讯X5浏览器内核封装的统一 WebViewActivity ，性能卓越。具体介绍可以去看X5内核。
 
-**17、EasyCache 类**：一个基于文件的存储工具，可以很方便的存储很长的字符串，且效率很高。如果大家想做缓存，建议用这个。
+**17、EasyCache 类：**
 
-**18、PopupWindowUtils 类**：我封装的可以在任意View 下方弹出popupWindows 的工具。使用很方便。
+    一个基于文件的存储工具，可以很方便的存储很长的字符串，且效率很高。如果想做缓存，建议用这个。
 
-**19、SDCardUtils 类**：我封装的获取SD 卡存储路径的工具类，统一操作存储路径，不能随便在SD卡建立文件夹而影响用户体验。
+**18、PopupWindowUtils 类：**
 
-**20、Constants 类**：公共常量类，存放了屏幕分辨率，全局gson 之类的，可以根据需要继续添加。
+    封装的可以在任意View 下方弹出popupWindows 的工具。使用很方便。
 
-**21、MyUriUtils 类**：用schema 方式开发时的统一管理类，如果不用schema开发，就可以不用管这个。
+**19、FileUtils 类：**
 
-**22、UserManager 类**：用户信息管理类，如果牵涉到用户登录之类的，要用这个类来管理，方便别人使用。
+    获取存储路径的工具类，由于获取的是内部的存储路径，所以不需要存储权限。
 
-**23、FastBlurUtil 类**：我改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。
+**20、AppConstants 类：**
 
-      github上的两种实现：
-      1、https://github.com/CameraKit/blurkit-android
-      2、https://github.com/wasabeef/Blurry
+    公共常量类，存放了屏幕分辨率，全局gson 之类的，可以根据需要继续添加。
+
+**21、MyUriUtils 类：**
+
+    用schema 方式开发时的统一管理类，如果不用schema开发，就可以不用管这个。
+
+**22、UserManager 类：**
+
+    用户信息管理类，如果牵涉到用户登录之类的，要用这个类来管理，方便别人使用。
+
+**23、FastBlurUtil,FastBlurUtil2 类：**
+
+    我改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。建议使用FastBlurUtil。
+    github上的两种实现：
+    1、https://github.com/CameraKit/blurkit-android
+    2、https://github.com/wasabeef/Blurry
 
 **24、OnFinishListener 类** ：我自己定义的一个接口，可以作为一个万能回调使用。别的地方任何如果只是临时性的回调，可以用它来做，不需要再写个回调接口了。
 
