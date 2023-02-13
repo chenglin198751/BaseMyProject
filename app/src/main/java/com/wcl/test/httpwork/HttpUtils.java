@@ -52,7 +52,7 @@ public class HttpUtils {
     }
 
     public interface HttpDownloadCallback {
-        void onFinished(boolean isSuccess, String filePath, Exception e);
+        void onFinished(boolean isSuccessful, String filePath, Exception e);
 
         //fileTotalSize  文件总大小
         //fileDowningSize  文件已经下载的大小
