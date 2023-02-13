@@ -86,7 +86,7 @@ public class LongImageView extends WebView {
 
         HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback() {
             @Override
-            public void onSuccess(boolean isSuccess, String filePath, Exception e) {
+            public void onFinished(boolean isSuccess, String filePath, Exception e) {
                 if (isFinish()) {
                     return;
                 }
@@ -95,7 +95,7 @@ public class LongImageView extends WebView {
                     load(new File(filePath), showWidth);
                 }
                 if (httpCallback != null) {
-                    httpCallback.onSuccess(isSuccess, filePath, e);
+                    httpCallback.onFinished(isSuccess, filePath, e);
                 }
             }
 
