@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 
 
 public class BaseViewHelper {
@@ -63,7 +63,7 @@ public class BaseViewHelper {
 
         if (mStyle == TOP_STYLE) {
             mLoadingLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-            mLoadingLinear.setPadding(0, BaseUtils.dip2px(30f), 0, 0);
+            mLoadingLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {
             mLoadingLinear.setGravity(Gravity.CENTER);
             mLoadingLinear.setPadding(0, 0, 0, 0);
@@ -84,7 +84,7 @@ public class BaseViewHelper {
 
         if (mStyle == TOP_STYLE) {
             mEmptyLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-            mEmptyLinear.setPadding(0, BaseUtils.dip2px(30f), 0, 0);
+            mEmptyLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {
             mEmptyLinear.setGravity(Gravity.CENTER);
             mEmptyLinear.setPadding(0, 0, 0, 0);
@@ -110,7 +110,7 @@ public class BaseViewHelper {
 
         if (mStyle == TOP_STYLE) {
             mNoNetLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-            mNoNetLinear.setPadding(0, BaseUtils.dip2px(30f), 0, 0);
+            mNoNetLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {
             mNoNetLinear.setGravity(Gravity.CENTER);
             mNoNetLinear.setPadding(0, 0, 0, 0);

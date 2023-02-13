@@ -18,7 +18,7 @@ import java.util.List;
 
 import com.wcl.test.R;
 import com.wcl.test.preferences.PreferAppSettings;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 
 /**
  * weichenglin create in 16/4/11
@@ -264,7 +264,7 @@ public class SelectPhotosHelper {
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int padding = BaseUtils.dip2px(1);
+            int padding = AppBaseUtils.dip2px(1);
             outRect.right = padding;
             outRect.top = padding;
             outRect.bottom = 0;

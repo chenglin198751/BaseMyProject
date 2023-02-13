@@ -51,7 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.CRC32;
 
-public class BaseUtils {
+public class AppBaseUtils {
     private static String mVerCode = null;
     private static String mVerName = null;
     private static int mStatusBarHeight = 0;

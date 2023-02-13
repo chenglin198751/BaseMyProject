@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.List;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.SmartImageLoader;
 
 /**
@@ -64,7 +64,7 @@ public class PhotoListAdapter extends BaseAdapter {
         PhotoAlbum photoItem = mPhotoAlbums.get(position);
 
         if (photoItem != null && !TextUtils.isEmpty(photoItem.getPath())) {
-            int width = BaseUtils.dip2px(100);
+            int width = AppBaseUtils.dip2px(100);
             SmartImageLoader.load(holder.mImageView, new File(photoItem.getPath()), width, width, 0);
 
         }

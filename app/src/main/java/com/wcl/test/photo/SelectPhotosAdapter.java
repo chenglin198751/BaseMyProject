@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseAction;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.utils.FileUtils;
@@ -130,7 +130,7 @@ public class SelectPhotosAdapter extends RecyclerView.Adapter<SelectPhotosAdapte
             viewHolder.photoImg.setTag(R.id.publish_picture_id, position);
             viewHolder.photoImg.setOnClickListener(imgClickListener);
 
-            int width = BaseUtils.dip2px(100f);
+            int width = AppBaseUtils.dip2px(100f);
             SmartImageLoader.load(viewHolder.photoImg, new File(photoItem.getPath()), width, width, 0);
 
             if (!mActivity.isSingleType) {

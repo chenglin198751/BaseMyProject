@@ -9,7 +9,7 @@ import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;
 import com.wcl.test.httpwork.HttpUtils;
 import com.wcl.test.utils.ApkInstaller;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.widget.ToastUtils;
 
 public class UpdateDownLoadTask {
@@ -98,7 +98,7 @@ public class UpdateDownLoadTask {
      * 突然断网，取消下载进度
      */
     public void suddenBreadNet() {
-        BaseUtils.getUiHandler().post(new Runnable() {
+        AppBaseUtils.getUiHandler().post(new Runnable() {
             @Override
             public void run() {
                 cancelNotify();
@@ -108,7 +108,7 @@ public class UpdateDownLoadTask {
     }
 
     public static boolean apkExist(Context context, String versionName, String apk_path) {
-        ApkItem apkItem = BaseUtils.getApkInfo(context, apk_path);
+        ApkItem apkItem = AppBaseUtils.getApkInfo(context, apk_path);
 
         if (apkItem == null) {
             return false;

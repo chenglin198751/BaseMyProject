@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.ImageLoaderBuilder;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.utils.PhotosSelectedUtil;
@@ -55,8 +55,8 @@ public class TestSelectedPhotoActivity extends BaseActivity {
 
                 ImageLoaderBuilder builder = new ImageLoaderBuilder();
                 builder.setUri(path);
-                builder.setImageWidth(BaseUtils.dip2px(400));
-                builder.setImageHeight(BaseUtils.dip2px(400));
+                builder.setImageWidth(AppBaseUtils.dip2px(400));
+                builder.setImageHeight(AppBaseUtils.dip2px(400));
                 builder.setScaleType(ImageLoaderBuilder.CENTER_INSIDE);
                 SmartImageLoader.load(image,builder);
             } else {

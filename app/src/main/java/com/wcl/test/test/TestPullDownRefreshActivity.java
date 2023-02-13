@@ -19,7 +19,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseListViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
@@ -149,7 +149,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             TextView title = (TextView) convertView.findViewById(R.id.title);
             ImageView webImageView = convertView.findViewById(R.id.image_view);
             title.setText("标题 - " + position);
-            SmartImageLoader.load(webImageView, imagesList.get(position), BaseUtils.dip2px(100f), BaseUtils.dip2px(100f), 0);
+            SmartImageLoader.load(webImageView, imagesList.get(position), AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(100f), 0);
 
             return convertView;
         }
