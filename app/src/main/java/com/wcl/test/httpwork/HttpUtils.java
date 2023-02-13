@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.wcl.test.EnvToggle;
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.BaseUtils;
@@ -140,7 +142,7 @@ public class HttpUtils {
 
         return new okhttp3.Callback() {
             @Override
-            public void onFailure(Call call, final IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull final IOException e) {
                 if (context == null) {
                     return;
                 }
@@ -149,40 +151,25 @@ public class HttpUtils {
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                httpCallback.onResponse(false, e.toString());
-                            }
-                        });
+                        HttpCallback2.onResponse(httpCallback, false, e.toString());
                     }
                 } else {
-                    BaseUtils.getUiHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            httpCallback.onResponse(false, e.toString());
-                        }
-                    });
+                    HttpCallback2.onResponse(httpCallback, false, e.toString());
                 }
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
                 if (context == null) {
                     return;
                 }
 
                 if (!response.isSuccessful()) {
-                    BaseUtils.getUiHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            httpCallback.onResponse(false, response.toString());
-                        }
-                    });
+                    HttpCallback2.onResponse(httpCallback, false, response.toString());
                     return;
                 }
 
-                //有时服务端返回json带了bom头，会导致解析生效
+                //有时服务端返回json带了bom头，会导致解析异常
                 String tempStr = response.body().string();
                 if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
                     tempStr = tempStr.substring(1);
@@ -193,10 +180,10 @@ public class HttpUtils {
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
-                        handleHttpSuccessOnUiThread(httpCallback, result);
+                        HttpCallback2.onResponse(httpCallback, true, result);
                     }
                 } else {
-                    handleHttpSuccessOnUiThread(httpCallback, result);
+                    HttpCallback2.onResponse(httpCallback, true, result);
                 }
             }
         };
@@ -274,7 +261,7 @@ public class HttpUtils {
         try {
             Response response = mOkHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
-                //有时服务端返回json带了bom头，会导致解析生效
+                //有时服务端返回json带了bom头，会导致解析异常
                 String tempStr = response.body().string();
                 if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
                     tempStr = tempStr.substring(1);
@@ -317,7 +304,7 @@ public class HttpUtils {
         try {
             Response response = mOkHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
-                //有时服务端返回json带了bom头，会导致解析生效
+                //有时服务端返回json带了bom头，会导致解析异常
                 String tempStr = response.body().string();
                 if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
                     tempStr = tempStr.substring(1);
@@ -687,11 +674,15 @@ public class HttpUtils {
         return downPath;
     }
 
-    private static void handleHttpSuccessOnUiThread(final HttpCallback httpCallback, final String result) {
-        BaseUtils.getUiHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                httpCallback.onResponse(true, result);
+    public static class HttpCallback2 {
+        public static void onResponse(final HttpCallback httpCallback, boolean isSuccessful, String result) {
+            BaseUtils.getUiHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    httpCallback.onResponse(true, result);
+                }
+            });
+
 
 //                //这里try catch的唯一目的就是防止在回调结果时，json解析错误、之类的crash没处理。
 //                //如果你觉得回调结果的crash不要try，要直接暴露，你可以注释调我这里的try catch
@@ -701,8 +692,7 @@ public class HttpUtils {
 //                    e.printStackTrace();
 //                    httpCallback.onResponse(false, e.toString());
 //                }
-            }
-        });
+        }
     }
 
 }
