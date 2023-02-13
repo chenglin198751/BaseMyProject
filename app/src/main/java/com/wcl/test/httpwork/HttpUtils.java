@@ -175,6 +175,7 @@ public class HttpUtils {
                     tempStr = tempStr.substring(1);
                 }
                 response.body().close();
+                response.close();
                 final String result = tempStr;
 
                 if (context instanceof Activity) {
@@ -267,6 +268,7 @@ public class HttpUtils {
                     tempStr = tempStr.substring(1);
                 }
                 response.body().close();
+                response.close();
                 return tempStr;
             } else {
                 return null;
@@ -296,7 +298,8 @@ public class HttpUtils {
         }
 
         RequestBody body = FormBuilder.build();
-        Request.Builder requestBuilder = new Request.Builder()
+        Request.Builder requestBuilder = new Request
+                .Builder()
                 .url(url)
                 .post(body);
         Request request = requestBuilder.build();
@@ -310,6 +313,7 @@ public class HttpUtils {
                     tempStr = tempStr.substring(1);
                 }
                 response.body().close();
+                response.close();
                 return tempStr;
             } else {
                 return null;
@@ -454,6 +458,7 @@ public class HttpUtils {
             if (!response.isSuccessful()) {
                 HttpDownloadCallback2.onFailure(downloadCallback, new Exception(response.message()));
                 response.body().close();
+                response.close();
                 return null;
             }
 
@@ -485,6 +490,7 @@ public class HttpUtils {
             inputStream.close();
             savedFile.close();
             response.body().close();
+            response.close();
 
             //下载完成后把.temp的文件重命名为原文件
             if (tempFile.exists()) {
@@ -564,6 +570,7 @@ public class HttpUtils {
             if (response.isSuccessful()) {
                 long contentLength = response.body().contentLength();
                 response.body().close();
+                response.close();
                 return contentLength;
             }
         } catch (Throwable t) {
