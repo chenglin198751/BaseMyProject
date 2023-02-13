@@ -8,12 +8,10 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.wcl.test.httpwork.HttpUtils;
-import okhttp3.Call;
 import com.wcl.test.utils.BitmapUtils;
+
+import java.io.File;
 
 /**
  * Created by chenglin on 2018-1-20.
@@ -86,15 +84,18 @@ public class LongImageView extends WebView {
             return;
         }
 
-        HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback()  {
+        HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback() {
             @Override
-            public void onSuccess(String filePath) {
+            public void onSuccess(boolean isSuccess, String filePath, Exception e) {
                 if (isFinish()) {
                     return;
                 }
-                load(new File(filePath), showWidth);
+
+                if (isSuccess) {
+                    load(new File(filePath), showWidth);
+                }
                 if (httpCallback != null) {
-                    httpCallback.onSuccess(filePath);
+                    httpCallback.onSuccess(isSuccess, filePath, e);
                 }
             }
 
@@ -102,13 +103,6 @@ public class LongImageView extends WebView {
             public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
                 if (httpCallback != null) {
                     httpCallback.onProgress(fileTotalSize, fileDowningSize, percent);
-                }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                if (httpCallback != null) {
-                    httpCallback.onFailure(e);
                 }
             }
         });
