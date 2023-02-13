@@ -10,7 +10,7 @@ import com.google.android.flexbox.FlexboxLayout;
 
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.R;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 
 public class TestFlexBoxActivity extends BaseActivity {
     //例子：https://mp.weixin.qq.com/s/D0sCoIt7Gsms5JK9ZIhuhw
@@ -32,10 +32,10 @@ public class TestFlexBoxActivity extends BaseActivity {
 
         for (int i = 0; i < strArrs.length; i++) {
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(-2, -2);
-            params.leftMargin = BaseUtils.dip2px(1f);
-            params.rightMargin = BaseUtils.dip2px(1f);
-            params.topMargin = BaseUtils.dip2px(1f);
-            params.bottomMargin = BaseUtils.dip2px(1f);
+            params.leftMargin = AppBaseUtils.dip2px(1f);
+            params.rightMargin = AppBaseUtils.dip2px(1f);
+            params.topMargin = AppBaseUtils.dip2px(1f);
+            params.bottomMargin = AppBaseUtils.dip2px(1f);
             mFlexboxLayout.addView(buildTextView(strArrs[i]), params);
         }
 

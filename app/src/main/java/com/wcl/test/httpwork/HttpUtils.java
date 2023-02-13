@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.wcl.test.EnvToggle;
 import com.wcl.test.utils.AppLogUtils;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.DeviceUtils;
 import com.wcl.test.utils.FileUtils;
 
@@ -382,7 +382,7 @@ public class HttpUtils {
     }
 
     private static String syncDownloadFile(final String fileUrl, boolean isNeedCache, final HttpDownloadCallback downloadCallback) {
-        if (BaseUtils.isUiThread()) {
+        if (AppBaseUtils.isUiThread()) {
             throw new RuntimeException("Synchronized download file cannot be in UI thread");
         } else if (TextUtils.isEmpty(fileUrl)) {
             throw new NullPointerException("fileUrl is null");
@@ -479,7 +479,7 @@ public class HttpUtils {
                         if (System.currentTimeMillis() - timeStamp > 1000L) {
                             timeStamp = System.currentTimeMillis();
                             float progress2 = (sum * 1f / contentLength);
-                            progress2 = BaseUtils.formatFloat(progress2, 2);
+                            progress2 = AppBaseUtils.formatFloat(progress2, 2);
                             HttpDownloadCallback2.onProgress(downloadCallback, contentLength, sum, progress2);
                         }
                     }
@@ -580,7 +580,7 @@ public class HttpUtils {
     private static class HttpDownloadCallback2 {
         public static void onFinished(HttpDownloadCallback downloadCallback, String filePath) {
             if (downloadCallback != null) {
-                BaseUtils.getUiHandler().post(new Runnable() {
+                AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         downloadCallback.onFinished(true, filePath, null);
@@ -591,7 +591,7 @@ public class HttpUtils {
 
         public static void onProgress(HttpDownloadCallback downloadCallback, long fileTotalSize, long fileDowningSize, float percent) {
             if (downloadCallback != null) {
-                BaseUtils.getUiHandler().post(new Runnable() {
+                AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         downloadCallback.onProgress(fileTotalSize, fileDowningSize, percent);
@@ -602,7 +602,7 @@ public class HttpUtils {
 
         public static void onFailure(HttpDownloadCallback downloadCallback, Exception e) {
             if (downloadCallback != null) {
-                BaseUtils.getUiHandler().post(new Runnable() {
+                AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         downloadCallback.onFinished(false, null, e);
@@ -640,11 +640,11 @@ public class HttpUtils {
         params.put("brand", Build.BRAND);
         params.put("sdkVer", Build.VERSION.SDK_INT);
         params.put("sdkVerName", Build.VERSION.RELEASE);
-        params.put("appVer", BaseUtils.getVerCode());
-        params.put("appVerName", BaseUtils.getVerName());
+        params.put("appVer", AppBaseUtils.getVerCode());
+        params.put("appVerName", AppBaseUtils.getVerName());
         params.put("phone", "android");
-        params.put("channel", BaseUtils.getChannel());
-        params.put("packageName", BaseUtils.getPackageName());
+        params.put("channel", AppBaseUtils.getChannel());
+        params.put("packageName", AppBaseUtils.getPackageName());
     }
 
     /**
@@ -690,13 +690,13 @@ public class HttpUtils {
      * 根据下载文件URL得到文件的下载路径
      */
     public static String getDownLoadFilePath(String fileUrl) {
-        final String downPath = HTTP_DOWNLOAD_PATH + File.separator + BaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
+        final String downPath = HTTP_DOWNLOAD_PATH + File.separator + AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
         return downPath;
     }
 
     public static class HttpCallback2 {
         public static void onResponse(final HttpCallback httpCallback, boolean isSuccessful, String result) {
-            BaseUtils.getUiHandler().post(new Runnable() {
+            AppBaseUtils.getUiHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     httpCallback.onResponse(true, result);

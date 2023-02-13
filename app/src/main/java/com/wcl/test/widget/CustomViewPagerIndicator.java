@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 
 /**
  * Created by chenglin on 2017-2-21.
@@ -18,8 +18,8 @@ public class CustomViewPagerIndicator extends LinearLayout {
     private int mDotCount;
     private ViewPager mViewPager;
     private int mDotSelector = R.drawable.viewpage_dot_selector;
-    private int mSize = BaseUtils.dip2px(8f);
-    private int mMargin = BaseUtils.dip2px(5f);
+    private int mSize = AppBaseUtils.dip2px(8f);
+    private int mMargin = AppBaseUtils.dip2px(5f);
 
     public CustomViewPagerIndicator(Context context) {
         super(context);

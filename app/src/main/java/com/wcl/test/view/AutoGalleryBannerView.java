@@ -29,7 +29,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.SmartImageLoader;
 
 public class AutoGalleryBannerView extends RelativeLayout implements DefaultLifecycleObserver {
@@ -55,21 +55,21 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
     }
 
     private void init() {
-        FragmentActivity activity = (FragmentActivity) BaseUtils.getActivityFromContext(getContext());
+        FragmentActivity activity = (FragmentActivity) AppBaseUtils.getActivityFromContext(getContext());
         if (activity != null){
             activity.getLifecycle().addObserver(this);
         }
 
         AutoGalleryBannerView.this.setClipChildren(false);
         mViewPager = new ViewPager(getContext());
-        mViewPager.setPageMargin(-BaseUtils.dip2px(24f));
+        mViewPager.setPageMargin(-AppBaseUtils.dip2px(24f));
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.setPageTransformer(false, new ScaleTransformer());
 
         mViewPager.setClipChildren(false);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -2);
-        params.leftMargin = BaseUtils.dip2px(20f);
-        params.rightMargin = BaseUtils.dip2px(20f);
+        params.leftMargin = AppBaseUtils.dip2px(20f);
+        params.rightMargin = AppBaseUtils.dip2px(20f);
         addView(mViewPager, params);
 
         mAdapter = new BannerAdapter(getContext());
@@ -126,7 +126,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
         mTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (!isFinish) {
-                    BaseUtils.getUiHandler().post(runnable);
+                    AppBaseUtils.getUiHandler().post(runnable);
                 } else {
                     cancel();
                     mTimer.cancel();

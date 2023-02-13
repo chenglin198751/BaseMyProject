@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.base.BaseRecyclerViewHolder;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.SmartImageLoader;
 
 public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
@@ -50,7 +50,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
         @Override
         public void onBind(int position) {
-            SmartImageLoader.load(imageView, url, BaseUtils.dip2px(50f), BaseUtils.dip2px(50f), 15);
+            SmartImageLoader.load(imageView, url, AppBaseUtils.dip2px(50f), AppBaseUtils.dip2px(50f), 15);
             title.setText("标题 " + getData().get(position));
         }
 

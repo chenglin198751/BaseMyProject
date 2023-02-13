@@ -53,7 +53,7 @@ public class FastBlurUtil2 {
             public void run() {
                 super.run();
                 final Bitmap bitmap = doBlur(sentBitmap, scale, radius);
-                BaseUtils.getUiHandler().post(new Runnable() {
+                AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         if (listener != null) {
