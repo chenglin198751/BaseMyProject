@@ -52,14 +52,12 @@ public class HttpUtils {
     }
 
     public interface HttpDownloadCallback {
-        void onSuccess(String filePath);
+        void onSuccess(boolean isSuccess, String filePath, Exception e);
 
         //fileTotalSize  文件总大小
         //fileDowningSize  文件已经下载的大小
         //percent  文件下载的进度百分比
         void onProgress(long fileTotalSize, long fileDowningSize, float percent);
-
-        void onFailure(Exception e);
     }
 
     //用于扩展一些网络功能，比如写入header,写入cookies等操作
@@ -497,7 +495,7 @@ public class HttpUtils {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
                     if (downloadCallback != null) {
-                        downloadCallback.onSuccess(downPath);
+                        downloadCallback.onSuccess(true, downPath, null);
                     }
                     return downPath;
                 }
@@ -507,12 +505,12 @@ public class HttpUtils {
             String error = t.toString();
             AppLogUtils.w(TAG, "download failed:" + error);
             if (downloadCallback != null) {
-                downloadCallback.onFailure(new Exception(error));
+                downloadCallback.onSuccess(false, null, new Exception(error));
             }
         }
 
         if (downloadCallback != null) {
-            downloadCallback.onFailure(new Exception("download failed:unknown"));
+            downloadCallback.onSuccess(false, null, new Exception("download failed:unknown"));
         }
         return null;
     }
@@ -528,17 +526,17 @@ public class HttpUtils {
         if (downloadCallback == null) {
             throw new NullPointerException("HttpDownloadCallback 不能为空");
         } else if (TextUtils.isEmpty(fileUrl)) {
-            downloadCallback.onFailure(new NullPointerException("下载URL不能为空"));
+            downloadCallback.onSuccess(false, null, new NullPointerException("下载URL不能为空"));
             return;
         } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
-            downloadCallback.onFailure(new IOException(fileUrl + " 不是有效的URL"));
+            downloadCallback.onSuccess(false, null, new IOException(fileUrl + " 不是有效的URL"));
             return;
         }
 
         if (isNeedCache) {
             final String downPath = getDownLoadFilePath(fileUrl);
             if (new File(downPath).exists()) {
-                downloadCallback.onSuccess(downPath);
+                downloadCallback.onSuccess(true, downPath, null);
                 return;
             }
         }
@@ -546,7 +544,7 @@ public class HttpUtils {
         if (isFileDownloading(fileUrl)) {
             String error = fileUrl + " is being downloaded, do not download it again";
             AppLogUtils.w(TAG, error);
-            downloadCallback.onFailure(new Exception(error));
+            downloadCallback.onSuccess(false, null, new Exception(error));
             return;
         }
 
@@ -585,7 +583,7 @@ public class HttpUtils {
                 BaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        downloadCallback.onSuccess(filePath);
+                        downloadCallback.onSuccess(true, filePath, null);
                     }
                 });
             }
@@ -607,7 +605,7 @@ public class HttpUtils {
                 BaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        downloadCallback.onFailure(e);
+                        downloadCallback.onSuccess(false, null, e);
                     }
                 });
             }
