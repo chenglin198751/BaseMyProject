@@ -443,14 +443,11 @@ public class HttpUtils {
             if (isNeedCache) {
                 if (downFile.exists()) {
                     HttpDownloadCallback2.onSuccess(downloadCallback, downPath);
+                    return null;
                 }
             } else {
-                if (tempFile.exists()) {
-                    tempFile.delete();
-                }
-                if (downFile.exists()) {
-                    downFile.delete();
-                }
+                tempFile.delete();
+                downFile.delete();
             }
 
             if (isFileDownloading(fileUrl)) {
