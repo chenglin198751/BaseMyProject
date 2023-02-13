@@ -30,24 +30,23 @@ public class UpdateDownLoadTask {
 
         final HttpUtils.HttpDownloadCallback downloadCallback = new HttpUtils.HttpDownloadCallback() {
             @Override
-            public void onSuccess(String filePath) {
-                mUpdateDialog.downloadSuccess();
-                cancelNotify();
-                ApkInstaller.openApk(BaseApp.getApp(), filePath);
-                isDownLoading = false;
+            public void onSuccess(boolean isSuccess, String filePath, Exception e) {
+                if (isSuccess) {
+                    mUpdateDialog.downloadSuccess();
+                    cancelNotify();
+                    ApkInstaller.openApk(BaseApp.getApp(), filePath);
+                    isDownLoading = false;
+                } else {
+                    isDownLoading = false;
+                    suddenBreadNet();
+                    ToastUtils.show(R.string.net_error);
+                }
             }
 
             @Override
             public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
                 isDownLoading = true;
                 showNotification((int) (percent * 100));
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                isDownLoading = false;
-                suddenBreadNet();
-                ToastUtils.show(R.string.net_error);
             }
         };
 
