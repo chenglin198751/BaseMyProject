@@ -34,10 +34,8 @@
 
         <activity
             android:name="com.wcl.test.main.MainActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
             android:exported="true"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:theme="@style/FirstActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,49 +47,25 @@
 
         <activity
             android:name="com.wcl.test.widget.BaseWebViewActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
-        <activity
-            android:name="com.wcl.test.test.TestRecyclerViewRefreshActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.wcl.test.test.TestFlexBoxActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.wcl.test.test.TestTabLayoutActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.wcl.test.test.TestViewPager2Activity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.wcl.test.test.TestPullDownRefreshActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.wcl.test.test.TestConsecutiveNestScrollActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
+        <activity android:name="com.wcl.test.test.TestRecyclerViewRefreshActivity" />
 
-        <activity
-            android:name="com.wcl.test.test.TestGridViewWithHeaderActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
+        <activity android:name="com.wcl.test.test.TestFlexBoxActivity" />
 
-        <activity
-            android:name="com.wcl.test.test.TestSnapNestViewPagerActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
+        <activity android:name="com.wcl.test.test.TestTabLayoutActivity" />
 
-        <activity
-            android:name="com.wcl.test.test.TestSelectedPhotoActivity"
-            android:configChanges="fontScale|orientation|keyboardHidden|locale|navigation|screenSize|uiMode|layoutDirection"
-            android:screenOrientation="portrait" />
+        <activity android:name="com.wcl.test.test.TestViewPager2Activity" />
+
+        <activity android:name="com.wcl.test.test.TestPullDownRefreshActivity" />
+
+        <activity android:name="com.wcl.test.test.TestConsecutiveNestScrollActivity" />
+
+        <activity android:name="com.wcl.test.test.TestGridViewWithHeaderActivity" />
+
+        <activity android:name="com.wcl.test.test.TestSnapNestViewPagerActivity" />
+
+        <activity android:name="com.wcl.test.test.TestSelectedPhotoActivity" />
 
         <provider
             android:name="com.wcl.test.CustomInitProvider"
