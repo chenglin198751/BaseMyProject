@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Headers;
@@ -235,12 +234,7 @@ public class HttpUtils {
         }
 
         RequestBody body = FormBuilder.build();
-        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-        cacheBuilder.noCache();//不使用缓存，全部走网络
-        cacheBuilder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = cacheBuilder.build();
-
-        Request.Builder requestBuilder = new Request.Builder().cacheControl(cache).url(url).post(body);
+        Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
         if (builder.headersMap != null && builder.headersMap.size() > 0) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
@@ -260,13 +254,8 @@ public class HttpUtils {
     }
 
     public static void getWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
-        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-        cacheBuilder.noCache();//不使用缓存，全部走网络
-        cacheBuilder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = cacheBuilder.build();
-
         final String url2 = buildGetParams(url, params);
-        Request.Builder requestBuilder = new Request.Builder().cacheControl(cache).url(url2).get();
+        Request.Builder requestBuilder = new Request.Builder().url(url2).get();
         if (builder.headersMap != null && builder.headersMap.size() > 0) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
@@ -280,11 +269,7 @@ public class HttpUtils {
      * 同步get请求，必须放到线程中
      */
     public static String syncGet(final String url) {
-        final CacheControl.Builder builder = new CacheControl.Builder();
-        builder.noCache();//不使用缓存，全部走网络
-        builder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = builder.build();
-        Request request = new Request.Builder().cacheControl(cache).url(url).get().build();
+        Request request = new Request.Builder().url(url).get().build();
 
         try {
             Response response = mOkHttpClient.newCall(request).execute();
@@ -324,14 +309,7 @@ public class HttpUtils {
         }
 
         RequestBody body = FormBuilder.build();
-
-        final CacheControl.Builder cacheBuilder = new CacheControl.Builder();
-        cacheBuilder.noCache();//不使用缓存，全部走网络
-        cacheBuilder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = cacheBuilder.build();
-
         Request.Builder requestBuilder = new Request.Builder()
-                .cacheControl(cache)
                 .url(url)
                 .post(body);
         Request request = requestBuilder.build();
@@ -382,16 +360,9 @@ public class HttpUtils {
 
         //遍历paths中所有图片绝对路径到builder，并约定key如“upload”作为后台接受多张图片的key
         multipartBodyBuilder.addFormDataPart(picKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
-
-        final CacheControl.Builder builder = new CacheControl.Builder();
-        builder.noCache();//不使用缓存，全部走网络
-        builder.noStore();//不使用缓存，也不存储缓存
-        CacheControl cache = builder.build();
-
         RequestBody requestBody = multipartBodyBuilder.build();
         Request.Builder RequestBuilder = new Request.Builder();
         RequestBuilder.url(reqUrl);
-        RequestBuilder.cacheControl(cache);
         RequestBuilder.post(requestBody);
         Request request = RequestBuilder.build();
 
