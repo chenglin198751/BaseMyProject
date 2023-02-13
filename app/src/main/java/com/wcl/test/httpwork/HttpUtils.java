@@ -529,6 +529,14 @@ public class HttpUtils {
             return;
         }
 
+        if (isNeedCache) {
+            final String downPath = getDownLoadFilePath(fileUrl);
+            if (new File(downPath).exists()) {
+                downloadCallback.onSuccess(downPath);
+                return;
+            }
+        }
+
         new Thread() {
             @Override
             public void run() {
