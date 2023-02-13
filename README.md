@@ -111,22 +111,34 @@
     1、https://github.com/CameraKit/blurkit-android
     2、https://github.com/wasabeef/Blurry
 
-**24、OnFinishListener 类** ：我自己定义的一个接口，可以作为一个万能回调使用。别的地方任何如果只是临时性的回调，可以用它来做，不需要再写个回调接口了。
+**24、OnFinishedListener 类：** 
 
-**25、BitmapUtils 类**：压缩图片 以及得到图片宽高的类，里面有个方法叫createScaledBitmap() ，可以按比例创建缩放的图片，性能卓越。具体使用看注释。
+    自己定义的一个公共回调接口，可以作为一个万能回调使用。别的地方任何如果只是临时性的回调，可以用它来做，不需要再写个回调接口了。
 
-**26、MyTabLayout 类**：根据谷歌官方的TabLayout自己封装的ViewPager标题指示器，实现了自定义View。
+**25、BitmapUtils 类：**
 
-**27、NoScrollGridView 类**：不可滚动的GridView ，适用于放在ListView ，RecyclerView中。
+    压缩图片 以及得到图片宽高的类，里面有个方法叫createScaledBitmap() ，可以按比例创建缩放的图片，性能卓越。具体使用看注释。
 
-**28、NoScrollViewPager 类**：不可滚动的ViewPager，具体使用场景自己发挥。
+**26、MyTabLayout 类：**
 
-**29、com.youth.banner.Banner 类**：github 地址：//https://github.com/youth5201314/banner 一个很优秀的实现自动滚动banner的库。
-      另外，里面有WeakHandler这个防止内存泄露的Handler类使用。还有各种的ViewPager Transformer可以使用。 。
+    根据谷歌官方的TabLayout自己封装的ViewPager标题指示器，实现了自定义View。
 
-**30、AutoSizeImageView 类**：按照Bitmap的宽高比，保持ImageView宽高比。需要在设置图片源之前调用setWidth(),setHeight()方法设置控件宽度，高度
+**27、NoScrollGridView 类：**
 
-**31、SelectPhotosActivity 类**：一个通用的相册图片选择类，支持单选和多选，用法看代码。
+    不可滚动的GridView ，适用于放在ListView ，RecyclerView中。
+
+**28、NoScrollViewPager 类：**
+
+    不可滚动的ViewPager，具体使用场景自己发挥。
+
+**29、com.youth.banner.Banner 类：**
+
+    github 地址：//https://github.com/youth5201314/banner 一个很优秀的实现自动滚动banner的库。
+    另外，里面有WeakHandler这个防止内存泄露的Handler类使用。还有各种的ViewPager Transformer可以使用。 
+
+**30、AutoSizeImageView 类：**
+
+    按照Bitmap的宽高比，保持ImageView宽高比。需要在设置图片源之前调用setWidth(),setHeight()方法设置控件宽度，高度
 
 **32、EnglishCharFilter 类**：限制中文字符算作两个字，英文字符算作一个字的工具类。用法：
 
