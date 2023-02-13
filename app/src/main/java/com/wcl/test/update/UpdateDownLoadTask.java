@@ -30,7 +30,7 @@ public class UpdateDownLoadTask {
 
         final HttpUtils.HttpDownloadCallback downloadCallback = new HttpUtils.HttpDownloadCallback() {
             @Override
-            public void onSuccess(boolean isSuccess, String filePath, Exception e) {
+            public void onFinished(boolean isSuccess, String filePath, Exception e) {
                 if (isSuccess) {
                     mUpdateDialog.downloadSuccess();
                     cancelNotify();
