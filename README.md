@@ -424,10 +424,16 @@
     5、把第0个元素和第2个元素交换位置：Collections.swap(list,0,2);
     6、把一个list复制到另一个list：Collections.copy(list,list);
 
-**102、腾讯性能监测开源工具：**https://github.com/Tencent/matrix#matrix_cn
+**102、腾讯性能监测开源工具：**
+
+    https://github.com/Tencent/matrix#matrix_cn
 
 **103、android官方百分比布局：**implementation 'androidx.percentlayout:percentlayout:1.0.0'
 
     app:layout_heightPercent="30%"
     app:layout_marginTopPercent="10%"
     app:layout_widthPercent="100%"
+
+**104、调用系统的选择照片的工具类：**
+
+    PhotosPickUtil.java，不需要存储权限就可以选择照片，但是只能每次选择一张。

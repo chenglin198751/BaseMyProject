@@ -44,14 +44,17 @@ public class PhotosPickUtil {
             }
 
             if (bitmap != null) {
-                Bitmap bitmap2 = bitmap;
-                BitmapUtils.saveBitmap(bitmap, new OnCompressBitmapListener<String>() {
-                    @Override
-                    public void onSucceed(String path) {
-                        AppLogUtils.v("tag_2", "bitmap path=" + path);
-                        mListener.onFinished(bitmap2, path);
-                    }
-                });
+                mListener.onFinished(bitmap, null);
+
+//                // 如果需要保存图片为存储路径，打开下面的代码
+//                Bitmap bitmap2 = bitmap;
+//                BitmapUtils.saveBitmap(bitmap, new OnCompressBitmapListener<String>() {
+//                    @Override
+//                    public void onSucceed(String path) {
+//                        AppLogUtils.v("tag_2", "bitmap path=" + path);
+//                        mListener.onFinished(bitmap2, path);
+//                    }
+//                });
             } else {
                 mListener.onFinished(null, null);
             }
