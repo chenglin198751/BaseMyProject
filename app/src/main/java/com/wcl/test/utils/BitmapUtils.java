@@ -202,13 +202,23 @@ public class BitmapUtils {
                 }catch (Exception e) {
                     e.printStackTrace();
                     if (callback != null) {
-                        callback.onSucceed(null);
+                        AppBaseUtils.getUiHandler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSucceed(null);
+                            }
+                        });
                     }
                 }
-                String path = file.getAbsolutePath();
 
                 if (callback != null) {
-                    callback.onSucceed(path);
+                    AppBaseUtils.getUiHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            String path = file.getAbsolutePath();
+                            callback.onSucceed(path);
+                        }
+                    });
                 }
 
             }
