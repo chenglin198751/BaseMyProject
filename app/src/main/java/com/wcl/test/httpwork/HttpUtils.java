@@ -141,10 +141,10 @@ public class HttpUtils {
         return new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull final IOException e) {
+                e.printStackTrace();
                 if (context == null) {
                     return;
                 }
-                e.printStackTrace();
 
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
@@ -168,13 +168,12 @@ public class HttpUtils {
                 }
 
                 //有时服务端返回json带了bom头，会导致解析异常
-                String tempStr = response.body().string();
-                if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
-                    tempStr = tempStr.substring(1);
+                String result = response.body().string();
+                if (!TextUtils.isEmpty(result) && result.startsWith("\ufeff")) {
+                    result = result.substring(1);
                 }
                 response.body().close();
                 response.close();
-                final String result = tempStr;
 
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
@@ -306,13 +305,13 @@ public class HttpUtils {
             Response response = mOkHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 //有时服务端返回json带了bom头，会导致解析异常
-                String tempStr = response.body().string();
-                if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
-                    tempStr = tempStr.substring(1);
+                String result = response.body().string();
+                if (!TextUtils.isEmpty(result) && result.startsWith("\ufeff")) {
+                    result = result.substring(1);
                 }
                 response.body().close();
                 response.close();
-                return tempStr;
+                return result;
             } else {
                 return null;
             }
@@ -357,14 +356,20 @@ public class HttpUtils {
 
         mOkHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 call.cancel();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String str = response.body().string();
-                call.cancel();
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    //有时服务端返回json带了bom头，会导致解析异常
+                    String result = response.body().string();
+                    if (!TextUtils.isEmpty(result) && result.startsWith("\ufeff")) {
+                        result = result.substring(1);
+                    }
+                }
+
             }
         });
 
