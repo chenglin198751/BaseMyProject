@@ -65,8 +65,6 @@
 
         <activity android:name="com.wcl.test.test.TestSnapNestViewPagerActivity" />
 
-        <activity android:name="com.wcl.test.test.TestSelectedPhotoActivity" />
-
         <provider
             android:name="com.wcl.test.CustomInitProvider"
             android:authorities="${applicationId}.backgroundLibrary"
