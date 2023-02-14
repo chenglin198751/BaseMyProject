@@ -8,8 +8,8 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.wcl.test.EnvToggle;
-import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.DeviceUtils;
 import com.wcl.test.utils.FileUtils;
 
@@ -422,6 +422,8 @@ public class HttpUtils {
             if (tempFile.exists()) {
                 downloadLength = tempFile.length();
             }
+
+            //====start下载异常边界处理start:发生概率极低，不用太在意====
             if (downloadLength == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
@@ -432,12 +434,17 @@ public class HttpUtils {
                         downloadLength = 0;
                     }
                 }
+            } else if (downloadLength > contentLength) {
+                if (tempFile.delete()) {
+                    downloadLength = 0;
+                }
             }
+            //====end下载异常边界处理end:发生概率极低，不用太在意====
 
             final Request.Builder builder = new Request.Builder().url(fileUrl).get();
             final RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rws");
 
-            //跳过已经下载的字节，实现断点续传
+            // 跳过已经下载的字节，实现断点续传
             if (downloadLength > 0) {
                 savedFile.seek(downloadLength);
 
