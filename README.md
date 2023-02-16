@@ -221,6 +221,7 @@
     1、https://github.com/AriaLyy/Aria 
     2、https://github.com/ixuea/AndroidDownloader
     3、HttpURLConnection实现的断点续传：https://github.com/yaowen369/DownloadHelper
+    4、https://github.com/lingochamp/okdownload
 
 **47、封装的易用数据库dbflow：**
 
@@ -437,3 +438,7 @@
 **104、调用系统的选择照片的工具类：**
 
     PhotosPickUtil.java，不需要存储权限就可以选择照片，但是只能每次选择一张。
+
+**105、完全仿微信的图片选择，并且提供了多种图片加载接口，选择图片后可以旋转，可以裁剪成矩形或圆形，可以配置各种其他的参数：**
+
+    https://github.com/jeasonlzy/ImagePicker
