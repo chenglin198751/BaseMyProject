@@ -225,63 +225,117 @@
     5、https://github.com/Justson/Downloader
     6、支付多线程的下载库（不够稳定）：https://github.com/Aspsine/MultiThreadDownload
 
+    用HttpURLConnection封装的一套网络访问工具：https://github.com/guozhengXia/UrlHttpUtils
+
 **47、封装的易用数据库dbflow：**
 
     https://github.com/agrosner/DBFlow ： https://joyrun.github.io/2016/08/02/dbflow/
 
-**51、一款轻量级的socket库（模拟器Launcher在使用）：**https://github.com/xuuhaoo/OkSocket
+**51、一款轻量级的socket库（模拟器Launcher在使用）：**
 
-**52、二维码扫描：**https://github.com/devilsen/CZXing(底层库用的是：https://github.com/nu-book/zxing-cpp)
+    https://github.com/xuuhaoo/OkSocket
 
-**53、jackpal的Android-Terminal源码：**https://github.com/jackpal/Android-Terminal-Emulator/
+**52、二维码扫描：**
 
-**54、BottomDialogFragment：**类似抖音评论列表--滑动关闭的dialog(使用的是BottomSheetDialogFragment或者BottomSheetDialog)
+    https://github.com/devilsen/CZXing
+    (底层库用的是：https://github.com/nu-book/zxing-cpp)
 
-**55、TestSnapNestViewPagerActivity：**使用Android自带的UI实现的带头部的嵌套滚动的ViewPager
+**53、jackpal的Android-Terminal源码：**
 
-**56、CommonFragmentViewPagerAdapter：**通用的ViewPager的FragmentAdapter
+    https://github.com/jackpal/Android-Terminal-Emulator
 
-**57、TestGridViewWithHeaderActivity：**利用NestedScrollView实现RecyclerView带上header
+**54、BottomDialogFragment：**
 
-**58、TestUserInfoViewModel：**LiveData和ViewModel的使用示例
+    类似抖音评论列表--滑动关闭的dialog(使用的是BottomSheetDialogFragment或者BottomSheetDialog)
 
-**59、androidx.lifecycle.LifecycleObserver：**可以让随便一个类具有Activity的生命周期
+**55、TestSnapNestViewPagerActivity：**
 
-**60、OnSingleClickListener：**防止重复多次点击的类
+    使用Android自带的UI实现的带头部的嵌套滚动的ViewPager
 
-**60、js和android WebView通信：**https://github.com/lzyzsd/JsBridge
+**56、CommonFragmentViewPagerAdapter：**
 
-**61、集成各大push推送平台的库：**https://github.com/xuexiangjys/XPush/wiki
+    通用的ViewPager的FragmentAdapter
 
-**62、手机和电脑屏幕共享的库，里面的TouchUtils可以实现转换触摸手势：**https://github.com/android-notes/androidScreenShare
+**57、TestGridViewWithHeaderActivity：**
 
-**63、滑动表格库：ScrollablePanel：**https://github.com/Kelin-Hong/ScrollablePanel
+    利用NestedScrollView实现RecyclerView带上header
 
-**64、开源的视频播放器：**https://github.com/CarGuo/GSYVideoPlayer
+**58、TestUserInfoViewModel：**
 
-**65、腾讯的多渠道打包：**https://github.com/Tencent/VasDolly
+    LiveData和ViewModel的使用示例
 
-**66、直接获取TextView的LineCount的工具类，需要传入width：**TextViewLinesUtils.getTextViewLines(TextView textView, int textViewWidth);
+**59、androidx.lifecycle.LifecycleObserver：**
 
-**67、ConsecutiveScrollerLayout是Android下支持多个滑动布局：**(RecyclerView、WebView、ScrollView等)和普通控件(TextView、ImageView、LinearLayou、自定义View等)持续连贯滑动的容器,它使所有的子View像一个整体一样连续顺畅滑动。并且支持布局吸顶功能：https://github.com/donkingliang/ConsecutiveScroller
+    可以让随便一个类具有Activity的生命周期
 
-**68、一款时间选择器：**https://github.com/loperSeven/DateTimePicker
+**60、单次点击和多次点击：**
 
-**69、GroupedRecyclerViewAdapter可以很方便的实现RecyclerView的分组显示，并且每个组都可以包含组头、组尾和子项；可以方便实现多种Type类型的列表，可以实现如QQ联系人的列表一样的列表展开收起功能，还可以实现头部悬浮吸顶功能等：**https://github.com/donkingliang/GroupedRecyclerViewAdapter 具体见DEMO:TestConsecutiveNestScrollActivity
+    1、防止重复多次点击的类：OnSingleClickListener 
+    2、比如，3秒内点击10次。支持自定义点击时间间隔和次数：OnMultipleClickListener
+
+**60、js和android WebView通信：**
+
+    https://github.com/lzyzsd/JsBridge
+
+**61、集成各大push推送平台的库：**
+    
+    https://github.com/xuexiangjys/XPush/wiki
+
+**62、手机和电脑屏幕共享的库，里面的TouchUtils可以实现转换触摸手势：**
+
+    https://github.com/android-notes/androidScreenShare
+
+**63、滑动表格库：ScrollablePanel：**
+
+    https://github.com/Kelin-Hong/ScrollablePanel
+
+**64、开源的视频播放器：**
+
+    https://github.com/CarGuo/GSYVideoPlayer
+
+**65、腾讯的多渠道打包：**
+
+    https://github.com/Tencent/VasDolly
+
+**66、直接获取TextView的LineCount的工具类，需要传入width：**
+
+    TextViewLinesUtils.getTextViewLines(TextView textView, int textViewWidth);
+
+**67、ConsecutiveScrollerLayout 是Android下支持多个滑动布局：**
+
+    (RecyclerView、WebView、ScrollView等)和普通控件(TextView、ImageView、LinearLayou、自定义View等)持续连贯滑动的容器,
+    它使所有的子View像一个整体一样连续顺畅滑动。并且支持布局吸顶功能： https://github.com/donkingliang/ConsecutiveScroller
+
+**68、一款时间选择器：**
+
+    https://github.com/loperSeven/DateTimePicker
+
+**69、GroupedRecyclerViewAdapter可以很方便的实现RecyclerView的分组显示：**
+
+    GroupedRecyclerViewAdapter可以很方便的实现RecyclerView的分组显示，并且每个组都可以包含组头、组尾和子项；可以方便实现多种Type类型的列表，
+    可以实现如QQ联系人的列表一样的列表展开收起功能，还可以实现头部悬浮吸顶功能等：
+    https://github.com/donkingliang/GroupedRecyclerViewAdapter
+    具体见DEMO:TestConsecutiveNestScrollActivity
 
 **70、弹性动画实现：**
 
-      70.1、谷歌的弹性动画：implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0
-            示例：http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0330/7757.html
-      70.2、facebook的rebound：https://github.com/facebookarchive/rebound
+    1、谷歌的弹性动画：implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0
+        示例：http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0330/7757.html
+    2、facebook的rebound：https://github.com/facebookarchive/rebound
 
-**71、输入法键盘切换平滑过渡：**https://github.com/YummyLau/PanelSwitchHelper
+**71、输入法键盘切换平滑过渡：**
 
-**72、FlowLayout.java：**流式布局，来自腾讯团队的QMUIFloatLayout。 https://qmuiteam.com/android/documents/
+    https://github.com/YummyLau/PanelSwitchHelper
+
+**72、FlowLayout.java：**
+
+    流式布局，来自腾讯团队的QMUIFloatLayout。 https://qmuiteam.com/android/documents/
 
 **73、VerticalTextView.java：**来自腾讯团队的竖向排版的TextView
 
-**74、实现高斯模糊的库：**https://github.com/woshidasusu/base-module/tree/master/blur
+**74、实现高斯模糊的库：**
+
+    https://github.com/woshidasusu/base-module/tree/master/blur
 
     引入：implementation 'com.dasu.image:blur:0.0.6'
     ------------------------------------------------
@@ -305,15 +359,25 @@
                     //do something
                 }});
 
-**75、各种ViewPager标题指示器效果：**https://github.com/hackware1993/MagicIndicator    
+**75、各种ViewPager标题指示器效果：**
 
-**76、支持列表中播放的视频播放器饺子，支持替换为谷歌EXO内核：**https://github.com/Jzvd/JZVideo
+    https://github.com/hackware1993/MagicIndicator    
 
-**77、B站开源播放器ijkplayer：**https://github.com/bilibili/ijkplayer
+**76、支持列表中播放的视频播放器饺子，支持替换为谷歌EXO内核：**
 
-**78、可以下拉头部放大的RecyclerView，参考其用法可以实现别的动效：**PullToZoomRecyclerView.java
+    https://github.com/Jzvd/JZVideo
 
-**79、PullScrollView：**重写overScrollBy()方法可以实现下拉交互特效
+**77、B站开源播放器ijkplayer：**
+
+    https://github.com/bilibili/ijkplayer
+
+**78、可以下拉头部放大的RecyclerView，参考其用法可以实现别的动效：**
+
+    PullToZoomRecyclerView.java
+
+**79、PullScrollView.java：**
+
+    重写overScrollBy()方法可以实现下拉交互特效
 
 **80、App实现黑白模式：**在BaseActivity的onCreate()种实现：
 
@@ -323,21 +387,34 @@
     paint.setColorFilter(new ColorMatrixColorFilter(cm));
     getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE,paint);
 
-**81、MMKV键值对存储，可替代SP使用：**https://github.com/Tencent/MMKV/blob/master/README_CN.md
+**81、MMKV键值对存储，可替代SP使用：**
+
+    ttps://github.com/Tencent/MMKV/blob/master/README_CN.md
 
 **82、安卓开源的图表库：**
+
     https://github.com/danielgindi/Charts
     https://github.com/PhilJay/MPAndroidChart
 
-**83、监听键盘输入法弹出隐藏：**https://github.com/yshrsmz/KeyboardVisibilityEvent
+**83、监听键盘输入法弹出隐藏：**
 
-**84、gson解析容错：**https://github.com/getActivity/GsonFactory
+    https://github.com/yshrsmz/KeyboardVisibilityEvent
 
-**85、facebook开源的发光渐变文字效果：**http://facebook.github.io/shimmer-android/ ; ShimmerTextView ：简易版的发光渐变文字效果
+**84、gson解析容错：**
 
-**86、ShapeableImageView：**谷歌官方material系列，实现圆形，圆角，等各种形状的ImageView
+    https://github.com/getActivity/GsonFactory
 
-**87、APK反编译：**反编译工具：https://github.com/skylot/jadx/releases/tag/v1.2.0  源码：https://github.com/skylot/jadx
+**85、facebook开源的发光渐变文字效果：**
+
+    http://facebook.github.io/shimmer-android/ ; ShimmerTextView ：简易版的发光渐变文字效果
+
+**86、ShapeableImageView：**
+
+    谷歌官方material系列，实现圆形，圆角，等各种形状的ImageView
+
+**87、APK反编译：**
+
+    反编译工具：https://github.com/skylot/jadx/releases/tag/v1.2.0  源码：https://github.com/skylot/jadx
 
 **88、计算签名的工具类 SignUtils.java：**
 
@@ -347,39 +424,47 @@
     orderParam.put("product_name","vipCool");
     String sign = SignUtils.getSign(orderParam, appSecret);
 
-**89、用HttpURLConnection封装的一套网络访问工具：**https://github.com/guozhengXia/UrlHttpUtils
-
 **90、横屏模式下，EditText唤起键盘时，键盘全屏，导致无法看到输入页面。加如下属性禁止键盘全屏：：**
 
     android:imeOptions="flagNoExtractUi"
     mUserNameText.setImeOptions(|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
-**91、通过标签直接生成shape，无需再写shape.xml：**https://github.com/JavaNoober/BackgroundLibrary
+**91、通过标签直接生成shape，无需再写shape.xml：**
 
-**92、aar接入方式开发SDK可以使用自定义的ContentProvider初始化SDK：**com.wcl.test.CustomInitProvider，其onCreate()方法，晚于Application的attachBaseContext()，早于Application的onCreate()。
+    https://github.com/JavaNoober/BackgroundLibrary
 
-**93、glide自定义各种变换形状，灰度，黑白等：** implementation 'jp.wasabeef:glide-transformations:4.3.0'
-    
+**92、aar接入方式开发SDK可以使用自定义的ContentProvider初始化SDK：**
+
+    com.wcl.test.CustomInitProvider，其onCreate()方法，晚于Application的attachBaseContext()，早于Application的onCreate()。
+
+**93、glide自定义各种变换形状，灰度，黑白等：** 
+
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
+
     //比如，这个是图片从顶部开始展示
     Glide.with(getContext())
     .load(url)
     .transform(new CropTransformation(100,100, CropTransformation.CropType.TOP))
     .into(image);
 
-**94、Gson的容错兼容库：**https://github.com/getActivity/GsonFactory
-
 **95、WindowInsetsControllerCompat隐藏显示键盘：**
 
     windowInsetsControllerCompat.show(WindowInsetsCompat.Type.ime());
     windowInsetsControllerCompat.hide(WindowInsetsCompat.Type.ime());
 
-**96、WorkManager：**实现看TestWorkManager.java ; 参考文档：https://www.jianshu.com/p/284700112f37
+**96、WorkManager：**
 
+    实现看TestWorkManager.java ; 参考文档：https://www.jianshu.com/p/284700112f37
     特点： 1、针对不需要及时完成的任务 2、保证任务一定会被执行（只要提交了任务，任务如果返回的是retry，那么就会一直重试，保证一定被执行，不管杀掉程序还是重启手机）
 
-**97、解决Android P以上不让反射调用hide api的问题：**implementation "com.github.tiann:FreeReflection:3.1.0"
+**97、解决Android P以上不让反射调用hide api的问题：**
 
-**98、滴滴开源的字节码替换工具：**https://github.com/didi/DroidAssist
+    https://github.com/tiann/FreeReflection
+    implementation "com.github.tiann:FreeReflection:3.1.0"
+
+**98、滴滴开源的字节码替换工具：**
+
+    https://github.com/didi/DroidAssist
 
 **99、TextClock可以监听系统时间：**
         
