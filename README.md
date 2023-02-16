@@ -220,16 +220,14 @@
 
     1、https://github.com/AriaLyy/Aria 
     2、https://github.com/ixuea/AndroidDownloader
-    3、HttpURLConnection实现的断点续传：https://github.com/yaowen369/DownloadHelper
+    3、HttpURLConnection实现的断点续传（足够稳定）：https://github.com/yaowen369/DownloadHelper
     4、https://github.com/lingochamp/okdownload
+    5、https://github.com/Justson/Downloader
+    6、支付多线程的下载库（不够稳定）：https://github.com/Aspsine/MultiThreadDownload
 
 **47、封装的易用数据库dbflow：**
 
     https://github.com/agrosner/DBFlow ： https://joyrun.github.io/2016/08/02/dbflow/
-
-**49、检测是否为模拟器的工具类：**EmulatorUtil.java
-
-**50、图片裁剪器：**https://github.com/Yalantis/uCrop
 
 **51、一款轻量级的socket库（模拟器Launcher在使用）：**https://github.com/xuuhaoo/OkSocket
 
@@ -439,6 +437,9 @@
 
     PhotosPickUtil.java，不需要存储权限就可以选择照片，但是只能每次选择一张。
 
-**105、完全仿微信的图片选择，并且提供了多种图片加载接口，选择图片后可以旋转，可以裁剪成矩形或圆形，可以配置各种其他的参数：**
+**105、图片裁剪工具：**
 
+    1、开源的图片裁剪：https://github.com/Yalantis/uCrop
+
+    2、完全仿微信的图片选择，并且提供了多种图片加载接口，选择图片后可以旋转，可以裁剪成矩形或圆形，可以配置各种其他的参数：
     https://github.com/jeasonlzy/ImagePicker
