@@ -20,7 +20,8 @@ jar {
 def makeJar() {
     def jar_parent_dir = this.getBuildDir().path + '/libs'
     def tmp_jar_file = jar_parent_dir + '/testlibrary.jar'
-    def jar_name_dir = jar_parent_dir + '/seas_sdk_pack'
+    def jar_name = 'seas_sdk_pack'
+    def jar_name_dir = jar_parent_dir + '/' + jar_name
 
     if (!file(tmp_jar_file).exists()) {
         return
@@ -48,13 +49,14 @@ def makeJar() {
     // 3、执行jar -cvf 命令合并为jar文件
     exec {
         def MANIFEST = jar_name_dir + "/META-INF/MANIFEST.MF"
-        def mCommand = ["cmd", "/c", "jar", "-cvfm", "seas_sdk_pack.jar", MANIFEST, "*"]
+        def mCommand = ["cmd", "/c", "jar", "-cvfm", jar_name + ".jar", MANIFEST, "*"]
         workingDir jar_name_dir
         commandLine mCommand
     }
 
     // 4、把生成的可执行jar复制到对应文件夹，并清理残余文件
-    file(jar_name_dir + '/seas_sdk_pack.jar').renameTo(file(jar_parent_dir + '/seas_sdk_pack.jar'))
+    def jar_name2 = '/' + jar_name + '.jar'
+    file(jar_name_dir + jar_name2).renameTo(file(jar_parent_dir + jar_name2))
     delete(jar_name_dir)
     delete(tmp_jar_file)
 }
