@@ -42,8 +42,8 @@ def makeJar() {
         into jar_name_dir
     }
     copy {
-        from 'org'
-        into jar_name_dir + '/org'
+        from 'eclipse_main'
+        into jar_name_dir
     }
 
     // 3、执行jar -cvf 命令合并为jar文件
