@@ -1,0 +1,72 @@
+apply plugin: 'java-library'
+
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+jar {
+    manifest {
+        attributes 'Manifest-Version': '1.0'
+        attributes 'Main-Class': 'org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader'
+        attributes 'Rsrc-Class-Path': './ ant_v1.10.12.jar'
+        attributes 'Rsrc-Main-Class': 'main.SeasMainPack'
+        attributes 'Class-Path': '.'
+    }
+}
+
+def makeJar() {
+    def jar_parent_dir = this.getBuildDir().path + '/libs'
+    def tmp_jar_file = jar_parent_dir + '/testlibrary.jar'
+    def jar_name_dir = jar_parent_dir + '/seas_sdk_pack'
+
+    if (!file(tmp_jar_file).exists()) {
+        return
+    }
+
+    // 1、执行jar -xvf 命令解压jar文件
+    exec {
+        delete(jar_name_dir)
+        mkdir(jar_name_dir)
+        def mCommand = ["cmd", "/c", "jar", "-xvf", tmp_jar_file]
+        workingDir jar_name_dir
+        commandLine mCommand
+    }
+
+    // 2、把生成可执行jar所需要的文件复制过去
+    copy {
+        from 'libs'
+        into jar_name_dir
+    }
+    copy {
+        from 'org'
+        into jar_name_dir + '/org'
+    }
+
+    // 3、执行jar -cvf 命令合并为jar文件
+    exec {
+        def MANIFEST = jar_name_dir + "/META-INF/MANIFEST.MF"
+        def mCommand = ["cmd", "/c", "jar", "-cvfm", "seas_sdk_pack.jar", MANIFEST, "*"]
+        workingDir jar_name_dir
+        commandLine mCommand
+    }
+
+    // 4、把生成的可执行jar复制到对应文件夹，并清理残余文件
+    file(jar_name_dir + '/seas_sdk_pack.jar').renameTo(file(jar_parent_dir + '/seas_sdk_pack.jar'))
+    delete(jar_name_dir)
+    delete(tmp_jar_file)
+}
+
+
+project.afterEvaluate {
+    assemble.doLast {
+        makeJar()
+    }
+
+}
+
+
+
+
