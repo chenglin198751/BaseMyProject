@@ -35,9 +35,15 @@ def makeJar() {
     exec {
         delete(jar_name_dir)
         mkdir(jar_name_dir)
-        def mCommand = ["cmd", "/c", "jar", "-xvf", tmp_jar_file]
+
+        def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+        def command = ["sh", "jar", "-xvf", tmp_jar_file]
+        if (isWindows) {
+            command = ["cmd", "/c", "jar", "-xvf", tmp_jar_file]
+        }
+
         workingDir jar_name_dir
-        commandLine mCommand
+        commandLine command
     }
 
     // 2、把生成可执行jar所需要的文件复制过去
@@ -53,9 +59,13 @@ def makeJar() {
     // 3、执行jar -cvf 命令合并为jar文件
     exec {
         def MANIFEST = jar_name_dir + "/META-INF/MANIFEST.MF"
-        def mCommand = ["cmd", "/c", "jar", "-cvfm", jar_name + ".jar", MANIFEST, "*"]
+        def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+        def command = ["sh", "jar", "-cvfm", jar_name + ".jar", MANIFEST, "*"]
+        if (isWindows) {
+            command = ["cmd", "/c", "jar", "-cvfm", jar_name + ".jar", MANIFEST, "*"]
+        }
         workingDir jar_name_dir
-        commandLine mCommand
+        commandLine command
     }
 
     // 4、把生成的可执行jar复制到对应文件夹，并清理残余文件
