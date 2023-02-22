@@ -34,4 +34,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "BaseMyProject"
 include ':app'
-include ':testlibrary'
+include ':test_jar_lib'
