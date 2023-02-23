@@ -72,6 +72,7 @@ def makeJar() {
     file(jar_name_dir + jar_name2).renameTo(file(jar_parent_dir + jar_name2))
     delete(jar_name_dir)
     delete(tmp_jar_file)
+    delete(this.getBuildDir())
 }
 
 
