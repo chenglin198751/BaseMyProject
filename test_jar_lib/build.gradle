@@ -22,11 +22,11 @@ jar {
 }
 
 def makeJar() {
-    def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
-    def jar_parent_dir = this.getBuildDir().path + '/libs'
-    def tmp_jar_file = jar_parent_dir + '/test_jar_lib.jar'
-    def jar_name = 'seas_sdk_pack'
-    def jar_name_dir = jar_parent_dir + '/' + jar_name
+    def final isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+    def final jar_parent_dir = this.getBuildDir().path + '/libs'
+    def final tmp_jar_file = jar_parent_dir + '/test_jar_lib.jar'
+    def final jar_name = 'seas_sdk_pack'
+    def final jar_name_dir = jar_parent_dir + '/' + jar_name
 
     if (!file(tmp_jar_file).exists()) {
         return
