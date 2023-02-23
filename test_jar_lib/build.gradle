@@ -22,6 +22,7 @@ jar {
 }
 
 def makeJar() {
+    def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
     def jar_parent_dir = this.getBuildDir().path + '/libs'
     def tmp_jar_file = jar_parent_dir + '/test_jar_lib.jar'
     def jar_name = 'seas_sdk_pack'
@@ -36,7 +37,6 @@ def makeJar() {
         delete(jar_name_dir)
         mkdir(jar_name_dir)
 
-        def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
         def command = ["sh", "jar", "-xvf", tmp_jar_file]
         if (isWindows) {
             command = ["cmd", "/c", "jar", "-xvf", tmp_jar_file]
@@ -59,7 +59,6 @@ def makeJar() {
     // 3、执行jar -cvf 命令合并为jar文件
     exec {
         def MANIFEST = jar_name_dir + "/META-INF/MANIFEST.MF"
-        def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
         def command = ["sh", "jar", "-cvfm", jar_name + ".jar", MANIFEST, "*"]
         if (isWindows) {
             command = ["cmd", "/c", "jar", "-cvfm", jar_name + ".jar", MANIFEST, "*"]
