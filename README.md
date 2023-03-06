@@ -554,3 +554,13 @@
 
     2、完全仿微信的图片选择，并且提供了多种图片加载接口，选择图片后可以旋转，可以裁剪成矩形或圆形，可以配置各种其他的参数：
     https://github.com/jeasonlzy/ImagePicker
+
+
+**106、Android8.0 及以上TextView控件可以适应宽度显示全文字：**
+    
+    下面的只是针对于8.0的设备有效，如果想要兼容8.0以下设备，则需要用AppCompatTextView代替TextView：
+    autoSizeTextType：设置TextView是否支持自动改变文本大小，none表示不支持，uniform表示支持。
+    autoSizeMinTextSize：最小文字大小，例如设置为10sp，表示文字最多只能缩小到10sp。
+    autoSizeMaxTextSize：最大文字大小，例如设置为18sp，表示文字最多只能放大到18sp。
+    autoSizeStepGranularity：缩放粒度，即每次文字大小变化的数值，例如设置为1sp，表示每次缩小或放大的值为1sp。
+    
