@@ -13,9 +13,13 @@
     1-4、AS书签功能：F11 添加书签，shift + F11 打开书签列表
     1-5、ctrl + D 复制一行
 
-**3、新版AS无法使用git提交代码解决：** Version Control - Git - 勾选 Use credential helper
+**3、新版AS无法使用git提交代码解决：** 
 
-**4、显示上方的ToolBar：** View - Appearance - ToolBar
+    Version Control - Git - 勾选 Use credential helper
+
+**4、显示上方的ToolBar：** 
+
+    View - Appearance - ToolBar
 
 **5、用Android Studio创建的jks签名文件，使用时报错，解决办法：**
 
