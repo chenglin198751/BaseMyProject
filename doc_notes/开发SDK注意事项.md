@@ -1,5 +1,5 @@
 
-1、如果是游戏SDK，那么所有的R资源引用必须用getIdentifier（参看工具类getResUtils），否则如果使用者使用eclipse接入就会报R文件找不到的问题。
+**1、如果是游戏SDK，那么所有的R资源引用必须用getIdentifier（参看工具类getResUtils），否则如果使用者使用eclipse接入就会报R文件找不到的问题。**
 
 **2、混淆配置很重要，流程如下：**
 
