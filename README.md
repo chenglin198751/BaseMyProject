@@ -424,6 +424,32 @@
     orderParam.put("product_name","vipCool");
     String sign = SignUtils.getSign(orderParam, appSecret);
 
+**88(2)、各种获取apk签名方法：**
+
+    1、jarsigner.exe签名(v1)(位于...\jdk\bin\jarsigner.exe)：
+        jarsigner -verbose -keystore keystore_debug.jks -signedjar output.apk unsign.apk young_debug
+
+    2、apksigner.jar签名(v1+v2+v3)(位于...\Android\Sdk\build-tools\30.0.3\lib\apksigner.jar)：
+        java -jar apksigner.jar sign --ks keystore_debug.jks --ks-key-alias young_debug --ks-pass pass:123abc --key-pass pass:123abc --out output.apk unsign.apk
+
+    3、查看签名是v1还是v2：
+        java -jar apksigner.jar verify -v xxx.apk
+
+    4、bat传入参数写法，1234表示传入参数：
+        java -jar apksigner.jar sign --ks %1 --ks-key-alias %2 --ks-pass pass:%3 --key-pass pass:%4 --out %5 %6
+
+    5、查看apk签名：
+       第一种方法：解压apk，在META-INF下找到后缀名为.RSA文件，执行：keytool -printcert -file xx.RSA
+       第二种方法：
+        keytool -printcert -jarfile  xx.apk
+        keytool -list -jarfile  xx.apk
+
+    6、安卓app用代码获取apk签名信息：
+        PackageInfo infobefore = pm.getPackageArchiveInfo(strSavePath, PackageManager.GET_SIGNING_CERTIFICATES);
+
+    7、AndroidStudio内获取签名文件信息：
+        查看签名文件的MD5、SHA1、SHA-256：右侧Gradle：app--Tasks--android--signingReport
+
 **90、横屏模式下，EditText唤起键盘时，键盘全屏，导致无法看到输入页面。加如下属性禁止键盘全屏：：**
 
     android:imeOptions="flagNoExtractUi"
