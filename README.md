@@ -27,7 +27,7 @@
 
 **4、MainApp 类：**
 
-    程序的入口，这里我把Application的Context 给持有了，获取的方法叫做getApp() 。
+    程序的入口，这里把Application的Context 给持有了，获取的方法叫做getApp() 。
     切记，工程里凡是要用到Context的地方，MainApp.getApp() 方法，以免造成内存泄漏。
     还有，这里面有一句话叫做AppHelper.isAppMainProcess() ，是判断的主UI 进程的。
     因为Application的onCreate()有多少个进程就会执行多少次，而有些代码我们只需要在UI 进程执行，所以这里可以用上述方法判断。
@@ -106,7 +106,7 @@
 
 **23、FastBlurUtil,FastBlurUtil2 类：**
 
-    我改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。建议使用FastBlurUtil。
+    改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。建议使用FastBlurUtil。
     github上的两种实现：
     1、https://github.com/CameraKit/blurkit-android
     2、https://github.com/wasabeef/Blurry
@@ -559,8 +559,9 @@
 **106、Android8.0 及以上TextView控件可以适应宽度显示全文字：**
     
     下面的只是针对于8.0的设备有效，如果想要兼容8.0以下设备，则需要用AppCompatTextView代替TextView：
+
     autoSizeTextType：设置TextView是否支持自动改变文本大小，none表示不支持，uniform表示支持。
     autoSizeMinTextSize：最小文字大小，例如设置为10sp，表示文字最多只能缩小到10sp。
     autoSizeMaxTextSize：最大文字大小，例如设置为18sp，表示文字最多只能放大到18sp。
     autoSizeStepGranularity：缩放粒度，即每次文字大小变化的数值，例如设置为1sp，表示每次缩小或放大的值为1sp。
-    
+    android:includeFontPadding="false"：去除TextView边框周围的间隙
