@@ -156,28 +156,45 @@ public class FileUtils {
         fromFile.renameTo(toFile);
     }
 
+
     /**
      * 根据文件后缀名复制文件，支持数组格式的多个后缀名
      */
     public static void copyFilesBySuffix(String source_dir, String dest_dir, String[] files_suffix) {
         File[] source_files = new File(source_dir).listFiles();
-        if (source_files != null && source_files.length > 0) {
+
+        // 是否把source_dir整个文件夹的文件都复制过去
+        boolean isCopyAllFiles = false;
+        if (files_suffix.length == 1) {
+            if (files_suffix[0] == null || files_suffix[0].length() <= 0) {
+                isCopyAllFiles = true;
+            }
+        }
+
+        if (source_files.length > 0) {
             for (File file : source_files) {
-                for (String suffix : files_suffix) {
-                    if (file.getName().endsWith(suffix)) {
-                        String dest_file_path = dest_dir + File.separator + file.getName();
-                        copyFile(file.getAbsolutePath(), dest_file_path);
+                String dest_file_path = dest_dir + File.separator + file.getName();
+
+                if (isCopyAllFiles) {
+                    copyFile(file.getAbsolutePath(), dest_file_path);
+                } else {
+                    for (String suffix : files_suffix) {
+                        if (file.getName().endsWith(suffix)) {
+                            copyFile(file.getAbsolutePath(), dest_file_path);
+                        }
                     }
                 }
+
             }
         }
     }
 
     /**
-     * 根据文件后缀名复制文件，此方法只支持单个文件后缀名
+     * 根据文件后缀名复制文件，此方法只支持单个文件后缀名。
+     * 如果suffix参数为空字符串""，那么就是复制所有的文件
      */
     public static void copyFilesBySuffix(String source_dir, String dest_dir, String suffix) {
-        copyFilesBySuffix(source_dir, dest_dir, new String[]{suffix});
+        copyFilesBySuffix(source_dir, dest_dir, new String[] { suffix });
     }
 
     /**
@@ -185,7 +202,7 @@ public class FileUtils {
      */
     public static void getAllFiles(File dir, List<File> fileList) {
         File[] files = dir.listFiles();
-        if (files != null && files.length > 0) {
+        if (files!= null && files.length > 0) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     getAllFiles(file, fileList);
