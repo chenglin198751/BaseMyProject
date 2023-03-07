@@ -183,14 +183,14 @@ public class FileUtils {
     /**
      * 获取一个文件夹下所有的文件
      */
-    public static void getAllFiles(File dir, List<String> fileList) {
+    public static void getAllFiles(File dir, List<File> fileList) {
         File[] files = dir.listFiles();
         if (files != null && files.length > 0) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     getAllFiles(file, fileList);
                 } else {
-                    fileList.add(file.getAbsolutePath());
+                    fileList.add(file);
                 }
             }
         }
