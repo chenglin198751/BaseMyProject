@@ -111,6 +111,13 @@ public class ReflectUtils {
         return stubAsInterface(classForName(clazz), binder);
     }
 
+    /**
+     * 反射调用一个静态类的静态方法，使用示例：
+     * String className = "com.qihoo.gamecenter.sdk.matrix.Matrix";
+     * Class<?>[] parameterTypes = {Activity.class};
+     * Object[] parameters = {PortraitSdkUserActivity.this};
+     * ReflectUtils.invokeStaticMethod(className,"openFloatWindow",parameterTypes,parameters);
+     */
     public static Object invokeStaticMethod(String className, String methodName, Class<?>[] parameterTypes, Object... parameters) {
         try {
             Method method = getDeclaredMethod(classForName(className), methodName, parameterTypes);
