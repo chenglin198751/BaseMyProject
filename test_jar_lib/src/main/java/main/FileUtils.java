@@ -212,4 +212,17 @@ public class FileUtils {
             }
         }
     }
+
+    /**
+     * 获取一个文件夹下所有的文件和文件夹
+     */
+    public static void getAllDirs(File dir, List<File> dirList) {
+        File[] files = dir.listFiles();
+        for (File file : files) {
+            dirList.add(file);
+            if (file.isDirectory()) {
+                getAllDirs(file, dirList);
+            }
+        }
+    }
 }
