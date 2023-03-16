@@ -210,3 +210,7 @@
     tree.visit {FileTreeElement element ->
         println "$element.relativePath => $element.file"
     }
+
+**12、批量导入aar jar：**
+
+    implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
