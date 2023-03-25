@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 
 
 public class CommonDialog extends Dialog {
@@ -47,7 +47,7 @@ public class CommonDialog extends Dialog {
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getWindow().getDecorView().setPadding(BaseUtils.dip2px(45f), 0, BaseUtils.dip2px(45f), 0);
+        getWindow().getDecorView().setPadding(AppBaseUtils.dip2px(45f), 0, AppBaseUtils.dip2px(45f), 0);
         getWindow().setAttributes(layoutParams);
     }
 

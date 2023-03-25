@@ -57,22 +57,26 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
         mBaseViewHelper = new BaseViewHelper(getContext());
     }
 
+    @CallSuper
     @Deprecated
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.base_fragment_layout, container, false);
+        mContentView = (RelativeLayout) inflater.inflate(R.layout.base_fragment_layout, container, false);
+        return mContentView;
     }
 
+    @CallSuper
     @Deprecated
     @Override
-    public final void onViewCreated(View view, Bundle savedInstanceState) {
+    public final void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mContentView = view.findViewById(R.id.base_frag_id);
+
         if (getContentLayout() > 0) {
             mContentView.addView(View.inflate(getContext(), getContentLayout(), null), new RelativeLayout.LayoutParams(-1, -1));
         } else if (getContentView() != null) {
             mContentView.addView(getContentView(), new RelativeLayout.LayoutParams(-1, -1));
         }
+
         onViewCreated(savedInstanceState, view);
     }
 

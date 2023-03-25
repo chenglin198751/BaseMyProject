@@ -103,7 +103,7 @@ public class SmartImageLoader {
                                    final Drawable placeholder,
                                    final int scaleType) {
 
-        Activity activity = BaseUtils.getActivityFromContext(imageView.getContext());
+        Activity activity = AppBaseUtils.getActivityFromContext(imageView.getContext());
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return;
         }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseFragment;
+import com.wcl.test.databinding.ActivityMainBinding;
 import com.wcl.test.helper.ShowFragmentHelper;
 import com.wcl.test.widget.ToastUtils;
 
@@ -33,6 +34,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             R.string.host_third_tab, R.string.host_fourth_tab};
     private final Class[] FRAGMENTS = {MainFirstFragment.class, MainSecondFragment.class, MainThirdFragment.class, MainFourthFragment.class};
     private ShowFragmentHelper mFragHelper;
+    private ActivityMainBinding mViewBinding;
 
     private MainFirstFragment mMainFirstFragment;
     private MainSecondFragment mMainSecondFragment;
@@ -54,7 +56,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        setContentLayout(R.layout.activity_main);
+        mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentLayout(mViewBinding.getRoot());
+
         getTitleHelper().hideTitleBar();
         mFragHelper = new ShowFragmentHelper(getSupportFragmentManager(), FRAGMENTS);
 
@@ -64,9 +68,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void initView() {
         for (int index = 0; index < TAB_BOTTOM_ID_ARRAY.length; index++) {
-            findViewById(TAB_BOTTOM_ID_ARRAY[index]).setOnClickListener(this);
-            ImageView imageView = (ImageView) findViewById(TAB_BOTTOM_ID_ARRAY[index]).findViewById(R.id.image_view);
-            TextView textView = (TextView) findViewById(TAB_BOTTOM_ID_ARRAY[index]).findViewById(R.id.text_view);
+            mViewBinding.bottomTab.findViewById(TAB_BOTTOM_ID_ARRAY[index]).setOnClickListener(this);
+            ImageView imageView =  findViewById(TAB_BOTTOM_ID_ARRAY[index]).findViewById(R.id.image_view);
+            TextView textView = findViewById(TAB_BOTTOM_ID_ARRAY[index]).findViewById(R.id.text_view);
 
             imageView.setImageResource(TAB_BOTTOM_ICON_ARRAY[index]);
             textView.setText(TAB_BOTTOM_NAME_ARRAY[index]);

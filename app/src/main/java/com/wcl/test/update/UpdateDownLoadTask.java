@@ -4,16 +4,12 @@ import android.app.Notification;
 import android.content.Context;
 import android.widget.RemoteViews;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.wcl.test.R;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;
-import com.wcl.test.R;
 import com.wcl.test.httpwork.HttpUtils;
-import okhttp3.Call;
-import com.wcl.test.utils.BaseUtils;
-import com.wcl.test.utils.FileUtils;
+import com.wcl.test.utils.ApkInstaller;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.widget.ToastUtils;
 
 public class UpdateDownLoadTask {
@@ -30,34 +26,31 @@ public class UpdateDownLoadTask {
 
     public void start(final String url) {
         isDownLoading = true;
-        clearTempFile();
         showNotification(0);
 
         final HttpUtils.HttpDownloadCallback downloadCallback = new HttpUtils.HttpDownloadCallback() {
             @Override
-            public void onSuccess(String filePath) {
-                mUpdateDialog.downloadSuccess();
-                cancelNotify();
-                BaseUtils.installApk(BaseApp.getApp(), filePath);
-                isDownLoading = false;
+            public void onFinished(boolean isSuccess, String filePath, Exception e) {
+                if (isSuccess) {
+                    mUpdateDialog.downloadSuccess();
+                    cancelNotify();
+                    ApkInstaller.openApk(BaseApp.getApp(), filePath);
+                    isDownLoading = false;
+                } else {
+                    isDownLoading = false;
+                    suddenBreadNet();
+                    ToastUtils.show(R.string.net_error);
+                }
             }
 
             @Override
-            public void onProgress(Call call, long fileTotalSize, long fileDowningSize, float percent) {
+            public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
                 isDownLoading = true;
-                showNotification((int) (percent *100));
-            }
-
-            @Override
-            public void onFailure(IOException e) {
-                isDownLoading = false;
-                suddenBreadNet();
-                clearTempFile();
-                ToastUtils.show(R.string.net_error);
+                showNotification((int) (percent * 100));
             }
         };
 
-        HttpUtils.downloadFile(url, getApkPath(), false, downloadCallback);
+        HttpUtils.downloadFile(url, true, downloadCallback);
     }
 
 
@@ -105,7 +98,7 @@ public class UpdateDownLoadTask {
      * 突然断网，取消下载进度
      */
     public void suddenBreadNet() {
-        BaseUtils.getHandler().post(new Runnable() {
+        AppBaseUtils.getUiHandler().post(new Runnable() {
             @Override
             public void run() {
                 cancelNotify();
@@ -114,14 +107,8 @@ public class UpdateDownLoadTask {
         });
     }
 
-    private void clearTempFile() {
-        File myFile = new File(getApkPath());
-        myFile.delete();
-    }
-
-
-    public static boolean apkExist(Context context, String versionName) {
-        ApkItem apkItem = BaseUtils.getApkInfo(context, getApkPath());
+    public static boolean apkExist(Context context, String versionName, String apk_path) {
+        ApkItem apkItem = AppBaseUtils.getApkInfo(context, apk_path);
 
         if (apkItem == null) {
             return false;
@@ -132,9 +119,5 @@ public class UpdateDownLoadTask {
         } else {
             return false;
         }
-    }
-
-    public static String getApkPath() {
-        return FileUtils.getExternalPath() + BaseUtils.getPackageName() + ".apk";
     }
 }

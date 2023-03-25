@@ -13,6 +13,8 @@ import java.io.IOException;
 public class FileUtils {
 
     /**
+     * 不需要存储权限
+     *
      * 现在的Android应用将文件放到SD卡上时总是随便创建一个目录，那这样有个问题就是卸载应用时，
      * 这些垃圾还留在用户的SD卡上导致占用存储空间（猎豹清理大师这样的工具由此应用而生）。
      * 其实Android系统已经帮我们提供了相关的API可以将文件缓存到data/data目录下，
@@ -21,26 +23,10 @@ public class FileUtils {
      * 2021-05-21 修正补充：
      * 由于安卓11对文件存储有很大限制，导致sdcard/data/data无法正常使用。故此方法弃用.
      * 所以存储统一改为使用 getExternalPath() 方法
-     *
-     * @see com.wcl.test.utils.FileUtils#getExternalPath
-     */
-    @Deprecated
-    public static String getDataPath() {
-        return BaseApp.getApp().getFilesDir().getAbsolutePath();
-    }
-
-    /**
      * 获取外部存储卡路径：比如：sdcard/Android/data/data/包名/cache
      */
     public static String getExternalPath() {
         return BaseApp.getApp().getExternalCacheDir().getAbsolutePath();
-    }
-
-    /**
-     * 获取外部存储卡下载路径：比如：/storage/emulated/0/Download/
-     */
-    public static String getExternalDownloadPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
     }
 
     /**

@@ -13,7 +13,7 @@ import com.wcl.test.EnvToggle;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseAction;
 import com.wcl.test.preferences.ToggleSettings;
-import com.wcl.test.utils.BaseUtils;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.widget.ToastUtils;
 
 
@@ -43,7 +43,7 @@ public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 ToggleSettings.setLogEnable(isChecked);
-                if (BaseUtils.isDebuggable()){
+                if (AppBaseUtils.isDebuggable()){
                     ToastUtils.show("操作无效，AndroidStudio运行安装的的apk，日志永远是开启");
                 }
             }

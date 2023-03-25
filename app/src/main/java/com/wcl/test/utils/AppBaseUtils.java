@@ -1,6 +1,5 @@
 package com.wcl.test.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
@@ -15,12 +14,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
@@ -28,10 +24,8 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseApp;
@@ -57,8 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.CRC32;
 
-public class BaseUtils {
-    private static Handler mHandler;
+public class AppBaseUtils {
     private static String mVerCode = null;
     private static String mVerName = null;
     private static int mStatusBarHeight = 0;
@@ -204,58 +197,6 @@ public class BaseUtils {
     }
 
     /**
-     * 安装一个APK包
-     */
-    public static void installApk(Context context, String path) {
-        try {
-            installApk2(context, path);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void installApk2(Context context, String path) {
-        Activity activity = (Activity) context;
-        if (activity == null) {
-            return;
-        }
-        File file = new File(path);
-        if (file.exists()) {
-            Intent installApkIntent = new Intent();
-            installApkIntent.setAction(Intent.ACTION_VIEW);
-            installApkIntent.addCategory(Intent.CATEGORY_DEFAULT);
-            installApkIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //适配8.0需要有权限
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                boolean hasInstallPermission = context.getPackageManager().canRequestPackageInstalls();
-                if (hasInstallPermission) {
-                    //安装应用
-//                    installApkIntent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".QGameFileProvider", file), "application/vnd.android.package-archive");
-                    installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    if (context.getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-                        context.startActivity(installApkIntent);
-                    }
-                } else {
-                    //跳转至“安装未知应用”权限界面，引导用户开启权限
-                    Uri selfPackageUri = Uri.parse("package:" + context.getPackageName());
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, selfPackageUri);
-                    activity.startActivityForResult(intent, 10098);
-                }
-            } else {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-//                    installApkIntent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".QGameFileProvider", file), "application/vnd.android.package-archive");
-                    installApkIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                } else {
-                    installApkIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-                }
-                if (context.getPackageManager().queryIntentActivities(installApkIntent, 0).size() > 0) {
-                    context.startActivity(installApkIntent);
-                }
-            }
-        }
-    }
-
-    /**
      * 得到APK包的信息
      */
     public static ApkItem getApkInfo(Context context, String path) {
@@ -266,38 +207,35 @@ public class BaseUtils {
 
         PackageManager mPackageManager = context.getPackageManager();
         ApkItem apkItem = new ApkItem();
-        PackageInfo ApkInfor = mPackageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
+        PackageInfo ApkInfo = mPackageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
 
-        if (ApkInfor == null) {
+        if (ApkInfo == null) {
             return null;
         }
 
         apkItem.appSize = file.length();
-        apkItem.appVersion = ApkInfor.versionName;
-        apkItem.versionCode = ApkInfor.versionCode;
+        apkItem.appVersion = ApkInfo.versionName;
+        apkItem.versionCode = ApkInfo.versionCode;
 
-        ApplicationInfo appInfo = ApkInfor.applicationInfo;
+        ApplicationInfo appInfo = ApkInfo.applicationInfo;
         appInfo.sourceDir = path;
         appInfo.publicSourceDir = path;
 
         apkItem.appName = appInfo.loadLabel(mPackageManager).toString().trim();
         apkItem.image = appInfo.loadIcon(mPackageManager);
-        apkItem.packageName = ApkInfor.applicationInfo.packageName;
+        apkItem.packageName = ApkInfo.applicationInfo.packageName;
         return apkItem;
+    }
+
+    private static final class MHandlerHolder {
+        private static final Handler mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
      * 创建一个全局Handler，可以用来执行一些post任务等
      */
-    public static Handler getHandler() {
-        if (mHandler == null) {
-            synchronized (BaseUtils.class) {
-                if (mHandler == null) {
-                    mHandler = new Handler(Looper.getMainLooper());
-                }
-            }
-        }
-        return mHandler;
+    public static Handler getUiHandler() {
+        return MHandlerHolder.mHandler;
     }
 
     //利用BigDecimal做除法
