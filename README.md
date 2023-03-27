@@ -8,6 +8,7 @@
 * [常用代码记录1.md](doc_notes/常用代码记录1.md)
 * [常用代码记录2.md](doc_notes/常用代码记录2.md)
 * [开发SDK注意事项.md](doc_notes/开发SDK注意事项.md)
+* [python学习笔记.md](doc_notes/python学习笔记.md)
 
 **1、BaseActivity 类：** 
 
