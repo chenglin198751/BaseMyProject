@@ -40,8 +40,8 @@ public class BaseAction {
         String ACTIVITY_NAME = "activity_name";
     }
 
-    public interface CommonAction {
-        String ACTION_TEST = "ACTION_TEST";
+    public interface Action {
+        String TEST = "TEST";
     }
 
 }
