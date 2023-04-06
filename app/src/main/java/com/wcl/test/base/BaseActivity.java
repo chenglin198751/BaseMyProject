@@ -39,6 +39,7 @@ import java.util.List;
  * @author weiChengLin 2013-06-20
  */
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
+    private BroadcastReceiver mBroadcastReceiver = null;
     protected final static Gson gson = AppConstants.gson;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper = null;
@@ -335,6 +336,16 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     private void registerBroadcastReceiver() {
         if (mBroadcastReceiver == null) {
+            mBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().equals(BaseAction.System.ACTION_BASE_BROADCAST)) {
+                        String myAction = intent.getStringExtra("action");
+                        onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
+                    }
+                }
+            };
+
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
             LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
@@ -347,15 +358,5 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             mBroadcastReceiver = null;
         }
     }
-
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BaseAction.System.ACTION_BASE_BROADCAST)) {
-                String myAction = intent.getStringExtra("action");
-                onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
-            }
-        }
-    };
 
 }
