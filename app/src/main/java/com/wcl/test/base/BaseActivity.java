@@ -334,9 +334,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     private void registerBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
+        if (mBroadcastReceiver == null) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
+        }
     }
 
     private void unregisterBroadcastReceiver() {
