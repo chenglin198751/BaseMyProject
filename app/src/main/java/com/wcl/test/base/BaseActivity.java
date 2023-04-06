@@ -173,9 +173,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mBroadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
-        }
+        unregisterBroadcastReceiver();
     }
 
 
@@ -339,6 +337,13 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        if (mBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mBroadcastReceiver);
+            mBroadcastReceiver = null;
+        }
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
