@@ -40,7 +40,7 @@ public class BaseAction {
         String ACTIVITY_NAME = "activity_name";
     }
 
-    public interface Action {
+    public interface Actions {
         String TEST = "TEST";
     }
 
