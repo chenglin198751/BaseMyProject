@@ -10,6 +10,9 @@
 * [开发SDK注意事项.md](doc_notes/开发SDK注意事项.md)
 * [python学习笔记.md](doc_notes/python学习笔记.md)
 * [海外SDK笔记.md](doc_notes/海外SDK笔记.md)
+* [融合SDK--python打包常用代码.md](doc_notes/融合SDK--python打包常用代码.md)
+* [融合SDK--各渠道特性.md](doc_notes/融合SDK--各渠道特性.md)
+* [融合SDK--开发点注意.md](doc_notes/融合SDK--开发点注意.md)
 
 **1、BaseActivity 类：** 
 
