@@ -74,3 +74,7 @@
 
     <param name="taAppId" value="9ae899c5dd1243318a545a0a20cc1f82"/>
 
+**8、有的渠道需要单独的keystore，比如应用宝，因为战火使命游戏，之前上线过应用宝，所以必须用旧的签名文件才行**
+    
+    参考如下路径：
+    ...\games\game27\channels\2707\keystore\keystore.xml
