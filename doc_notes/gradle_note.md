@@ -182,6 +182,12 @@
         into 'C:/work/AndroidCode/BaseMyProject/test'
     }
 
+    // 直接调用方法生成zip文件
+    def zipFile = file(jar_name_dir + "/"+jar_name + ".jar")
+    def sourceDir = file(jar_name_dir )
+    zipFile.delete()
+    ant.zip(destFile: zipFile, basedir: sourceDir)
+
 **9、gradle 下载的aar路径：**
 
     C:\Users\weichenglin1\.gradle\caches\modules-2\files-2.1\androidx.viewpager2\viewpager2\1.0.0\91c378a09ddff66e1bb73e90edeac53487d2832b\viewpager2-1.0.0.aar
