@@ -167,6 +167,7 @@
 
 **8、gradle 执行执行压缩和解压缩：**
 
+    1、基于gradle的task生成zip和解压zip
     执行任务并传递参数：gradlew zip -Pparams=123
     在任务内获取参数：project.getProperty("params") 或者 "$params"
     判断是否有参数：project.hasProperty("apk_name")
@@ -182,11 +183,18 @@
         into 'C:/work/AndroidCode/BaseMyProject/test'
     }
 
-    // 直接调用方法生成zip文件
-    def zipFile = file(jar_name_dir + "/"+jar_name + ".jar")
-    def sourceDir = file(jar_name_dir )
+    2、直接调用gradle自带的ant方法生成zip和解压zip
+
+    // 生成zip文件
+    def zipFile = file("E:\\bbb\\xx.zip")
+    def sourceDir = file("E:\\aaa" )
     zipFile.delete()
     ant.zip(destFile: zipFile, basedir: sourceDir)
+
+    // 解压zip
+    def zipFile = file("E:\\bbb\\xx.zip")
+    def destDir = "E:\\bbb\\xx"
+    ant.unzip(src:zipFile, dest:destDir)
 
 **9、gradle 下载的aar路径：**
 
