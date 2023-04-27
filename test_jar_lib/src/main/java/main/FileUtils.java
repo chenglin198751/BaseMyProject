@@ -225,4 +225,7 @@ public class FileUtils {
             }
         }
     }
+
+    //逐行读取文本
+//    List<String> lines = Files.readAllLines(Paths.get(all_file_path),StandardCharsets.UTF_8);
 }
