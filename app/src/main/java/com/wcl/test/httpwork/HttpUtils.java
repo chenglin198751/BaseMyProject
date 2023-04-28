@@ -714,16 +714,6 @@ public class HttpUtils {
                     httpCallback.onResponse(true, result);
                 }
             });
-
-
-//                //这里try catch的唯一目的就是防止在回调结果时，json解析错误、之类的crash没处理。
-//                //如果你觉得回调结果的crash不要try，要直接暴露，你可以注释调我这里的try catch
-//                try {
-//                    httpCallback.onResponse(true, result);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    httpCallback.onResponse(false, e.toString());
-//                }
         }
     }
 
