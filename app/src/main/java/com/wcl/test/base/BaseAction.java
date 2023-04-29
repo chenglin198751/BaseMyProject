@@ -40,7 +40,8 @@ public class BaseAction {
         String ACTIVITY_NAME = "activity_name";
     }
 
-
-    public final static String ACTION_TEST = "ACTION_TEST";
+    public interface Actions {
+        String TEST = "TEST";
+    }
 
 }

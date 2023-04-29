@@ -39,6 +39,7 @@ import java.util.List;
  * @author weiChengLin 2013-06-20
  */
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
+    private BroadcastReceiver mBroadcastReceiver = null;
     protected final static Gson gson = AppConstants.gson;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper = null;
@@ -173,9 +174,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mBroadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
-        }
+        unregisterBroadcastReceiver();
     }
 
 
@@ -336,19 +335,28 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     private void registerBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
+        if (mBroadcastReceiver == null) {
+            mBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().equals(BaseAction.System.ACTION_BASE_BROADCAST)) {
+                        String myAction = intent.getStringExtra("action");
+                        onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
+                    }
+                }
+            };
+
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
+        }
     }
 
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BaseAction.System.ACTION_BASE_BROADCAST)) {
-                String myAction = intent.getStringExtra("action");
-                onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
-            }
+    private void unregisterBroadcastReceiver() {
+        if (mBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mBroadcastReceiver);
+            mBroadcastReceiver = null;
         }
-    };
+    }
 
 }
