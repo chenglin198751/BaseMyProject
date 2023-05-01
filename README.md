@@ -12,7 +12,7 @@
 * [海外SDK笔记.md](doc_notes/海外SDK笔记.md)
 * [融合SDK--python打包常用代码.md](doc_notes/融合SDK--python打包常用代码.md)
 * [融合SDK--各渠道特性.md](doc_notes/融合SDK--各渠道特性.md)
-* [融合SDK--开发点注意.md](doc_notes/融合SDK--开发点注意.md)
+* [融合SDK--开发点注意.md](doc_notes/融合SDK--渠道参数配置.md)
 
 **1、BaseActivity 类：** 
 
