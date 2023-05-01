@@ -78,3 +78,8 @@
     
     参考如下路径：
     ...\games\game27\channels\2707\keystore\keystore.xml
+
+**9、360独代，对外的投放渠道，配置投放渠道的各个app_id如下：**
+    
+    //字节跳动的巨量引擎的app id
+    <param name="ByteDance_toufang_id" value="481568"/>
