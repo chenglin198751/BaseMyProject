@@ -14,6 +14,12 @@
 * [融合SDK--各渠道特性.md](doc_notes/融合SDK--各渠道特性.md)
 * [融合SDK--开发点注意.md](doc_notes/融合SDK--渠道参数配置.md)
 
+## 如何从手助获取包：
+    
+    从 https://openbox.mobilem.360.cn/third/getAppInfo?sid=xxx 中获取到下载链接，
+    然后将域名 shouji.360tpcdn.com 替换成 m.shouji.360tpcdn.com
+
+
 **1、BaseActivity 类：** 
 
     基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。
