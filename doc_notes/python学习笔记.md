@@ -32,3 +32,9 @@
     for af in files:
         abs_f = os.path.abspath(af)
         print "abspath = " + abs_f
+
+**7、shutil使用方法 ：**
+
+    shutil.copytree(src, dst)：复制文件夹，注意，目标路径dst必须不存在才能复制
+    shutil.copy(src, dst)：目标dst即可以是文件路径，也可以是目录路径
+    shutil.move(src, dst)：相当于rename重命名操作
