@@ -70,7 +70,7 @@
     此类是在主Activity onCreate()中最先初始化的类。由于隐私协议问题，所以init方法延后了，
     导致某些必须提前设置的方法无法被设置。所以，此类最先执行游戏主Activity onCreate()。
 
-**7、games.xml中添加数数appid，注意，每个游戏appid一定要单独申请。示例：**
+**7、对整个游戏配置，games.xml中添加数数appid，注意，每个游戏appid一定要单独申请。示例：**
 
     <param name="taAppId" value="9ae899c5dd1243318a545a0a20cc1f82"/>
 
@@ -79,7 +79,7 @@
     参考如下路径：
     ...\games\game27\channels\2707\keystore\keystore.xml
 
-**9、360独代，对外的投放渠道，配置投放渠道的各个参数如下：**
+**9、对游戏下的某个渠道配置，示例，game27下的config.xml中，360独代渠道，对外投放，配置投放渠道的各个参数如下：**
     
     //字节跳动的巨量引擎的app id
     <param name="ByteDance_toufang_id" value="481568"/>
