@@ -79,7 +79,20 @@
     参考如下路径：
     ...\games\game27\channels\2707\keystore\keystore.xml
 
-**9、对游戏下的某个渠道配置，示例，game27下的config.xml中，360独代渠道，对外投放，配置投放渠道的各个参数如下：**
+**9、配置投放渠道参数等：对游戏下的某个渠道配置，示例，game27下的config.xml中，360独代渠道，对外投放，配置投放渠道的各个参数如下：**
     
     //字节跳动的巨量引擎的app id
     <param name="ByteDance_toufang_id" value="481568"/>
+
+**10、配置一个游戏是否开启接入推送SDK，并且配置各个推送通道的参数，在每个游戏下的games.xml配置：**
+
+    //um_push_sdk:是否开启推送的总开关
+    <push>
+        <param name="um_push_sdk" value="true"/>
+        <param name="um_push_app_key" value="6465c3a38c5c724f27370192"/>
+        <param name="um_push_message_secret" value="30da8ce99e03bd605c54930ab3dc598f"/>
+        <param name="xiaomi_push_app_id" value="2882303761518668828"/>
+        <param name="xiaomi_push_app_key" value="5141866839828"/>
+        <param name="oppo_push_app_key" value="34a18bd669aa4610a47ea15aed4712dd"/>
+        <param name="oppo_push_app_secret" value="xxxxxxxxxx"/>				
+    </push>
