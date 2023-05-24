@@ -86,13 +86,15 @@
 
 **10、配置一个游戏是否开启接入推送SDK，并且配置各个推送通道的参数，在每个游戏下的games.xml配置：**
 
-    //um_push_sdk:是否开启推送的总开关
+    //push_sdk_switch:是否开启推送的总开关
     <push>
-        <param name="um_push_sdk" value="true"/>
+        <param name="push_sdk_switch" value="true"/>
         <param name="um_push_app_key" value="6465c3a38c5c724f27370192"/>
         <param name="um_push_message_secret" value="30da8ce99e03bd605c54930ab3dc598f"/>
         <param name="xiaomi_push_app_id" value="2882303761518668828"/>
         <param name="xiaomi_push_app_key" value="5141866839828"/>
         <param name="oppo_push_app_key" value="34a18bd669aa4610a47ea15aed4712dd"/>
-        <param name="oppo_push_app_secret" value="xxxxxxxxxx"/>				
+        <param name="oppo_push_app_secret" value="xxxxxxxxxx"/>
+        <param name="vivo_push_app_key" value="xxxxxxxx1111"/>
+        <param name="vivo_push_app_id" value="xxxxxxxx2222"/>
     </push>
