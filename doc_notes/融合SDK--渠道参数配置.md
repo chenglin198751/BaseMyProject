@@ -94,7 +94,7 @@
         <param name="xiaomi_push_app_id" value="2882303761518668828"/>
         <param name="xiaomi_push_app_key" value="5141866839828"/>
         <param name="oppo_push_app_key" value="34a18bd669aa4610a47ea15aed4712dd"/>
-        <param name="oppo_push_app_secret" value="xxxxxxxxxx"/>
-        <param name="vivo_push_app_key" value="xxxxxxxx1111"/>
+        <param name="oppo_push_master_secret" value="503557ff3bd64f05b2fb47304491016e"/>
+        <param name="vivo_push_app_key" value="405f1d43ca35dadf84fd49290e948db5"/>
         <param name="vivo_push_app_id" value="xxxxxxxx2222"/>
     </push>
