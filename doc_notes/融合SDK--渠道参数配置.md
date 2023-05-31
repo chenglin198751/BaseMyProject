@@ -86,7 +86,7 @@
 
 **10、配置一个游戏是否开启接入推送SDK，并且配置各个推送通道的参数，在每个游戏下的games.xml配置：**
 
-    //push_sdk_switch:是否开启推送的总开关
+
     <push>
         <param name="push_sdk_switch" value="true"/>
         <param name="um_push_app_key" value="6465c3a38c5c724f27370192"/>
@@ -95,6 +95,12 @@
         <param name="xiaomi_push_app_key" value="5141866839828"/>
         <param name="oppo_push_app_key" value="34a18bd669aa4610a47ea15aed4712dd"/>
         <param name="oppo_push_master_secret" value="503557ff3bd64f05b2fb47304491016e"/>
-        <param name="vivo_push_app_key" value="405f1d43ca35dadf84fd49290e948db5"/>
-        <param name="vivo_push_app_id" value="xxxxxxxx2222"/>
+		<param name="vivo_push_app_key" value="405f1d43ca35dadf84fd49290e948db5"/>
+		<param name="vivo_push_app_id" value="104481124"/>
     </push>
+
+    参数说明：
+    1、push_sdk_switch:总开关，是否开启推送
+    2、xiaomi,oppo,vivo参数，如果开通了厂商通道就配置，未开通就不要配置；华为比较特殊，必须写在manifest中（默认已写入）
+    3、xiaomi,vivo,友盟，必须配置游戏的多个包名；华为不支持多包名配置；oppo无需配置多包名
+    4、友盟推送可以用随意的手机调试，但是调试4大厂商推送时，必须用对应厂商手机调试
