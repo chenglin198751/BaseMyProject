@@ -86,7 +86,6 @@
 
 **10、配置一个游戏是否开启接入推送SDK，并且配置各个推送通道的参数，在每个游戏下的games.xml配置：**
 
-
     <push>
         <param name="push_sdk_switch" value="true"/>
         <param name="um_push_app_key" value="6465c3a38c5c724f27370192"/>
