@@ -69,11 +69,6 @@ android {
     }
 }
 
-task clean2(dependsOn: 'clean') {
-    delete rootProject.getProjectDir().absolutePath + "/app/debug"
-    delete rootProject.getProjectDir().absolutePath + "/app/release"
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation fileTree(dir: 'libs', include: ['*.aar'])
