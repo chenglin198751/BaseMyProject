@@ -8,13 +8,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.PackTools;
+
 
 public class CmdTask {
     private final static String TYPE_INPUT = "input";
     private final static String TYPE_ERROR = "error";
-    private boolean isLog = false;
     private final String mCommand;
     private final String mWorkDir;
+    private OnLogListener<String> mLogListener;
 
 
     public CmdTask(String command) {
@@ -26,8 +28,11 @@ public class CmdTask {
         this.mWorkDir = FileUtils.replacePath(workDir);
     }
 
+    public void setLogListener(OnLogListener<String> listener) {
+        mLogListener = listener;
+    }
+
     public Outs run(boolean is_log) {
-        isLog = is_log;
         Outs outs = new Outs();
         Process process = null;
         int exitVal = 0;
@@ -41,8 +46,8 @@ public class CmdTask {
             process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
             // Runtime.exec()创建的子进程公用父进程的流，不同平台上，父进程的stream buffer可能被打满导致子进程阻塞，从而永远无法返回。
             // 针对这种情况，我们只需要将子进程的stream重定向出来即可。
-            new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT).start();
-            new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR).start();
+            new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT, mLogListener).start();
+            new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR, mLogListener).start();
 
             exitVal = process.waitFor();
         } catch (IOException | InterruptedException e) {
@@ -81,18 +86,20 @@ public class CmdTask {
     }
 
     private static class RedirCmdStreamThread extends Thread {
+        OnLogListener<String> mLogListener;
         InputStream is;
         Process process;
         String type;
         boolean isLog;
         Outs mOuts;
 
-        RedirCmdStreamThread(boolean is_log, Outs outs, Process process, InputStream is, String type) {
+        RedirCmdStreamThread(boolean is_log, Outs outs, Process process, InputStream is, String type, OnLogListener<String> listener) {
             this.is = is;
             this.process = process;
             this.type = type;
             this.isLog = is_log;
             this.mOuts = outs;
+            this.mLogListener = listener;
         }
 
         public void run() {
@@ -105,6 +112,10 @@ public class CmdTask {
                     if (isLog) {
                         PackTools.Printer.print(line);
                     }
+                    if (mLogListener != null) {
+                        mLogListener.onFinished(line);
+                    }
+
                     if (type.equals(TYPE_INPUT)) {
                         mOuts.addInputList(line);
                     } else if (type.equals(TYPE_ERROR)) {
