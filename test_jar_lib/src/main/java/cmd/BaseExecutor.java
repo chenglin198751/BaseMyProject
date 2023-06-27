@@ -1,12 +1,8 @@
-package com.zyh.ce4j.executor;
+package cmd;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import com.zyh.ce4j.domain.ExecutedResult;
-import com.zyh.ce4j.domain.Result;
-import com.zyh.ce4j.strategy.CheckStrategy;
 
 public class BaseExecutor implements Executor{
 	

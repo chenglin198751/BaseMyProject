@@ -1,7 +1,4 @@
-package com.zyh.ce4j.strategy;
-
-import com.zyh.ce4j.domain.Result;
-import com.zyh.ce4j.util.StringUtils;
+package cmd;
 
 /**
  * 预实现的一个简单判定执行结果的策略：
