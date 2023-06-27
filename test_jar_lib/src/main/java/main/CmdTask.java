@@ -50,6 +50,8 @@ public class CmdTask {
             new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR, mLogListener).start();
 
             exitVal = process.waitFor();
+            process.destroy();
+            process.exitValue();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             error = e.toString();
