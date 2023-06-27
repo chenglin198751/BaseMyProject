@@ -1,4 +1,4 @@
-package com.zyh.ce4j.executor;
+package cmd;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,10 +10,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.zyh.ce4j.domain.ExecutedResult;
-import com.zyh.ce4j.domain.Result;
-import com.zyh.ce4j.strategy.CheckStrategy;
 
 public interface Executor {
 	

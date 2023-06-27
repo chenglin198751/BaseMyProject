@@ -1,6 +1,4 @@
-package com.zyh.ce4j.strategy;
-
-import com.zyh.ce4j.domain.Result;
+package cmd;
 
 public interface CheckStrategy {
 	/**

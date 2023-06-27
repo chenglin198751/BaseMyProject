@@ -1,4 +1,4 @@
-package com.zyh.ce4j.domain;
+package cmd;
 
 import java.util.List;
 
