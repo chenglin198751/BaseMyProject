@@ -55,6 +55,10 @@ public class CmdTask {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             error = e.toString();
+            if (process != null) {
+                process.destroy();
+                process.exitValue();
+            }
         }
 
         if (error.length() > 0 || exitVal != 0) {
