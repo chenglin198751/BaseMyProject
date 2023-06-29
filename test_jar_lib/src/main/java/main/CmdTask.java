@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import main.PackTools;
-
 
 public class CmdTask {
     private final static String TYPE_INPUT = "input";
@@ -109,9 +107,11 @@ public class CmdTask {
         }
 
         public void run() {
+            InputStreamReader isr = null;
+            BufferedReader br = null;
             try {
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
+                isr = new InputStreamReader(is);
+                br = new BufferedReader(isr);
 
                 String line = "";
                 while ((line = br.readLine()) != null) {
@@ -132,6 +132,17 @@ public class CmdTask {
                 mOuts.inputList.add(ioe.toString());
                 mOuts.errorList.add(ioe.toString());
                 ioe.printStackTrace();
+            } finally {
+                try {
+                    if (br != null) {
+                        br.close();
+                    }
+                    if (isr != null) {
+                        isr.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
