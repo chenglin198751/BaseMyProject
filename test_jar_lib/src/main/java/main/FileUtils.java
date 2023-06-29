@@ -26,6 +26,11 @@ public class FileUtils {
         }
     }
 
+    public static void move(String from_dir, String to_dir) {
+        copyDirectory(from_dir, to_dir);
+        delete(from_dir);
+    }
+
     public static void copyDirectory(String fromDir2, String toDir2) {
         fromDir2 = replacePath(fromDir2);
         toDir2 = replacePath(toDir2);
