@@ -28,7 +28,7 @@ public class CmdTask {
     public Outs run(boolean is_log) {
         Outs outs = new Outs();
         Process process = null;
-        int exitVal = 0;
+        int exitVal = -1;
         String error = null;
 
         try {
@@ -55,7 +55,7 @@ public class CmdTask {
             }
         }
 
-        if (error == null || exitVal != 0) {
+        if (error != null || exitVal != 0) {
             error = "cmd = " + mCommand + "; exec failed:" + error + " exitVal= " + exitVal;
             PackTools.Printer.print(error);
             return outs;
@@ -65,7 +65,7 @@ public class CmdTask {
     }
 
     public static final class Outs {
-        public int exit_value = -100;
+        public int exit_value = -1;
         private final List<String> inputList = new ArrayList<>();
         private final List<String> errorList = new ArrayList<>();
 
