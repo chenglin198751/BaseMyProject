@@ -576,3 +576,7 @@
     autoSizeMaxTextSize：最大文字大小，例如设置为18sp，表示文字最多只能放大到18sp。
     autoSizeStepGranularity：缩放粒度，即每次文字大小变化的数值，例如设置为1sp，表示每次缩小或放大的值为1sp。
     android:includeFontPadding="false"：去除TextView边框周围的间隙
+
+**107、基于sqlite的key value存储，只支持文本类型的key value：**
+
+    BigDataDbManager.java : 建议value比较大时再用此类
