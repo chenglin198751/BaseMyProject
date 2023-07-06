@@ -24,12 +24,7 @@ public class CommonSQLite extends SQLiteOpenHelper {
                 "column2 TEXT," +
                 "column3 TEXT," +
                 "column4 TEXT," +
-                "column5 TEXT," +
-                "column6 TEXT," +
-                "column7 TEXT," +
-                "column8 TEXT," +
-                "column9 TEXT," +
-                "column10 TEXT)";
+                "column5 TEXT)";
 
         sql = sql.replace("TABLE_NAME", TABLE_NAME)
                 .replace("T_KEY", T_KEY)

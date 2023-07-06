@@ -11,9 +11,9 @@ import com.wcl.test.utils.AppLogUtils;
 public class BigDataDbManager {
     private static final String TAG = "KvDbManager";
 
-    public static void put(String key, String value) {
+    public static boolean put(String key, String value) {
         if (TextUtils.isEmpty(key)) {
-            return;
+            return false;
         }
 
         CommonSQLite dbHelper = new CommonSQLite();
@@ -26,19 +26,21 @@ public class BigDataDbManager {
         final String sql_query = "select * from " + CommonSQLite.TABLE_NAME + " where " + CommonSQLite.T_KEY + "=?";
         Cursor cursor = db.rawQuery(sql_query, new String[]{key});
 
+        long row_id = -1;
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 AppLogUtils.v(TAG, "update");
-                db.update(CommonSQLite.TABLE_NAME, values, CommonSQLite.T_KEY + "=?", new String[]{key});
+                row_id = db.update(CommonSQLite.TABLE_NAME, values, CommonSQLite.T_KEY + "=?", new String[]{key});
             } else {
                 AppLogUtils.v(TAG, "insert");
-                db.insert(CommonSQLite.TABLE_NAME, null, values);
+                row_id = db.insert(CommonSQLite.TABLE_NAME, null, values);
             }
             cursor.close();
         }
 
         db.close();
         dbHelper.close();
+        return row_id > 0;
     }
 
     public static String get(String key) {
