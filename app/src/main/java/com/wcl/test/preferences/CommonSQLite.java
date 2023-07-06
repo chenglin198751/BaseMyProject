@@ -12,7 +12,7 @@ public class CommonSQLite extends SQLiteOpenHelper {
     public static final int TABLE_VERSION = 1;
 
     public CommonSQLite() {
-        super(BaseApp.getApp(), "apk_common.db", null, TABLE_VERSION);
+        super(BaseApp.getApp(), "app_common.db", null, TABLE_VERSION);
     }
 
     @Override
