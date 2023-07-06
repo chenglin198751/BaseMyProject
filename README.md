@@ -579,4 +579,4 @@
 
 **107、基于sqlite的key value存储，只支持文本类型的key value：**
 
-    BigDataDbManager.java : 建议value比较大时再用此类
+    BigDataDbManager.java : 建议value比较大时再用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
