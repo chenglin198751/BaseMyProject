@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.wcl.test.utils.AppLogUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,25 +20,11 @@ public class BigDataDbManager {
 
         CommonSQLite dbHelper = new CommonSQLite();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(CommonSQLite.T_KEY, key);
-        values.put(CommonSQLite.T_VALUE, value);
-
-        // 先查询T_KEY列是否有key值，如果有就update，没有就insert
-        final String sql_query = "select * from " + CommonSQLite.TABLE_NAME + " where " + CommonSQLite.T_KEY + " = ?";
-        Cursor cursor = db.rawQuery(sql_query, new String[]{key});
-        long row_id = -1;
-
-        if (cursor != null) {
-            if (cursor.getCount() > 0) {
-                AppLogUtils.v(TAG, "update");
-                row_id = db.update(CommonSQLite.TABLE_NAME, values, CommonSQLite.T_KEY + " = ?", new String[]{key});
-            } else {
-                AppLogUtils.v(TAG, "insert");
-                row_id = db.insert(CommonSQLite.TABLE_NAME, null, values);
-            }
-            cursor.close();
-        }
+        ContentValues contents = new ContentValues();
+        contents.put(CommonSQLite.T_KEY, key);
+        contents.put(CommonSQLite.T_VALUE, value);
+        // db.replace只针对CommonSQLite.T_KEY是主键时有效
+        long row_id = db.replace(CommonSQLite.TABLE_NAME, null, contents);
 
         db.close();
         dbHelper.close();
@@ -90,6 +74,7 @@ public class BigDataDbManager {
             ContentValues contents = new ContentValues();
             contents.put(CommonSQLite.T_KEY, keys.get(i));
             contents.put(CommonSQLite.T_VALUE, values.get(i));
+            // db.replace只针对CommonSQLite.T_KEY是主键时有效
             long row_id = db.replace(CommonSQLite.TABLE_NAME, null, contents);
             if (row_id > 0) {
                 count++;
