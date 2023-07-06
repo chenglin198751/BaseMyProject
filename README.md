@@ -242,6 +242,10 @@
 
     https://github.com/agrosner/DBFlow ： https://joyrun.github.io/2016/08/02/dbflow/
 
+**48、轻量级基于SQLiteOpenHelper封装的数据库，适用于SDK开发：**
+
+    https://github.com/guolindev/LitePal
+
 **51、一款轻量级的socket库（模拟器Launcher在使用）：**
 
     https://github.com/xuuhaoo/OkSocket
