@@ -25,8 +25,8 @@ public class BigDataDbManager {
         // 先查询T_KEY列是否有key值，如果有就update，没有就insert
         final String sql_query = "select * from " + CommonSQLite.TABLE_NAME + " where " + CommonSQLite.T_KEY + "=?";
         Cursor cursor = db.rawQuery(sql_query, new String[]{key});
-
         long row_id = -1;
+
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 AppLogUtils.v(TAG, "update");
