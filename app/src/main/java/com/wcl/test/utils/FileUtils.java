@@ -132,7 +132,7 @@ public class FileUtils {
         List<String> lines = new ArrayList<>();
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+                lines = Files.readAllLines(Paths.get(filePath));
             } else {
                 FileReader reader = new FileReader(filePath);
                 BufferedReader bufferedReader = new BufferedReader(reader);
