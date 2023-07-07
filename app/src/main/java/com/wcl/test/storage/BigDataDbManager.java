@@ -56,8 +56,7 @@ public class BigDataDbManager {
             ContentValues contents = new ContentValues();
             contents.put(CommonSQLite.T_KEY, keys.get(i));
             contents.put(CommonSQLite.T_VALUE, values.get(i));
-            // db.replace只针对CommonSQLite.T_KEY是主键时有效
-            long row_id = db.replace(CommonSQLite.TABLE_NAME, null, contents);
+            long row_id = db.insert(CommonSQLite.TABLE_NAME, null, contents);
             if (row_id > 0) {
                 count++;
             }
