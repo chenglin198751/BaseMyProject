@@ -207,16 +207,15 @@ public class FileUtils {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Files.copy(source.toPath(), dest.toPath());
             } else {
-                FileInputStream fis = new FileInputStream(source);
-                FileOutputStream fos = new FileOutputStream(dest);
-                FileChannel srcChannel = fis.getChannel();
-                FileChannel dstChannel = fos.getChannel();
-                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-
-                srcChannel.close();
-                dstChannel.close();
-                fis.close();
-                fos.close();
+                FileInputStream sourceOutStream = new FileInputStream(source);
+                FileOutputStream targetOutStream = new FileOutputStream(dest);
+                FileChannel sourceChannel = sourceOutStream.getChannel();
+                FileChannel targetChannel = targetOutStream.getChannel();
+                sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
+                sourceChannel.close();
+                targetChannel.close();
+                sourceOutStream.close();
+                targetOutStream.close();
             }
         } catch (IOException e) {
             System.out.println("copy file error = " + e);
