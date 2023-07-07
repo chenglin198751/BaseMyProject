@@ -13,11 +13,23 @@ import java.util.List;
 public class BigStringRelyFile {
     private static final String TAG = "BigStringRelyFile";
 
-
     private static String getKeyFilePath(String key) {
         String dir = FileUtils.getExternalPath() + "/string";
         new File(dir).mkdirs();
         return dir + "/" + key;
+    }
+
+    public static List<String> getAllKeys() {
+        String dir = FileUtils.getExternalPath() + "/string";
+        File[] files = new File(dir).listFiles();
+        List<String> keys = new ArrayList<>();
+
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                keys.add(file.getName());
+            }
+        }
+        return keys;
     }
 
     public static void put(String key, String value) {
