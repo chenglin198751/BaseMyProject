@@ -13,6 +13,26 @@ import java.util.List;
 public class BigStringRelyDb {
     private static final String TAG = "BigStringRelyDb";
 
+    public static List<String> getAllKeys() {
+        List<String> keys = new ArrayList<>();
+        CommonSQLite dbHelper = new CommonSQLite();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] columns = new String[]{CommonSQLite.T_KEY};
+        Cursor cursor = db.query(CommonSQLite.TABLE_NAME, columns, null, null, null, null, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                keys.add(cursor.getString(0));
+            }
+            cursor.close();
+        }
+
+        db.close();
+        dbHelper.close();
+        return keys;
+    }
+
     public static boolean put(String key, String value) {
         List<String> keys = new ArrayList<>();
         keys.add(key);
