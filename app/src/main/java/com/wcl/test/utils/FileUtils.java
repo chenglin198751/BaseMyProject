@@ -1,7 +1,6 @@
 package com.wcl.test.utils;
 
 import android.os.Build;
-import android.os.Environment;
 import android.text.TextUtils;
 
 import com.wcl.test.base.BaseApp;
@@ -43,71 +42,43 @@ public class FileUtils {
     /**
      * 得到文件夹大小
      */
-    public static long getFolderSize(File file) {
+    public static long getFolderSize(File folder) {
         long size = 0;
-        File[] fileList = file.listFiles();
-        if (fileList == null || fileList.length == 0) {
-            return size;
-        }
-
-        for (File value : fileList) {
-            if (value.isDirectory()) {
-                size = size + getFolderSize(value);
-            } else {
-                size = size + value.length();
+        if (folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files == null || files.length == 0) {
+                return size;
             }
+            for (File file : files) {
+                if (file.isFile()) {
+                    size += file.length();
+                } else {
+                    size += getFolderSize(file);
+                }
+            }
+        } else {
+            size += folder.length();
         }
-        return size / (1024 * 1024);
+        return size;
     }
 
     /**
      * 删文件或者目录
      */
-    public static void deleteDirectory(File file) {
+    public static void delete(String file2) {
+        File file = new File(file2);
         if (file.exists()) {
             if (file.isFile()) {
                 file.delete();
             } else if (file.isDirectory()) {
                 File files[] = file.listFiles();
                 for (int i = 0; i < files.length; i++) {
-                    deleteDirectory(files[i]);
+                    delete(files[i].getAbsolutePath());
                 }
             }
             file.delete();
         }
     }
-
-    /**
-     * 清空文件夹下的文件，而不删除文件夹
-     */
-    public static boolean clearDirectory(String path) {
-        boolean flag = false;
-        File file = new File(path);
-        if (!file.exists()) {
-            return flag;
-        }
-        if (!file.isDirectory()) {
-            return flag;
-        }
-        String[] tempList = file.list();
-        File temp = null;
-        for (int i = 0; i < tempList.length; i++) {
-            if (path.endsWith(File.separator)) {
-                temp = new File(path + tempList[i]);
-            } else {
-                temp = new File(path + File.separator + tempList[i]);
-            }
-            if (temp.isFile()) {
-                temp.delete();
-            }
-            if (temp.isDirectory()) {
-                clearDirectory(path + File.separator + tempList[i]);
-                flag = true;
-            }
-        }
-        return flag;
-    }
-
 
     /**
      * 把String字符串写入文件
@@ -133,37 +104,48 @@ public class FileUtils {
         if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
             return null;
         }
-        StringBuilder line = new StringBuilder();
 
         try {
-            FileReader reader = new FileReader(file_path);
-            int character;
-            while ((character = reader.read()) != -1) {
-                line.append((char) character);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Path path = Paths.get(file_path);
+                Files.readAllBytes(path);
+                return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+            } else {
+                StringBuilder line = new StringBuilder();
+                FileReader reader = new FileReader(file_path);
+                int character;
+                while ((character = reader.read()) != -1) {
+                    line.append((char) character);
+                }
+                reader.close();
+                return line.toString();
             }
-            reader.close();
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return line.toString();
+        return null;
     }
 
     public static List<String> readLines(String filePath) {
         List<String> lines = new ArrayList<>();
-
         try {
-            FileReader reader = new FileReader(filePath);
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                lines.add(line);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+            } else {
+                FileReader reader = new FileReader(filePath);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    lines.add(line);
+                }
+                bufferedReader.close();
+                reader.close();
             }
-            bufferedReader.close();
-            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return lines;
     }
 
