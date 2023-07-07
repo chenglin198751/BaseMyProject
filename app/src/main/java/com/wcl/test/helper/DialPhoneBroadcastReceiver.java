@@ -12,7 +12,7 @@ import android.widget.CompoundButton;
 import com.wcl.test.EnvToggle;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseAction;
-import com.wcl.test.preferences.ToggleSettings;
+import com.wcl.test.storage.ToggleSettings;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.widget.ToastUtils;
 

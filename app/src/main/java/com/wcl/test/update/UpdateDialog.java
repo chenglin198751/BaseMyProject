@@ -13,7 +13,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.httpwork.HttpUrls;
 import com.wcl.test.httpwork.HttpUtils;
-import com.wcl.test.preferences.PreferAppSettings;
+import com.wcl.test.storage.PreferAppSettings;
 import com.wcl.test.utils.ApkInstaller;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;

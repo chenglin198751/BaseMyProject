@@ -1,4 +1,4 @@
-package com.wcl.test.preferences;
+package com.wcl.test.storage;
 
 import android.content.ContentValues;
 import android.database.Cursor;

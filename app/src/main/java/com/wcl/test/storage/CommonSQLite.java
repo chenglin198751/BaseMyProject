@@ -1,4 +1,4 @@
-package com.wcl.test.preferences;
+package com.wcl.test.storage;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
