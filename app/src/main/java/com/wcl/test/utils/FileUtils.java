@@ -1,6 +1,7 @@
 package com.wcl.test.utils;
 
 import android.os.Environment;
+import android.text.TextUtils;
 
 import com.wcl.test.base.BaseApp;
 
@@ -9,12 +10,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtils {
 
     /**
      * 不需要存储权限
-     *
+     * <p>
      * 现在的Android应用将文件放到SD卡上时总是随便创建一个目录，那这样有个问题就是卸载应用时，
      * 这些垃圾还留在用户的SD卡上导致占用存储空间（猎豹清理大师这样的工具由此应用而生）。
      * 其实Android系统已经帮我们提供了相关的API可以将文件缓存到data/data目录下，
@@ -95,16 +102,16 @@ public class FileUtils {
 
 
     /**
-     * 把字符串写入文件
+     * 把String字符串写入文件
      */
-    public static void writeFile(File file, String value) {
-        if (!file.exists()) {
+    public static void writeFile(String file_path, String text) {
+        if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
             return;
         }
 
         try {
-            FileWriter fileWriter = new FileWriter(file, true);
-            fileWriter.write(value);
+            FileWriter fileWriter = new FileWriter(file_path, true);
+            fileWriter.write(text);
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,35 +119,44 @@ public class FileUtils {
     }
 
     /**
-     * 读取文件
+     * 读取文件，返回String
      */
-    public static String readFile(File file) {
-        if (!file.exists()) {
+    public static String readFile(String file_path) {
+        if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
             return null;
         }
+        StringBuilder line = new StringBuilder();
 
-        BufferedReader in = null;
         try {
-            in = new BufferedReader(new FileReader(file));
-            String readString = "";
-            String currentLine;
-            while ((currentLine = in.readLine()) != null) {
-                currentLine += '\n';
-                readString += currentLine;
+            FileReader reader = new FileReader(file_path);
+            int character;
+            while ((character = reader.read()) != -1) {
+                line.append((char) character);
             }
-            return readString;
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+        return line.toString();
+    }
+
+    public static List<String> readLines(String filePath) {
+        List<String> lines = new ArrayList<>();
+
+        try {
+            FileReader reader = new FileReader(filePath);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                lines.add(line);
+            }
+            bufferedReader.close();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return lines;
     }
 
 //    public static void copyDirectory(File fromDir, File toDir) {
