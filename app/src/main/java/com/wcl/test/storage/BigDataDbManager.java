@@ -33,6 +33,12 @@ public class BigDataDbManager {
         }
     }
 
+    public static boolean remove(String key) {
+        List<String> keys = new ArrayList<>();
+        keys.add(key);
+        return remove(keys);
+    }
+
     public static boolean putValues(List<String> keys, List<String> values) {
         if (keys == null || keys.size() == 0) {
             return false;
@@ -56,7 +62,6 @@ public class BigDataDbManager {
                 count++;
             }
         }
-
 
         db.close();
         dbHelper.close();
@@ -90,12 +95,6 @@ public class BigDataDbManager {
         db.close();
         dbHelper.close();
         return values;
-    }
-
-    public static boolean remove(String key) {
-        List<String> keys = new ArrayList<>();
-        keys.add(key);
-        return remove(keys);
     }
 
     public static boolean remove(List<String> keys) {
