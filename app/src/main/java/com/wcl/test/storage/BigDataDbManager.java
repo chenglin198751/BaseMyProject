@@ -11,50 +11,26 @@ import java.util.List;
 
 
 public class BigDataDbManager {
-    private static final String TAG = "KvDbManager";
+    private static final String TAG = "BigDataDbManager";
 
     public static boolean put(String key, String value) {
-        if (TextUtils.isEmpty(key)) {
-            return false;
-        }
-
-        CommonSQLite dbHelper = new CommonSQLite();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues contents = new ContentValues();
-        contents.put(CommonSQLite.T_KEY, key);
-        contents.put(CommonSQLite.T_VALUE, value);
-        // db.replace只针对CommonSQLite.T_KEY是主键时有效
-        long row_id = db.replace(CommonSQLite.TABLE_NAME, null, contents);
-
-        db.close();
-        dbHelper.close();
-        return row_id > 0;
+        List<String> keys = new ArrayList<>();
+        keys.add(key);
+        List<String> values = new ArrayList<>();
+        values.add(value);
+        return putValues(keys, values);
     }
 
     public static String get(String key) {
-        if (TextUtils.isEmpty(key)) {
+        List<String> keys = new ArrayList<>();
+        keys.add(key);
+
+        List<String> values = getValues(keys);
+        if (values != null && values.size() > 0) {
+            return values.get(0);
+        } else {
             return null;
         }
-
-        String value = null;
-        CommonSQLite dbHelper = new CommonSQLite();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        String[] columns = new String[]{CommonSQLite.T_VALUE};
-        String selection = CommonSQLite.T_KEY + " = ?";
-        Cursor cursor = db.query(CommonSQLite.TABLE_NAME, columns, selection, new String[]{key}, null, null, null);
-
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                value = cursor.getString(0);
-
-            }
-            cursor.close();
-        }
-
-        db.close();
-        dbHelper.close();
-        return value;
     }
 
     public static boolean putValues(List<String> keys, List<String> values) {
@@ -117,19 +93,9 @@ public class BigDataDbManager {
     }
 
     public static boolean remove(String key) {
-        if (TextUtils.isEmpty(key)) {
-            return false;
-        }
-
-        CommonSQLite dbHelper = new CommonSQLite();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        String selection = CommonSQLite.T_KEY + " = ?";
-        int deletedRows = db.delete(CommonSQLite.TABLE_NAME, selection, new String[]{key});
-
-        db.close();
-        dbHelper.close();
-        return deletedRows > 0;
+        List<String> keys = new ArrayList<>();
+        keys.add(key);
+        return remove(keys);
     }
 
     public static boolean remove(List<String> keys) {
