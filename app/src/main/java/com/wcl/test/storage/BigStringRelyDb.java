@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class BigDataDbManager {
-    private static final String TAG = "BigDataDbManager";
+public class BigStringRelyDb {
+    private static final String TAG = "BigStringRelyDb";
 
     public static boolean put(String key, String value) {
         List<String> keys = new ArrayList<>();
