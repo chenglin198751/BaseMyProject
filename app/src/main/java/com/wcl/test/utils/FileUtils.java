@@ -1,5 +1,6 @@
 package com.wcl.test.utils;
 
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 
@@ -7,9 +8,12 @@ import com.wcl.test.base.BaseApp;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,14 +43,18 @@ public class FileUtils {
     /**
      * 得到文件夹大小
      */
-    public static long getFolderSize(java.io.File file) throws Exception {
+    public static long getFolderSize(File file) {
         long size = 0;
-        java.io.File[] fileList = file.listFiles();
-        for (int i = 0; i < fileList.length; i++) {
-            if (fileList[i].isDirectory()) {
-                size = size + getFolderSize(fileList[i]);
+        File[] fileList = file.listFiles();
+        if (fileList == null || fileList.length == 0) {
+            return size;
+        }
+
+        for (File value : fileList) {
+            if (value.isDirectory()) {
+                size = size + getFolderSize(value);
             } else {
-                size = size + fileList[i].length();
+                size = size + value.length();
             }
         }
         return size / (1024 * 1024);
@@ -159,39 +167,59 @@ public class FileUtils {
         return lines;
     }
 
-//    public static void copyDirectory(File fromDir, File toDir) {
-//        try {
-//            if (!fromDir.isDirectory()) {
-//                return;
-//            }
-//
-//            if (!toDir.exists()) {
-//                toDir.mkdirs();
-//            }
-//
-//            File[] files = fromDir.listFiles();
-//            for (File file : files) {
-//                String strFrom = fromDir + File.separator + file.getName();
-//                String strTo = toDir + File.separator + file.getName();
-//                if (file.isDirectory()) {
-//                    copyDirectory(new File(strFrom), new File(strTo));
-//                }
-//                if (file.isFile()) {
-//                    copy(new File(strFrom), new File(strTo));
-//                }
-//            }
-//        } catch (Exception e) {
-//            System.out.println("copy Directory error = " + e.toString());
-//        }
-//
-//    }
-//
-//    public static void copy(File source, File dest) {
-//        try {
-//            Files.copy(source.toPath(), dest.toPath());
-//        } catch (Exception e) {
-//            System.out.println("copy file error = " + e.toString());
-//        }
-//
-//    }
+    public static void copyDirectory(File fromDir, File toDir) {
+        try {
+            if (!fromDir.isDirectory()) {
+                return;
+            }
+
+            if (!toDir.exists()) {
+                toDir.mkdirs();
+            }
+
+            File[] files = fromDir.listFiles();
+            for (File file : files) {
+                String strFrom = fromDir + File.separator + file.getName();
+                String strTo = toDir + File.separator + file.getName();
+                if (file.isDirectory()) {
+                    copyDirectory(new File(strFrom), new File(strTo));
+                }
+                if (file.isFile()) {
+                    copyFile(new File(strFrom), new File(strTo));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("copy Directory error = " + e.toString());
+        }
+
+    }
+
+    public static void copyFile(File source, File dest) {
+        if (source == null || dest == null) {
+            return;
+        }
+
+        try {
+            if (dest.exists()) {
+                dest.delete();
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.copy(source.toPath(), dest.toPath());
+            } else {
+                FileInputStream fis = new FileInputStream(source);
+                FileOutputStream fos = new FileOutputStream(dest);
+                FileChannel srcChannel = fis.getChannel();
+                FileChannel dstChannel = fos.getChannel();
+                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+
+                srcChannel.close();
+                dstChannel.close();
+                fis.close();
+                fos.close();
+            }
+        } catch (IOException e) {
+            System.out.println("copy file error = " + e);
+        }
+    }
 }
