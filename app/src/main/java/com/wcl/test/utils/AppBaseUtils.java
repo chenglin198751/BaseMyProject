@@ -711,7 +711,7 @@ public class AppBaseUtils {
             String line = "";
             StringBuilder result = new StringBuilder();
             while ((line = bufReader.readLine()) != null) {
-                result.append(line).append("\n");
+                result.append(line).append(System.lineSeparator());
             }
             if (result.length() > 0) {
                 result.deleteCharAt(result.length() - 1);
