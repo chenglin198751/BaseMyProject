@@ -107,3 +107,10 @@
 **11、微信app_id参数配置，用于分享，在每个游戏下的games.xml配置：**
 
     <param name="wx_app_id" value="wxe0abe2c40588394b"/>
+
+**12、while打包apkpkg.jar的机关：**
+
+    1、portal-sdk-tool\BUILD_CONFIG\reset_switch : 放置此文件，可以重置所有的打包状态。切记，用完要删除此文件。
+    2、portal-sdk-tool\BUILD_CONFIG\chmod777.config : 放置此文件，内容配置如路径：portal-sdk-tool/games/game2/channels，
+        比如以portal-sdk-tool开头，以回车符分割，那么这些文件夹或者文件会被修改为chmod777的权限。切记，用完一定要删除。
+
