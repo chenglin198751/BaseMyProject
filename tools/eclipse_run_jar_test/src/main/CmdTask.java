@@ -86,7 +86,7 @@ public class CmdTask {
 						if (isLog) {
 							PackTools.Printer.print(line);	
 						}
-						line2 = line2 + line + "\n";
+						line2 = line2 + line + System.lineSeparator();
 					}
 				}
 				if (mListener != null) {
