@@ -81,7 +81,7 @@ public class FileUtils {
     }
 
     /**
-     * 把String字符串写入文件
+     * 把String字符串追加写入文件
      */
     public static void writeFile(String file_path, String text) {
         if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
@@ -89,6 +89,7 @@ public class FileUtils {
         }
 
         try {
+            // 追加模式写入
             FileWriter fileWriter = new FileWriter(file_path, true);
             fileWriter.write(text);
             fileWriter.close();
@@ -128,7 +129,7 @@ public class FileUtils {
         return null;
     }
 
-    public static List<String> readLines(String filePath) {
+    public static List<String> readAllLines(String filePath) {
         List<String> lines = new ArrayList<>();
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -147,6 +148,20 @@ public class FileUtils {
             e.printStackTrace();
         }
         return lines;
+    }
+
+    public static void writeAllLines(String filePath, Iterable<String> lines) {
+        try {
+            // 覆盖模式写入
+            FileWriter fileWriter = new FileWriter(filePath, false);
+            for (String line : lines) {
+                fileWriter.write(line);
+                fileWriter.write(System.lineSeparator());
+            }
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void copyDirectory(File fromDir, File toDir) {
