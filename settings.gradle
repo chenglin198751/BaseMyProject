@@ -1,8 +1,9 @@
 pluginManagement {
     repositories {
-//        gradlePluginPortal()
-//        google()
-//        mavenCentral()
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/public' }
@@ -18,8 +19,10 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-//        google()
-//        mavenCentral()
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/public' }

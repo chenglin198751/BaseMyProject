@@ -12,7 +12,13 @@
 * [海外SDK笔记.md](doc_notes/海外SDK笔记.md)
 * [融合SDK--python打包常用代码.md](doc_notes/融合SDK--python打包常用代码.md)
 * [融合SDK--各渠道特性.md](doc_notes/融合SDK--各渠道特性.md)
-* [融合SDK--开发点注意.md](doc_notes/融合SDK--开发点注意.md)
+* [融合SDK--开发点注意.md](doc_notes/融合SDK--渠道参数配置.md)
+
+## 如何从手助获取包：
+    
+    从 https://openbox.mobilem.360.cn/third/getAppInfo?sid=xxx 中获取到下载链接，
+    然后将域名 shouji.360tpcdn.com 替换成 m.shouji.360tpcdn.com
+
 
 **1、BaseActivity 类：** 
 
@@ -84,10 +90,6 @@
 **16、BaseWebViewActivity.java,BaseWebViewFragment.java类：**
 
     基于腾讯X5浏览器内核封装的统一 WebViewActivity ，性能卓越。具体介绍可以去看X5内核。
-
-**17、EasyCache 类：**
-
-    一个基于文件的存储工具，可以很方便的存储很长的字符串，且效率很高。如果想做缓存，建议用这个。
 
 **18、PopupWindowUtils 类：**
 
@@ -231,10 +233,6 @@
     6、支付多线程的下载库（不够稳定）：https://github.com/Aspsine/MultiThreadDownload
 
     用HttpURLConnection封装的一套网络访问工具：https://github.com/guozhengXia/UrlHttpUtils
-
-**47、封装的易用数据库dbflow：**
-
-    https://github.com/agrosner/DBFlow ： https://joyrun.github.io/2016/08/02/dbflow/
 
 **51、一款轻量级的socket库（模拟器Launcher在使用）：**
 
@@ -538,6 +536,8 @@
     4、查找某个元素的位置：Collections.binarySearch(list,"55555");
     5、把第0个元素和第2个元素交换位置：Collections.swap(list,0,2);
     6、把一个list复制到另一个list：Collections.copy(list,list);
+    7、返回一个不可修改的list：Collections.unmodifiableList(list)
+    8、构建一个长度为3，都是 ? 的list：Collections.nCopies(3, "?")
 
 **102、腾讯性能监测开源工具：**
 
@@ -570,3 +570,11 @@
     autoSizeMaxTextSize：最大文字大小，例如设置为18sp，表示文字最多只能放大到18sp。
     autoSizeStepGranularity：缩放粒度，即每次文字大小变化的数值，例如设置为1sp，表示每次缩小或放大的值为1sp。
     android:includeFontPadding="false"：去除TextView边框周围的间隙
+
+**107、数据存储相关的都在这里：**
+
+    1、BigStringRelyDb.java : 基于sqlite实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
+    2、BigStringRelyFile.java : 基于File实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
+    3、数据库框架dbflow : https://github.com/agrosner/DBFlow https://joyrun.github.io/2016/08/02/dbflow/
+    4、轻量级基于SQLiteOpenHelper封装的数据库，适用于SDK开发 : https://github.com/guolindev/LitePal
+

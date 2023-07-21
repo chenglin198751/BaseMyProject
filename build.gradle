@@ -1,5 +1,29 @@
+//buildscript {
+//    repositories {
+//        google()
+//        jcenter()
+//        maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
+//        maven { url 'https://android-sdk.is.com/' }
+//        maven { url 'https://artifacts.applovin.com/android' }
+//        maven { url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" }
+//        maven { url 'https://repo.onestore.co.kr/repository/onestore-sdk-public' }
+//    }
+//    dependencies {
+//        classpath 'com.android.tools.build:gradle:4.0.1'
+//        classpath 'com.google.gms:google-services:4.3.8'
+//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20"
+//        classpath "com.applovin.quality:AppLovinQualityServiceGradlePlugin:4.5.12"
+//    }
+//}
+
 plugins {
-    id 'com.android.application' version '7.3.1' apply false
-    id 'com.android.library' version '7.3.1' apply false
-    id 'org.jetbrains.kotlin.android' version '1.7.10' apply false
+    id 'com.android.application' version '8.0.2' apply false
+    id 'com.android.library' version '8.0.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.8.20' apply false
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+    delete rootProject.getProjectDir().absolutePath + "/app/debug"
+    delete rootProject.getProjectDir().absolutePath + "/app/release"
 }

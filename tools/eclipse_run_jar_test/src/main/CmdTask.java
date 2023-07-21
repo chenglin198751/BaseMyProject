@@ -76,17 +76,17 @@ public class CmdTask {
 
 		public void run() {
 			try {
-				InputStreamReader isr = new InputStreamReader(is, Charset.forName("GBK"));
+				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
 
 				String line = "";
 				String line2 = "";
 				while ((line = br.readLine()) != null) {
-					if (line != null || line.length() > 0) {
+					if (line.length() > 0) {
 						if (isLog) {
 							PackTools.Printer.print(line);	
 						}
-						line2 = line2 + line + "\n";
+						line2 = line2 + line + System.lineSeparator();
 					}
 				}
 				if (mListener != null) {
