@@ -514,6 +514,8 @@ public class HttpUtils {
             savedFile.close();
             response.body().close();
             response.close();
+            fileLock.close();
+            fileChannel.close();
 
             //下载完成后把.temp的文件重命名为原文件
             if (tempFile.exists() && tempFile.length() == contentLength) {
@@ -521,9 +523,6 @@ public class HttpUtils {
                 if (isSuccess) {
                     FileHttpDownloadCallback.onFinished(downCallback, null);
                     return downPath;
-                } else {
-                    String error = "tempFile renameTo downFile failed";
-                    FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
                 }
             } else {
                 String error = "downloaded failed:tempFile.length() != contentLength";
@@ -546,8 +545,10 @@ public class HttpUtils {
             String error = t.toString();
             AppLogUtils.w(TAG, "download failed:" + error);
             FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
+            return null;
         }
 
+        // 兜底的下载callback
         String error = "download failed:unknown";
         FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
         return null;
