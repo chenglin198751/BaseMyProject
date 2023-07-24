@@ -519,10 +519,11 @@ public class HttpUtils {
             if (tempFile.exists() && tempFile.length() == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    if (downCallback != null) {
-                        downCallback.onFinished(true, downPath, null);
-                    }
+                    FileHttpDownloadCallback.onFinished(downCallback, null);
                     return downPath;
+                } else {
+                    String error = "tempFile renameTo downFile failed";
+                    FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
                 }
             } else {
                 String error = "downloaded failed:tempFile.length() != contentLength";
@@ -544,14 +545,11 @@ public class HttpUtils {
             t.printStackTrace();
             String error = t.toString();
             AppLogUtils.w(TAG, "download failed:" + error);
-            if (downCallback != null) {
-                downCallback.onFinished(false, null, new Exception(error));
-            }
+            FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
         }
 
-        if (downCallback != null) {
-            downCallback.onFinished(false, null, new Exception("download failed:unknown"));
-        }
+        String error = "download failed:unknown";
+        FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
         return null;
     }
 
