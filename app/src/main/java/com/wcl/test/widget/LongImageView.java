@@ -84,7 +84,7 @@ public class LongImageView extends WebView {
             return;
         }
 
-        HttpUtils.downloadFile(url, true, new HttpUtils.HttpDownloadCallback() {
+        HttpUtils.downloadFile(url, new HttpUtils.HttpDownloadCallback() {
             @Override
             public void onFinished(boolean isSuccessful, String filePath, Exception e) {
                 if (isFinish()) {
