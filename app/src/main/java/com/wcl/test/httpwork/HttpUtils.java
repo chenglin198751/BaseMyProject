@@ -405,6 +405,7 @@ public class HttpUtils {
 
         FileChannel fileChannel = null;
         FileLock fileLock = null;
+        InputStream inputStream = null;
 
         try {
             final String downPath = getDownLoadFilePath(fileUrl);
@@ -484,7 +485,7 @@ public class HttpUtils {
                 return null;
             }
 
-            InputStream inputStream = response.body().byteStream();
+            inputStream = response.body().byteStream();
             byte[] buffer = new byte[2048];
             int len;
             long sum = downloadLength;
@@ -536,6 +537,9 @@ public class HttpUtils {
                 }
                 if (fileChannel != null) {
                     fileChannel.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
