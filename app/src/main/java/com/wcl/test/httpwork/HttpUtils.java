@@ -510,18 +510,18 @@ public class HttpUtils {
                 }
             }
 
+            fileLock.close();
+            fileChannel.close();
             inputStream.close();
             savedFile.close();
             response.body().close();
             response.close();
-            fileLock.close();
-            fileChannel.close();
 
             //下载完成后把.temp的文件重命名为原文件
             if (tempFile.exists() && tempFile.length() == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    FileHttpDownloadCallback.onFinished(downCallback, null);
+                    FileHttpDownloadCallback.onFinished(downCallback, downPath);
                     return downPath;
                 }
             } else {
