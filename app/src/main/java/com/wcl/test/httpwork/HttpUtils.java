@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import com.wcl.test.EnvToggle;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppLogUtils;
+import com.wcl.test.utils.AppThreadPoolExecutor;
 import com.wcl.test.utils.DeviceUtils;
 import com.wcl.test.utils.FileUtils;
 
@@ -575,13 +576,12 @@ public class HttpUtils {
             return;
         }
 
-        new Thread() {
+        AppThreadPoolExecutor.getExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                super.run();
                 syncDownloadFile(fileUrl, downloadCallback);
             }
-        }.start();
+        });
     }
 
     /**
