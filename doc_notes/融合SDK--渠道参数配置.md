@@ -118,3 +118,7 @@
 
     ${applicationId}
     yxme_sdk_application_id
+
+**14、每次新增渠道，需要在下面的xml文件中配置参数：**
+
+    /home/q/system/l.u.360.cn/public/server_channel.xml
