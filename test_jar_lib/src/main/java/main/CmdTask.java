@@ -115,6 +115,9 @@ public class CmdTask {
                     } else if (type.equals(TYPE_ERROR)) {
                         mOuts.addErrorList(line);
                     }
+                    if (isLog){
+                        System.out.println(line);
+                    }
                 }
             } catch (Exception ioe) {
                 mOuts.inputList.add(ioe.toString());
