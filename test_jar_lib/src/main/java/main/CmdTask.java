@@ -116,7 +116,7 @@ public class CmdTask {
                         mOuts.addErrorList(line);
                     }
                     if (isLog){
-                        System.out.println(line);
+                        PackTools.Printer.print(line);
                     }
                 }
             } catch (Exception ioe) {
