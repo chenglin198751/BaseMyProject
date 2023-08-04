@@ -113,6 +113,7 @@
     1、portal-sdk-tool\BUILD_CONFIG\reset_switch : 放置此文件，可以重置所有的打包状态。切记，用完要删除此文件。
     2、portal-sdk-tool\BUILD_CONFIG\chmod777.config : 放置此文件，内容配置如路径：portal-sdk-tool/games/game2/channels，
         比如以portal-sdk-tool开头，以回车符分割，那么这些文件夹或者文件会被修改为chmod777的权限。切记，用完一定要删除。
+    3、portal-sdk-tool\BUILD_CONFIG\clear_apk : 放置此文件，可以清理垃圾文件。
 
 **13、自动替换一下字符串为包名：**
 
