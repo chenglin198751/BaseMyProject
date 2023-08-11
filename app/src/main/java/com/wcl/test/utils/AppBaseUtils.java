@@ -294,50 +294,6 @@ public class AppBaseUtils {
 
 
     /**
-     * 得到数组中的最小值
-     */
-    public static long getMinNum(long[] numbers) {
-        if (numbers == null || numbers.length <= 0) {
-            return 0;
-        }
-
-        int i;
-        long min, max;
-        min = max = numbers[0];
-        for (i = 0; i < numbers.length; i++) {
-            if (numbers[i] > max) {
-                max = numbers[i];
-            }
-            if (numbers[i] < min) {
-                min = numbers[i];
-            }
-        }
-        return min;
-    }
-
-    /**
-     * 得到数组中的最大值
-     */
-    public static long getMaxNum(long[] numbers) {
-        if (numbers == null || numbers.length <= 0) {
-            return 0;
-        }
-
-        int i;
-        long min, max;
-        min = max = numbers[0];
-        for (i = 0; i < numbers.length; i++) {
-            if (numbers[i] > max) {
-                max = numbers[i];
-            }
-            if (numbers[i] < min) {
-                min = numbers[i];
-            }
-        }
-        return max;
-    }
-
-    /**
      * 只能输入数字。字母和汉字
      */
     public static String LetterAndChinese(String text) {
@@ -711,7 +667,7 @@ public class AppBaseUtils {
             String line = "";
             StringBuilder result = new StringBuilder();
             while ((line = bufReader.readLine()) != null) {
-                result.append(line).append("\n");
+                result.append(line).append(System.lineSeparator());
             }
             if (result.length() > 0) {
                 result.deleteCharAt(result.length() - 1);
