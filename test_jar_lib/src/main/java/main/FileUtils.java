@@ -12,18 +12,30 @@ public class FileUtils {
 
     public static void delete(String file2) {
         file2 = replacePath(file2);
-        File file = new File(file2);
-        if (file.exists()) {
-            if (file.isFile()) {
-                file.delete();
-            } else if (file.isDirectory()) {
-                File files[] = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    delete(files[i].getAbsolutePath());
-                }
-            }
-            file.delete();
+        File folder = new File(file2);
+
+        if (!folder.exists()) {
+            return;
         }
+
+        if (folder.isFile()) {
+            folder.delete();
+            return;
+        }
+
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                delete(file.getAbsolutePath());
+            }
+        }
+
+        folder.delete();
+    }
+
+    public static void move(String from_dir, String to_dir) {
+        copyDirectory(from_dir, to_dir);
+        delete(from_dir);
     }
 
     public static void copyDirectory(String fromDir2, String toDir2) {

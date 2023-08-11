@@ -1,7 +1,7 @@
 package com.wcl.test;
 
 
-import com.wcl.test.preferences.ToggleSettings;
+import com.wcl.test.storage.ToggleSettings;
 import com.wcl.test.utils.AppBaseUtils;
 
 public class EnvToggle {

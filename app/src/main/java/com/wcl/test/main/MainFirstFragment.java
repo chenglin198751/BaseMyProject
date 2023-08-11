@@ -9,6 +9,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
 import com.wcl.test.httpwork.HttpUtils;
+import com.wcl.test.utils.AppBaseUtils;
 
 
 /**
@@ -32,16 +33,7 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding.viewLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                new Thread(){
-//                    @Override
-//                    public void run() {
-//                        super.run();
-//                        String path = HttpUtils.syncDownloadFile(apk_path,true);
-//                        Log.v("tag_3","path = " + path);
-//                    }
-//                }.start();
-
-                HttpUtils.downloadFile(apk_path, false, new HttpUtils.HttpDownloadCallback() {
+                HttpUtils.downloadFile(apk_path, new HttpUtils.HttpDownloadCallback() {
                     @Override
                     public void onFinished(boolean isSuccessful, String filePath, Exception e) {
                         if (isSuccessful) {
@@ -51,10 +43,10 @@ public class MainFirstFragment extends BaseFragment {
 
                     @Override
                     public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
-                        Log.d("tag_3", "percent = " + (percent * 100) + "%");
+                        Log.v("tag_3", "percent1 = " + percent);
+                        Log.d("tag_3", "percent2 = " + AppBaseUtils.formatFloat(percent * 100, 2) + "%");
                     }
                 });
-
             }
         });
 

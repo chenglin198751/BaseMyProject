@@ -15,17 +15,23 @@ jar {
     manifest {
         attributes 'Manifest-Version': '1.0'
         attributes 'Main-Class': 'org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader'
+        //修改点1：引用的jar文件，格式必须'./ aa.jar bb.jar'，注意每个jar之间有空格。如果没有引用jar，这里就写'./'
         attributes 'Rsrc-Class-Path': './ ant_v1.10.12.jar'
+        //修改点2：当前可执行jar的main方法入口类
         attributes 'Rsrc-Main-Class': 'main.SeasMainPack'
         attributes 'Class-Path': '.'
     }
 }
 
 def makeJar() {
+    //修改点3：修改为对外输出的jar名字
+    def final jar_name = 'seas_sdk_pack'
+    //修改点4：修改为jar对外输出的路径名
+    def final out_put_jar_path = this.getBuildDir().getParent()
+
     def final isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
     def final jar_parent_dir = this.getBuildDir().path + '/libs'
-    def final tmp_jar_file = jar_parent_dir + '/test_jar_lib.jar'
-    def final jar_name = 'seas_sdk_pack'
+    def final tmp_jar_file = jar_parent_dir + '/' + project.name + '.jar'
     def final jar_name_dir = jar_parent_dir + '/' + jar_name
 
     if (!file(tmp_jar_file).exists()) {
@@ -67,9 +73,12 @@ def makeJar() {
         commandLine command
     }
 
+
     // 4、把生成的可执行jar复制到对应文件夹，并清理残余文件
     def jar_name2 = '/' + jar_name + '.jar'
-    file(jar_name_dir + jar_name2).renameTo(file(jar_parent_dir + jar_name2))
+    def target_jar = file(out_put_jar_path + jar_name2)
+    target_jar.delete()
+    file(jar_name_dir + jar_name2).renameTo(target_jar)
     delete(jar_name_dir)
     delete(tmp_jar_file)
     delete(this.getBuildDir())

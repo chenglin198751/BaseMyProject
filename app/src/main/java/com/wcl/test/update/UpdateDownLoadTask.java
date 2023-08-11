@@ -34,7 +34,7 @@ public class UpdateDownLoadTask {
                 if (isSuccess) {
                     mUpdateDialog.downloadSuccess();
                     cancelNotify();
-                    ApkInstaller.openApk(BaseApp.getApp(), filePath);
+                    ApkInstaller.installApk(BaseApp.getApp(), filePath);
                     isDownLoading = false;
                 } else {
                     isDownLoading = false;
@@ -50,7 +50,7 @@ public class UpdateDownLoadTask {
             }
         };
 
-        HttpUtils.downloadFile(url, true, downloadCallback);
+        HttpUtils.downloadFile(url, downloadCallback);
     }
 
 

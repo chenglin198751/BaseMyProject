@@ -13,7 +13,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.httpwork.HttpUrls;
 import com.wcl.test.httpwork.HttpUtils;
-import com.wcl.test.preferences.PreferAppSettings;
+import com.wcl.test.storage.PreferAppSettings;
 import com.wcl.test.utils.ApkInstaller;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
@@ -93,7 +93,7 @@ public class UpdateDialog extends Dialog {
                         String apk_path = HttpUtils.getDownLoadFilePath(mVersionModel.url);
                         boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName, apk_path);
                         if (isExist) {
-                            ApkInstaller.openApk(mActivity, apk_path);
+                            ApkInstaller.installApk(mActivity, apk_path);
                         } else {
                             ToastUtils.show("安装失败，请立即更新");
                             mRightBtn.setText(R.string.update_version_update);
