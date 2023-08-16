@@ -32,3 +32,7 @@
     类中右键：Generate ：产生XXX
     自动生成parcelable 的插件：Android Parcelable code generator
     自动转化 json 为类的插件 ：GsonFormat
+
+**7、自定义上放主导航按钮：**
+
+    File--->Settings--->Appearance& Behavior--->Menus and Toolbars--->Main Toolbar Left--->右上角+ Add Actions
