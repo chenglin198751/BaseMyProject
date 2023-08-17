@@ -51,7 +51,26 @@
         tree.write(manifest, 'UTF-8')
         return 0
 
-** 3、apk_utils.merge_res_xml_values()方法是自动去除xml重复值。目前注释掉了，原因：现在用AndroidStudo开发生成jar了，会自动检查重复资源文件**
+** 3、apk_utils.merge_res_xml_values()方法是自动去除xml重复值。目前注释掉了，原因：现在用AndroidStudio开发生成jar了，会自动检查重复资源文件**
 
     在生成R文件(generateNewRFile()方法)之前，需要把res/values下的xml去除重复值
     apk_utils.merge_res_xml_values(decompileDir)
+
+** 4、get和set application 和 activity 的根元素的值**
+
+    <application android:allowBackup="true" test_test="333">
+    <activity android:name="com.jiguang.h5.SplashActivity" android:screenOrientation="sensorPortrait"/>
+    
+    1、示例，获取 allowBackup 的值：
+    androidNS = 'http://schemas.android.com/apk/res/android'
+
+    appNode = root.find('application')
+    allowBackupKey = '{' + androidNS + '}allowBackup'
+    allowBackup = appNode.get(allowBackupKey)
+
+    设置：appNode.set(allowBackupKey,'ddd33')
+
+    2、示例，获取 test_test 的值： 
+    test_test = appNode.get('test_test')
+
+    设置：appNode.set('test_test','ddd33')
