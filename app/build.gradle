@@ -56,8 +56,8 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
+    android.applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
             outputFileName = "base_project_v_" + defaultConfig.versionName + ".apk"
         }
     }
