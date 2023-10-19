@@ -31,12 +31,12 @@ public class FileUtils {
      * 当APP卸载时，这些垃圾文件也跟着自动卸载清除了。
      * <p>
      * 2021-05-21 修正补充：
-     * 由于安卓11对文件存储有很大限制，导致sdcard/data/data无法正常使用。故此方法弃用.
-     * 所以存储统一改为使用 getExternalPath() 方法
-     * 获取外部存储卡路径：比如：sdcard/Android/data/data/包名/cache
+     * 由于安卓11对文件存储有很大限制，导致data/data无法正常使用。故此方法弃用.
+     * 所以存储统一改为使用 getExternalFilesDir() 方法
+     * 获取外部存储卡路径：比如：/storage/emulated/0/Android/data/包名/files
      */
     public static String getExternalPath() {
-        return BaseApp.getApp().getExternalCacheDir().getAbsolutePath();
+        return BaseApp.getApp().getExternalFilesDir("").getAbsolutePath();
     }
 
     /**
