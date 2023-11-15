@@ -12,17 +12,17 @@ import java.util.List;
 public class CmdTask {
     private final static String TYPE_INPUT = "input";
     private final static String TYPE_ERROR = "error";
-    private final String mCommand;
+    private final String[] mCommand;
     private final String mWorkDir;
 
 
-    public CmdTask(String command) {
+    public CmdTask(String[] command) {
         this(command, null);
     }
 
-    public CmdTask(String command, String workDir) {
-        this.mCommand = FileUtils.replacePath(command);
-        this.mWorkDir = FileUtils.replacePath(workDir);
+    public CmdTask(String[] command, String workDir) {
+        this.mCommand = command;
+        this.mWorkDir = workDir;
     }
 
     public Outs run(boolean is_log) {
@@ -115,7 +115,7 @@ public class CmdTask {
                     } else if (type.equals(TYPE_ERROR)) {
                         mOuts.addErrorList(line);
                     }
-                    if (isLog){
+                    if (isLog) {
                         PackTools.Printer.print(line);
                     }
                 }
