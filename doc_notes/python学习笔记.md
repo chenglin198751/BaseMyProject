@@ -49,9 +49,40 @@
 
 **9、os.walk()获取一个文件夹下所有的文件：**
 
-    # dir_path 当前遍历的文件夹的绝对路径
+    # dir_path 当前文件夹下的所有子文件夹的路径（包含当前文件夹）
     # dir_names 当前文件夹下的所有子文件夹的名称（仅一层，孙子文件夹不包括）
     # file_names 保存当前文件夹下的所有文件的名称
     for dir_path, dir_names, file_names in os.walk(path):
         for f in file_names:
             print(os.path.abspath(f))
+
+**10、pathlib.Path使用方法：**
+
+    # 常用方法
+    path = Path('E:/mac/test1/test2')
+    path.unlink()  # 删除文件
+    path.rmdir()  # 删除空目录
+    path.rmdir()  # 递归删除目录及其内容
+    path.mkdir(parents=True, exist_ok=True)  # 递归创建文件夹
+
+    # 遍历当前路径下的文件
+    entries = Path('E:/mac/test1/test2')
+    for path in entries.iterdir():
+        print(path.absolute())
+        print(path.is_file())
+        print(path.is_dir())
+        print(path.parts)
+        print(path.parent)
+        print(path.name)
+        print(path.stem)
+        print(path.suffix)
+
+**11、字符串操作：**
+
+        1、# 打印data_1111_backup.txt这种字符
+        if fnmatch.fnmatch(f_name, 'data_*_backup.txt'):
+            print(f_name)
+
+        2、# 打印aapt aapt2这种字符
+        if fnmatch.fnmatch(f_name, 'aa*'):
+            print(f_name)
