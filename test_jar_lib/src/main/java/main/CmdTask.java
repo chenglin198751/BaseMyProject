@@ -38,12 +38,6 @@ public class CmdTask {
             }
             process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
 
-//            特别注意：这里不能使用线程解析输入输出流，否则在Linux服务器，会导致数据返回不同步。by weichenglin1 2023-12-06
-//            // Runtime.exec()创建的子进程公用父进程的流，不同平台上，父进程的stream buffer可能被打满导致子进程阻塞，从而永远无法返回。
-//            // 针对这种情况，我们只需要将子进程的stream重定向出来即可。
-//            new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT).start();
-//            new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR).start();
-
             // 1、process.getInputStream()
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
@@ -65,6 +59,16 @@ public class CmdTask {
             }
 
             exitVal = process.waitFor();
+
+//            // 特别注意：这里不能使用线程解析输入输出流，否则在Linux服务器，会导致数据返回不同步。by weichenglin1 2023-12-06
+//            // 第二种写法：可以使用线程的join方法来实现等待两个线程执行完毕。代码如下：
+//            Thread input_thread = new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT);
+//            Thread error_thread =new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
+//            input_thread.start();
+//            error_thread.start();
+//            input_thread.join();
+//            error_thread.join();
+
             outs.exit_value = exitVal;
             process.destroy();
             process.exitValue();
