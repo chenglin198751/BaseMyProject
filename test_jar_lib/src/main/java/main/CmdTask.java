@@ -70,15 +70,9 @@ public class CmdTask {
 //            error_thread.join();
 
             outs.exit_value = exitVal;
-            process.destroy();
-            process.exitValue();
         } catch (Exception e) {
             e.printStackTrace();
             error = e.toString();
-            if (process != null) {
-                process.destroy();
-                process.exitValue();
-            }
         }
 
         if (error != null || exitVal != 0) {
