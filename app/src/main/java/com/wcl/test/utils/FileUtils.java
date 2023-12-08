@@ -101,7 +101,7 @@ public class FileUtils {
     /**
      * 读取文件，返回String
      */
-    public static String readFile(String file_path) {
+    public static String readFileString(String file_path) {
         if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
             return null;
         }
@@ -109,7 +109,6 @@ public class FileUtils {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Path path = Paths.get(file_path);
-                Files.readAllBytes(path);
                 return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
             } else {
                 StringBuilder line = new StringBuilder();
@@ -121,15 +120,13 @@ public class FileUtils {
                 reader.close();
                 return line.toString();
             }
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<String> readAllLines(String filePath) {
+    public static List<String> readFileLines(String filePath) {
         List<String> lines = new ArrayList<>();
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -150,7 +147,7 @@ public class FileUtils {
         return lines;
     }
 
-    public static void writeAllLines(String filePath, Iterable<String> lines) {
+    public static void writeFileLines(String filePath, Iterable<String> lines) {
         try {
             // 覆盖模式写入
             FileWriter fileWriter = new FileWriter(filePath, false);
