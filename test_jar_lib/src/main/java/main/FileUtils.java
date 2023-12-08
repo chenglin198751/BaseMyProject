@@ -149,7 +149,7 @@ public class FileUtils {
     }
 
     public static String replacePath(String path) {
-        if (path == null || path.length() <= 0) {
+        if (path == null || path.length() == 0) {
             return path;
         } else {
             return path.replace("/", File.separator);
@@ -176,25 +176,22 @@ public class FileUtils {
         // 是否把source_dir整个文件夹的文件都复制过去
         boolean isCopyAllFiles = false;
         if (files_suffix.length == 1) {
-            if (files_suffix[0] == null || files_suffix[0].length() <= 0) {
+            if (files_suffix[0] == null || files_suffix[0].length() == 0) {
                 isCopyAllFiles = true;
             }
         }
 
-        if (source_files.length > 0) {
-            for (File file : source_files) {
-                String dest_file_path = dest_dir + File.separator + file.getName();
+        for (File file : source_files) {
+            String dest_file_path = dest_dir + File.separator + file.getName();
 
-                if (isCopyAllFiles) {
-                    copyFile(file.getAbsolutePath(), dest_file_path);
-                } else {
-                    for (String suffix : files_suffix) {
-                        if (file.getName().endsWith(suffix)) {
-                            copyFile(file.getAbsolutePath(), dest_file_path);
-                        }
+            if (isCopyAllFiles) {
+                copyFile(file.getAbsolutePath(), dest_file_path);
+            } else {
+                for (String suffix : files_suffix) {
+                    if (file.getName().endsWith(suffix)) {
+                        copyFile(file.getAbsolutePath(), dest_file_path);
                     }
                 }
-
             }
         }
     }
