@@ -55,7 +55,7 @@ public class BigStringRelyFile {
         }
 
         String file_path = getKeyFilePath(key);
-        return FileUtils.readFile(file_path);
+        return FileUtils.readFileString(file_path);
     }
 
     public static void putValues(List<String> keys, List<String> values) {
