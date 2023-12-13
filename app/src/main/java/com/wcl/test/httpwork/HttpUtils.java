@@ -165,7 +165,7 @@ public class HttpUtils {
                     return;
                 }
 
-                if (!response.isSuccessful()) {
+                if (!response.isSuccessful() || response.body() == null) {
                     HttpCallback2.onResponse(httpCallback, false, response.toString());
                     return;
                 }
@@ -261,6 +261,10 @@ public class HttpUtils {
 
         try {
             Response response = mOkHttpClient.newCall(request).execute();
+            if (response.body() == null) {
+                response.close();
+                return null;
+            }
             if (response.isSuccessful()) {
                 //有时服务端返回json带了bom头，会导致解析异常
                 String tempStr = response.body().string();
@@ -306,6 +310,10 @@ public class HttpUtils {
 
         try {
             Response response = mOkHttpClient.newCall(request).execute();
+            if (response.body() == null) {
+                response.close();
+                return null;
+            }
             if (response.isSuccessful()) {
                 //有时服务端返回json带了bom头，会导致解析异常
                 String result = response.body().string();
@@ -476,6 +484,9 @@ public class HttpUtils {
             //开始启动下载
             final Request request = builder.build();
             final Response response = mOkHttpClient.newCall(request).execute();
+            if (response.body() == null) {
+                return null;
+            }
             if (!response.isSuccessful()) {
                 response.body().close();
                 response.close();
@@ -518,6 +529,9 @@ public class HttpUtils {
             savedFile.close();
             response.body().close();
             response.close();
+            fileLock = null;
+            fileChannel = null;
+            inputStream = null;
 
             //下载完成后把.temp的文件重命名为原文件
             if (tempFile.exists() && tempFile.length() == contentLength) {
@@ -591,6 +605,10 @@ public class HttpUtils {
         Request request = new Request.Builder().url(downloadUrl).build();
         try {
             Response response = mOkHttpClient.newCall(request).execute();
+            if (response.body() == null) {
+                response.close();
+                return 0;
+            }
             if (response.isSuccessful()) {
                 long contentLength = response.body().contentLength();
                 response.body().close();
@@ -673,14 +691,14 @@ public class HttpUtils {
             Object value = entry.getValue();
 
             if (params2.length() <= 0 && !url.contains("?")) {
-                params2.append("?" + key + "=" + value);
+                params2.append("?").append(key).append("=").append(value);
             } else {
-                params2.append("&" + key + "=" + value);
+                params2.append("&").append(key).append("=").append(value);
             }
         }
 
         if (!TextUtils.isEmpty(url)) {
-            return url + params2.toString();
+            return url + params2;
         } else {
             return params2.toString();
         }
@@ -701,8 +719,7 @@ public class HttpUtils {
      * 根据下载文件URL得到文件的下载路径
      */
     public static String getDownLoadFilePath(String fileUrl) {
-        final String downPath = HTTP_DOWNLOAD_PATH + File.separator + AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
-        return downPath;
+        return HTTP_DOWNLOAD_PATH + File.separator + AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
     }
 
     public static class HttpCallback2 {
