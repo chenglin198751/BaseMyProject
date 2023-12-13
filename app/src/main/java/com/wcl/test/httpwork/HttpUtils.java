@@ -485,6 +485,7 @@ public class HttpUtils {
             final Request request = builder.build();
             final Response response = mOkHttpClient.newCall(request).execute();
             if (response.body() == null) {
+                FileHttpDownloadCallback.onFailure("null", downCallback, new NullPointerException("Response.body() is null"));
                 return null;
             }
             if (!response.isSuccessful()) {
