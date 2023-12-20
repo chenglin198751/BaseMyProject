@@ -14,9 +14,9 @@ project.ext {
     BUILD_TOOLS_VERSION = "34.0.0"
 
     //最低支持Android版本
-    MIN_SDK_VERSION = 21
+    MIN_SDK_VERSION = 24
 
     //目标版本
-    TARGET_SDK_VERSION = 31
+    TARGET_SDK_VERSION = 34
 
 }
