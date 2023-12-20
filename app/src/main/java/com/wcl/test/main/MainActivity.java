@@ -83,11 +83,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void showTab(int selectedIndex) {
         BaseFragment baseFragment = mFragHelper.showTabFragment(R.id.fragment_base_id, selectedIndex);
         for (int index = 0; index < TAB_BOTTOM_ID_ARRAY.length; index++) {
-            if (selectedIndex == index) {
-                findViewById(TAB_BOTTOM_ID_ARRAY[index]).setSelected(true);
-            } else {
-                findViewById(TAB_BOTTOM_ID_ARRAY[index]).setSelected(false);
-            }
+            findViewById(TAB_BOTTOM_ID_ARRAY[index]).setSelected(selectedIndex == index);
         }
 
         if (selectedIndex == TAB_FIRST) {
