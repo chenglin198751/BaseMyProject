@@ -1,5 +1,15 @@
 # 融合SDK--开发点注意
 
+** 0、融合后台配置升级：**
+
+    比如当前要发布的游戏版本号是281，已发出去的游戏版本号是280，那么就如下配置：
+    版本号升级：1　（就写1，指最小版本）
+    版本号结束：280 （已经发出去的要被强更的最后一个版本号）
+    待升级版本号：281 （没用到，随便写，不过还是写当前要发布强更的版本号为好）
+    待升级版本名称：2.8.1 （没用到，随便写，不过还是写当前要发布强更的版本名称为好）
+    包名：一定要写当前游戏包名
+    MD5值：没用到，随便写
+
 ** 1、关于闪屏配置：**
 
     拿game2举例：
@@ -113,8 +123,13 @@
     1、portal-sdk-tool\BUILD_CONFIG\reset_switch : 放置此文件，可以重置所有的打包状态。切记，用完要删除此文件。
     2、portal-sdk-tool\BUILD_CONFIG\chmod777.config : 放置此文件，内容配置如路径：portal-sdk-tool/games/game2/channels，
         比如以portal-sdk-tool开头，以回车符分割，那么这些文件夹或者文件会被修改为chmod777的权限。切记，用完一定要删除。
+    3、portal-sdk-tool\BUILD_CONFIG\clear_apk : 放置此文件，可以清理垃圾文件。
 
 **13、自动替换一下字符串为包名：**
 
     ${applicationId}
     yxme_sdk_application_id
+
+**14、每次新增渠道，需要在下面的xml文件中配置参数：**
+
+    /home/q/system/l.u.360.cn/public/server_channel.xml

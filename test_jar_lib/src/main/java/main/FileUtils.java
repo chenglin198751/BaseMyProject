@@ -115,16 +115,14 @@ public class FileUtils {
     /**
      * 读取文件
      */
-    public static String readFile(File file) {
+    public static String readFileString(File file) {
         if (!file.exists()) {
             return null;
         }
 
         try {
             Path path = Paths.get(file.getAbsolutePath());
-            Files.readAllBytes(path);
-            String readString = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-            return readString;
+            return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
         } catch (Throwable e) {
             PackTools.Error_Msg = e.toString();
             e.printStackTrace();
@@ -133,7 +131,7 @@ public class FileUtils {
     }
 
     /**
-     * 把字符串写入文件
+     * 覆盖模式把字符串写入文件
      */
     public static void writeFile(File file, String value) {
         if (!file.exists()) {
@@ -151,7 +149,7 @@ public class FileUtils {
     }
 
     public static String replacePath(String path) {
-        if (path == null || path.length() <= 0) {
+        if (path == null || path.length() == 0) {
             return path;
         } else {
             return path.replace("/", File.separator);
@@ -178,25 +176,22 @@ public class FileUtils {
         // 是否把source_dir整个文件夹的文件都复制过去
         boolean isCopyAllFiles = false;
         if (files_suffix.length == 1) {
-            if (files_suffix[0] == null || files_suffix[0].length() <= 0) {
+            if (files_suffix[0] == null || files_suffix[0].length() == 0) {
                 isCopyAllFiles = true;
             }
         }
 
-        if (source_files.length > 0) {
-            for (File file : source_files) {
-                String dest_file_path = dest_dir + File.separator + file.getName();
+        for (File file : source_files) {
+            String dest_file_path = dest_dir + File.separator + file.getName();
 
-                if (isCopyAllFiles) {
-                    copyFile(file.getAbsolutePath(), dest_file_path);
-                } else {
-                    for (String suffix : files_suffix) {
-                        if (file.getName().endsWith(suffix)) {
-                            copyFile(file.getAbsolutePath(), dest_file_path);
-                        }
+            if (isCopyAllFiles) {
+                copyFile(file.getAbsolutePath(), dest_file_path);
+            } else {
+                for (String suffix : files_suffix) {
+                    if (file.getName().endsWith(suffix)) {
+                        copyFile(file.getAbsolutePath(), dest_file_path);
                     }
                 }
-
             }
         }
     }
@@ -206,7 +201,7 @@ public class FileUtils {
      * 如果suffix参数为空字符串""，那么就是复制所有的文件
      */
     public static void copyFilesBySuffix(String source_dir, String dest_dir, String suffix) {
-        copyFilesBySuffix(source_dir, dest_dir, new String[] { suffix });
+        copyFilesBySuffix(source_dir, dest_dir, new String[]{suffix});
     }
 
     /**
@@ -214,7 +209,7 @@ public class FileUtils {
      */
     public static void getAllFiles(File dir, List<File> fileList) {
         File[] files = dir.listFiles();
-        if (files!= null && files.length > 0) {
+        if (files != null && files.length > 0) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     getAllFiles(file, fileList);
@@ -238,6 +233,9 @@ public class FileUtils {
         }
     }
 
-    //逐行读取文本
-//    List<String> lines = Files.readAllLines(Paths.get(all_file_path),StandardCharsets.UTF_8);
+    // 逐行读取文本
+    // List<String> lines = Files.readAllLines(Paths.get(all_file_path),StandardCharsets.UTF_8);
+
+    // 写入上面逐行读出的list
+    // Files.write(Paths.get(all_file_path),lines);
 }

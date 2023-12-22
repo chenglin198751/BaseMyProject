@@ -8,15 +8,15 @@ task zip(type: Zip) {
 
 project.ext {
     //用于编译的SDK版本
-    COMPILE_SDK_VERSION = 33
+    COMPILE_SDK_VERSION = 34
 
     //用于Gradle编译项目的工具版本
-    BUILD_TOOLS_VERSION = "32.0.0"
+    BUILD_TOOLS_VERSION = "34.0.0"
 
     //最低支持Android版本
-    MIN_SDK_VERSION = 21
+    MIN_SDK_VERSION = 24
 
     //目标版本
-    TARGET_SDK_VERSION = 31
+    TARGET_SDK_VERSION = 34
 
 }
