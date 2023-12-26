@@ -38,37 +38,16 @@ public class CmdTask {
             }
             process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
 
-            // 1、process.getInputStream()
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                outs.addInputList(line);
-                if (is_log) {
-                    System.out.println(line);
-                }
-            }
-
-            // 2、process.getErrorStream()
-            BufferedReader reader2 = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            String line2;
-            while ((line2 = reader2.readLine()) != null) {
-                outs.addErrorList(line2);
-                if (is_log) {
-                    System.out.println(line2);
-                }
-            }
+            // Runtime.exec()创建的子进程公用父进程的流，不同平台上，父进程的stream buffer可能被打满导致子进程阻塞，从而永远无法返回。
+            // 针对这种情况，我们只需要将子进程的stream重定向出来即可。
+            Thread input_thread = new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT);
+            Thread error_thread = new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
+            input_thread.start();
+            error_thread.start();
+            input_thread.join();
+            error_thread.join();
 
             exitVal = process.waitFor();
-
-//            // 特别注意：这里不能使用线程解析输入输出流，否则在Linux服务器，会导致数据返回不同步。by weichenglin1 2023-12-06
-//            // 第二种写法：可以使用线程的join方法来实现等待两个线程执行完毕。代码如下：
-//            Thread input_thread = new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT);
-//            Thread error_thread =new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
-//            input_thread.start();
-//            error_thread.start();
-//            input_thread.join();
-//            error_thread.join();
-
             outs.exit_value = exitVal;
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,55 +85,55 @@ public class CmdTask {
         }
     }
 
-//    private static class RedirCmdStreamThread extends Thread {
-//        InputStream is;
-//        Process process;
-//        String type;
-//        boolean isLog;
-//        Outs mOuts;
-//
-//        RedirCmdStreamThread(boolean is_log, Outs outs, Process process, InputStream is, String type) {
-//            this.is = is;
-//            this.process = process;
-//            this.type = type;
-//            this.isLog = is_log;
-//            this.mOuts = outs;
-//        }
-//
-//        public void run() {
-//            InputStreamReader isr = null;
-//            BufferedReader br = null;
-//            try {
-//                isr = new InputStreamReader(is);
-//                br = new BufferedReader(isr);
-//
-//                String line = "";
-//                while ((line = br.readLine()) != null) {
-//                    if (type.equals(TYPE_INPUT)) {
-//                        mOuts.addInputList(line);
-//                    } else if (type.equals(TYPE_ERROR)) {
-//                        mOuts.addErrorList(line);
-//                    }
-//                    if (isLog) {
-//                        PackTools.Printer.print(line);
-//                    }
-//                }
-//            } catch (Exception ioe) {
-//                mOuts.inputList.add(ioe.toString());
-//                mOuts.errorList.add(ioe.toString());
-//                ioe.printStackTrace();
-//            } finally {
-//                try {
-//                    if (br != null) {
-//                        br.close();
-//                    }
-//                    if (isr != null) {
-//                        isr.close();
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
+    private static class RedirCmdStreamThread extends Thread {
+        InputStream is;
+        Process process;
+        String type;
+        boolean isLog;
+        Outs mOuts;
+
+        RedirCmdStreamThread(boolean is_log, Outs outs, Process process, InputStream is, String type) {
+            this.is = is;
+            this.process = process;
+            this.type = type;
+            this.isLog = is_log;
+            this.mOuts = outs;
+        }
+
+        public void run() {
+            InputStreamReader isr = null;
+            BufferedReader br = null;
+            try {
+                isr = new InputStreamReader(is);
+                br = new BufferedReader(isr);
+
+                String line = "";
+                while ((line = br.readLine()) != null) {
+                    if (type.equals(TYPE_INPUT)) {
+                        mOuts.addInputList(line);
+                    } else if (type.equals(TYPE_ERROR)) {
+                        mOuts.addErrorList(line);
+                    }
+                    if (isLog) {
+                        PackTools.Printer.print(line);
+                    }
+                }
+            } catch (Exception ioe) {
+                mOuts.inputList.add(ioe.toString());
+                mOuts.errorList.add(ioe.toString());
+                ioe.printStackTrace();
+            } finally {
+                try {
+                    if (br != null) {
+                        br.close();
+                    }
+                    if (isr != null) {
+                        isr.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
