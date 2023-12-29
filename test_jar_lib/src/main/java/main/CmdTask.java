@@ -49,6 +49,7 @@ public class CmdTask {
 
             exitVal = process.waitFor();
             outs.exit_value = exitVal;
+            process.destroy();
         } catch (Exception e) {
             e.printStackTrace();
             error = e.toString();
