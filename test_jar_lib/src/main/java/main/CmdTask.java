@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public class CmdTask {
@@ -27,8 +28,6 @@ public class CmdTask {
 
     public Outs run(boolean is_log) {
         Outs outs = new Outs();
-        Process process = null;
-        int exitVal = -1;
         String error = null;
 
         try {
@@ -36,7 +35,7 @@ public class CmdTask {
             if (mWorkDir != null && mWorkDir.length() > 0) {
                 work_dirs = new File(mWorkDir);
             }
-            process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
+            Process process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
 
             // Runtime.exec()创建的子进程公用父进程的流，不同平台上，父进程的stream buffer可能被打满导致子进程阻塞，从而永远无法返回。
             // 针对这种情况，我们只需要将子进程的stream重定向出来即可。
@@ -44,17 +43,21 @@ public class CmdTask {
             Thread error_thread = new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
             input_thread.start();
             error_thread.start();
-            exitVal = process.waitFor();
+            // 设置执行命令的超时时间为3分钟
+            if (!process.waitFor(3, TimeUnit.MINUTES)) {
+                error = "执行命令超时了";
+                process.destroy();
+            }
+            outs.exit_value = process.exitValue();
             input_thread.join();
             error_thread.join();
-            outs.exit_value = exitVal;
         } catch (Exception e) {
             e.printStackTrace();
             error = e.toString();
         }
 
-        if (error != null || exitVal != 0) {
-            error = "cmd = " + mCommand + "; exec failed:" + error + " exitVal= " + exitVal;
+        if (error != null || outs.exit_value != 0) {
+            error = "cmd is " + mCommand + ";exec failed:" + error + " exitValue is " + outs.exit_value;
             PackTools.Printer.print(error);
             return outs;
         }
