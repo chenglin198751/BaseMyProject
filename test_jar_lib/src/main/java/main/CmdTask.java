@@ -44,12 +44,10 @@ public class CmdTask {
             Thread error_thread = new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
             input_thread.start();
             error_thread.start();
+            exitVal = process.waitFor();
             input_thread.join();
             error_thread.join();
-
-            exitVal = process.waitFor();
             outs.exit_value = exitVal;
-            process.destroy();
         } catch (Exception e) {
             e.printStackTrace();
             error = e.toString();
