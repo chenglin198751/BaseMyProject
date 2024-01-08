@@ -43,12 +43,13 @@ public class CmdTask {
             Thread error_thread = new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
             input_thread.start();
             error_thread.start();
-            // 设置执行命令的超时时间为3分钟。特别注意，这里设置超时不适用于所有项目。
-            // 因为有些命令执行确实非常耗时，比如java -jar apktool，要2-5分钟
-            if (!process.waitFor(3, TimeUnit.MINUTES)) {
-                error = "执行命令超时了";
-                process.destroy();
-            }
+//            // 设置执行命令的超时时间为3分钟。特别注意，这里设置超时不适用于所有项目。
+//            // 因为有些命令执行确实非常耗时，比如java -jar apktool，要2-5分钟
+//            if (!process.waitFor(3, TimeUnit.MINUTES)) {
+//                error = "执行命令超时了";
+//                process.destroy();
+//            }
+            process.waitFor();
             outs.exit_value = process.exitValue();
             input_thread.join();
             error_thread.join();
