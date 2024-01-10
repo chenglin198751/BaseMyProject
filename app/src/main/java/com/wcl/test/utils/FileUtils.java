@@ -36,7 +36,11 @@ public class FileUtils {
      * 获取外部存储卡路径：比如：/storage/emulated/0/Android/data/包名/files
      */
     public static String getExternalPath() {
-        return BaseApp.getApp().getExternalFilesDir("").getAbsolutePath();
+        File file = BaseApp.getApp().getExternalFilesDir("");
+        if (file == null) {
+            file = BaseApp.getApp().getFilesDir();
+        }
+        return file.getAbsolutePath();
     }
 
     /**
