@@ -4,6 +4,8 @@ plugins {
 }
 apply from: '../common.gradle'
 
+def apk_release_path, apk_debug_path
+
 android {
     namespace 'com.wcl.test'
     compileSdk project.ext.COMPILE_SDK_VERSION
@@ -59,7 +61,12 @@ android {
 
     android.applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
-            outputFileName = "base_project_v_" + defaultConfig.versionName + ".apk"
+            it.outputFileName = "base_project_v_" + defaultConfig.versionName + ".apk"
+            if (variant.name == 'release') {
+                apk_release_path = it.outputFile.getAbsolutePath()
+            } else if (variant.name == 'debug') {
+                apk_debug_path = it.outputFile.getAbsolutePath()
+            }
         }
     }
 
