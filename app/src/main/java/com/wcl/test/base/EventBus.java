@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class BaseAction {
+public class EventBus {
 
     /**
      * 通用的发送广播，可以在任意位置发送
@@ -34,14 +34,6 @@ public class BaseAction {
          * 关闭别的Activity，只保留MainActivity不关闭
          */
         String ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY = "ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY";
-    }
-
-    public interface Keys {
-        String ACTIVITY_NAME = "activity_name";
-    }
-
-    public interface Actions {
-        String TEST = "TEST";
     }
 
 }
