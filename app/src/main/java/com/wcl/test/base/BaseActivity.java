@@ -69,8 +69,8 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
         if (onKeepSingleActivity()) {
             Bundle bundle = new Bundle();
-            bundle.putString(BaseAction.Keys.ACTIVITY_NAME, this.getClass().getName());
-            BaseAction.sendBroadcast(BaseAction.System.ACTION_KEEP_SINGLE_ACTIVITY, bundle);
+            bundle.putString("activity_name", this.getClass().getName());
+            EventBus.sendBroadcast(EventBus.System.ACTION_KEEP_SINGLE_ACTIVITY, bundle);
         }
         registerBroadcastReceiver();
 
@@ -181,20 +181,20 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @CallSuper
     @Override
     public void onBroadcastReceiver(String action, Bundle bundle) {
-        if (BaseAction.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(action)) {
+        if (EventBus.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(action)) {
             //根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
             if (onKeepSingleActivity()) {
                 String className = this.getClass().getName();
-                if (bundle != null && className.equals(bundle.getString(BaseAction.Keys.ACTIVITY_NAME))) {
+                if (bundle != null && className.equals(bundle.getString("activity_name"))) {
                     finish();
                 }
             }
-        } else if (BaseAction.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
+        } else if (EventBus.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
             //只保留MainActivity不关闭
             if (!this.getClass().getSimpleName().equals(MainActivity.CLASS_NAME)) {
                 finish();
             }
-        } else if (BaseAction.System.ACTION_BASE_BROADCAST.equals(action)) {
+        } else if (EventBus.System.ACTION_BASE_BROADCAST.equals(action)) {
             //通知Activity里面所有的fragment接收广播
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             if (fragments.size() > 0) {
@@ -339,7 +339,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             mBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    if (intent.getAction().equals(BaseAction.System.ACTION_BASE_BROADCAST)) {
+                    if (intent.getAction().equals(EventBus.System.ACTION_BASE_BROADCAST)) {
                         String myAction = intent.getStringExtra("action");
                         onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
                     }
@@ -347,7 +347,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             };
 
             IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(BaseAction.System.ACTION_BASE_BROADCAST);
+            intentFilter.addAction(EventBus.System.ACTION_BASE_BROADCAST);
             LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
         }
     }
