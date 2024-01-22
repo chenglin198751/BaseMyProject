@@ -79,7 +79,7 @@ public class BigStringFile implements BigStringBase {
         } else if (values == null || values.size() == 0) {
             return false;
         } else if (keys.size() != values.size()) {
-            throw new IllegalArgumentException("keys.size() != values.size()");
+            throw new IllegalArgumentException("putValues() method keys.size() != values.size()");
         }
 
         for (int i = 0; i < keys.size(); i++) {
