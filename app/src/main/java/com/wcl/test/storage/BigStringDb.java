@@ -3,7 +3,10 @@ package com.wcl.test.storage;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+
+import com.wcl.test.base.BaseApp;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,11 +28,11 @@ public class BigStringDb implements BigStringBase {
     @Override
     public List<String> getAllKeys() {
         List<String> keys = new ArrayList<>();
-        CommonSQLite dbHelper = new CommonSQLite();
+        BigDbSQLite dbHelper = new BigDbSQLite();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String[] columns = new String[]{CommonSQLite.T_KEY};
-        Cursor cursor = db.query(CommonSQLite.TABLE_NAME, columns, null, null, null, null, null);
+        String[] columns = new String[]{BigDbSQLite.T_KEY};
+        Cursor cursor = db.query(BigDbSQLite.TABLE_NAME, columns, null, null, null, null, null);
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -76,15 +79,15 @@ public class BigStringDb implements BigStringBase {
             throw new IllegalArgumentException("keys.size() != values.size()");
         }
 
-        CommonSQLite dbHelper = new CommonSQLite();
+        BigDbSQLite dbHelper = new BigDbSQLite();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         int count = 0;
         for (int i = 0; i < keys.size(); i++) {
             ContentValues contents = new ContentValues();
-            contents.put(CommonSQLite.T_KEY, keys.get(i));
-            contents.put(CommonSQLite.T_VALUE, values.get(i));
-            long row_id = db.replace(CommonSQLite.TABLE_NAME, null, contents);
+            contents.put(BigDbSQLite.T_KEY, keys.get(i));
+            contents.put(BigDbSQLite.T_VALUE, values.get(i));
+            long row_id = db.replace(BigDbSQLite.TABLE_NAME, null, contents);
             if (row_id > 0) {
                 count++;
             }
@@ -102,15 +105,15 @@ public class BigStringDb implements BigStringBase {
         }
 
         List<String> values = new ArrayList<>();
-        CommonSQLite dbHelper = new CommonSQLite();
+        BigDbSQLite dbHelper = new BigDbSQLite();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] selectionArgs = new String[keys.size()];
         keys.toArray(selectionArgs);
 
         String selection = TextUtils.join(",", Collections.nCopies(keys.size(), "?"));
-        String sql_query = "SELECT " + CommonSQLite.T_VALUE + " FROM " + CommonSQLite.TABLE_NAME +
-                " WHERE " + CommonSQLite.T_KEY + " in (" + selection + ")";
+        String sql_query = "SELECT " + BigDbSQLite.T_VALUE + " FROM " + BigDbSQLite.TABLE_NAME +
+                " WHERE " + BigDbSQLite.T_KEY + " in (" + selection + ")";
 
         Cursor cursor = db.rawQuery(sql_query, selectionArgs);
         if (cursor != null) {
@@ -138,13 +141,13 @@ public class BigStringDb implements BigStringBase {
             return false;
         }
 
-        CommonSQLite dbHelper = new CommonSQLite();
+        BigDbSQLite dbHelper = new BigDbSQLite();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         int count = 0;
         for (int i = 0; i < keys.size(); i++) {
-            String selection = CommonSQLite.T_KEY + " = ?";
-            int deletedRows = db.delete(CommonSQLite.TABLE_NAME, selection, new String[]{keys.get(i)});
+            String selection = BigDbSQLite.T_KEY + " = ?";
+            int deletedRows = db.delete(BigDbSQLite.TABLE_NAME, selection, new String[]{keys.get(i)});
             if (deletedRows > 0) {
                 count++;
             }
@@ -154,6 +157,35 @@ public class BigStringDb implements BigStringBase {
         dbHelper.close();
         return count == keys.size();
     }
+
+    private static class BigDbSQLite extends SQLiteOpenHelper {
+        public static final String TABLE_NAME = "common_app_setting";
+        public static final String T_KEY = "t_key";
+        public static final String T_VALUE = "t_value";
+        public static final int TABLE_VERSION = 1;
+
+        public BigDbSQLite() {
+            super(BaseApp.getApp(), "app_common.db", null, TABLE_VERSION);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            String sql = "create table TABLE_NAME" +
+                    "(T_KEY TEXT primary key," +
+                    "T_VALUE TEXT)";
+
+            sql = sql.replace("TABLE_NAME", TABLE_NAME)
+                    .replace("T_KEY", T_KEY)
+                    .replace("T_VALUE", T_VALUE);
+
+            db.execSQL(sql);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        }
+    }
+
 }
 
 
