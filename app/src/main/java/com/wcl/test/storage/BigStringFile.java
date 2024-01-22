@@ -25,7 +25,7 @@ public class BigStringFile implements BigStringBase {
         static final BigStringFile INSTANCE = new BigStringFile();
     }
 
-    public static BigStringFile get() {
+    public static BigStringFile getInstance() {
         return BigStringFile.InstanceHolder.INSTANCE;
     }
 
