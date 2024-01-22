@@ -18,7 +18,7 @@ public class BigStringDb implements BigStringBase {
         static final BigStringDb INSTANCE = new BigStringDb();
     }
 
-    public static BigStringDb get() {
+    public static BigStringDb getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
