@@ -170,14 +170,7 @@ public class BigStringDb implements BigStringBase {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            String sql = "create table TABLE_NAME" +
-                    "(T_KEY TEXT primary key," +
-                    "T_VALUE TEXT)";
-
-            sql = sql.replace("TABLE_NAME", TABLE_NAME)
-                    .replace("T_KEY", T_KEY)
-                    .replace("T_VALUE", T_VALUE);
-
+            final String sql = String.format("create table %s(%s primary key,%s)", TABLE_NAME, T_KEY, T_VALUE);
             db.execSQL(sql);
         }
 
