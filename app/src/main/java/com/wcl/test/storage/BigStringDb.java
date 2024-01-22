@@ -112,8 +112,7 @@ public class BigStringDb implements BigStringBase {
         keys.toArray(selectionArgs);
 
         String selection = TextUtils.join(",", Collections.nCopies(keys.size(), "?"));
-        String sql_query = "SELECT " + BigDbSQLite.T_VALUE + " FROM " + BigDbSQLite.TABLE_NAME +
-                " WHERE " + BigDbSQLite.T_KEY + " in (" + selection + ")";
+        String sql_query = String.format("SELECT %s FROM %s WHERE %s in (%s)", BigDbSQLite.T_VALUE, BigDbSQLite.TABLE_NAME, BigDbSQLite.T_KEY, selection);
 
         Cursor cursor = db.rawQuery(sql_query, selectionArgs);
         if (cursor != null) {
