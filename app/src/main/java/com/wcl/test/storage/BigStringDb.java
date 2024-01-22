@@ -9,11 +9,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+public class BigStringDb implements BigStringBase {
 
-public class BigStringRelyDb {
-    private static final String TAG = "BigStringRelyDb";
+    private BigStringDb() {
+    }
 
-    public static List<String> getAllKeys() {
+    private static final class InstanceHolder {
+        static final BigStringDb INSTANCE = new BigStringDb();
+    }
+
+    public static BigStringDb get() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    @Override
+    public List<String> getAllKeys() {
         List<String> keys = new ArrayList<>();
         CommonSQLite dbHelper = new CommonSQLite();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -33,7 +43,8 @@ public class BigStringRelyDb {
         return keys;
     }
 
-    public static boolean put(String key, String value) {
+    @Override
+    public boolean put(String key, String value) {
         List<String> keys = new ArrayList<>();
         keys.add(key);
         List<String> values = new ArrayList<>();
@@ -41,7 +52,8 @@ public class BigStringRelyDb {
         return putValues(keys, values);
     }
 
-    public static String get(String key) {
+    @Override
+    public String get(String key) {
         List<String> keys = new ArrayList<>();
         keys.add(key);
 
@@ -53,13 +65,9 @@ public class BigStringRelyDb {
         }
     }
 
-    public static boolean remove(String key) {
-        List<String> keys = new ArrayList<>();
-        keys.add(key);
-        return remove(keys);
-    }
 
-    public static boolean putValues(List<String> keys, List<String> values) {
+    @Override
+    public boolean putValues(List<String> keys, List<String> values) {
         if (keys == null || keys.size() == 0) {
             return false;
         } else if (values == null || values.size() == 0) {
@@ -87,7 +95,8 @@ public class BigStringRelyDb {
         return count == keys.size();
     }
 
-    public static List<String> getValues(List<String> keys) {
+    @Override
+    public List<String> getValues(List<String> keys) {
         if (keys == null || keys.size() == 0) {
             return null;
         }
@@ -116,7 +125,15 @@ public class BigStringRelyDb {
         return values;
     }
 
-    public static boolean remove(List<String> keys) {
+    @Override
+    public boolean remove(String key) {
+        List<String> keys = new ArrayList<>();
+        keys.add(key);
+        return remove(keys);
+    }
+
+    @Override
+    public boolean remove(List<String> keys) {
         if (keys == null || keys.size() == 0) {
             return false;
         }
@@ -137,5 +154,6 @@ public class BigStringRelyDb {
         dbHelper.close();
         return count == keys.size();
     }
-
 }
+
+

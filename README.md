@@ -573,8 +573,8 @@
 
 **107、数据存储相关的都在这里：**
 
-    1、BigStringRelyDb.java : 基于sqlite实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
-    2、BigStringRelyFile.java : 基于File实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
+    1、BigStringDb.java : 基于sqlite实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
+    2、BigStringFile.java : 基于File实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
     3、数据库框架dbflow : https://github.com/agrosner/DBFlow https://joyrun.github.io/2016/08/02/dbflow/
     4、轻量级基于SQLiteOpenHelper封装的数据库，适用于SDK开发 : https://github.com/guolindev/LitePal
 
