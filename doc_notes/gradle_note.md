@@ -210,7 +210,7 @@
 
     1、
     def sdk_jar_parent_dir = 'D:/aaaa'
-    files(file(sdk_jar_parent_dir).listFiles()).each { file ->
+    file(sdk_jar_parent_dir).listFiles()).each { file ->
         println('xxxx=' + file)
     }
 
