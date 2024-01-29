@@ -1,5 +1,6 @@
 package com.wcl.test.base;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -81,8 +82,13 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 
     protected abstract int getContentLayout();
@@ -110,17 +116,12 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
      */
     @Override
     public final WaitDialog showWaitDialog() {
-        if (getContext() != null) {
-            return getContext().showWaitDialog();
-        }
-        return null;
+        return getContext().showWaitDialog();
     }
 
     @Override
     public void dismissWaitDialog() {
-        if (getContext() != null) {
-            getContext().dismissWaitDialog();
-        }
+        getContext().dismissWaitDialog();
     }
 
     /**

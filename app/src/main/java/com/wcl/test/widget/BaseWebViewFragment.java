@@ -1,5 +1,6 @@
 package com.wcl.test.widget;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,9 +16,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 
-import com.wcl.test.base.BaseFragment;
 import com.wcl.test.R;
+import com.wcl.test.base.BaseFragment;
 
 /**
  * Created by chenglin on 2017-9-20.
@@ -64,9 +67,25 @@ public class BaseWebViewFragment extends BaseFragment {
             mWebView.goBack();
             return false;
         } else {
-            getActivity().finish();
+            requireActivity().finish();
             return true;
         }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (mWebView != null && mWebView.canGoBack()) {
+                    mWebView.goBack();
+                } else {
+                    requireActivity().finish();
+                }
+            }
+        });
     }
 
     @Override
@@ -93,7 +112,7 @@ public class BaseWebViewFragment extends BaseFragment {
 //                    getContext().startActivity(intent);
 //                    return true;
 //                }
-                return false;
+                return true;
             }
 
             @Override

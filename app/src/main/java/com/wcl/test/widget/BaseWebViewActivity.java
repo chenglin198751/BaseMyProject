@@ -66,14 +66,8 @@ public class BaseWebViewActivity extends BaseActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (mWebViewFragment != null) {
-            mWebViewFragment.onBackPressed();
-        }
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
     }
 
     @Override
