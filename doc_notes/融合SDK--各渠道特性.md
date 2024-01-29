@@ -44,3 +44,5 @@
 	解决方案：加上formatted="false"，把下面的第一行改成第二行就行了。
 	<string name="shark_install_service_app_hint">您尚未%s新版“黑鲨游戏服务”插件%s</string>
 	<string name="shark_install_service_app_hint" formatted="false">您尚未%s新版“黑鲨游戏服务”插件%s</string>
+
+** 5、开发者后台配置支付回调：4399、荣耀、华为、小米、UC、应用宝：**
