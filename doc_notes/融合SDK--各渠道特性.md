@@ -45,4 +45,7 @@
 	<string name="shark_install_service_app_hint">您尚未%s新版“黑鲨游戏服务”插件%s</string>
 	<string name="shark_install_service_app_hint" formatted="false">您尚未%s新版“黑鲨游戏服务”插件%s</string>
 
-** 5、开发者后台配置支付回调：4399、荣耀、华为、小米、UC、应用宝：**
+** 5、支付回调配置：**
+
+    开发者后台配置支付回调：4399、荣耀、小米、UC、应用宝
+    华为：代码里处理的，无需配置
