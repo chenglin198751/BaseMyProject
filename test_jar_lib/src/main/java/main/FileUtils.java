@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 
@@ -138,10 +139,26 @@ public class FileUtils {
             return;
         }
 
-        // 写入文件
         try {
             Path path = Paths.get(file.getAbsolutePath());
             Files.write(path, value.getBytes(StandardCharsets.UTF_8));
+        } catch (Throwable e) {
+            PackTools.Error_Msg = e.toString();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 追加模式把字符串写入文件
+     */
+    public static void appendFile(File file, String value) {
+        if (!file.exists()) {
+            return;
+        }
+
+        try {
+            Path path = Paths.get(file.getAbsolutePath());
+            Files.write(path, value.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
         } catch (Throwable e) {
             PackTools.Error_Msg = e.toString();
             e.printStackTrace();
