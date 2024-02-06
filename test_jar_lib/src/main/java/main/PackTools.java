@@ -87,7 +87,7 @@ public class PackTools {
 
         // SDK的build.gradle文件
         final String BUILD_GRADLE_1 = SRC_PATH + "/gamecenter_overseas_sdk/build.gradle";
-        final String TEXT_BUILD_GRADLE_1 = FileUtils.readFile(new File(BUILD_GRADLE_1));
+        final String TEXT_BUILD_GRADLE_1 = FileUtils.readFileString(new File(BUILD_GRADLE_1));
         int start_index_1 = TEXT_BUILD_GRADLE_1.indexOf(START_STR);
         start_index_1 = start_index_1 + START_STR.length();
         int end_index_1 = TEXT_BUILD_GRADLE_1.indexOf(END_STR);
@@ -97,7 +97,7 @@ public class PackTools {
 
         // demo的build.gradle文件
         final String BUILD_GRADLE_2 = SRC_PATH + "/app_demo/build.gradle";
-        final String TEXT_BUILD_GRADLE_2 = FileUtils.readFile(new File(BUILD_GRADLE_2));
+        final String TEXT_BUILD_GRADLE_2 = FileUtils.readFileString(new File(BUILD_GRADLE_2));
         int start_index_2 = TEXT_BUILD_GRADLE_2.indexOf(START_STR);
         start_index_2 = start_index_2 + START_STR.length();
         int end_index_2 = TEXT_BUILD_GRADLE_2.indexOf(END_STR);
@@ -125,7 +125,7 @@ public class PackTools {
 
         // demo工程的settings.gradle文件
         final String BUILD_GRADLE_3 = SRC_PATH + "/settings.gradle";
-        final String TEXT_SETTINGS_GRADLE_3 = FileUtils.readFile(new File(BUILD_GRADLE_3));
+        final String TEXT_SETTINGS_GRADLE_3 = FileUtils.readFileString(new File(BUILD_GRADLE_3));
         int start_index_3 = TEXT_SETTINGS_GRADLE_3.indexOf(START_STR3);
         start_index_3 = start_index_3 + START_STR3.length();
         int end_index_3 = TEXT_SETTINGS_GRADLE_3.indexOf(END_STR3);
@@ -158,7 +158,7 @@ public class PackTools {
     public static void modifyEnvConstants(String SRC_PATH) {
         final String JAVA_FILE = SRC_PATH + //
                 "/gamecenter_overseas_sdk/src/main/java/com/stimute/playcenter/common/env/EnvConstants.java";
-        final String TEXT_JAVA_FILE = FileUtils.readFile(new File(JAVA_FILE));
+        final String TEXT_JAVA_FILE = FileUtils.readFileString(new File(JAVA_FILE));
         String text_java2 = null;
         if (SRC_PATH.contains("_debug")) {
             text_java2 = TEXT_JAVA_FILE.replace("false", "true");
@@ -178,7 +178,7 @@ public class PackTools {
                 "/gamecenter_overseas_sdk/src/main/java/com/stimute/playcenter/sdk/overseas/version/HostSDKVersion.java";
         version_path = FileUtils.replacePath(version_path);
 
-        String text = FileUtils.readFile(new File(version_path));
+        String text = FileUtils.readFileString(new File(version_path));
         text = text.replace("\n", "").replace("\r", "").replace(" ", "");
 
         String arrs[] = text.split(";");
