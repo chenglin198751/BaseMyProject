@@ -196,6 +196,20 @@
     def destDir = "E:\\bbb\\xx"
     ant.unzip(src:zipFile, dest:destDir)
 
+    // 复制第一级目录下后缀名为.dex的文件
+    copy {
+        from '/decompile/apk'
+        into 'output/dexs'
+        include '*.dex'
+    }
+
+    // 复制所有目录下后缀名为.dex的文件
+    copy {
+        from '/decompile/apk'
+        into 'output/dexs'
+        include '**/*.dex'
+    }
+
 **9、gradle 下载的aar路径：**
 
     C:\Users\weichenglin1\.gradle\caches\modules-2\files-2.1\androidx.viewpager2\viewpager2\1.0.0\91c378a09ddff66e1bb73e90edeac53487d2832b\viewpager2-1.0.0.aar
