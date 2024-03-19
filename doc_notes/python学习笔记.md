@@ -86,3 +86,15 @@
         2、# 打印aapt aapt2这种字符
         if fnmatch.fnmatch(f_name, 'aa*'):
             print(f_name)
+
+**12、压缩和解压文件夹：**
+
+    # 1、压缩文件夹
+    src = 'E:/360portalgamesdk/portal-sdk-tool/scripts'
+    dst = 'E:/360portalgamesdk/portal-sdk-tool/scripts'
+    shutil.make_archive(dst, 'zip', src)
+
+    # 2、解压文件夹
+    archive_file = 'E:/360portalgamesdk/portal-sdk-tool/scripts.zip'
+    extract_to = 'E:/360portalgamesdk/portal-sdk-tool/scripts222'
+    shutil.unpack_archive(archive_file, extract_to)
