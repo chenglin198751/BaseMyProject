@@ -1,6 +1,0 @@
-1、修改服务器账号密码：http://ops.qihoo.net/account/resetting
-2、融合服务器IP：10.216.0.147   账号：weichenglin1  密码：wclWCLD10!@#19-87-51
-3、WinSCP登录融合服务器：
-	文件协议：SFTP 主机名：jumper.qihoo.net  端口：2222 
-	账号：weichenglin1 密码：pin+token 。如果一直失败，就推推重置pin码
-4、堡垒机申请ACL：https://sec.corp.qihoo.net/addorder/xiangyun_vpn
