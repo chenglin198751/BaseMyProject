@@ -105,27 +105,39 @@ public class FileUtils {
     /**
      * 读取文件，返回String
      */
-    public static String readFileString(String file_path) {
+    private static String readFileString(String file_path) {
         if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
             return null;
         }
 
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
                 Path path = Paths.get(file_path);
                 return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-            } else {
-                StringBuilder line = new StringBuilder();
-                FileReader reader = new FileReader(file_path);
-                int character;
-                while ((character = reader.read()) != -1) {
-                    line.append((char) character);
-                }
-                reader.close();
-                return line.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            StringBuilder contentBuilder = new StringBuilder();
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file_path));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    contentBuilder.append(line).append("\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return contentBuilder.toString();
         }
         return null;
     }
