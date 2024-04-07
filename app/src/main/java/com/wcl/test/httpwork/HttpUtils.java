@@ -55,7 +55,7 @@ public class HttpUtils {
     }
 
     public interface HttpDownloadCallback {
-        void onFinished(boolean isSuccessful, String filePath, Exception e);
+        void onFinished(boolean isSuccessful, String filePath, String error);
 
         //fileTotalSize  文件总大小
         //fileDowningSize  文件已经下载的大小
@@ -409,13 +409,11 @@ public class HttpUtils {
             throw new NullPointerException("fileUrl is null");
         } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
             String error = fileUrl + " is not a valid Url";
-            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new RuntimeException(error));
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
             return null;
-        }
-
-        if (mDowningUrls.contains(fileUrl)) {
+        } else if (mDowningUrls.contains(fileUrl)) {
             String error = String.format("the file url:%s is downloading", fileUrl);
-            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new IOException(error));
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
             return null;
         }
 
@@ -481,13 +479,13 @@ public class HttpUtils {
             final Request request = builder.build();
             final Response response = mOkHttpClient.newCall(request).execute();
             if (response.body() == null) {
-                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new NullPointerException("Response.body() is null"));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, "Response.body() is null");
                 return null;
             }
             if (!response.isSuccessful()) {
                 response.body().close();
                 response.close();
-                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(response.message()));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, response.message());
                 return null;
             }
 
@@ -532,7 +530,7 @@ public class HttpUtils {
                 }
             } else {
                 String error = "downloaded failed:tempFile.length() != contentLength";
-                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(error));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
                 return null;
             }
         } catch (Throwable t) {
@@ -547,13 +545,13 @@ public class HttpUtils {
             t.printStackTrace();
             String error = t.toString();
             AppLogUtils.w(TAG, "download failed:" + error);
-            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(error));
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
             return null;
         }
 
         // 兜底的下载callback
         String error = "download failed:unknown";
-        FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(error));
+        FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
         return null;
     }
 
@@ -567,10 +565,10 @@ public class HttpUtils {
         if (downloadCallback == null) {
             throw new NullPointerException("HttpDownloadCallback 不能为空");
         } else if (TextUtils.isEmpty(fileUrl)) {
-            downloadCallback.onFinished(false, null, new NullPointerException("下载URL不能为空"));
+            downloadCallback.onFinished(false, null, "下载URL不能为空");
             return;
         } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
-            downloadCallback.onFinished(false, null, new IOException(fileUrl + " 不是有效的URL"));
+            downloadCallback.onFinished(false, null, fileUrl + " 不是有效的URL");
             return;
         }
 
@@ -629,14 +627,14 @@ public class HttpUtils {
             }
         }
 
-        public static void onFailure(HttpDownloadCallback downloadCallback, String fileUrl, Exception e) {
-            AppLogUtils.w(TAG, e.getMessage());
+        public static void onFailure(HttpDownloadCallback downloadCallback, String fileUrl, String error) {
+            AppLogUtils.w(TAG, error);
             mDowningUrls.remove(fileUrl);
             if (downloadCallback != null) {
                 AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        downloadCallback.onFinished(false, null, e);
+                        downloadCallback.onFinished(false, null, error);
                     }
                 });
             }
