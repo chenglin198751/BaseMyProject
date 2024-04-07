@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.Proxy;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -73,6 +73,7 @@ public class HttpUtils {
     private static final int TIME_OUT = 15;
     private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + "/download";
     public static final OkHttpClient mOkHttpClient;
+    private static final List<String> mDowningUrls = new ArrayList<>();
 
     static {
         File downloadDir = new File(HTTP_DOWNLOAD_PATH);
@@ -408,13 +409,18 @@ public class HttpUtils {
             throw new NullPointerException("fileUrl is null");
         } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
             String error = fileUrl + " is not a valid Url";
-            FileHttpDownloadCallback.onFailure(error, downCallback, null);
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new RuntimeException(error));
             return null;
         }
 
-        FileChannel fileChannel = null;
-        FileLock fileLock = null;
+        if (mDowningUrls.contains(fileUrl)) {
+            String error = String.format("the file url:%s is downloading", fileUrl);
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new IOException(error));
+            return null;
+        }
+
         InputStream inputStream = null;
+        mDowningUrls.add(fileUrl);
 
         try {
             final String downPath = getDownLoadFilePath(fileUrl);
@@ -429,7 +435,7 @@ public class HttpUtils {
             if (downFile.exists() && downFile.length() == contentLength) {
                 tempFile.delete();
                 AppLogUtils.d(TAG, "The file already exist");
-                FileHttpDownloadCallback.onFinished(downCallback, downPath);
+                FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
                 return downPath;
             }
 
@@ -441,7 +447,7 @@ public class HttpUtils {
             if (downloadLength == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    FileHttpDownloadCallback.onFinished(downCallback, downPath);
+                    FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
                     return downPath;
                 } else {
                     if (tempFile.delete()) {
@@ -457,16 +463,6 @@ public class HttpUtils {
 
             final Request.Builder builder = new Request.Builder().url(fileUrl).get();
             final RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rws");
-            fileChannel = savedFile.getChannel();
-            fileLock = fileChannel.tryLock();
-
-            if (!fileLock.isValid()) {
-                fileLock.close();
-                fileChannel.close();
-                String error = "the file is downloading";
-                FileHttpDownloadCallback.onFailure(error, downCallback, new IOException(error));
-                return null;
-            }
 
             // 跳过已经下载的字节，实现断点续传
             if (downloadLength > 0) {
@@ -485,16 +481,13 @@ public class HttpUtils {
             final Request request = builder.build();
             final Response response = mOkHttpClient.newCall(request).execute();
             if (response.body() == null) {
-                FileHttpDownloadCallback.onFailure("null", downCallback, new NullPointerException("Response.body() is null"));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new NullPointerException("Response.body() is null"));
                 return null;
             }
             if (!response.isSuccessful()) {
                 response.body().close();
                 response.close();
-                fileLock.close();
-                fileChannel.close();
-                String error = response.message();
-                FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(response.message()));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(response.message()));
                 return null;
             }
 
@@ -524,36 +517,26 @@ public class HttpUtils {
                 }
             }
 
-            fileLock.close();
-            fileChannel.close();
             inputStream.close();
             savedFile.close();
             response.body().close();
             response.close();
-            fileLock = null;
-            fileChannel = null;
             inputStream = null;
 
             //下载完成后把.temp的文件重命名为原文件
             if (tempFile.exists() && tempFile.length() == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    FileHttpDownloadCallback.onFinished(downCallback, downPath);
+                    FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
                     return downPath;
                 }
             } else {
                 String error = "downloaded failed:tempFile.length() != contentLength";
-                FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(error));
                 return null;
             }
         } catch (Throwable t) {
             try {
-                if (fileLock != null) {
-                    fileLock.close();
-                }
-                if (fileChannel != null) {
-                    fileChannel.close();
-                }
                 if (inputStream != null) {
                     inputStream.close();
                 }
@@ -564,13 +547,13 @@ public class HttpUtils {
             t.printStackTrace();
             String error = t.toString();
             AppLogUtils.w(TAG, "download failed:" + error);
-            FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(error));
             return null;
         }
 
         // 兜底的下载callback
         String error = "download failed:unknown";
-        FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
+        FileHttpDownloadCallback.onFailure(downCallback, fileUrl, new Exception(error));
         return null;
     }
 
@@ -623,7 +606,8 @@ public class HttpUtils {
     }
 
     private static class FileHttpDownloadCallback {
-        public static void onFinished(HttpDownloadCallback downloadCallback, String filePath) {
+        public static void onFinished(HttpDownloadCallback downloadCallback, String fileUrl, String filePath) {
+            mDowningUrls.remove(fileUrl);
             if (downloadCallback != null) {
                 AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
@@ -645,11 +629,9 @@ public class HttpUtils {
             }
         }
 
-        public static void onFailure(String error, HttpDownloadCallback downloadCallback, Exception e) {
-            if (e != null) {
-                error = error + ":" + e;
-            }
-            AppLogUtils.w(TAG, error);
+        public static void onFailure(HttpDownloadCallback downloadCallback, String fileUrl, Exception e) {
+            AppLogUtils.w(TAG, e.getMessage());
+            mDowningUrls.remove(fileUrl);
             if (downloadCallback != null) {
                 AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
@@ -733,5 +715,4 @@ public class HttpUtils {
             });
         }
     }
-
 }
