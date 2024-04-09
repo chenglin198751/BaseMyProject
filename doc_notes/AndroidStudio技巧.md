@@ -45,3 +45,12 @@
 
     Rainbow Brackets 彩虹括号
     Translation  翻译
+
+**10、使用bfg.jar清理大文件的git记录，或删除特定文件的git记录（bfg.jar位于tools下）：**
+
+    1、git clone --mirror git://example.com/some-big-repo.git //--mirror克隆工程
+    2、java -jar bfg.jar --strip-blobs-bigger-than 50M some-big-repo.git //删除>=50M历史文件
+    3、java -jar bfg.jar --delete-files yxme.apk --delete-files xx.so my-repo.git //删除名为yxme.apk和xx.so的历史文件
+    4、cd some-big-repo.git
+    5、git reflog expire --expire=now --all && git gc --prune=now --aggressive
+    6、git push
