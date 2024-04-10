@@ -442,10 +442,10 @@
         java -jar apksigner.jar sign --ks %1 --ks-key-alias %2 --ks-pass pass:%3 --key-pass pass:%4 --out %5 %6
 
     5、查看apk签名：
-       第一种方法：解压apk，在META-INF下找到后缀名为.RSA文件，执行：keytool -printcert -file xx.RSA
-       第二种方法：
-        keytool -printcert -jarfile  xx.apk
-        keytool -list -jarfile  xx.apk
+        1、解压apk，在META-INF下找到后缀名为.RSA文件，执行：keytool -printcert -file xx.RSA
+        2、keytool -printcert -jarfile  xx.apk
+        3、keytool -list -jarfile  xx.apk
+        4、java -jar apksigner.jar verify --print-certs xx.apk
 
     6、安卓app用代码获取apk签名信息：
         PackageInfo infobefore = pm.getPackageArchiveInfo(strSavePath, PackageManager.GET_SIGNING_CERTIFICATES);
