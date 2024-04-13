@@ -14,7 +14,7 @@
         android:largeHeap="true"
         android:theme="@style/AppBaseTheme"
         android:usesCleartextTraffic="true"
-        tools:replace="android:allowBackup,android:label,android:icon">
+        tools:replace="android:label,android:icon">
 
         <meta-data
             android:name="TEST_APP_KEY"

@@ -35,7 +35,7 @@ public class MainFirstFragment extends BaseFragment {
             public void onClick(View v) {
                 HttpUtils.downloadFile(apk_path, new HttpUtils.HttpDownloadCallback() {
                     @Override
-                    public void onFinished(boolean isSuccessful, String filePath, Exception e) {
+                    public void onFinished(boolean isSuccessful, String filePath, String error) {
                         if (isSuccessful) {
                             Log.v("tag_3", "path = " + filePath);
                         }
