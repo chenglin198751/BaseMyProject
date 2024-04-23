@@ -9,7 +9,6 @@ def apk_release_path, apk_debug_path
 android {
     namespace 'com.wcl.test'
     compileSdk project.ext.COMPILE_SDK_VERSION
-    buildToolsVersion project.ext.BUILD_TOOLS_VERSION
 
     defaultConfig {
         applicationId "com.wcl.test"
