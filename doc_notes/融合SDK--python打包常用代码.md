@@ -74,3 +74,7 @@
     test_test = appNode.get('test_test')
 
     设置：appNode.set('test_test','ddd33')
+
+** 5、解析出的xml的节点，转为字符串**
+
+    xml_string = ET.tostring(activityNode, encoding='utf-8', method='xml').decode('utf-8')
