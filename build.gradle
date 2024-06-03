@@ -23,7 +23,6 @@ plugins {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDir
     delete rootProject.getProjectDir().absolutePath + "/app/debug"
     delete rootProject.getProjectDir().absolutePath + "/app/release"
 }
