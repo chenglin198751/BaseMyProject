@@ -1,19 +1,3 @@
-# 工程各个工具类说明
-
-* [AndroidStudio技巧](doc_notes/AndroidStudio技巧.md)
-* [ConstraintLayout学习.md](doc_notes/ConstraintLayout学习.md)
-* [gradle_note.md](doc_notes/gradle_note.md)
-* [Kotlin.md](doc_notes/Kotlin.md)
-* [Linux学习笔记.md](doc_notes/Linux学习笔记.md)
-* [常用代码记录1.md](doc_notes/常用代码记录1.md)
-* [常用代码记录2.md](doc_notes/常用代码记录2.md)
-* [开发SDK注意事项.md](doc_notes/开发SDK注意事项.md)
-* [python学习笔记.md](doc_notes/python学习笔记.md)
-* [海外SDK笔记.md](doc_notes/海外SDK笔记.md)
-* [融合SDK--python打包常用代码.md](doc_notes/融合SDK-python-xml解析)
-* [融合SDK--各渠道特性.md](doc_notes/融合SDK--各渠道特性.md)
-* [融合SDK--开发点注意.md](doc_notes/融合SDK--渠道参数配置.md)
-
 ## 如何从手助获取包：
     
     从 https://openbox.mobilem.360.cn/third/getAppInfo?sid=xxx 中获取到下载链接，
