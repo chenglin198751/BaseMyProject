@@ -505,7 +505,7 @@
         private SdkActivityLife() {
         }
         private static final class InstanceHolder {
-            static final SdkActivityLife INSTANCE = new SdkActivityLife();
+            private static final SdkActivityLife INSTANCE = new SdkActivityLife();
         }
         public static SdkActivityLife getInstance() {
             return InstanceHolder.INSTANCE;
