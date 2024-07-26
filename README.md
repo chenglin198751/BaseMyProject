@@ -14,3 +14,11 @@
 * [融合SDK--python打包常用代码.md](doc_notes/融合SDK-python-xml解析)
 * [融合SDK--各渠道特性.md](doc_notes/融合SDK--各渠道特性.md)
 * [融合SDK--开发点注意.md](doc_notes/融合SDK--渠道参数配置.md)
+
+**1、纯净的测试工程Test22**
+
+    https://github.com/chenglin198751/Test22.git
+
+**2、游戏SDK开发框架GameSdkFrame**
+
+    https://github.com/chenglin198751/GameSdkFrame.git
