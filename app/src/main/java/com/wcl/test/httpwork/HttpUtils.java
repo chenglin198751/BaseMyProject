@@ -133,15 +133,6 @@ public class HttpUtils {
      * 通用的okhttp3.Callback封装
      */
     private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpBack) {
-        final HttpCallback httpCallback = new HttpCallback() {
-            @Override
-            public void onResponse(boolean isSuccessful, String result) {
-                if (httpBack != null) {
-                    httpBack.onResponse(true, result);
-                }
-            }
-        };
-
         return new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull final IOException e) {
@@ -153,10 +144,10 @@ public class HttpUtils {
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
-                        HttpCallback2.onResponse(httpCallback, false, e.toString());
+                        HttpCallback2.onResponse(httpBack, false, e.toString());
                     }
                 } else {
-                    HttpCallback2.onResponse(httpCallback, false, e.toString());
+                    HttpCallback2.onResponse(httpBack, false, e.toString());
                 }
             }
 
@@ -167,7 +158,7 @@ public class HttpUtils {
                 }
 
                 if (!response.isSuccessful() || response.body() == null) {
-                    HttpCallback2.onResponse(httpCallback, false, response.toString());
+                    HttpCallback2.onResponse(httpBack, false, response.toString());
                     return;
                 }
 
@@ -182,10 +173,10 @@ public class HttpUtils {
                 if (context instanceof Activity) {
                     Activity activity = (Activity) context;
                     if (!activity.isFinishing()) {
-                        HttpCallback2.onResponse(httpCallback, true, result);
+                        HttpCallback2.onResponse(httpBack, true, result);
                     }
                 } else {
-                    HttpCallback2.onResponse(httpCallback, true, result);
+                    HttpCallback2.onResponse(httpBack, true, result);
                 }
             }
         };
@@ -224,7 +215,7 @@ public class HttpUtils {
 
         RequestBody body = FormBuilder.build();
         Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
-        if (builder.headersMap != null && builder.headersMap.size() > 0) {
+        if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
         Request request = requestBuilder.build();
@@ -245,7 +236,7 @@ public class HttpUtils {
     public static void getWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
         final String url2 = buildGetParams(url, params);
         Request.Builder requestBuilder = new Request.Builder().url(url2).get();
-        if (builder.headersMap != null && builder.headersMap.size() > 0) {
+        if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
         Request request = requestBuilder.build();
@@ -708,7 +699,7 @@ public class HttpUtils {
             AppBaseUtils.getUiHandler().post(new Runnable() {
                 @Override
                 public void run() {
-                    httpCallback.onResponse(true, result);
+                    httpCallback.onResponse(isSuccessful, result);
                 }
             });
         }
