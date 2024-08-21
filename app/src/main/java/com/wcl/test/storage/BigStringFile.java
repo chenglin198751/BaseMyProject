@@ -19,23 +19,27 @@ import java.util.List;
 
 
 public class BigStringFile implements BigStringBase {
+    private String mCachedPath = null;
+
     private BigStringFile() {
     }
 
-    private static final class InstanceHolder {
-        static final BigStringFile INSTANCE = new BigStringFile();
-    }
-
-    public static BigStringFile getInstance() {
-        return BigStringFile.InstanceHolder.INSTANCE;
+    public BigStringFile(String dir_name) {
+        if (TextUtils.isEmpty(dir_name)) {
+            throw new NullPointerException("BigStringFile() dir_name is null");
+        }
+        mCachedPath = getExternalPath() + File.separator + dir_name;
+        new File(mCachedPath).mkdirs();
     }
 
     @Override
     public List<String> getAllKeys() {
-        String dir = getExternalPath() + "/string";
-        File[] files = new File(dir).listFiles();
         List<String> keys = new ArrayList<>();
-
+        File folder = new File(mCachedPath);
+        if (!folder.exists() || !folder.isDirectory()) {
+            return keys;
+        }
+        File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
                 keys.add(file.getName());
@@ -50,7 +54,7 @@ public class BigStringFile implements BigStringBase {
             return false;
         }
 
-        String file_path = getKeyFilePath(key);
+        String file_path = mCachedPath + File.separator + key;
         File file = new File(file_path);
         try {
             file.delete();
@@ -69,15 +73,15 @@ public class BigStringFile implements BigStringBase {
             return null;
         }
 
-        String file_path = getKeyFilePath(key);
+        String file_path = mCachedPath + File.separator + key;
         return readFileString(file_path);
     }
 
     @Override
     public boolean putValues(List<String> keys, List<String> values) {
-        if (keys == null || keys.size() == 0) {
+        if (keys == null || keys.isEmpty()) {
             return false;
-        } else if (values == null || values.size() == 0) {
+        } else if (values == null || values.isEmpty()) {
             return false;
         } else if (keys.size() != values.size()) {
             throw new IllegalArgumentException("putValues() method keys.size() != values.size()");
@@ -91,7 +95,7 @@ public class BigStringFile implements BigStringBase {
 
     @Override
     public List<String> getValues(List<String> keys) {
-        if (keys == null || keys.size() == 0) {
+        if (keys == null || keys.isEmpty()) {
             return null;
         }
 
@@ -110,26 +114,19 @@ public class BigStringFile implements BigStringBase {
             return false;
         }
 
-        String file_path = getKeyFilePath(key);
+        String file_path = mCachedPath + File.separator + key;
         return new File(file_path).delete();
     }
 
     @Override
     public boolean remove(List<String> keys) {
-        if (keys == null || keys.size() == 0) {
+        if (keys == null || keys.isEmpty()) {
             return false;
         }
         for (String key : keys) {
             remove(key);
         }
         return true;
-    }
-
-
-    private static String getKeyFilePath(String key) {
-        String dir = getExternalPath() + "/string";
-        new File(dir).mkdirs();
-        return dir + "/" + key;
     }
 
     private static String readFileString(String file_path) {
