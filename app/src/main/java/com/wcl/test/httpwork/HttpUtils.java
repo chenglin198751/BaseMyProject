@@ -76,10 +76,7 @@ public class HttpUtils {
     private static final List<String> mDowningUrls = new ArrayList<>();
 
     static {
-        File downloadDir = new File(HTTP_DOWNLOAD_PATH);
-        if (!downloadDir.exists()) {
-            downloadDir.mkdirs();
-        }
+        new File(HTTP_DOWNLOAD_PATH).mkdirs();
 
         final OkHttpClient.Builder builder = new OkHttpClient
                 .Builder()
