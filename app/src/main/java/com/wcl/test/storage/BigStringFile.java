@@ -29,7 +29,6 @@ public class BigStringFile implements BigStringBase {
             throw new NullPointerException("BigStringFile() dir_name is null");
         }
         mCachedPath = getExternalPath() + File.separator + dir_name;
-        new File(mCachedPath).mkdirs();
     }
 
     @Override
@@ -54,8 +53,9 @@ public class BigStringFile implements BigStringBase {
             return false;
         }
 
-        String file_path = mCachedPath + File.separator + key;
-        File file = new File(file_path);
+        new File(mCachedPath).mkdirs();
+        String filePath = mCachedPath + File.separator + key;
+        File file = new File(filePath);
         try {
             file.delete();
             file.createNewFile();
@@ -63,7 +63,7 @@ public class BigStringFile implements BigStringBase {
             e.printStackTrace();
         }
 
-        writeFile(file_path, value);
+        writeFile(filePath, value);
         return true;
     }
 
