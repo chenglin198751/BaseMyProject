@@ -142,12 +142,11 @@ public class HttpUtils {
                 }
 
                 if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
-                    if (!activity.isFinishing()) {
-                        HttpCallback2.onResponse(httpBack, false, e.toString());
+                    if (!isFinished(context)) {
+                        httpOnUiThread.onResponse(httpBack, false, e.toString());
                     }
                 } else {
-                    HttpCallback2.onResponse(httpBack, false, e.toString());
+                    httpOnUiThread.onResponse(httpBack, false, e.toString());
                 }
             }
 
@@ -158,7 +157,7 @@ public class HttpUtils {
                 }
 
                 if (!response.isSuccessful() || response.body() == null) {
-                    HttpCallback2.onResponse(httpBack, false, response.toString());
+                    httpOnUiThread.onResponse(httpBack, false, response.toString());
                     return;
                 }
 
@@ -171,12 +170,11 @@ public class HttpUtils {
                 response.close();
 
                 if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
-                    if (!activity.isFinishing()) {
-                        HttpCallback2.onResponse(httpBack, true, result);
+                    if (!isFinished(context)) {
+                        httpOnUiThread.onResponse(httpBack, true, result);
                     }
                 } else {
-                    HttpCallback2.onResponse(httpBack, true, result);
+                    httpOnUiThread.onResponse(httpBack, true, result);
                 }
             }
         };
@@ -694,7 +692,7 @@ public class HttpUtils {
         return HTTP_DOWNLOAD_PATH + File.separator + AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
     }
 
-    public static class HttpCallback2 {
+    private static class httpOnUiThread {
         public static void onResponse(final HttpCallback httpCallback, boolean isSuccessful, String result) {
             AppBaseUtils.getUiHandler().post(new Runnable() {
                 @Override
@@ -703,5 +701,10 @@ public class HttpUtils {
                 }
             });
         }
+    }
+
+    private static boolean isFinished(Context context) {
+        Activity activity = (Activity) context;
+        return activity == null || activity.isFinishing() || activity.isDestroyed();
     }
 }
