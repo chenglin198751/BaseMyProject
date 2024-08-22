@@ -100,8 +100,8 @@ public class BigStringFile implements BigStringBase {
         }
 
         List<String> contents = new ArrayList<>();
-        for (int i = 0; i < keys.size(); i++) {
-            String content = get(keys.get(i));
+        for (String key : keys) {
+            String content = get(key);
             contents.add(content);
         }
 
