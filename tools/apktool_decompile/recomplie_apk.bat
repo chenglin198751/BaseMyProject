@@ -8,7 +8,7 @@ java -jar tools/apktool.jar -v b -f %1 -o unsign.apk
 
 @echo --------------start sign apk....--------------
 
-java -jar tools/apksigner.jar sign --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled false --v4-signing-enabled false --ks tools/tianming.jks --ks-key-alias tianming_alias --ks-pass pass:360tianming --key-pass pass:tianming360 --out signed_output.apk unsign.apk
+java -jar tools/apksigner.jar sign --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled false --v4-signing-enabled false --ks tools/keystore_debug.jks --ks-key-alias young_debug --ks-pass pass:123abc --key-pass pass:123abc --out signed_output.apk unsign.apk
 
 @echo --------------compile apk successful--------------
 @echo --------------------------------------------------------
