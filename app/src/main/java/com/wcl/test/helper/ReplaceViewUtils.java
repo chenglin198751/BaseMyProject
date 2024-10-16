@@ -19,8 +19,10 @@ public class ReplaceViewUtils {
      * @param newLayoutId 要替换进去的新ViewLayoutId
      */
     public static void replaceView(View oldView, final int newLayoutId) {
-        View newView = inflateViewNoAdd(oldView, newLayoutId);
-        replaceView(oldView, newView);
+        if (oldView != null && oldView.getParent() != null) {
+            View newView = inflateViewNoAdd(oldView, newLayoutId);
+            replaceView(oldView, newView);
+        }
     }
 
     /**
@@ -30,6 +32,9 @@ public class ReplaceViewUtils {
      * @param newView 要替换进去的新View
      */
     public static void replaceView(View oldView, View newView) {
+        if (newView == null) {
+            return;
+        }
         ViewGroup parent = (ViewGroup) oldView.getParent();
         final int index = parent.indexOfChild(oldView);
         parent.removeViewInLayout(oldView);
