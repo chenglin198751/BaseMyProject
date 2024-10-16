@@ -44,7 +44,7 @@
     
     实现了上拉加载更多，下拉刷新。封装自https://github.com/scwang90/SmartRefreshLayout ，它可以很随意的定制自己的header 和footer ，并有很多属性可以设置，极为好用。
 
-**9、ReplaceViewHelper 类：**
+**9、ReplaceViewUtils 类：**
 
     一个封装的工具类，可以很方便的替换任意的View 为另一个View 。
 
