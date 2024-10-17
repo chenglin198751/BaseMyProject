@@ -17,12 +17,15 @@ public class ReplaceViewUtils {
      *
      * @param oldView     被替换的旧View
      * @param newLayoutId 要替换进去的新ViewLayoutId
+     * @return View 返回newView
      */
-    public static void replaceView(View oldView, final int newLayoutId) {
-        if (oldView != null && oldView.getParent() != null) {
-            View newView = inflateViewNoAdd(oldView, newLayoutId);
-            replaceView(oldView, newView);
+    public static View replaceView(View oldView, final int newLayoutId) {
+        if (oldView == null || oldView.getParent() == null) {
+            return null;
         }
+        View newView = inflateViewNoAdd(oldView, newLayoutId);
+        replaceView(oldView, newView);
+        return newView;
     }
 
     /**
@@ -32,7 +35,7 @@ public class ReplaceViewUtils {
      * @param newView 要替换进去的新View
      */
     public static void replaceView(View oldView, View newView) {
-        if (newView == null) {
+        if (newView == null || oldView == null || oldView.getParent() == null) {
             return;
         }
         ViewGroup parent = (ViewGroup) oldView.getParent();
