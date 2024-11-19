@@ -54,3 +54,6 @@
     4、cd some-big-repo.git
     5、git reflog expire --expire=now --all && git gc --prune=now --aggressive
     6、git push
+
+**11、git显示年月日：**
+- TortoiseGit -> Setting -> General-Dialogs1 -> Short data/time format in log messages(取消勾选)
