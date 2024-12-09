@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +34,7 @@ public class CmdTask {
 
         try {
             File work_dirs = null;
-            if (mWorkDir != null && mWorkDir.length() > 0) {
+            if (mWorkDir != null && !mWorkDir.isEmpty()) {
                 work_dirs = new File(mWorkDir);
             }
             Process process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
@@ -60,7 +61,7 @@ public class CmdTask {
         }
 
         if (error != null || outs.exit_value != 0) {
-            error = "cmd is " + mCommand + ";exec failed:" + error + " exitValue is " + outs.exit_value;
+            error = "cmd=" + Arrays.toString(mCommand) + ";exec failed:" + error + ";exitValue=" + outs.exit_value;
             PackTools.Printer.print(error);
             return outs;
         }
