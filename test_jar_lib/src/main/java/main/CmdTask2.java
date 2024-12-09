@@ -43,7 +43,7 @@ public class CmdTask2 {
                 }
             }
             outs.exit_value = process.waitFor();
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             error = e.toString();
         }
 
