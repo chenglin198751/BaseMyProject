@@ -562,3 +562,7 @@
     3、数据库框架dbflow : https://github.com/agrosner/DBFlow https://joyrun.github.io/2016/08/02/dbflow/
     4、轻量级基于SQLiteOpenHelper封装的数据库，适用于SDK开发 : https://github.com/guolindev/LitePal
 
+**108、AgentWeb是一个基于的 Android WebView：** 
+
+    AgentWeb 是一个基于的 Android WebView ，极度容易使用以及功能强大的库，提供了 Android WebView 一系列的问题解决方案 ，并且轻量和极度灵活，详细使用请参照上面的 Sample
+    https://github.com/Justson/AgentWeb?tab=readme-ov-file
