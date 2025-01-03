@@ -9,9 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
+/**
+ * 旧版命令行执行工具，不建议使用
+ */
 public class CmdTask {
     private final static String TYPE_INPUT = "input";
     private final static String TYPE_ERROR = "error";

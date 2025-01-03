@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * 新版命令行执行工具，使用这个
+ */
 public class CmdTask2 {
     private final String[] mCommand;
     private final String mWorkDir;
