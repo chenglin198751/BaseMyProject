@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,8 +51,10 @@ public class CmdTask2 {
         }
 
         if (error != null || outs.exit_value != 0) {
-            error = "cmd=" + String.join(" ", mCommand) + ";exec failed:" + error + ";exitValue=" + outs.exit_value;
+            error = "cmd=" + Arrays.toString(mCommand) + ";exec failed:" + error + ";exitValue=" + outs.exit_value;
+            PackTools.Printer.print(error);
             PackTools.Error_Msg = error;
+            outs.addInputList(error);
             return outs;
         }
         return outs;
