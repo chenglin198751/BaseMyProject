@@ -28,10 +28,25 @@
         FileUtils.getAllFiles(new File("E:\\apks"), fileList);
         System.out.println("11-fileList.size(): " + fileList.size());
     });
-
     CompletableFuture<Void> future2 = future1.thenRun(() -> {
         List<File> fileList = new ArrayList<>();
         FileUtils.getAllFiles(new File("E:\\apks"), fileList);
         System.out.println("22-fileList.size(): " + fileList.size());
     });
     future2.join();
+
+    3、每个耗时任务执行完的回调：
+    future1.whenComplete((result, ex) -> {
+        if (ex == null) {
+            System.out.println("future1 completed successfully.");
+        } else {
+            System.out.println("future1 failed: " + ex.getMessage());
+        }
+    });
+    future2.whenComplete((result, ex) -> {
+        if (ex == null) {
+            System.out.println("future2 completed successfully.");
+        } else {
+            System.out.println("future2 failed: " + ex.getMessage());
+        }
+    });
