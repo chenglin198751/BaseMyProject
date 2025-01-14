@@ -39,7 +39,7 @@ public class CmdTask {
             int exitValue = process.waitFor();
             try {
                 CompletableFuture.allOf(inputFuture, errorFuture).get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (Exception e) {
                 PackTools.Printer.print("Exception11:" + e);
             }
             outs.exit_value = exitValue;
