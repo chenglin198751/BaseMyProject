@@ -2,8 +2,8 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,46 +12,47 @@ import java.util.List;
  * 新版命令行执行工具，使用这个
  */
 public class CmdTask2 {
-    private final String[] mCommand;
-    private final String mWorkDir;
+    private final String[] command;
+    private final String workDir;
 
-
-    public CmdTask2(String[] commands) {
-        this(commands, null);
+    public CmdTask2(String[] command) {
+        this(command, null);
     }
 
-    public CmdTask2(String[] commands, String workDir) {
-        this.mCommand = commands;
-        this.mWorkDir = workDir;
+    public CmdTask2(String[] command, String workDir) {
+        this.command = command;
+        this.workDir = workDir;
     }
 
-    public Outs run(boolean is_log) {
+    public Outs run(boolean isLog) {
         Outs outs = new Outs();
         String error = null;
 
         try {
-            ProcessBuilder pb = new ProcessBuilder(mCommand);
+            ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
-            if (mWorkDir != null && !mWorkDir.isEmpty()) {
-                pb.directory(new File(mWorkDir));
+            if (workDir != null && !workDir.isEmpty()) {
+                pb.directory(new File(workDir));
             }
             Process process = pb.start();
-            InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                outs.addInputList(line);
-                if (is_log) {
-                    PackTools.Printer.print(line);
+            try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
+                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    outs.addInputList(line);
+                    if (isLog) {
+                        PackTools.Printer.print(line);
+                    }
                 }
+                outs.setExitValue(process.waitFor());
             }
-            outs.exit_value = process.waitFor();
         } catch (Exception e) {
-            error = e.toString();
+            error = "IOException: " + e.getMessage();
+            PackTools.Printer.print("IOException occurred" + e);
         }
 
-        if (error != null || outs.exit_value != 0) {
-            error = "cmd=" + Arrays.toString(mCommand) + ";exec failed:" + error + ";exitValue=" + outs.exit_value;
+        if (error != null || outs.getExitValue() != 0) {
+            error = "cmd=" + Arrays.toString(command) + ";exec failed:" + error + ";exitValue=" + outs.getExitValue();
             PackTools.Printer.print(error);
             PackTools.Error_Msg = error;
             outs.addInputList(error);
@@ -61,8 +62,16 @@ public class CmdTask2 {
     }
 
     public static final class Outs {
-        public int exit_value = -1;
+        private int exitValue = -1;
         private final List<String> inputList = new ArrayList<>();
+
+        public int getExitValue() {
+            return exitValue;
+        }
+
+        public void setExitValue(int exitValue) {
+            this.exitValue = exitValue;
+        }
 
         public List<String> getInputList() {
             return inputList;
