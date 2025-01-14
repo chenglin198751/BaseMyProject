@@ -2,24 +2,20 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-
-/**
- * 旧版命令行执行工具，不建议使用
- */
 public class CmdTask {
     private final static String TYPE_INPUT = "input";
     private final static String TYPE_ERROR = "error";
     private final String[] mCommand;
     private final String mWorkDir;
-
 
     public CmdTask(String[] command) {
         this(command, null);
@@ -30,44 +26,33 @@ public class CmdTask {
         this.mWorkDir = workDir;
     }
 
-    public Outs run(boolean is_log) {
+    public Outs run(boolean isLog) {
         Outs outs = new Outs();
-        String error = null;
-
         try {
-            File work_dirs = null;
+            File workDirs = null;
             if (mWorkDir != null && !mWorkDir.isEmpty()) {
-                work_dirs = new File(mWorkDir);
+                workDirs = new File(mWorkDir);
             }
-            Process process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
-
-            // Runtime.exec()创建的子进程公用父进程的流，不同平台上，父进程的stream buffer可能被打满导致子进程阻塞，从而永远无法返回。
-            // 针对这种情况，我们只需要将子进程的stream重定向出来即可。
-            Thread input_thread = new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT);
-            Thread error_thread = new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
-            input_thread.start();
-            error_thread.start();
-//            // 设置执行命令的超时时间为3分钟。特别注意，这里设置超时不适用于所有项目。
-//            // 因为有些命令执行确实非常耗时，比如java -jar apktool，要2-5分钟
-//            if (!process.waitFor(3, TimeUnit.MINUTES)) {
-//                error = "执行命令超时了";
-//                process.destroy();
-//            }
-            process.waitFor();
-            outs.exit_value = process.exitValue();
-            input_thread.join();
-            error_thread.join();
+            Process process = Runtime.getRuntime().exec(mCommand, null, workDirs);
+            CompletableFuture<Void> inputFuture = CompletableFuture.runAsync(() -> handleStream(process.getInputStream(), outs, TYPE_INPUT, isLog));
+            CompletableFuture<Void> errorFuture = CompletableFuture.runAsync(() -> handleStream(process.getErrorStream(), outs, TYPE_ERROR, isLog));
+            int exitValue = process.waitFor();
+            try {
+                CompletableFuture.allOf(inputFuture, errorFuture).get();
+            } catch (InterruptedException | ExecutionException e) {
+                PackTools.Printer.print("Exception11:" + e);
+            }
+            outs.exit_value = exitValue;
         } catch (Exception e) {
-            e.printStackTrace();
-            error = e.toString();
+            outs.errorList.add(e.toString());
+            PackTools.Printer.print("Exception22:" + e);
         }
 
-        if (error != null || outs.exit_value != 0) {
-            error = "cmd=" + Arrays.toString(mCommand) + ";exec failed:" + error + ";exitValue=" + outs.exit_value;
+        if (outs.exit_value != 0) {
+            String error = "cmd=" + Arrays.toString(mCommand) + ";exec failed:" + outs.errorList + ";exitValue=" + outs.exit_value;
             PackTools.Printer.print(error);
             return outs;
         }
-
         return outs;
     }
 
@@ -93,55 +78,23 @@ public class CmdTask {
         }
     }
 
-    private static class RedirCmdStreamThread extends Thread {
-        InputStream is;
-        Process process;
-        String type;
-        boolean isLog;
-        Outs mOuts;
-
-        RedirCmdStreamThread(boolean is_log, Outs outs, Process process, InputStream is, String type) {
-            this.is = is;
-            this.process = process;
-            this.type = type;
-            this.isLog = is_log;
-            this.mOuts = outs;
-        }
-
-        public void run() {
-            InputStreamReader isr = null;
-            BufferedReader br = null;
-            try {
-                isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                br = new BufferedReader(isr);
-
-                String line = "";
-                while ((line = br.readLine()) != null) {
-                    if (type.equals(TYPE_INPUT)) {
-                        mOuts.addInputList(line);
-                    } else if (type.equals(TYPE_ERROR)) {
-                        mOuts.addErrorList(line);
-                    }
-                    if (isLog) {
-                        PackTools.Printer.print(line);
-                    }
+    private static void handleStream(InputStream is, Outs outs, String type, boolean isLog) {
+        try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+             BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (type.equals(TYPE_INPUT)) {
+                    outs.addInputList(line);
+                } else if (type.equals(TYPE_ERROR)) {
+                    outs.addErrorList(line);
                 }
-            } catch (Exception ioe) {
-                mOuts.inputList.add(ioe.toString());
-                mOuts.errorList.add(ioe.toString());
-                ioe.printStackTrace();
-            } finally {
-                try {
-                    if (br != null) {
-                        br.close();
-                    }
-                    if (isr != null) {
-                        isr.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (isLog) {
+                    PackTools.Printer.print(line);
                 }
             }
+        } catch (Exception e) {
+            outs.errorList.add(e.toString());
+            PackTools.Printer.print(e.toString());
         }
     }
 }
