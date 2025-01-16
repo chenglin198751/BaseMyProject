@@ -70,7 +70,7 @@ public class ZipUtils {
     }
 
     // 基于commons-compress-1.27.1.jar实现的解压zip
-    public static void unzip2(String zipFilePath, String destDirectory) throws IOException {
+    public static void unZip2(String zipFilePath, String destDirectory) throws IOException {
         File destDir = new File(destDirectory);
         if (!destDir.exists()) {
             destDir.mkdirs();
