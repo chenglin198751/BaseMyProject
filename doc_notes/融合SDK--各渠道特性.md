@@ -10,6 +10,7 @@
     6、退弹很重要，否则不过审，检查游戏的退弹是否实现
     7、测试支付可以使用4399的测试账号测试支付，无需真实支付
     8、建议游戏接入unity层面的crash统计SDK
+    9、游戏内一定要显示备案号
     
 
 ** 1、4399测试版不能支付，必须用测试账号：**
@@ -44,3 +45,14 @@
 	解决方案：加上formatted="false"，把下面的第一行改成第二行就行了。
 	<string name="shark_install_service_app_hint">您尚未%s新版“黑鲨游戏服务”插件%s</string>
 	<string name="shark_install_service_app_hint" formatted="false">您尚未%s新版“黑鲨游戏服务”插件%s</string>
+
+** 5、支付回调配置：**
+
+    开发者后台配置支付回调：4399、荣耀、小米、UC九游、应用宝、雷电
+    华为：代码里处理的，无需配置
+
+** 6、oppo通用开发者公钥和私钥：**
+    
+    开发者公钥:MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCfQqOKB0ErAOzmVaF4xKelw2utJXRFHctE2rnAO87pQMkNi412/hpTAA5ZNn6yJTpxMmQFVIBxUmcGqCxLqJZh5ngF0uz7AhZaEAQet4Uyyte7lCXm1gnKp/fR1U+Fbgkdd9TMHYdkPnM16W4CLDKFGizUz8EPZQYbwWbfuyD0LQIDAQAB
+    开发者私钥:MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJ9Co4oHQSsA7OZVoXjEp6XDa60ldEUdy0TaucA7zulAyQ2LjXb+GlMADlk2frIlOnEyZAVUgHFSZwaoLEuolmHmeAXS7PsCFloQBB63hTLK17uUJebWCcqn99HVT4VuCR131Mwdh2Q+czXpbgIsMoUaLNTPwQ9lBhvBZt+7IPQtAgMBAAECgYAKVVRPnSNjEysL0eQJdjcLeBfJMvwtjN6Wv9tcB/VnqIKzDIo3/Yo/Nup3auQDEovNcu/O8bnowGg7ZBeFrDFfm5p32DHJj50gWO19l5WdpUVKV9n6akdUEkkUKr6yciHO2/LJ4/nWcIN2DYusCoPI39Y1GbUq6HJofDQQYBvpWQJBAPRe4c8gVBda8Y2vHLK/0VhGZzb04LZDZbeg6dgGIVRrC+2zf9KwmfUrgj8sip6UOvlnAytD9vPRZdbB4L4xB3kCQQCm1t/5pa9dzLQ6CZoWhL0J8CDGtXC6mn/+UAu+7JNx/u+0cbWaMD4U2VCZlLVD+Ezj22P8s1ylUrItYIZj4gFVAkAaJ0V3i3g0f7E2frVNlCXtkqtdQFwEZbYvLvOYAR/0DvjZ2comXGw9xwhLhpLXYfnl01aNfNqjQZfqohlRgaHRAkBwnDpDHAUZD9FaFx8NMf0SlyTYWqFDIoNf2RGEhdQjroqGxfVopEVS9zeC4i/TN+ZWKb/8UegnooCnRi6Pfn2dAkEAyy/VS53EwaVfKW+NBGwL/HM4ICNSpAHQHD8GmSlSrEScZEf+0UnLqrgQ/VEL7+kfaekM+7IyPh73XHZwnK/3yQ==
+

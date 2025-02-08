@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.Proxy;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +55,7 @@ public class HttpUtils {
     }
 
     public interface HttpDownloadCallback {
-        void onFinished(boolean isSuccessful, String filePath, Exception e);
+        void onFinished(boolean isSuccessful, String filePath, String error);
 
         //fileTotalSize  文件总大小
         //fileDowningSize  文件已经下载的大小
@@ -73,12 +73,10 @@ public class HttpUtils {
     private static final int TIME_OUT = 15;
     private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + "/download";
     public static final OkHttpClient mOkHttpClient;
+    private static final List<String> mDowningUrls = new ArrayList<>();
 
     static {
-        File downloadDir = new File(HTTP_DOWNLOAD_PATH);
-        if (!downloadDir.exists()) {
-            downloadDir.mkdirs();
-        }
+        new File(HTTP_DOWNLOAD_PATH).mkdirs();
 
         final OkHttpClient.Builder builder = new OkHttpClient
                 .Builder()
@@ -132,15 +130,6 @@ public class HttpUtils {
      * 通用的okhttp3.Callback封装
      */
     private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpBack) {
-        final HttpCallback httpCallback = new HttpCallback() {
-            @Override
-            public void onResponse(boolean isSuccessful, String result) {
-                if (httpBack != null) {
-                    httpBack.onResponse(true, result);
-                }
-            }
-        };
-
         return new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull final IOException e) {
@@ -150,12 +139,11 @@ public class HttpUtils {
                 }
 
                 if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
-                    if (!activity.isFinishing()) {
-                        HttpCallback2.onResponse(httpCallback, false, e.toString());
+                    if (!isFinished(context)) {
+                        httpOnUiThread.onResponse(httpBack, false, e.toString());
                     }
                 } else {
-                    HttpCallback2.onResponse(httpCallback, false, e.toString());
+                    httpOnUiThread.onResponse(httpBack, false, e.toString());
                 }
             }
 
@@ -166,7 +154,7 @@ public class HttpUtils {
                 }
 
                 if (!response.isSuccessful() || response.body() == null) {
-                    HttpCallback2.onResponse(httpCallback, false, response.toString());
+                    httpOnUiThread.onResponse(httpBack, false, response.toString());
                     return;
                 }
 
@@ -179,12 +167,11 @@ public class HttpUtils {
                 response.close();
 
                 if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
-                    if (!activity.isFinishing()) {
-                        HttpCallback2.onResponse(httpCallback, true, result);
+                    if (!isFinished(context)) {
+                        httpOnUiThread.onResponse(httpBack, true, result);
                     }
                 } else {
-                    HttpCallback2.onResponse(httpCallback, true, result);
+                    httpOnUiThread.onResponse(httpBack, true, result);
                 }
             }
         };
@@ -223,7 +210,7 @@ public class HttpUtils {
 
         RequestBody body = FormBuilder.build();
         Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
-        if (builder.headersMap != null && builder.headersMap.size() > 0) {
+        if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
         Request request = requestBuilder.build();
@@ -244,7 +231,7 @@ public class HttpUtils {
     public static void getWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
         final String url2 = buildGetParams(url, params);
         Request.Builder requestBuilder = new Request.Builder().url(url2).get();
-        if (builder.headersMap != null && builder.headersMap.size() > 0) {
+        if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
         Request request = requestBuilder.build();
@@ -408,13 +395,16 @@ public class HttpUtils {
             throw new NullPointerException("fileUrl is null");
         } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
             String error = fileUrl + " is not a valid Url";
-            FileHttpDownloadCallback.onFailure(error, downCallback, null);
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
+            return null;
+        } else if (mDowningUrls.contains(fileUrl)) {
+            String error = String.format("the file url:%s is downloading", fileUrl);
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
             return null;
         }
 
-        FileChannel fileChannel = null;
-        FileLock fileLock = null;
         InputStream inputStream = null;
+        mDowningUrls.add(fileUrl);
 
         try {
             final String downPath = getDownLoadFilePath(fileUrl);
@@ -429,7 +419,7 @@ public class HttpUtils {
             if (downFile.exists() && downFile.length() == contentLength) {
                 tempFile.delete();
                 AppLogUtils.d(TAG, "The file already exist");
-                FileHttpDownloadCallback.onFinished(downCallback, downPath);
+                FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
                 return downPath;
             }
 
@@ -441,7 +431,7 @@ public class HttpUtils {
             if (downloadLength == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    FileHttpDownloadCallback.onFinished(downCallback, downPath);
+                    FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
                     return downPath;
                 } else {
                     if (tempFile.delete()) {
@@ -457,16 +447,6 @@ public class HttpUtils {
 
             final Request.Builder builder = new Request.Builder().url(fileUrl).get();
             final RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rws");
-            fileChannel = savedFile.getChannel();
-            fileLock = fileChannel.tryLock();
-
-            if (!fileLock.isValid()) {
-                fileLock.close();
-                fileChannel.close();
-                String error = "the file is downloading";
-                FileHttpDownloadCallback.onFailure(error, downCallback, new IOException(error));
-                return null;
-            }
 
             // 跳过已经下载的字节，实现断点续传
             if (downloadLength > 0) {
@@ -485,16 +465,13 @@ public class HttpUtils {
             final Request request = builder.build();
             final Response response = mOkHttpClient.newCall(request).execute();
             if (response.body() == null) {
-                FileHttpDownloadCallback.onFailure("null", downCallback, new NullPointerException("Response.body() is null"));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, "Response.body() is null");
                 return null;
             }
             if (!response.isSuccessful()) {
                 response.body().close();
                 response.close();
-                fileLock.close();
-                fileChannel.close();
-                String error = response.message();
-                FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(response.message()));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, response.message());
                 return null;
             }
 
@@ -524,36 +501,26 @@ public class HttpUtils {
                 }
             }
 
-            fileLock.close();
-            fileChannel.close();
             inputStream.close();
             savedFile.close();
             response.body().close();
             response.close();
-            fileLock = null;
-            fileChannel = null;
             inputStream = null;
 
             //下载完成后把.temp的文件重命名为原文件
             if (tempFile.exists() && tempFile.length() == contentLength) {
                 boolean isSuccess = tempFile.renameTo(downFile);
                 if (isSuccess) {
-                    FileHttpDownloadCallback.onFinished(downCallback, downPath);
+                    FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
                     return downPath;
                 }
             } else {
                 String error = "downloaded failed:tempFile.length() != contentLength";
-                FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
+                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
                 return null;
             }
         } catch (Throwable t) {
             try {
-                if (fileLock != null) {
-                    fileLock.close();
-                }
-                if (fileChannel != null) {
-                    fileChannel.close();
-                }
                 if (inputStream != null) {
                     inputStream.close();
                 }
@@ -564,13 +531,13 @@ public class HttpUtils {
             t.printStackTrace();
             String error = t.toString();
             AppLogUtils.w(TAG, "download failed:" + error);
-            FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
+            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
             return null;
         }
 
         // 兜底的下载callback
         String error = "download failed:unknown";
-        FileHttpDownloadCallback.onFailure(error, downCallback, new Exception(error));
+        FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
         return null;
     }
 
@@ -584,10 +551,10 @@ public class HttpUtils {
         if (downloadCallback == null) {
             throw new NullPointerException("HttpDownloadCallback 不能为空");
         } else if (TextUtils.isEmpty(fileUrl)) {
-            downloadCallback.onFinished(false, null, new NullPointerException("下载URL不能为空"));
+            downloadCallback.onFinished(false, null, "下载URL不能为空");
             return;
         } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
-            downloadCallback.onFinished(false, null, new IOException(fileUrl + " 不是有效的URL"));
+            downloadCallback.onFinished(false, null, fileUrl + " 不是有效的URL");
             return;
         }
 
@@ -623,7 +590,8 @@ public class HttpUtils {
     }
 
     private static class FileHttpDownloadCallback {
-        public static void onFinished(HttpDownloadCallback downloadCallback, String filePath) {
+        public static void onFinished(HttpDownloadCallback downloadCallback, String fileUrl, String filePath) {
+            mDowningUrls.remove(fileUrl);
             if (downloadCallback != null) {
                 AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
@@ -645,16 +613,14 @@ public class HttpUtils {
             }
         }
 
-        public static void onFailure(String error, HttpDownloadCallback downloadCallback, Exception e) {
-            if (e != null) {
-                error = error + ":" + e;
-            }
+        public static void onFailure(HttpDownloadCallback downloadCallback, String fileUrl, String error) {
             AppLogUtils.w(TAG, error);
+            mDowningUrls.remove(fileUrl);
             if (downloadCallback != null) {
                 AppBaseUtils.getUiHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        downloadCallback.onFinished(false, null, e);
+                        downloadCallback.onFinished(false, null, error);
                     }
                 });
             }
@@ -723,15 +689,19 @@ public class HttpUtils {
         return HTTP_DOWNLOAD_PATH + File.separator + AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
     }
 
-    public static class HttpCallback2 {
+    private static class httpOnUiThread {
         public static void onResponse(final HttpCallback httpCallback, boolean isSuccessful, String result) {
             AppBaseUtils.getUiHandler().post(new Runnable() {
                 @Override
                 public void run() {
-                    httpCallback.onResponse(true, result);
+                    httpCallback.onResponse(isSuccessful, result);
                 }
             });
         }
     }
 
+    private static boolean isFinished(Context context) {
+        Activity activity = (Activity) context;
+        return activity == null || activity.isFinishing() || activity.isDestroyed();
+    }
 }

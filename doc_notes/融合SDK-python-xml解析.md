@@ -1,4 +1,4 @@
-# 融合SDK--python打包常用代码
+# 融合SDK-python-xml解析
 
 ** 1、修改 intent-filter 中的data值，比如修改下方的 wexin_appid ，和修改android:taskAffinity="applicationId.diff**
 
@@ -74,3 +74,21 @@
     test_test = appNode.get('test_test')
 
     设置：appNode.set('test_test','ddd33')
+
+** 5、解析出的xml的节点，转为字符串**
+
+    xml_string = ET.tostring(activityNode, encoding='utf-8', method='xml').decode('utf-8')
+
+
+** 6、通用解析xml**
+
+    key = '{' + Constants.androidNS + '}name'
+    xml_file = 'xx/AndroidManifest.xml'
+    ET.register_namespace('android', Constants.androidNS)
+    tree = ET.parse(xml_file)
+    applications = tree.getroot().find('application')
+    for activity_node in list(applications):
+        print('activity_node.tag=' + activity_node.tag)
+        print('activity_node.get(key)=' + activity_node.get(key))
+        # 一个字典，包含元素的所有属性
+        print('activity_node.attrib=' + str(activity_node.attrib))

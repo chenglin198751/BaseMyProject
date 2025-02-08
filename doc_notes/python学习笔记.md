@@ -58,24 +58,33 @@
 
 **10、pathlib.Path使用方法：**
 
-    # 常用方法
-    path = Path('E:/mac/test1/test2')
-    path.unlink()  # 删除文件
-    path.rmdir()  # 删除空目录
-    path.rmdir()  # 递归删除目录及其内容
-    path.mkdir(parents=True, exist_ok=True)  # 递归创建文件夹
-
-    # 遍历当前路径下的文件
-    entries = Path('E:/mac/test1/test2')
-    for path in entries.iterdir():
-        print(path.absolute())
-        print(path.is_file())
-        print(path.is_dir())
-        print(path.parts)
-        print(path.parent)
-        print(path.name)
-        print(path.stem)
-        print(path.suffix)
+    1、创建路径对象：path = Path('E:/mac/test1/test2')
+    2、删除文件：path.unlink()
+    3、删除空目录：path.rmdir()
+    4、递归删除目录及其内容：path.rmdir()
+    5、递归创建文件夹：path.mkdir(parents=True, exist_ok=True)
+    6、路径拼接：YxmeSDK = Path(smali_dir) / dir_name / "YxmeSDK.smali"
+    7、文件或路径是否存在：YxmeSDK.exists()
+    8、获取绝对路径：absolute_path = path.resolve()
+    9、获取文件名和父目录：file_name = path.name;parent_dir = path.parent
+    10、重命名文件或目录：path.rename('new_name')
+    11、读取文件内容：content = path.read_text()
+    12、写入文件内容：path.write_text('Hello, World!')
+    13、遍历当前路径下的文件
+        for child in path.iterdir():
+            print(path.absolute())
+    14、列出当前目录及其子目录中的所有文件和子目录：
+        for item in path.glob('**/*'):
+            print(item)
+    15、列出当前目录及其子目录中的所有文件：
+        for file in path.glob('**/*.*'):
+            print(file)
+    16、列出当前目录及其子目录中的所有 Python 脚本文件：
+        for script in path.glob('**/*.py'):
+            print(script)
+    17、列出当前目录及其子目录中所有以 prefix 开头的文件或目录：
+        for item in path.glob('**/prefix*'):
+            print(item)
 
 **11、字符串操作：**
 
@@ -86,3 +95,15 @@
         2、# 打印aapt aapt2这种字符
         if fnmatch.fnmatch(f_name, 'aa*'):
             print(f_name)
+
+**12、压缩和解压文件夹：**
+
+    # 1、压缩文件夹
+    src = 'E:/360portalgamesdk/portal-sdk-tool/scripts'
+    dst = 'E:/360portalgamesdk/portal-sdk-tool/scripts'
+    shutil.make_archive(dst, 'zip', src)
+
+    # 2、解压文件夹
+    archive_file = 'E:/360portalgamesdk/portal-sdk-tool/scripts.zip'
+    extract_to = 'E:/360portalgamesdk/portal-sdk-tool/scripts222'
+    shutil.unpack_archive(archive_file, extract_to)

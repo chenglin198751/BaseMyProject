@@ -1,6 +1,7 @@
 package main;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * 首先明确一个问题：aar配置了混淆，demo apk也配置了混淆，那么打包结果是取的二者全集
@@ -22,7 +23,7 @@ import java.io.File;
  * <p>
  * by weichenglin1 2022-10-10
  */
-public class SeasMainPack {
+public class Main {
     private static volatile int zip_count = 0;
     private static final String[] BUILD_TYPES = {"debug", "release"};
     private static String QBUILD_OUT;
@@ -205,8 +206,8 @@ public class SeasMainPack {
         }
 
         final String sh_path = SRC_PATH + "/proj_help/build/sh/build_demo_apk.sh";
-        final String bashCommand = "sh " + sh_path + " " + SRC_PATH + " " + type;
-        PackTools.Printer.print("-----exe_build_demo_apk_sh----" + bashCommand);
+        final String[] bashCommand = {"sh", sh_path, SRC_PATH, type};
+        PackTools.Printer.print("-----exe_build_demo_apk_sh----" + Arrays.toString(bashCommand));
         CmdTask cmdTask = new CmdTask(bashCommand, null);
         cmdTask.run(true);
     }

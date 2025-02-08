@@ -5,6 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 
@@ -138,10 +141,26 @@ public class FileUtils {
             return;
         }
 
-        // 写入文件
         try {
             Path path = Paths.get(file.getAbsolutePath());
             Files.write(path, value.getBytes(StandardCharsets.UTF_8));
+        } catch (Throwable e) {
+            PackTools.Error_Msg = e.toString();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 追加模式把字符串写入文件
+     */
+    public static void appendFile(File file, String value) {
+        if (!file.exists()) {
+            return;
+        }
+
+        try {
+            Path path = Paths.get(file.getAbsolutePath());
+            Files.write(path, value.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
         } catch (Throwable e) {
             PackTools.Error_Msg = e.toString();
             e.printStackTrace();
@@ -231,6 +250,25 @@ public class FileUtils {
                 getAllDirs(file, dirList);
             }
         }
+    }
+
+    public static String MD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : messageDigest) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     // 逐行读取文本

@@ -133,13 +133,14 @@
 
 **17、git Tips ：**
 
-    git tag  显示tag列表
-    git tag v4.0.0 新建标签
-    git push origin v4.0.0 推送标签到远端
-    git push origin --tags 推送所有标签到远端
-    git checkout v4.0.0查看此标签下的内容
-    git checkout -b newBranch v4.0.0以标签v4.0.0为节点检出分支newBranch
-    git 远程分支已删除，但是本地还显示远程分支的记录，解决办法：git remote prune origin
+    git tag （显示tag列表）
+    git tag v4.0.0 （新建标签）
+    git push origin v4.0.0 （推送标签到远端）
+    git push origin --tags （推送所有标签到远端）
+    git checkout v4.0.0 （查看此标签下的内容）
+    git checkout -b newBranch v4.0.0 （以标签v4.0.0为节点检出分支newBranch）
+    git remote prune origin （远程分支已删除，但是本地还显示远程分支的记录）
+    git rm --cached fileName （把一个受git控制的文件改为不受git控制）
 
 **19_1 颜色渐变：**
 

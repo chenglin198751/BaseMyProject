@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,11 @@ public class FileUtils {
      * 获取外部存储卡路径：比如：/storage/emulated/0/Android/data/包名/files
      */
     public static String getExternalPath() {
-        return BaseApp.getApp().getExternalFilesDir("").getAbsolutePath();
+        File file = BaseApp.getApp().getExternalFilesDir("");
+        if (file == null) {
+            file = BaseApp.getApp().getFilesDir();
+        }
+        return file.getAbsolutePath();
     }
 
     /**
@@ -101,27 +107,39 @@ public class FileUtils {
     /**
      * 读取文件，返回String
      */
-    public static String readFileString(String file_path) {
+    private static String readFileString(String file_path) {
         if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
             return null;
         }
 
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
                 Path path = Paths.get(file_path);
                 return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-            } else {
-                StringBuilder line = new StringBuilder();
-                FileReader reader = new FileReader(file_path);
-                int character;
-                while ((character = reader.read()) != -1) {
-                    line.append((char) character);
-                }
-                reader.close();
-                return line.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            StringBuilder contentBuilder = new StringBuilder();
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file_path));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    contentBuilder.append(line).append("\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return contentBuilder.toString();
         }
         return null;
     }
@@ -214,5 +232,24 @@ public class FileUtils {
         } catch (IOException e) {
             System.out.println("copy file error = " + e);
         }
+    }
+
+    public static String MD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : messageDigest) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

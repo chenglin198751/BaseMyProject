@@ -17,11 +17,7 @@ import com.wcl.test.base.BaseApp;
 public class AppConstants {
     public static int screenWidth = BaseApp.getApp().getResources().getDisplayMetrics().widthPixels;
     public static int screenHeight = BaseApp.getApp().getResources().getDisplayMetrics().heightPixels;
-
     public final static Gson gson = GsonFactory.getSingletonGson();
-
-    public static final String ACTION_GET_PHOTO_LIST = "ACTION_GET_PHOTO_LIST";
-    public static final String KEY_PHOTO_LIST = "KEY_PHOTO_LIST";
 
     public static class Toggle {
         //app是否展示黑白模式

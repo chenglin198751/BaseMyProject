@@ -2,19 +2,20 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class CmdTask {
     private final static String TYPE_INPUT = "input";
     private final static String TYPE_ERROR = "error";
     private final String[] mCommand;
     private final String mWorkDir;
-
 
     public CmdTask(String[] command) {
         this(command, null);
@@ -25,62 +26,33 @@ public class CmdTask {
         this.mWorkDir = workDir;
     }
 
-    public Outs run(boolean is_log) {
+    public Outs run(boolean isLog) {
         Outs outs = new Outs();
-        Process process = null;
-        int exitVal = -1;
-        String error = null;
-
         try {
-            File work_dirs = null;
-            if (mWorkDir != null && mWorkDir.length() > 0) {
-                work_dirs = new File(mWorkDir);
+            File workDirs = null;
+            if (mWorkDir != null && !mWorkDir.isEmpty()) {
+                workDirs = new File(mWorkDir);
             }
-            process = Runtime.getRuntime().exec(mCommand, null, work_dirs);
-
-            // 1、process.getInputStream()
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                outs.addInputList(line);
-                if (is_log) {
-                    System.out.println(line);
-                }
+            Process process = Runtime.getRuntime().exec(mCommand, null, workDirs);
+            CompletableFuture<Void> inputFuture = CompletableFuture.runAsync(() -> handleStream(process.getInputStream(), outs, TYPE_INPUT, isLog));
+            CompletableFuture<Void> errorFuture = CompletableFuture.runAsync(() -> handleStream(process.getErrorStream(), outs, TYPE_ERROR, isLog));
+            int exitValue = process.waitFor();
+            try {
+                CompletableFuture.allOf(inputFuture, errorFuture).get();
+            } catch (Exception e) {
+                PackTools.Printer.print("Exception11:" + e);
             }
-
-            // 2、process.getErrorStream()
-            BufferedReader reader2 = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            String line2;
-            while ((line2 = reader2.readLine()) != null) {
-                outs.addErrorList(line2);
-                if (is_log) {
-                    System.out.println(line2);
-                }
-            }
-
-            exitVal = process.waitFor();
-
-//            // 特别注意：这里不能使用线程解析输入输出流，否则在Linux服务器，会导致数据返回不同步。by weichenglin1 2023-12-06
-//            // 第二种写法：可以使用线程的join方法来实现等待两个线程执行完毕。代码如下：
-//            Thread input_thread = new RedirCmdStreamThread(is_log, outs, process, process.getInputStream(), TYPE_INPUT);
-//            Thread error_thread =new RedirCmdStreamThread(is_log, outs, process, process.getErrorStream(), TYPE_ERROR);
-//            input_thread.start();
-//            error_thread.start();
-//            input_thread.join();
-//            error_thread.join();
-
-            outs.exit_value = exitVal;
+            outs.exit_value = exitValue;
         } catch (Exception e) {
-            e.printStackTrace();
-            error = e.toString();
+            outs.errorList.add(e.toString());
+            PackTools.Printer.print("Exception22:" + e);
         }
 
-        if (error != null || exitVal != 0) {
-            error = "cmd = " + mCommand + "; exec failed:" + error + " exitVal= " + exitVal;
+        if (outs.exit_value != 0) {
+            String error = "cmd=" + Arrays.toString(mCommand) + ";exec failed:" + outs.errorList + ";exitValue=" + outs.exit_value;
             PackTools.Printer.print(error);
             return outs;
         }
-
         return outs;
     }
 
@@ -106,55 +78,23 @@ public class CmdTask {
         }
     }
 
-//    private static class RedirCmdStreamThread extends Thread {
-//        InputStream is;
-//        Process process;
-//        String type;
-//        boolean isLog;
-//        Outs mOuts;
-//
-//        RedirCmdStreamThread(boolean is_log, Outs outs, Process process, InputStream is, String type) {
-//            this.is = is;
-//            this.process = process;
-//            this.type = type;
-//            this.isLog = is_log;
-//            this.mOuts = outs;
-//        }
-//
-//        public void run() {
-//            InputStreamReader isr = null;
-//            BufferedReader br = null;
-//            try {
-//                isr = new InputStreamReader(is);
-//                br = new BufferedReader(isr);
-//
-//                String line = "";
-//                while ((line = br.readLine()) != null) {
-//                    if (type.equals(TYPE_INPUT)) {
-//                        mOuts.addInputList(line);
-//                    } else if (type.equals(TYPE_ERROR)) {
-//                        mOuts.addErrorList(line);
-//                    }
-//                    if (isLog) {
-//                        PackTools.Printer.print(line);
-//                    }
-//                }
-//            } catch (Exception ioe) {
-//                mOuts.inputList.add(ioe.toString());
-//                mOuts.errorList.add(ioe.toString());
-//                ioe.printStackTrace();
-//            } finally {
-//                try {
-//                    if (br != null) {
-//                        br.close();
-//                    }
-//                    if (isr != null) {
-//                        isr.close();
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
+    private static void handleStream(InputStream is, Outs outs, String type, boolean isLog) {
+        try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+             BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (type.equals(TYPE_INPUT)) {
+                    outs.addInputList(line);
+                } else if (type.equals(TYPE_ERROR)) {
+                    outs.addErrorList(line);
+                }
+                if (isLog) {
+                    PackTools.Printer.print(line);
+                }
+            }
+        } catch (Exception e) {
+            outs.errorList.add(e.toString());
+            PackTools.Printer.print(e.toString());
+        }
+    }
 }
