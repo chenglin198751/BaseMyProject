@@ -1,5 +1,6 @@
 package com.wcl.test.view.pullrefresh;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -10,12 +11,11 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.scwang.smartrefresh.layout.api.RefreshHeader;
-import com.scwang.smartrefresh.layout.api.RefreshKernel;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.constant.RefreshState;
-import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
-
+import com.scwang.smart.refresh.layout.api.RefreshHeader;
+import com.scwang.smart.refresh.layout.api.RefreshKernel;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.constant.RefreshState;
+import com.scwang.smart.refresh.layout.constant.SpinnerStyle;
 import com.wcl.test.R;
 
 /**
@@ -45,26 +45,31 @@ public class CustomRefreshHeader implements RefreshHeader {
         return SpinnerStyle.Translate;
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void setPrimaryColors(@ColorInt int... colors) {
 
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
 
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void onHorizontalDrag(float percentX, int offsetX, int offsetMax) {
 
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void onStartAnimator(RefreshLayout layout, int height, int extendHeight) {
         startRotate();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public int onFinish(RefreshLayout layout, boolean success) {
         stopRotate();
@@ -82,15 +87,23 @@ public class CustomRefreshHeader implements RefreshHeader {
     }
 
     @Override
+    public boolean autoOpen(int duration, float dragRate, boolean animationOnly) {
+        return false;
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
     public void onMoving(boolean isDragging, float percent, int offset, int headerHeight, int extendHeight) {
         mLoadingView.setRotation(percent * 360f);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void onReleased(@NonNull RefreshLayout refreshLayout, int height, int maxDragHeight) {
     }
 
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
         switch (newState) {
