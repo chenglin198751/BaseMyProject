@@ -35,7 +35,8 @@
 
 **7、自定义上放主导航按钮：**
 
-    File--->Settings--->Appearance& Behavior--->Menus and Toolbars--->Main Toolbar Left--->右上角+ Add Actions
+    方式1：File--->Settings--->Appearance& Behavior--->Menus and Toolbars--->Main Toolbar--->Left--->右上角+ Add Actions
+    方式12：Customize Toolbar--->Main Toolbar--->Left--->右上角+ Add Actions
 
 **8、修改AS tab展示多个文件，默认AS中打开的文件个数是10个，当超过10个时，超过的部分会直接隐藏：**
 
