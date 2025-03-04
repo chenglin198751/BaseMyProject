@@ -22,7 +22,7 @@ public class BaseViewHelper {
     public static final int CENTER_STYLE = 2;
     private int mStyle = CENTER_STYLE;
 
-    private View.OnClickListener mClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (mTempClickListener != null) {
