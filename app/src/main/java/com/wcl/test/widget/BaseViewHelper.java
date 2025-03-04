@@ -12,7 +12,7 @@ import com.wcl.test.utils.AppBaseUtils;
 
 
 public class BaseViewHelper {
-    private Context mContext;
+    private final Context mContext;
     private View mView;
     private View.OnClickListener mTempClickListener;
     public static final int TOP_STYLE = 1;
