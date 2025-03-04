@@ -58,8 +58,3 @@
 
 **11、git显示年月日：**
 - TortoiseGit -> Setting -> General-Dialogs1 -> Short data/time format in log messages(取消勾选)
-
-**12、windows11右键菜单显示全部：**
-
-    reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
-    taskkill /f /im explorer.exe & start explorer.exe
