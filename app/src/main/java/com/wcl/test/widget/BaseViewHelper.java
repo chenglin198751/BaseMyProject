@@ -20,7 +20,7 @@ public class BaseViewHelper {
     private View.OnClickListener mTempClickListener;
     public static final int TOP_STYLE = 1;
     public static final int CENTER_STYLE = 2;
-    private int mStyle = CENTER_STYLE;
+    private int mShowPosition = CENTER_STYLE;
 
     private final View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
@@ -35,8 +35,8 @@ public class BaseViewHelper {
         mContext = context;
     }
 
-    public void setShowStyle(int style) {
-        mStyle = style;
+    public void setLoadingShowPosition(int position) {
+        mShowPosition = position;
     }
 
     /**
@@ -61,7 +61,7 @@ public class BaseViewHelper {
             textView.setVisibility(View.GONE);
         }
 
-        if (mStyle == TOP_STYLE) {
+        if (mShowPosition == TOP_STYLE) {
             mLoadingLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             mLoadingLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {
@@ -82,7 +82,7 @@ public class BaseViewHelper {
         mEmptyLinear = mView.findViewById(R.id.empty_linear);
         TextView textView = mEmptyLinear.findViewById(R.id.empty_text);
 
-        if (mStyle == TOP_STYLE) {
+        if (mShowPosition == TOP_STYLE) {
             mEmptyLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             mEmptyLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {
@@ -108,7 +108,7 @@ public class BaseViewHelper {
         mView = View.inflate(mContext, R.layout.base_no_net_layout, null);
         mNoNetLinear = mView.findViewById(R.id.no_net_linear);
 
-        if (mStyle == TOP_STYLE) {
+        if (mShowPosition == TOP_STYLE) {
             mNoNetLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             mNoNetLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {

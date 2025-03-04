@@ -139,8 +139,8 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
         addLoadView();
     }
 
-    public void setShowStyle(int style) {
-        mBaseViewHelper.setShowStyle(style);
+    public void setLoadingShowPosition(int position) {
+        mBaseViewHelper.setLoadingShowPosition(position);
     }
 
 
