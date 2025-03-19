@@ -4,27 +4,24 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.Scroller;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.wcl.test.utils.AppLogUtils;
+
 
 public class DragRelativeLayout extends RelativeLayout {
-    public static final int TOUCH_THRESHOLD = 3;
-    public int margin_edge;
-    private Scroller scroller;
+    private static final int TOUCH_THRESHOLD = 10;
+    private static final int MARGIN_EDGE = 0;
     private float downX, downY;
     private float lastX, lastY;
     private float curX, curY;
-    private int lastOffset;
-    private int width, height;
-    private int viewHeight;
-    private int viewWidth;
+    private int mParentWidth, mParentHeight;
     private OnClickListener mListener;
-    private Rect mRect;
 
     public DragRelativeLayout(@NonNull Context context) {
         super(context);
@@ -41,38 +38,37 @@ public class DragRelativeLayout extends RelativeLayout {
         init(context, attrs);
     }
 
+
     private void init(Context context, AttributeSet attrs) {
-//        resolveAttr(context, attrs);
-        scroller = new Scroller(getContext());
-        margin_edge = 0;
+
     }
 
-    public void setRectF(Rect rect) {
-        mRect = rect;
-        height = mRect.height();
-        width = mRect.width();
+    //设置父布局view,在哪个父布局内移动
+    public void setParentView(View parent) {
+        parent.post(() -> {
+            Rect rect = new Rect();
+            parent.getGlobalVisibleRect(rect);
+            mParentHeight = rect.height();//可见部分的高度
+            mParentWidth = rect.width();//可见部分的宽度
+            AppLogUtils.d("DragRelativeLayout", "父view 可见部分宽高:" + mParentHeight + "---" + mParentWidth);
+
+            AppLogUtils.d("DragRelativeLayout", "父view : " + "上边界距离屏幕顶部" + rect.top + "，下边界距离屏幕顶部"
+                    + rect.bottom + "，左边界距离屏幕左边" + rect.left + "，右边界距离屏幕左边" + rect.right);
+
+            int[] location = new int[2];
+            parent.getLocationInWindow(location);
+            int x = location[0]; // view距离window 左边的距离（即x轴方向）
+            int y = location[1]; // view距离window 顶边的距离（即y轴方向）
+            AppLogUtils.d("DragRelativeLayout", " view距离window的宽高:" + x + "---" + y);
+        });
     }
 
-//    private void resolveAttr(Context context, AttributeSet attrs) {
-//        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.DragFrameLayout);
-//        margin_edge = array.getDimensionPixelSize(R.styleable.DragFrameLayout_margin_edge, 0);
-//        array.recycle();
-//    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        viewWidth = getWidth();
-        viewHeight = getHeight();
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (scroller.computeScrollOffset()) {
-            return super.onTouchEvent(event);
-        }
         curX = event.getRawX();
         curY = event.getRawY();
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = lastX = event.getRawX();
@@ -84,99 +80,64 @@ public class DragRelativeLayout extends RelativeLayout {
                 lastY = curY;
                 break;
             case MotionEvent.ACTION_UP:
+                LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                layoutParams.leftMargin = getLeft();
+                layoutParams.topMargin = getTop();
+                layoutParams.setMargins(getLeft(), getTop(), 0, 0);
+                setLayoutParams(layoutParams);
                 onScrollEdge();
                 break;
         }
         return true;
     }
 
+
     private void onMove() {
+        //x方向上移动的距离,dx为负数，向左移
         int dx = (int) (curX - lastX);
+        //y方向上移动的距离.dy位负数，向上移
         int dy = (int) (curY - lastY);
 
-        if (getLeft() + dx < margin_edge) {
-            dx = 0;
-        } else if (getLeft() + viewWidth + dx > width - margin_edge) {
-            dx = 0;
+        int left = getLeft() + dx;
+        int right = getRight() + dx;
+        int top = getTop() + dy;
+        int bottom = getBottom() + dy;
+
+        //如果移动到了屏幕的左边
+        if (left < 0) {
+            left = 0;
+            right = left + getWidth();
         }
 
-        if (getTop() + dy < margin_edge) {
-            dy = 0;
-        } else if (getTop() + viewHeight + dy > height - margin_edge) {
+        //如果移动到了屏幕的最右边
+        if (right > mParentWidth) {
+            right = mParentWidth;
+            left = right - getWidth();
+        }
+
+        //如果移动到了父布局的最顶部
+        if (top < MARGIN_EDGE) {
             dy = 0;
         }
-        setPosition1(dx, dy);
-        //setPosition2(dx, dy);
-        //setPosition3(dx, dy);
-        //setPosition4(dx, dy);
+        //如果移动到了父布局的最底部
+        if (bottom > mParentHeight - MARGIN_EDGE) {
+            dy = 0;
+        }
+        layout(left, getTop() + dy, right, getBottom() + dy);
     }
 
-    private void setPosition1(int dx, int dy) {
-        layout(getLeft() + dx, getTop() + dy, getLeft() + viewWidth + dx, getTop() + viewHeight + dy);
-    }
-
-    private void setPosition2(int dx, int dy) {
-        offsetLeftAndRight(dx);
-        offsetTopAndBottom(dy);
-    }
-
-    int transX = 0;
-    int transY = 0;
-
-    /**
-     * 需要修正实现方式
-     *
-     * @param dx
-     * @param dy
-     */
-    private void setPosition3(int dx, int dy) {
-        transX += dx;
-        transY += dy;
-        setTranslationX(transX);
-        setTranslationY(transY);
-    }
-
-    private void setPosition4(int dx, int dy) {
-        LayoutParams layoutParams = (LayoutParams) getLayoutParams();
-        layoutParams.rightMargin = layoutParams.rightMargin - dx;
-        layoutParams.topMargin = layoutParams.topMargin + dy;
-        setLayoutParams(layoutParams);
-    }
 
     private void onScrollEdge() {
         if (Math.abs(curX - downX) < TOUCH_THRESHOLD && Math.abs(curY - downY) < TOUCH_THRESHOLD) {
             if (mListener != null) {
                 mListener.onClick(this);
             }
-            return;
         }
-//        int dx;
-//        if (getLeft() > (width - getRight())) {
-//            dx = width - getRight() - margin_edge;
-//        } else {
-//            dx = margin_edge - getLeft();
-//        }
-//        lastOffset = 0;
-//        scroller.startScroll(getScrollX(), getScrollY(), dx, 0);
-//        invalidate();
     }
 
     @Override
-    public void computeScroll() {
-        if (scroller.computeScrollOffset()) {
-            int dx = scroller.getCurrX() - lastOffset;
-            lastOffset = scroller.getCurrX();
-            setPosition1(dx, 0);
-            //setPosition2(dx, 0);
-            //setPosition3(dx, 0);
-            //setPosition4(dx, 0);
-            invalidate();
-        }
-        super.computeScroll();
-    }
-
-    public void setOnClickListener2(OnClickListener listener2) {
-        this.mListener = listener2;
+    public void setOnClickListener(OnClickListener listener) {
+        this.mListener = listener;
     }
 
 }
