@@ -20,11 +20,7 @@ android {
 
         ndk {
             //noinspection ChromeOsAbiSupport
-            abiFilters 'arm64-v8a', 'armeabi-v7a'
-            packagingOptions {
-                doNotStrip '*/arm64-v8a/*.so'
-                doNotStrip '*/armeabi-v7a/*.so'
-            }
+            abiFilters 'arm64-v8a'
         }
     }
 
