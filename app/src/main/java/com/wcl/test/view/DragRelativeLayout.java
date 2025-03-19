@@ -1,5 +1,6 @@
 package com.wcl.test.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -85,7 +86,8 @@ public class DragRelativeLayout extends RelativeLayout {
                 layoutParams.topMargin = getTop();
                 layoutParams.setMargins(getLeft(), getTop(), 0, 0);
                 setLayoutParams(layoutParams);
-                onScrollEdge();
+                performViewClick();
+                scrollToEdge();
                 break;
         }
         return true;
@@ -126,8 +128,19 @@ public class DragRelativeLayout extends RelativeLayout {
         layout(left, getTop() + dy, right, getBottom() + dy);
     }
 
+    // 松手后滚动到屏幕边缘
+    private void scrollToEdge() {
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(curX, 0f);
+        valueAnimator.addUpdateListener(animation -> {
+            curX = (float) animation.getAnimatedValue();
+            onMove();
+        });
+        valueAnimator.setDuration(700);
+        valueAnimator.start();
+    }
 
-    private void onScrollEdge() {
+    // 拖拽松手后，执行view的点击事件
+    private void performViewClick() {
         if (Math.abs(curX - downX) < TOUCH_THRESHOLD && Math.abs(curY - downY) < TOUCH_THRESHOLD) {
             if (mListener != null) {
                 mListener.onClick(this);
