@@ -700,4 +700,20 @@ public class AppBaseUtils {
         }
         return null;
     }
+
+    /**
+     * 重启应用
+     */
+    public static void restartApplication(Context mContext) {
+        try {
+            Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mContext.startActivity(intent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
