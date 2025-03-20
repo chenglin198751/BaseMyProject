@@ -119,13 +119,15 @@ public class DragRelativeLayout extends RelativeLayout {
 
         //如果移动到了父布局的最顶部
         if (top < MARGIN_EDGE) {
-            dy = 0;
+            top = MARGIN_EDGE;
+            bottom = top + getHeight();
         }
         //如果移动到了父布局的最底部
         if (bottom > mParentHeight - MARGIN_EDGE) {
-            dy = 0;
+            bottom = mParentHeight - MARGIN_EDGE;
+            top = bottom - getHeight();
         }
-        layout(left, getTop() + dy, right, getBottom() + dy);
+        layout(left, top, right, bottom);
     }
 
     // 松手后滚动到屏幕边缘
