@@ -1,6 +1,9 @@
 package com.wcl.test.widget;
 
+import android.content.Context;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,15 +40,15 @@ public class ToastUtils {
         }
     }
 
-    private static void showToast(String text) {
-        TextView tvMessage;
+    private static void showToast(String message) {
+        LayoutInflater inflater = (LayoutInflater) BaseApp.getApp().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.my_toast_layout, null);
+        TextView textView = layout.findViewById(R.id.message);
+        textView.setText(message);
         Toast toast = new Toast(BaseApp.getApp());
-
-        View view = View.inflate(BaseApp.getApp(), R.layout.my_toast_layout, null);
-        tvMessage = view.findViewById(R.id.message);
-        tvMessage.setText(text);
-        toast.setView(view);
         toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 50);
         toast.show();
     }
 
