@@ -2,17 +2,14 @@ package com.wcl.test.view;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.wcl.test.utils.AppLogUtils;
 
 
 public class DragRelativeLayout extends RelativeLayout {
@@ -45,19 +42,15 @@ public class DragRelativeLayout extends RelativeLayout {
 
     }
 
-    //设置父布局view,在哪个父布局内移动
-    public void setParentView(View parent) {
-        parent.post(() -> {
-            // 计算当前父布局在屏幕的可见区域坐标
-            Rect rect = new Rect();
-            parent.getGlobalVisibleRect(rect);
-            mParentHeight = rect.height();
-            mParentWidth = rect.width();
-            int[] location = new int[2];
-            parent.getLocationInWindow(location);
-        });
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        ViewGroup parent = (ViewGroup) getParent();
+        if (parent != null) {
+            mParentWidth = parent.getWidth();
+            mParentHeight = parent.getHeight();
+        }
     }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
