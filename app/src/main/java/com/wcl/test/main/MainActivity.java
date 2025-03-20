@@ -52,13 +52,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             getWindow().setAttributes(layoutParams);
         }
 
-//        // 延伸显示区域到刘海
+//        // 延伸显示区域到刘海屏缺口屏
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 //            WindowManager.LayoutParams lp = getWindow().getAttributes();
 //            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 //            getWindow().setAttributes(lp);
+//
 //            final View decorView = getWindow().getDecorView();
-//            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+//            int systemUiVisibility = decorView.getSystemUiVisibility();
+//            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+//            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+//            decorView.setSystemUiVisibility(systemUiVisibility);
 //        }
 
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
