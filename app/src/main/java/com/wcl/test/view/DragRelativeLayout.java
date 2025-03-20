@@ -23,6 +23,7 @@ public class DragRelativeLayout extends RelativeLayout {
     private float curX, curY;
     private int mParentWidth, mParentHeight;
     private OnClickListener mListener;
+    private ValueAnimator mScrollAnimator;
 
     public DragRelativeLayout(@NonNull Context context) {
         super(context);
@@ -47,26 +48,23 @@ public class DragRelativeLayout extends RelativeLayout {
     //设置父布局view,在哪个父布局内移动
     public void setParentView(View parent) {
         parent.post(() -> {
+            // 计算当前父布局在屏幕的可见区域坐标
             Rect rect = new Rect();
             parent.getGlobalVisibleRect(rect);
-            mParentHeight = rect.height();//可见部分的高度
-            mParentWidth = rect.width();//可见部分的宽度
-            AppLogUtils.d("DragRelativeLayout", "父view 可见部分宽高:" + mParentHeight + "---" + mParentWidth);
-
-            AppLogUtils.d("DragRelativeLayout", "父view : " + "上边界距离屏幕顶部" + rect.top + "，下边界距离屏幕顶部"
-                    + rect.bottom + "，左边界距离屏幕左边" + rect.left + "，右边界距离屏幕左边" + rect.right);
-
+            mParentHeight = rect.height();
+            mParentWidth = rect.width();
             int[] location = new int[2];
             parent.getLocationInWindow(location);
-            int x = location[0]; // view距离window 左边的距离（即x轴方向）
-            int y = location[1]; // view距离window 顶边的距离（即y轴方向）
-            AppLogUtils.d("DragRelativeLayout", " view距离window的宽高:" + x + "---" + y);
         });
     }
 
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (isAnimatorRunning()) {
+            return super.onTouchEvent(event);
+        }
+
         curX = event.getRawX();
         curY = event.getRawY();
 
@@ -81,13 +79,8 @@ public class DragRelativeLayout extends RelativeLayout {
                 lastY = curY;
                 break;
             case MotionEvent.ACTION_UP:
-                LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                layoutParams.leftMargin = getLeft();
-                layoutParams.topMargin = getTop();
-                layoutParams.setMargins(getLeft(), getTop(), 0, 0);
-                setLayoutParams(layoutParams);
                 performViewClick();
-                scrollToEdge();
+                scrollToEdgeAnimation();
                 break;
         }
         return true;
@@ -129,23 +122,31 @@ public class DragRelativeLayout extends RelativeLayout {
     }
 
     // 松手后滚动到屏幕边缘
-    private void scrollToEdge() {
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(curX, 0f);
-        valueAnimator.addUpdateListener(animation -> {
+    private void scrollToEdgeAnimation() {
+        mScrollAnimator = ValueAnimator.ofFloat(curX, 0f);
+        mScrollAnimator.addUpdateListener(animation -> {
             curX = (float) animation.getAnimatedValue();
             onMove();
+            lastX = curX;
         });
-        valueAnimator.setDuration(700);
-        valueAnimator.start();
+        mScrollAnimator.setDuration(300);
+        mScrollAnimator.start();
     }
 
     // 拖拽松手后，执行view的点击事件
     private void performViewClick() {
         if (Math.abs(curX - downX) < TOUCH_THRESHOLD && Math.abs(curY - downY) < TOUCH_THRESHOLD) {
             if (mListener != null) {
+                if (isAnimatorRunning()) {
+                    return;
+                }
                 mListener.onClick(this);
             }
         }
+    }
+
+    private boolean isAnimatorRunning() {
+        return mScrollAnimator != null && mScrollAnimator.isRunning();
     }
 
     @Override
