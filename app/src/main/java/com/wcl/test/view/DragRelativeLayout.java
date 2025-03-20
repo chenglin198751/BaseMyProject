@@ -95,44 +95,47 @@ public class DragRelativeLayout extends RelativeLayout {
 
 
     private void onMove() {
-        //x方向上移动的距离,dx为负数，向左移
-        int dx = (int) (curX - lastX);
-        //y方向上移动的距离.dy位负数，向上移
-        int dy = (int) (curY - lastY);
+        float dx = curX - lastX;
+        float dy = curY - lastY;
 
-        int left = getLeft() + dx;
-        int right = getRight() + dx;
-        int top = getTop() + dy;
-        int bottom = getBottom() + dy;
+        int newLeft = (int) (getLeft() + dx);
+        int newTop = (int) (getTop() + dy);
+        int newRight = (int) (getRight() + dx);
+        int newBottom = (int) (getBottom() + dy);
 
-        //如果移动到了屏幕的左边
-        if (left < 0) {
-            left = 0;
-            right = left + getWidth();
+        // 限制拖动范围在父 View 内
+        if (newLeft < 0) {
+            newLeft = 0;
+            newRight = getWidth();
+        } else if (newRight > mParentWidth) {
+            newRight = mParentWidth;
+            newLeft = mParentWidth - getWidth();
         }
 
-        //如果移动到了屏幕的最右边
-        if (right > mParentWidth) {
-            right = mParentWidth;
-            left = right - getWidth();
+        if (newTop < 0) {
+            newTop = 0;
+            newBottom = getHeight();
+        } else if (newBottom > mParentHeight) {
+            newBottom = mParentHeight;
+            newTop = mParentHeight - getHeight();
         }
 
-        //如果移动到了父布局的最顶部
-        if (top < MARGIN_EDGE) {
-            top = MARGIN_EDGE;
-            bottom = top + getHeight();
-        }
-        //如果移动到了父布局的最底部
-        if (bottom > mParentHeight - MARGIN_EDGE) {
-            bottom = mParentHeight - MARGIN_EDGE;
-            top = bottom - getHeight();
-        }
-        layout(left, top, right, bottom);
+        layout(newLeft, newTop, newRight, newBottom);
+        lastX = curX;
+        lastY = curY;
     }
 
     // 松手后滚动到屏幕边缘
     private void scrollToEdgeAnimation() {
-        mScrollAnimator = ValueAnimator.ofFloat(curX, 0f);
+        int targetLeft;
+
+        if (getLeft() < mParentWidth / 2 - getWidth() / 2) {
+            targetLeft = 0;
+        } else {
+            targetLeft = mParentWidth;
+        }
+
+        mScrollAnimator = ValueAnimator.ofFloat(curX, targetLeft);
         mScrollAnimator.addUpdateListener(animation -> {
             curX = (float) animation.getAnimatedValue();
             onMove();
