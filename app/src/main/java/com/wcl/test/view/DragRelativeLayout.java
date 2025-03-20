@@ -43,6 +43,20 @@ public class DragRelativeLayout extends RelativeLayout {
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mScrollAnimator != null) {
+            mScrollAnimator.cancel();
+            mScrollAnimator = null;
+        }
+    }
+
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         ViewGroup parent = (ViewGroup) getParent();
