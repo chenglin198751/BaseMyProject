@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -48,5 +47,41 @@
         android:textSize="10dp"
         app:layout_constraintStart_toEndOf="@+id/view_left"
         app:layout_constraintTop_toBottomOf="@+id/view_line" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:columnCount="4"
+        android:orientation="horizontal"
+        android:rowCount="6"
+        app:layout_constraintTop_toBottomOf="@+id/view_left">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_columnWeight="1"
+            android:background="@android:color/holo_blue_bright" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_columnWeight="1"
+            android:background="@android:color/holo_orange_dark" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_columnWeight="1"
+            android:background="@android:color/holo_red_dark"
+
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_columnWeight="1"
+            android:background="@android:color/holo_red_light" />
+    </GridLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
