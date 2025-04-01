@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -76,12 +75,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         showTab(TAB_FIRST);
+
+//        // 适配Android15边到边（edge-to-edge）特性
+//        ViewCompat.setOnApplyWindowInsetsListener(mViewBinding.getRoot(), new OnApplyWindowInsetsListener() {
+//            @NonNull
+//            @Override
+//            public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
+//                // 状态栏缺口屏刘海屏区域
+//                Insets stateBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+//                // 底部导航栏区域
+//                Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+//
+//                v.setPadding(v.getPaddingLeft(), stateBars.top, v.getPaddingRight(), v.getPaddingBottom());
+//                return insets;
+//            }
+//        });
     }
 
     private void initView() {
         for (int index = 0; index < TAB_BOTTOM_ID_ARRAY.length; index++) {
             mViewBinding.bottomTab.findViewById(TAB_BOTTOM_ID_ARRAY[index]).setOnClickListener(this);
-            ImageView imageView =  findViewById(TAB_BOTTOM_ID_ARRAY[index]).findViewById(R.id.image_view);
+            ImageView imageView = findViewById(TAB_BOTTOM_ID_ARRAY[index]).findViewById(R.id.image_view);
             TextView textView = findViewById(TAB_BOTTOM_ID_ARRAY[index]).findViewById(R.id.text_view);
 
             imageView.setImageResource(TAB_BOTTOM_ICON_ARRAY[index]);
