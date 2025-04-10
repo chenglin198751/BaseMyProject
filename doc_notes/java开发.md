@@ -50,3 +50,8 @@
             System.out.println("future2 failed: " + ex.getMessage());
         }
     });
+
+**2、线程池用法：**
+
+    // 核心线程设为10个，最大为20个，空闲线程等待时间为30秒(30秒没被使用，会被系统回收)
+    public static Executor mExecutor = new ThreadPoolExecutor(10, 20, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
