@@ -1,8 +1,7 @@
 package com.wcl.test.utils;
 
-import android.content.Context;
+import android.os.Build;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
@@ -15,8 +14,8 @@ import com.wcl.test.base.BaseApp;
  * 公共常量类
  */
 public class AppConstants {
-    public static int screenWidth = BaseApp.getApp().getResources().getDisplayMetrics().widthPixels;
-    public static int screenHeight = BaseApp.getApp().getResources().getDisplayMetrics().heightPixels;
+    public static int screenWidth = getScreenSize()[0];
+    public static int screenHeight = getScreenSize()[1];
     public final static Gson gson = GsonFactory.getSingletonGson();
 
     public static class Toggle {
@@ -24,4 +23,20 @@ public class AppConstants {
         public static boolean isGrayscale = false;
     }
 
+    private static int[] getScreenSize() {
+        int screenWidth;
+        int screenHeight;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowManager windowManager = BaseApp.getApp().getSystemService(WindowManager.class);
+            WindowMetrics metrics = windowManager.getCurrentWindowMetrics();
+            screenWidth = metrics.getBounds().width();
+            screenHeight = metrics.getBounds().height();
+        } else {
+            DisplayMetrics displayMetrics = BaseApp.getApp().getResources().getDisplayMetrics();
+            screenWidth = displayMetrics.widthPixels;
+            screenHeight = displayMetrics.heightPixels;
+        }
+        return new int[]{screenWidth, screenHeight};
+    }
 }
