@@ -5,28 +5,28 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import com.wcl.test.utils.AppBaseUtils;
 
-public class CornerRelativeLayout extends RelativeLayout {
+public class CornerFrameLayout extends FrameLayout {
     private float topLeftRadius;
     private float topRightRadius;
     private float bottomLeftRadius;
     private float bottomRightRadius;
     private Path clipPath;
 
-    public CornerRelativeLayout(Context context) {
+    public CornerFrameLayout(Context context) {
         super(context);
         init();
     }
 
-    public CornerRelativeLayout(Context context, AttributeSet attrs) {
+    public CornerFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public CornerRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CornerFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -60,4 +60,4 @@ public class CornerRelativeLayout extends RelativeLayout {
         super.dispatchDraw(canvas);
         canvas.restoreToCount(save);
     }
-}
+}    
