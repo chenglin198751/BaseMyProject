@@ -35,6 +35,10 @@ public class CornerRelativeLayout extends RelativeLayout {
         clipPath = new Path();
     }
 
+    public void setCorner(int radii) {
+        setCorner(radii, radii, radii, radii);
+    }
+
     public void setCorner(float topLeft, float topRight, float bottomLeft, float bottomRight) {
         this.topLeftRadius = AppBaseUtils.dip2px(topLeft);
         this.topRightRadius = AppBaseUtils.dip2px(topRight);
