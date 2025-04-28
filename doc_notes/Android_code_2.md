@@ -334,3 +334,33 @@
         for (String arg:args){
         }
     }
+
+
+**54、设置任意View圆角，并且让子View都会被圆角裁剪：**
+
+    public class CustomOutlineProvider extends ViewOutlineProvider {
+    private final float cornerRadius;
+    
+        public CustomOutlineProvider(float cornerRadius) {
+            this.cornerRadius = cornerRadius;
+        }
+    
+        @Override
+        public void getOutline(View view, Outline outline) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Path path = new Path();
+                RectF rect = new RectF(0, 0, view.getWidth(), view.getHeight());
+    
+                // 设置左上角和右上角为圆角
+                path.addRoundRect(rect, new float[]{
+                    cornerRadius, cornerRadius, // 左上角
+                    cornerRadius, cornerRadius, // 右上角
+                    0, 0,                       // 右下角
+                    0, 0                        // 左下角
+                }, Path.Direction.CW);
+    
+                // 将 Path 设置到 Outline
+                outline.setConvexPath(path);
+            }
+        }
+    }
