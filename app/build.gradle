@@ -109,7 +109,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
-    implementation 'com.github.donkingliang:ConsecutiveScroller:2.6.2'
+    implementation 'com.github.donkingliang:ConsecutiveScroller:4.6.4'
     implementation 'com.dasu.image:blur:0.0.6'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0'
