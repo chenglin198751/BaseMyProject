@@ -197,7 +197,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         } else if (EventBus.System.ACTION_BASE_BROADCAST.equals(action)) {
             //通知Activity里面所有的fragment接收广播
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
-            if (fragments.size() > 0) {
+            if (!fragments.isEmpty()) {
                 for (Fragment fragment : fragments) {
                     if (fragment instanceof BaseFragment) {
                         ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
