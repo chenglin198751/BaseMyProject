@@ -8,6 +8,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 public class EventBus {
     public static final String ACTION_BASE_BROADCAST = "ACTION_SYS_BASE_BROADCAST";
 
+    public static void sendBroadcast(String action) {
+        sendBroadcast(action, null);
+    }
+
     /**
      * 通用的发送广播，可以在任意位置发送
      */
