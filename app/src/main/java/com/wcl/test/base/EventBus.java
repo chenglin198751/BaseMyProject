@@ -24,10 +24,6 @@ public class EventBus {
 
     public interface System {
         /**
-         * 系统基础广播
-         */
-
-        /**
          * 根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
          */
         String ACTION_KEEP_SINGLE_ACTIVITY = "ACTION_SYS_KEEP_SINGLE_ACTIVITY";
