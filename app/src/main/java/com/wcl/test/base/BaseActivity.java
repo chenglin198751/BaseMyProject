@@ -339,7 +339,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             mBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    if (EventBus.System.ACTION_BASE_BROADCAST.equals(intent.getAction())) {
+                    if (EventBus.ACTION_BASE_BROADCAST.equals(intent.getAction())) {
                         String childAction = intent.getStringExtra("action");
                         onBroadcastReceiver(childAction, intent.getBundleExtra("bundle"));
                     }
@@ -347,7 +347,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             };
 
             IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(EventBus.System.ACTION_BASE_BROADCAST);
+            intentFilter.addAction(EventBus.ACTION_BASE_BROADCAST);
             LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
         }
     }
