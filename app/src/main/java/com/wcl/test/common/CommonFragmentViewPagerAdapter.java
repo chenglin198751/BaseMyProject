@@ -1,65 +1,61 @@
 package com.wcl.test.common;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import android.view.ViewGroup;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by chenglin on 2017-9-14.
+ * 使用 ViewPager2 的 FragmentStateAdapter 实现的通用适配器
  */
+public class CommonFragmentViewPagerAdapter extends FragmentStateAdapter {
+    private final List<Fragment> mFragments;
+    private final List<String> mTitleList = new ArrayList<>();
 
-public class CommonFragmentViewPagerAdapter extends FragmentPagerAdapter {
-    public List<Fragment> mFragments = new ArrayList<>();
-    public List<String> mTitleList = new ArrayList<>();
-
-    public CommonFragmentViewPagerAdapter(FragmentManager fm, List<Fragment> list) {
-        super(fm,FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        mFragments = list;
+    public CommonFragmentViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Fragment> fragments) {
+        super(fragmentActivity);
+        this.mFragments = fragments;
     }
 
-
-    @Override
-    public Fragment getItem(int position) {
-        return this.mFragments.get(position);
+    public CommonFragmentViewPagerAdapter(@NonNull Fragment fragment, List<Fragment> fragments) {
+        super(fragment);
+        this.mFragments = fragments;
     }
 
+    @NonNull
     @Override
-    public int getCount() {
-        return this.mFragments.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+    public Fragment createFragment(int position) {
+        return mFragments.get(position);
     }
 
     @Override
-    public int getItemPosition(Object object) {
-        // 最简单解决 notifyDataSetChanged() 页面不刷新问题的方法
-        return POSITION_NONE;
+    public int getItemCount() {
+        return mFragments.size();
     }
 
-    @Override
     public CharSequence getPageTitle(int position) {
-        if (mTitleList.size() == mFragments.size()){
+        if (mTitleList != null && position < mTitleList.size()) {
             return mTitleList.get(position);
-        }else {
-            return super.getPageTitle(position);
         }
+        return null;
     }
 
-    @Override
-    public Fragment instantiateItem(ViewGroup container, int position) {
-        Fragment fragment = (Fragment) super.instantiateItem(container, position);
-        return fragment;
+    // 如果你需要更新数据，建议配合 DiffUtil 使用 submitList 或手动刷新
+    public void updateFragments(List<Fragment> newFragments) {
+        this.mFragments.clear();
+        this.mFragments.addAll(newFragments);
+        notifyDataSetChanged();
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        super.destroyItem(container, position, object);
+    public void updateTitles(List<String> titles) {
+        this.mTitleList.clear();
+        this.mTitleList.addAll(titles);
+        notifyDataSetChanged();
     }
+
+    // 注意：ViewPager2 不再直接调用 getPageTitle()
+    // 如果你是结合 TabLayout 使用，请使用 TabLayoutMediator 设置标题
 }
