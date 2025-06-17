@@ -1,25 +1,21 @@
 package com.wcl.test.test;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.wcl.test.R;
+import com.wcl.test.base.BaseActivity;
+import com.wcl.test.common.CommonFragmentViewPagerAdapter;
+import com.wcl.test.widget.MyTabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-import com.wcl.test.base.BaseActivity;
-import com.wcl.test.R;
-import com.wcl.test.common.CommonFragmentViewPagerAdapter;
-import com.wcl.test.widget.MyTabLayout;
 
 /**
  * Created by chenglin on 2017-9-14.

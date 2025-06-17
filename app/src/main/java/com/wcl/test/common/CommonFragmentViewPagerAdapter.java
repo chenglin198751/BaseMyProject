@@ -5,22 +5,25 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 使用 ViewPager2 的 FragmentStateAdapter 实现的通用适配器
  */
 public class CommonFragmentViewPagerAdapter extends FragmentStateAdapter {
-    private final List<Fragment> mFragments;
+    private final List<Fragment> mFragments = new ArrayList<>();
 
     public CommonFragmentViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Fragment> fragments) {
         super(fragmentActivity);
-        this.mFragments = fragments;
+        this.mFragments.clear();
+        this.mFragments.addAll(fragments);
     }
 
     public CommonFragmentViewPagerAdapter(@NonNull Fragment fragment, List<Fragment> fragments) {
         super(fragment);
-        this.mFragments = fragments;
+        this.mFragments.clear();
+        this.mFragments.addAll(fragments);
     }
 
     @NonNull
