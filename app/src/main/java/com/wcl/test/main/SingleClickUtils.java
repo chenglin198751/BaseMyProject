@@ -1,12 +1,13 @@
 package com.wcl.test.main;
 
-import android.util.Log;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SingleClickUtils {
-    private static long mLastClickTime;
-    private static String mClickId = null;
-
-    //时间间隔：比如2000毫秒内只能点击一次
+    // 使用原子类确保多线程安全
+    private static final AtomicReference<String> mClickId = new AtomicReference<>(null);
+    private static final AtomicLong mLastClickTime = new AtomicLong(0);
+    // 时间间隔：比如2000毫秒内只能点击一次
     private final static long timeInterval = 2000L;
 
     public static boolean singleClick(final String click_id) {
@@ -14,21 +15,34 @@ public class SingleClickUtils {
     }
 
     public static boolean singleClick(final String click_id, final long interval) {
-        if (mClickId == null) {
-            mClickId = click_id;
+        if (click_id == null) {
+            return false;
         }
-        if (!mClickId.equals(click_id)) {
-            mLastClickTime = 0;
-            mClickId = click_id;
+
+        String currentId = mClickId.get();
+        if (currentId == null) {
+            if (!mClickId.compareAndSet(null, click_id)) {
+                // 并发设置失败，重新获取并继续判断
+                currentId = mClickId.get();
+            } else {
+                currentId = click_id;
+            }
         }
+
+        if (!click_id.equals(currentId)) {
+            mLastClickTime.set(0);
+            mClickId.set(click_id);
+            currentId = click_id;
+        }
+
         long nowTime = System.currentTimeMillis();
-        if (nowTime - mLastClickTime > interval) {
-            Log.v("YxmeSDK", "---只能点击一次---");
-            mLastClickTime = nowTime;
+        long lastTime = mLastClickTime.get();
+
+        if (nowTime - lastTime > interval) {
+            mLastClickTime.set(nowTime);
             return true;
         }
-        Log.v("YxmeSDK", "---触发了多次点击---");
+
         return false;
     }
-
 }
