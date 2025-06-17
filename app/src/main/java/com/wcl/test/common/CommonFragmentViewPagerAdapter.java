@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +12,6 @@ import java.util.List;
  */
 public class CommonFragmentViewPagerAdapter extends FragmentStateAdapter {
     private final List<Fragment> mFragments;
-    private final List<String> mTitleList = new ArrayList<>();
 
     public CommonFragmentViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Fragment> fragments) {
         super(fragmentActivity);
@@ -36,26 +34,16 @@ public class CommonFragmentViewPagerAdapter extends FragmentStateAdapter {
         return mFragments.size();
     }
 
-    public CharSequence getPageTitle(int position) {
-        if (mTitleList != null && position < mTitleList.size()) {
-            return mTitleList.get(position);
-        }
-        return null;
-    }
-
     // 如果你需要更新数据，建议配合 DiffUtil 使用 submitList 或手动刷新
     public void updateFragments(List<Fragment> newFragments) {
+        if (newFragments == null || newFragments.isEmpty()) {
+            mFragments.clear();
+            notifyDataSetChanged();
+            return;
+        }
+
         this.mFragments.clear();
         this.mFragments.addAll(newFragments);
         notifyDataSetChanged();
     }
-
-    public void updateTitles(List<String> titles) {
-        this.mTitleList.clear();
-        this.mTitleList.addAll(titles);
-        notifyDataSetChanged();
-    }
-
-    // 注意：ViewPager2 不再直接调用 getPageTitle()
-    // 如果你是结合 TabLayout 使用，请使用 TabLayoutMediator 设置标题
 }

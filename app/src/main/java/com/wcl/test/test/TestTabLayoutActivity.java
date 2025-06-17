@@ -37,8 +37,8 @@ public class TestTabLayoutActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentLayout(R.layout.tab_layout);
-        mViewPager = (ViewPager2) findViewById(R.id.view_pager);
-        mTabLayout = (MyTabLayout) findViewById(R.id.tab_layout);
+        mViewPager = findViewById(R.id.view_pager);
+        mTabLayout = findViewById(R.id.tab_layout);
 
         for (int i = 0; i < 4; i++) {
             TestTabLayoutFragment fragment = new TestTabLayoutFragment();
