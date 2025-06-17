@@ -30,25 +30,20 @@ public class MainFirstFragment extends BaseFragment {
     protected void onViewCreated(Bundle savedInstanceState, View view) {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
-        mViewBinding.viewLeft.setOnClickListener(new View.OnClickListener() {
+        mViewBinding.viewLeft.setOnClickListener(v -> HttpUtils.downloadFile(apk_path, new HttpUtils.HttpDownloadCallback() {
             @Override
-            public void onClick(View v) {
-                HttpUtils.downloadFile(apk_path, new HttpUtils.HttpDownloadCallback() {
-                    @Override
-                    public void onFinished(boolean isSuccessful, String filePath, String error) {
-                        if (isSuccessful) {
-                            Log.v("tag_3", "path = " + filePath);
-                        }
-                    }
-
-                    @Override
-                    public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
-                        Log.v("tag_3", "percent1 = " + percent);
-                        Log.d("tag_3", "percent2 = " + AppBaseUtils.formatFloat(percent * 100, 2) + "%");
-                    }
-                });
+            public void onFinished(boolean isSuccessful, String filePath, String error) {
+                if (isSuccessful) {
+                    Log.v("tag_3", "path = " + filePath);
+                }
             }
-        });
+
+            @Override
+            public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
+                Log.v("tag_3", "percent1 = " + percent);
+                Log.d("tag_3", "percent2 = " + AppBaseUtils.formatFloat(percent * 100, 2) + "%");
+            }
+        }));
 
     }
 
