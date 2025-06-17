@@ -25,14 +25,12 @@ import android.widget.ScrollView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wcl.test.listener.OnCompressBitmapListener;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.wcl.test.listener.OnCompressBitmapListener;
 
 /**
  * Created by chenglin on 2017-5-24.
@@ -189,41 +187,46 @@ public class BitmapUtils {
      * 保存图片到sdcard
      */
     public static void saveBitmap(final Bitmap bmp, final OnCompressBitmapListener<String> callback) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String fileName = System.currentTimeMillis() + ".jpg";
-                File file = new File(FileUtils.getExternalPath(), fileName);
-                try {
-                    FileOutputStream fos = new FileOutputStream(file);
-                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    fos.flush();
-                    fos.close();
-                }catch (Exception e) {
-                    e.printStackTrace();
-                    if (callback != null) {
-                        AppBaseUtils.getUiHandler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSucceed(null);
-                            }
-                        });
-                    }
-                }
+        if (bmp == null) {
+            if (callback != null) {
+                postToUiThread(() -> callback.onFailed("Bitmap is null"));
+            }
+            return;
+        }
 
-                if (callback != null) {
-                    AppBaseUtils.getUiHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            String path = file.getAbsolutePath();
-                            callback.onSucceed(path);
-                        }
-                    });
-                }
+        new Thread(() -> {
+            String fileName = System.currentTimeMillis() + ".jpg";
+            File dir = new File(FileUtils.getExternalPath());
+            if (!dir.exists() && !dir.mkdirs()) {
+                postCallbackError(callback, "Failed to create directory");
+                return;
+            }
 
+            File file = new File(dir, fileName);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                if (!bmp.compress(Bitmap.CompressFormat.JPEG, 85, fos)) {
+                    postCallbackError(callback, "Bitmap compress failed");
+                    return;
+                }
+                fos.flush();
+                postCallbackSuccess(callback, file.getAbsolutePath());
+            } catch (Exception e) {
+                e.printStackTrace();
+                postCallbackError(callback, "IOException during saving bitmap: " + e.getMessage());
             }
         }).start();
+    }
 
+    private static void postCallbackSuccess(final OnCompressBitmapListener<String> callback, final String path) {
+        postToUiThread(() -> callback.onSucceed(path));
+    }
+
+    private static void postCallbackError(final OnCompressBitmapListener<String> callback, final String errorMsg) {
+        postToUiThread(() -> callback.onFailed(errorMsg));
+    }
+
+    private static void postToUiThread(Runnable runnable) {
+        AppBaseUtils.getUiHandler().post(runnable);
     }
 
 
@@ -243,25 +246,31 @@ public class BitmapUtils {
     /**
      * 按原图比例缩放裁剪图片
      *
-     * @param activity   Activity
-     * @param imagePath  图片的路径
-     * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
-     * @param callback   回调监听
+     * @param activity       Activity
+     * @param imageLocalPath 图片文件所在的路径
+     * @param imageWidth     想要被缩放到的target图片宽度，会根据此宽度和原图的比例，去计算target图片高度
+     * @param callback       回调监听
      */
-    public static void createScaledBitmap(final Activity activity, final String imagePath, final int imageWidth, final OnCompressBitmapListener<String> callback) {
+    public static void createScaledBitmap(final Activity activity, final String imageLocalPath, final int imageWidth, final OnCompressBitmapListener<String> callback) {
         if (callback == null) {
             throw new NullPointerException("OnCompressBitmapListener must not null");
         }
 
-        if (TextUtils.isEmpty(imagePath) || !(new File(imagePath).exists())) {
+        if (TextUtils.isEmpty(imageLocalPath) || !(new File(imageLocalPath).exists())) {
             callback.onSucceed(null);
             return;
         }
 
-        //原图宽度大于传入的宽度才压缩，否则不压缩，直接返回原图路径
-        final int[] size = getBitmapWidthHeight(imagePath);
+        // 获取原始图片宽高
+        final int[] size = getBitmapWidthHeight(imageLocalPath);
+        if (size[0] <= 0 || size[1] <= 0) {
+            callback.onSucceed(null);
+            return;
+        }
+
+        // 原图宽度小于等于目标宽度则直接返回原图路径
         if (size[0] <= imageWidth) {
-            callback.onSucceed(imagePath);
+            callback.onSucceed(imageLocalPath);
             return;
         }
 
@@ -270,33 +279,44 @@ public class BitmapUtils {
             public void run() {
                 super.run();
 
-                int imageHeight = (int) (size[1] * 1f * imageWidth * 1f / size[0] * 1f);
-                float scale = size[0] * 1f / imageWidth * 1f;
+                float scale = (float) size[0] / imageWidth;
+                int imageHeight = Math.round((float) size[1] / scale);
 
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = getOptionSize(scale);
-                Bitmap targetBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(imagePath, options), imageWidth, imageHeight, true);
 
-                saveBitmap(targetBitmap, new OnCompressBitmapListener<String>() {
+                Bitmap bitmap = BitmapFactory.decodeFile(imageLocalPath, options);
+                if (bitmap == null) {
+                    callback.onSucceed(null);
+                    return;
+                }
+
+                Bitmap targetBitmap = Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, true);
+                bitmap.recycle();
+
+                saveBitmap(targetBitmap, new OnCompressBitmapListener<>() {
                     @Override
                     public void onSucceed(final String path) {
+                        if (!targetBitmap.isRecycled()) {
+                            targetBitmap.recycle();
+                        }
+
                         if (activity != null && !activity.isFinishing()) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!TextUtils.isEmpty(path)) {
-                                        callback.onSucceed(path);
-                                    } else {
-                                        callback.onSucceed(null);
-                                    }
-                                }
-                            });
+                            activity.runOnUiThread(() -> callback.onSucceed(path));
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(String s) {
+                        if (!targetBitmap.isRecycled()) {
+                            targetBitmap.recycle();
                         }
                     }
                 });
             }
         }.start();
     }
+
 
     /**
      * 返回bitmap 所占内存的大小
