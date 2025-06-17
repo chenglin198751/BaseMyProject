@@ -59,7 +59,7 @@ public class SignUtils {
         String orderStr = authInfo.toString();
         Log.i("signStr", "orderStr: " + orderStr);
         try {
-            return getMD5(orderStr).toUpperCase();
+            return MD5Util.md5(orderStr).toUpperCase();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,25 +67,4 @@ public class SignUtils {
     }
 
 
-
-    private static String getMD5(String plaintext) {
-        try {
-            byte[] btInput = plaintext.getBytes();
-            MessageDigest mdInst = MessageDigest.getInstance("MD5");
-            mdInst.update(btInput);
-            byte[] md = mdInst.digest();
-            int j = md.length;
-            char str[] = new char[j * 2];
-            int k = 0;
-            for (int i = 0; i < j; i++) {
-                byte byte0 = md[i];
-                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
-                str[k++] = hexDigits[byte0 & 0xf];
-            }
-            return new String(str);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 }

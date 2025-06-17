@@ -126,7 +126,7 @@ public class SmartImageLoader {
             }
         }
 
-        GlideRequest glideRequest = GlideApp
+        GlideRequest<Drawable> glideRequest = GlideApp
                 .with(imageView.getContext())
                 .applyDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_ARGB_8888))
                 .load(object)
