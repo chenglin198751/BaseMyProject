@@ -8,10 +8,7 @@ import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.youth.banner.Banner;
-import com.youth.banner.Transformer;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +20,7 @@ import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
+import com.youth.banner.transformer.ZoomOutPageTransformer;
 
 public class TestPullDownRefreshActivity extends BaseActivity {
     private PullToRefreshView mPullToRefreshView;
@@ -37,18 +35,17 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.test_pull_down_refresh_layout);
 
-        imagesList.add("http://img.zcool.cn/community/0166c756e1427432f875520f7cc838.jpg");
-        imagesList.add("http://img.zcool.cn/community/018fdb56e1428632f875520f7b67cb.jpg");
-        imagesList.add("http://img.zcool.cn/community/01c8dc56e1428e6ac72531cbaa5f2c.jpg");
-        imagesList.add("http://img.zcool.cn/community/01fd2756e142716ac72531cbf8bbbf.jpg");
-        imagesList.add("http://pic31.nipic.com/20130727/6949918_163332595163_2.jpg");
+        imagesList.add("http://qd.shouji.qihucdn.com/media/7596e61dd2bc80488dbca79665ec1252/660127d7974f7.png");
+        imagesList.add("https://d02.qd.shouji.360tpcdn.com/media/3768e5340f2139e71661b805718e4cce/67d3e3a7d7717.png");
+        imagesList.add("http://qd.shouji.qihucdn.com/media/80d15cfc4174f0bb48e9231400160487/6602aa5c7dfde.png");
+        imagesList.add("http://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.pn");
+        imagesList.add("http://qd.shouji.qihucdn.com/media/3471cdbe7ce5812df964fbd68226edc0/6602aa4ad6b7f.png");
 
         getTitleHelper().setTitle("测试");
         mListView = (ListView) findViewById(R.id.list_view);
         Banner banner = (Banner) View.inflate(this, R.layout.banner_layout, null);
-        banner.setImageLoader(new BannerImageLoader());
-        banner.setImages(imagesList);
-        banner.setBannerAnimation(Transformer.ZoomOutSlide);
+        banner.setAdapter(new BannerImageLoader(imagesList));
+        banner.setPageTransformer(new ZoomOutPageTransformer());
         banner.start();
 
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, AppConstants.screenWidth / 2);
