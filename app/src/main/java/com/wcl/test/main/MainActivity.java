@@ -10,6 +10,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseFragment;
@@ -52,6 +54,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         showTab(TAB_FIRST);
+        onBackKeyPressed();
     }
 
     private void initView() {
@@ -103,16 +106,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        long exitTime = System.currentTimeMillis();
-        if (exitTime - mLastTime < TIME_LONG) {
-            super.onBackPressed();
-        } else {
-            ToastUtils.show(getString(R.string.quit_alert));
-            mLastTime = exitTime;
-        }
+    private void onBackKeyPressed() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                long exitTime = System.currentTimeMillis();
+                if (exitTime - mLastTime < TIME_LONG) {
+                    finish();
+                } else {
+                    ToastUtils.show(getString(R.string.quit_alert));
+                    mLastTime = exitTime;
+                }
+            }
+        });
     }
+
 
     @Override
     public void onBroadcastReceiver(String myAction, Bundle bundle) {
