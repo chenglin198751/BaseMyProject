@@ -44,29 +44,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //由于Manifest的style v27中设置了使用缺口屏，所以这里恢复为默认不使用缺口屏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
-            getWindow().setAttributes(layoutParams);
-        }
-
-//        // 延伸显示区域到刘海屏缺口屏
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-//            WindowManager.LayoutParams lp = getWindow().getAttributes();
-//            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-//            getWindow().setAttributes(lp);
-//
-//            final View decorView = getWindow().getDecorView();
-//            int systemUiVisibility = decorView.getSystemUiVisibility();
-//            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-//            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-//            decorView.setSystemUiVisibility(systemUiVisibility);
-//        }
-
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
         mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentLayout(mViewBinding.getRoot());
 
@@ -75,21 +52,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         showTab(TAB_FIRST);
-
-//        // 适配Android15边到边（edge-to-edge）特性
-//        ViewCompat.setOnApplyWindowInsetsListener(mViewBinding.getRoot(), new OnApplyWindowInsetsListener() {
-//            @NonNull
-//            @Override
-//            public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
-//                // 状态栏缺口屏刘海屏区域
-//                Insets stateBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
-//                // 底部导航栏区域
-//                Insets navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-//
-//                v.setPadding(v.getPaddingLeft(), stateBars.top, v.getPaddingRight(), v.getPaddingBottom());
-//                return insets;
-//            }
-//        });
     }
 
     private void initView() {
