@@ -93,14 +93,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return mFragHelper.mSelectedTab;
     }
 
-    //解决fragment回收后重建空指针的问题
-    @SuppressLint("MissingSuperCall")
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-    }
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
