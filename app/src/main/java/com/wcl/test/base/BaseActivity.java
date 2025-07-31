@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import com.wcl.test.R;
 import com.wcl.test.helper.MainTitleHelper;
 import com.wcl.test.main.MainActivity;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
@@ -47,7 +48,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private RelativeLayout mBaseRootView;
     private View mContentView = null;
     private ViewGroup mNestedParentLayout;
-    public WindowInsetsControllerCompat windowInsetsController;
 
     @CallSuper
     @Override
@@ -61,11 +61,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
             getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
         }
-
-        windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        setLightStatusBarColor(true);
-        //设置是否沉浸状态栏，false 表示沉浸，true表示不沉浸
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
 
         if (onKeepSingleActivity()) {
             Bundle bundle = new Bundle();
@@ -83,10 +78,25 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             mTitleHelper.setTitle(getTitle().toString());
         }
 
+        setupSystemBars();
     }
 
     public BaseActivity getContext() {
         return this;
+    }
+
+    private void setupSystemBars() {
+        // 边到边（edge-to-edge），false沉浸式，true不沉浸
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        if (!AppBaseUtils.isEdgeToEdge()) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
+        // 状态栏黑色文字
+        View decorView = getWindow().getDecorView();
+        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(), decorView);
+        controller.setAppearanceLightStatusBars(true);
     }
 
     /**
@@ -301,16 +311,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @Override
     public void setNestedParentLayout(ViewGroup parent) {
         mNestedParentLayout = parent;
-    }
-
-    /**
-     * 设置状态栏底色和文字颜色，true为黑色，false为白色
-     */
-    protected void setLightStatusBarColor(boolean isLightBar) {
-        //设置状态栏底色为白色
-        getWindow().setStatusBarColor(Color.WHITE);
-        // 控制状态栏字体颜色，true为黑色，false为白色
-        windowInsetsController.setAppearanceLightStatusBars(isLightBar);
     }
 
     /**
