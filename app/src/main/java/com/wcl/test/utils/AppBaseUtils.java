@@ -13,6 +13,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
@@ -60,17 +62,24 @@ public class AppBaseUtils {
     /**
      * 判断手机是否联网
      */
-    public static boolean hasNet() {
-        ConnectivityManager manager = (ConnectivityManager) BaseApp.getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager == null) {
+    public static boolean isNetAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) BaseApp.getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
             return false;
         }
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        if (networkInfo == null || !networkInfo.isAvailable()) {
-            return false;
+
+        Network network = connectivityManager.getActiveNetwork();
+        if (network != null) {
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            if (capabilities != null) {
+                return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+            }
         }
         return true;
     }
+
 
     public static String getString(int id) {
         return BaseApp.getApp().getResources().getString(id);
@@ -643,5 +652,9 @@ public class AppBaseUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isEdgeToEdge() {
+        return Build.VERSION.SDK_INT >= 35 && BaseApp.getApp().getApplicationInfo().targetSdkVersion >= 35;
     }
 }
