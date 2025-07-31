@@ -42,6 +42,7 @@ import java.util.List;
  * @author weiChengLin 2013-06-20
  */
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
+    public static final String CLASS_NAME = "MainActivity";
     private BroadcastReceiver mBroadcastReceiver = null;
     protected final static Gson gson = AppConstants.gson;
     private MainTitleHelper mTitleHelper;
