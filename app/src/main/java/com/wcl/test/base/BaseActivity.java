@@ -18,7 +18,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -79,6 +81,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         }
 
         setupSystemBars();
+
+        if (!onDisplayInCutoutMode()) {
+            ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
+                int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+                int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+                v.setPadding(0, statusBarHeight, 0, navBarHeight);
+                return insets;
+            });
+        }
     }
 
     public BaseActivity getContext() {
@@ -178,6 +189,13 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      */
     protected boolean onKeepSingleActivity() {
         return false;
+    }
+
+    /**
+     * 是否显示在顶部挖空屏内
+     */
+    protected boolean onDisplayInCutoutMode() {
+        return true;
     }
 
     @CallSuper
