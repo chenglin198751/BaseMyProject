@@ -65,7 +65,7 @@ public class UpdateDialog extends Dialog {
         mRightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!AppBaseUtils.hasNet()) {
+                if (!AppBaseUtils.isNetAvailable()) {
                     ToastUtils.show(getContext().getString(R.string.net_error));
                     return;
                 }
