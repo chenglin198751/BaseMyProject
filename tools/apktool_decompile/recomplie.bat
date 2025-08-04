@@ -4,7 +4,7 @@ set CMD_PATH=
 for %%P in (%0) do set CMD_PATH=%%~dpP
 cd /d "%CMD_PATH%"
 
-java -jar tools/apktool.jar -v b -f %1 -o unsign.apk
+java -jar tools/apktool.jar b -f %1 -o unsign.apk
 
 @echo --------------start sign apk....--------------
 
