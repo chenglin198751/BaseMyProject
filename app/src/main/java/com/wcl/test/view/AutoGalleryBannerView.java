@@ -123,7 +123,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
 
     private void startTimer(final Runnable runnable) {
         mTimer = new Timer();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
+        mTimer.schedule(new TimerTask() {
             public void run() {
                 if (!isFinish) {
                     AppBaseUtils.getUiHandler().post(runnable);
