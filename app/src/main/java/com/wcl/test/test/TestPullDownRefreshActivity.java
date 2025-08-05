@@ -35,17 +35,18 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.test_pull_down_refresh_layout);
 
-        imagesList.add("http://qd.shouji.qihucdn.com/media/7596e61dd2bc80488dbca79665ec1252/660127d7974f7.png");
+        imagesList.add("https://qd.shouji.qihucdn.com/media/7596e61dd2bc80488dbca79665ec1252/660127d7974f7.png");
         imagesList.add("https://d02.qd.shouji.360tpcdn.com/media/3768e5340f2139e71661b805718e4cce/67d3e3a7d7717.png");
-        imagesList.add("http://qd.shouji.qihucdn.com/media/80d15cfc4174f0bb48e9231400160487/6602aa5c7dfde.png");
-        imagesList.add("http://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.pn");
-        imagesList.add("http://qd.shouji.qihucdn.com/media/3471cdbe7ce5812df964fbd68226edc0/6602aa4ad6b7f.png");
+        imagesList.add("https://qd.shouji.qihucdn.com/media/80d15cfc4174f0bb48e9231400160487/6602aa5c7dfde.png");
+        imagesList.add("https://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png");
+        imagesList.add("https://qd.shouji.qihucdn.com/media/3471cdbe7ce5812df964fbd68226edc0/6602aa4ad6b7f.png");
 
         getTitleHelper().setTitle("测试");
         mListView = (ListView) findViewById(R.id.list_view);
         Banner banner = (Banner) View.inflate(this, R.layout.banner_layout, null);
         banner.setAdapter(new BannerImageLoader(imagesList));
-        banner.setPageTransformer(new ZoomOutPageTransformer());
+//        banner.setPageTransformer(new ZoomOutPageTransformer());
+        banner.setBannerGalleryEffect(30, 10); //画廊效果
         banner.start();
 
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, AppConstants.screenWidth / 2);
