@@ -1,5 +1,6 @@
 package com.wcl.test.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
 import com.wcl.test.httpwork.HttpUtils;
+import com.wcl.test.test.TestPullDownRefreshActivity;
 import com.wcl.test.utils.AppBaseUtils;
 
 
@@ -31,20 +33,8 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
         mViewBinding.viewLeft.setOnClickListener(v -> {
-            HttpUtils.downloadFile(apk_path, new HttpUtils.HttpDownloadCallback() {
-                @Override
-                public void onFinished(boolean isSuccessful, String filePath, String error) {
-                    if (isSuccessful) {
-                        Log.v("tag_3", "path = " + filePath);
-                    }
-                }
-
-                @Override
-                public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
-                    Log.v("tag_3", "percent1 = " + percent);
-                    Log.d("tag_3", "percent2 = " + AppBaseUtils.formatFloat(percent * 100, 2) + "%");
-                }
-            });
+            Intent intent = new Intent(getContext(), TestPullDownRefreshActivity.class);
+            startActivity(intent);
         });
     }
 

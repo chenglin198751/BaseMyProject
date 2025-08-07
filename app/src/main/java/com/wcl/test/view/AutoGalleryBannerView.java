@@ -216,7 +216,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
         public String childUrl;
     }
 
-    private final class ScaleTransformer implements ViewPager.PageTransformer {
+    private static final class ScaleTransformer implements ViewPager.PageTransformer {
         @Override
         public void transformPage(@NonNull View view, float position) {
             View childImg = view.findViewById(R.id.child_img);
