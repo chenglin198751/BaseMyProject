@@ -1,0 +1,52 @@
+package main;
+
+import java.io.File;
+
+public class EnvUtils {
+    public static final String temp_dir = System.currentTimeMillis() + "";
+    public static final String JAR_PATH = new File(System.getProperty("java.class.path")).getAbsolutePath();
+    private static final String OS = System.getProperty("os.name").toLowerCase();
+    private static String mWinPath = null;
+
+    public static boolean isWindows() {
+        return OS.contains("windows");
+    }
+
+    public static boolean isMac() {
+        return OS.contains("mac");
+    }
+
+    public static boolean isLinux() {
+        return OS.contains("linux");
+    }
+
+    public static String getWorkPath() {
+        return getWindowsCachePath() + "/check_workspace/" + temp_dir;
+
+    }
+
+    private static String getWindowsCachePath() {
+        if (mWinPath == null) {
+            mWinPath = System.getenv("USERPROFILE");
+            if (!new File(mWinPath).exists()) {
+                mWinPath = System.getenv("TEMP");
+            }
+            if (!new File(mWinPath).exists()) {
+                mWinPath = System.getProperty("java.io.tmpdir");
+            }
+            if (mWinPath.endsWith(File.separator)) {
+                mWinPath = mWinPath.substring(0, mWinPath.length() - 1);
+            }
+        }
+        return mWinPath;
+    }
+
+    public static String getToolsPath() {
+        return getWorkPath() + "/tools";
+    }
+
+    public static String getApksigner() {
+        return EnvUtils.getToolsPath() + "/apksigner.jar";
+    }
+
+}
