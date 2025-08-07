@@ -49,4 +49,7 @@ public class EnvUtils {
         return EnvUtils.getToolsPath() + "/apksigner.jar";
     }
 
+    public static String getAapt2() {
+        return EnvUtils.getToolsPath() + "/aapt2.exe";
+    }
 }
