@@ -3,8 +3,8 @@ setlocal
 
 :: 配置变量
 set SRC_DIR=D:\AndroidCode\zhushou
-set APK_NAME=original.apk
-set PLUGIN_JAR=news.jar
+set APK_NAME=host.apk
+set PLUGIN_JAR=com.qihoo.plugin.modulation.jar
 set PLUGIN_LIBRARY=modulation
 
 set INIT_DIR=%cd%
@@ -34,9 +34,9 @@ set ADB=adb.exe
 :: 复制一份APK，避免覆盖原文件
 copy /Y %APK_NAME% %OUT_APK%
 
-:: 替换 APK 中的 assets/plugins/news.jar 文件
+:: 替换 APK 中的 assets/plugins/.jar 文件
 echo 2.Updating %ASSET_PATH% in APK...
-%SEVEN_ZIP% u -tzip %OUT_APK% %PLUGIN_JAR% -spf2 -ssc
+%SEVEN_ZIP% u -tzip %OUT_APK% %ASSET_PATH% -spf2 -ssc -up0q3
 
 :: 对齐 APK
 echo 3.Aligning APK...
