@@ -5,6 +5,7 @@ setlocal
 set SRC_DIR=D:\AndroidCode\zhushou
 set APK_NAME=original.apk
 set PLUGIN_JAR=news.jar
+set PLUGIN_LIBRART=modulation
 
 set ASSET_PATH=assets/plugins/%PLUGIN_JAR%
 set OUT_APK=modified_aligned_signed.apk
@@ -13,12 +14,14 @@ set ALIAS=young_debug
 set STOREPASS=123abc
 set KEYPASS=123abc
 
-:: %SRC_DIR%\gradlew :plugins:modulation:app:assembleRelease --stacktrace --no-daemon
-set RELEASE_APK=%SRC_DIR%\plugins\modulation\app\build\outputs\apk\release
+:: 使用gradlew编译插件apk，并把apk重命名为jar
+"%SRC_DIR%\gradlew" :plugins:%PLUGIN_LIBRART%:app:assembleRelease --stacktrace --no-daemon
+set RELEASE_APK=%SRC_DIR%\plugins\%PLUGIN_LIBRART%\app\build\outputs\apk\release
+del "%RELEASE_APK%\%PLUGIN_JAR%" >nul 2>&1
 ren "%RELEASE_APK%\*.apk" %PLUGIN_JAR%
 copy /Y "%RELEASE_APK%\%PLUGIN_JAR%" .
 
-:: 路径工具
+:: 配置所需工具
 set ZIPALIGN=tools\zipalign.exe
 set APKSIGNER_JAR=tools\apksigner.jar
 set SEVEN_ZIP=tools\7z.exe
