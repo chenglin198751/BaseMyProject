@@ -2,14 +2,21 @@
 setlocal
 
 :: 配置变量
+set SRC_DIR=D:\AndroidCode\zhushou
 set APK_NAME=original.apk
 set PLUGIN_JAR=news.jar
+
 set ASSET_PATH=assets/plugins/%PLUGIN_JAR%
 set OUT_APK=modified_aligned_signed.apk
 set KEYSTORE=tools\keystore_debug.jks
 set ALIAS=young_debug
 set STOREPASS=123abc
 set KEYPASS=123abc
+
+:: %SRC_DIR%\gradlew :plugins:modulation:app:assembleRelease --stacktrace --no-daemon
+set RELEASE_APK=%SRC_DIR%\plugins\modulation\app\build\outputs\apk\release
+ren "%RELEASE_APK%\*.apk" %PLUGIN_JAR%
+copy /Y "%RELEASE_APK%\%PLUGIN_JAR%" .
 
 :: 路径工具
 set ZIPALIGN=tools\zipalign.exe
