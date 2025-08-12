@@ -1,11 +1,17 @@
 package main;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
+    private static final String PC_PNG_PATH = "D:/TestScreenshots/";
+    private static final String ERROR_LOG = PC_PNG_PATH + "/error.log";
+    private static String APPLICATION_LABEL = "";
+    private static String PACKAGE_NAME = "";
+    private static String LAUNCHABLE_ACTIVITY = "";
 
     public static void main(String[] args) {
         initTools();
@@ -27,58 +33,55 @@ public class Main {
                 PackTools.Printer.print("请输入apk所在文件夹");
             }
         }
-
-
     }
 
     private static void checkSingleApk(final String apkPath) {
-        boolean isGoogleSigner = false;
-        boolean isSignerShort = false;
-        boolean containsChinese = false;
+        try {
+            checkSingleApk2(apkPath);
+        } catch (Exception e) {
+            PackTools.Printer.print(e.toString());
+            createLogFile();
+            FileUtils.appendFile(new File(ERROR_LOG), e + "\n\n");
+        }
+    }
 
-        String[] cmd_print_certs = {"java", "-jar", EnvUtils.getApksigner(), "verify", "--print-certs", apkPath};
-        CmdTask2 cmdTask = new CmdTask2(cmd_print_certs);
-        CmdTask2.Outs outs1 = cmdTask.run(false);
-        List<String> list1 = outs1.getInputList();
+    private static void checkSingleApk2(final String apkPath) {
+        if (!apkPath.toLowerCase().endsWith(".apk")) {
+            PackTools.Printer.print("当前apk路径不合法：" + apkPath);
+            return;
+        }
 
-        String[] cmd_aapt2_dump_resources = {EnvUtils.getAapt2(), "dump", "resources", apkPath};
-        CmdTask2 cmdTask2 = new CmdTask2(cmd_aapt2_dump_resources);
-        CmdTask2.Outs outs2 = cmdTask2.run(false);
-        List<String> list2 = outs2.getInputList();
+        // 1、解析需要的包名等数据
+        aapt2_dump_badging(apkPath);
+        String png_path = "/sdcard/" + PACKAGE_NAME + ".png";
 
-        for (String str : list1) {
-            if (str.contains("CN=Android, OU=Android, O=Google Inc., L=Mountain View, ST=California, C=US")) {
-                // 1.第一个检查规则：只要是谷歌签名的，则大概率是英文的
-                isGoogleSigner = true;
-            } else if (str.contains("certificate DN:")) {
-                // 2.第二个检查规则：如果证书主题（certificate DN）较短，则大概率是中文。
-                // 原因是国内一些小作坊不专业，生成证书时很多名称不填。
-                String str2 = str.split("certificate DN:")[1].trim();
-                PackTools.Printer.print(str2);
-                if (str.split("certificate DN:")[1].trim().length() <= 25) {
-                    isSignerShort = true;
-                }
+        // 2、安装apk，并且打开
+        new CmdTask2(new String[]{"adb", "install", apkPath}).run(true);
+        new CmdTask2(new String[]{"adb", "shell", "am", "start", "-n", PACKAGE_NAME + '/' + LAUNCHABLE_ACTIVITY}).run(true);
+
+        try {
+            // 延时5秒后再截图
+            PackTools.Printer.print("sleep 5 seconds");
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // 3、截图
+        new CmdTask2(new String[]{"adb", "shell", "screencap", png_path}).run(true);
+
+        // 4、如果pull到电脑硬盘成功，则删除手机上的图片
+        CmdTask2.Outs outs = new CmdTask2(new String[]{"adb", "pull", png_path, PC_PNG_PATH}).run(true);
+        for (String line : outs.getInputList()) {
+            if (line.contains("1 file pulled")) {
+                // 删除截图和卸载游戏
+                new CmdTask2(new String[]{"adb", "shell", "rm", "-r", png_path}).run(true);
+                new CmdTask2(new String[]{"adb", "uninstall", PACKAGE_NAME}).run(true);
+                break;
             }
         }
 
-        // 3.第三个检查规则：如果values/strings.xml有中文，大概率是汉化。
-        // 原因是国内小作坊在汉化游戏时，并不会可以区分不同的多国语言，而是放到默认语言目录
-        for (String str : list2) {
-            if (str.contains("resource") && str.contains("string/")) {
-                if (CommonUtils.containsChinese(str)) {
-                    containsChinese = true;
-                    break;
-                }
-            }
-        }
-
-        PackTools.Printer.print("isGoogleSigner:" + isGoogleSigner + ",isSignerShort:" + isSignerShort + ",containsChinese:" + containsChinese);
-        String outStr = "游戏名:"+getLabel(apkPath) + " 路径:" + apkPath + '\n';
-        if (!isGoogleSigner || isSignerShort || containsChinese) {
-            PackTools.Printer.print("已汉化 " + outStr);
-        } else {
-            PackTools.Printer.print("未汉化 " + outStr);
-        }
+        System.out.println('\n');
     }
 
     private static void initTools() {
@@ -92,7 +95,10 @@ public class Main {
         ZipUtils.unZip(target_jar, EnvUtils.getWorkPath());
     }
 
-    private static String getLabel(final String apkPath) {
+    private static void aapt2_dump_badging(final String apkPath) {
+        APPLICATION_LABEL = "";
+        PACKAGE_NAME = "";
+
         String[] cmds = {EnvUtils.getAapt2(), "dump", "badging", apkPath};
         CmdTask2 cmdTask = new CmdTask2(cmds);
         CmdTask2.Outs outs = cmdTask.run(false);
@@ -103,10 +109,34 @@ public class Main {
                 Pattern r = Pattern.compile(pattern);
                 Matcher m = r.matcher(str);
                 if (m.find()) {
-                    return m.group(1);
+                    APPLICATION_LABEL = m.group(1);
+                }
+            } else if (str.contains("package: name=")) {
+                String pattern = "package: name='([^']+)'";
+                Pattern r = Pattern.compile(pattern);
+                Matcher m = r.matcher(str);
+                if (m.find()) {
+                    PACKAGE_NAME = m.group(1);
+                }
+            } else if (str.contains("launchable-activity: name=")) {
+                String pattern = "launchable-activity: name='([^']+)'";
+                Pattern r = Pattern.compile(pattern);
+                Matcher m = r.matcher(str);
+                if (m.find()) {
+                    LAUNCHABLE_ACTIVITY = m.group(1);
                 }
             }
         }
-        return "";
+    }
+
+    private static void createLogFile() {
+        File log_f = new File(ERROR_LOG);
+        if (!log_f.exists()) {
+            try {
+                log_f.createNewFile();
+            } catch (IOException e) {
+                PackTools.Printer.print(e.toString());
+            }
+        }
     }
 }
