@@ -2,6 +2,7 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,7 +12,7 @@ public class Main {
     private static final String ERROR_LOG = PC_PNG_PATH + "/error.log";
     private static String APPLICATION_LABEL = "";
     private static String PACKAGE_NAME = "";
-    private static String LAUNCHABLE_ACTIVITY = "";
+    private static List<String> launchableActivities = new ArrayList<>();
 
     public static void main(String[] args) {
         initTools();
@@ -40,8 +41,7 @@ public class Main {
             checkSingleApk2(apkPath);
         } catch (Exception e) {
             PackTools.Printer.print(e.toString());
-            createLogFile();
-            FileUtils.appendFile(new File(ERROR_LOG), e + "\n\n");
+            appendLog(e + "\n\n");
         }
     }
 
@@ -56,13 +56,28 @@ public class Main {
         String png_path = "/sdcard/" + PACKAGE_NAME + ".png";
 
         // 2、安装apk，并且打开
-        new CmdTask2(new String[]{"adb", "install", apkPath}).run(true);
-        new CmdTask2(new String[]{"adb", "shell", "am", "start", "-n", PACKAGE_NAME + '/' + LAUNCHABLE_ACTIVITY}).run(true);
+        CmdTask2.Outs outs1 = new CmdTask2(new String[]{"adb", "install", apkPath}).run(true);
+        if (outs1.getInputList().toString().contains("failed to install")) {
+            appendLog(outs1.getInputList() + "\n\n");
+        }
+
+        // 有的游戏不正规，Manifest.xml中配置了多个启动launch activity，其实只有一个生效，别的无用。所以这里只能通过循环以此尝试打开
+        for (String launcher : launchableActivities) {
+            CmdTask2.Outs outs2 = new CmdTask2(new String[]{"adb", "shell", "am", "start", "-n", PACKAGE_NAME + '/' + launcher}).run(true);
+            String outStr = outs2.getInputList().toString();
+            if (!outStr.contains("Error: Activity class") && !outStr.contains("does not exist")) {
+                break;
+            } else {
+                PackTools.Printer.print("previous launcher failed,try next launcher activity...");
+            }
+        }
+
 
         try {
-            // 延时5秒后再截图
-            PackTools.Printer.print("sleep 5 seconds");
-            Thread.sleep(5000);
+            // 延时几秒后再截图
+            final int seconds = 10;
+            PackTools.Printer.print("sleep " + seconds + " seconds");
+            Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -96,8 +111,10 @@ public class Main {
     }
 
     private static void aapt2_dump_badging(final String apkPath) {
+        // 一定要清空这些全局变量
         APPLICATION_LABEL = "";
         PACKAGE_NAME = "";
+        launchableActivities = new ArrayList<>();
 
         String[] cmds = {EnvUtils.getAapt2(), "dump", "badging", apkPath};
         CmdTask2 cmdTask = new CmdTask2(cmds);
@@ -122,14 +139,14 @@ public class Main {
                 String pattern = "launchable-activity: name='([^']+)'";
                 Pattern r = Pattern.compile(pattern);
                 Matcher m = r.matcher(str);
-                if (m.find()) {
-                    LAUNCHABLE_ACTIVITY = m.group(1);
+                while (m.find()) {
+                    launchableActivities.add(m.group(1));
                 }
             }
         }
     }
 
-    private static void createLogFile() {
+    private static void appendLog(String log) {
         File log_f = new File(ERROR_LOG);
         if (!log_f.exists()) {
             try {
@@ -138,5 +155,6 @@ public class Main {
                 PackTools.Printer.print(e.toString());
             }
         }
+        FileUtils.appendFile(log_f, log);
     }
 }
