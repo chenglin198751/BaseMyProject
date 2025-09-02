@@ -259,6 +259,7 @@
 
     1、防止重复多次点击的类：OnSingleClickListener 
     2、比如，3秒内点击10次。支持自定义点击时间间隔和次数：OnMultipleClickListener
+    3、简单的防止多次点击的类：if (SingleClickUtils.singleClick(R.id.button + "")){}
 
 **60、js和android WebView通信：**
 
