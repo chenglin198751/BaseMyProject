@@ -25,25 +25,32 @@ public class PhotosPicker {
     private final static int REQUEST_CODE = 10098;
     private OnFinishedListener2<String> mListener = null;
     private final Context mContext;
+    private Activity mActivity;
+    private Fragment mFragment;
 
     public PhotosPicker(Activity activity, OnFinishedListener2<String> listener) {
         mContext = activity;
+        mActivity = activity;
         mListener = listener;
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        activity.startActivityForResult(intent, REQUEST_CODE);
     }
 
     public PhotosPicker(Fragment fragment, OnFinishedListener2<String> listener) {
         mContext = fragment.getContext();
+        mFragment = fragment;
         mListener = listener;
+    }
+
+    public void start() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_PICK);
         intent.setType("image/*");
-        fragment.startActivityForResult(intent, REQUEST_CODE);
+        if (mActivity != null) {
+            mActivity.startActivityForResult(intent, REQUEST_CODE);
+        }
+        if (mFragment != null) {
+            mFragment.startActivityForResult(intent, REQUEST_CODE);
+        }
     }
-
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // 根据uri获取Bitmap
