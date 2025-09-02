@@ -24,7 +24,7 @@ import java.io.OutputStream;
 public class PhotosPicker {
     private final static int REQUEST_CODE = 10098;
     private OnFinishedListener2<String> mListener = null;
-    private Context mContext;
+    private final Context mContext;
 
     public PhotosPicker(Activity activity, OnFinishedListener2<String> listener) {
         mContext = activity;
