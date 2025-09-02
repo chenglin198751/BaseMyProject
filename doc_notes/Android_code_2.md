@@ -361,6 +361,7 @@
     
                 // 将 Path 设置到 Outline
                 outline.setConvexPath(path);
+	            view.setClipToOutline(true);
             }
         }
     }
