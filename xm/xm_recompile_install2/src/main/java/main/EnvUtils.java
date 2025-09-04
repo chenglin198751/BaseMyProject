@@ -22,7 +22,10 @@ public class EnvUtils {
 
     public static String getWorkPath() {
         return getWindowsCachePath() + "/check_workspace/" + temp_dir;
+    }
 
+    public static String getCurrentPath() {
+        return new File(JAR_PATH).getParent();
     }
 
     public static void initTools() {
