@@ -41,7 +41,7 @@ abstract class FatJarTask extends DefaultTask {
         def jarParentDir = "${buildDir}/libs"
         def tmpJarFile = "${jarParentDir}/${project.name}.jar"
         // 修改点3：修改为对外输出的jar名字
-        def jarName = 'xm_recompile_install2'
+        def jarName = 'xm_fast_build'
         def jarNameDir = "${jarParentDir}/${jarName}"
 
         //修改点4：修改为jar对外输出的路径名
