@@ -67,6 +67,6 @@ del unsign.apk signed.apk.idsig modified_aligned_signed.apk aligned.apk >nul 2>&
 
 :: 安装 APK
 echo 5.Installing APK...
-%ADB% install -r signed.apk
+%ADB% install -r -t signed.apk
 
 pause
