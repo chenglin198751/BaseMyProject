@@ -8,6 +8,19 @@ import java.util.Map;
 
 public class ProFileReader {
 
+//# 详情页
+//  plugin_jar_name=recommend.jar
+//  plugin_dir=D:\AndroidCode\develop_xmkw\plugins\app_info
+//
+//# modulation
+//# plugin_jar_name=com.qihoo.plugin.modulation.jar
+//# plugin_dir=D:\AndroidCode\develop_xmkw\plugins\app_info
+//
+//# 搜索
+//# plugin_jar_name=search.jar
+//# plugin_dir=D:\AndroidCode\develop_xmkw\plugins\search
+
+
     public static Map<String, String> readProFile(String filePath) {
         Map<String, String> configMap = new HashMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {

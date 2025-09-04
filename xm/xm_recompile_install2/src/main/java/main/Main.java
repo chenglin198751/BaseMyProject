@@ -101,7 +101,7 @@ public class Main {
         String tempHostApk = mHostPath.replace(".apk", "_temp.apk");
         FileUtils.copyFile(mHostPath, tempHostApk);
         String relativePath = ASSETS_PLUGINS + "/";
-        String[] cmds = {"tools/WinRAR/WinRAR.exe", "a", "-ibck", "-o+", tempHostApk, relativePath};
+        String[] cmds = {EnvUtils.getToolsPath() + "/WinRAR/WinRAR.exe", "a", "-ibck", "-o+", tempHostApk, relativePath};
         CmdTask2 cmdTask = new CmdTask2(cmds, EnvUtils.getCurrentPath());
         cmdTask.run(true);
         return tempHostApk;
@@ -112,7 +112,7 @@ public class Main {
      */
     private static String alignedHostApk(String tempHostApk) {
         String alignedApkPath = EnvUtils.getCurrentPath() + "/aligned.apk";
-        String[] cmds = {"tools/zipalign.exe", "-f", "4", tempHostApk, alignedApkPath};
+        String[] cmds = {EnvUtils.getToolsPath() + "/zipalign.exe", "-f", "4", tempHostApk, alignedApkPath};
         CmdTask2 cmdTask = new CmdTask2(cmds);
         cmdTask.run(true);
         return alignedApkPath;
@@ -125,9 +125,9 @@ public class Main {
         String signedApkPath = EnvUtils.getCurrentPath() + "/signed.apk";
         FileUtils.delete(signedApkPath);
 
-        String[] cmds = {"java", "-jar", "tools/apksigner.jar", "sign",//
+        String[] cmds = {"java", "-jar", EnvUtils.getToolsPath() + "/apksigner.jar", "sign",//
                 "--v1-signing-enabled", "true", "--v2-signing-enabled", "true",//
-                "--ks", "tools/debug.keystore", "--ks-key-alias",//
+                "--ks", EnvUtils.getToolsPath() + "/debug.keystore", "--ks-key-alias",//
                 "androiddebugkey", "--ks-pass", "pass:android", "--key-pass", "pass:android",//
                 "--out", signedApkPath, alignedApkPath};
 
