@@ -15,7 +15,7 @@ public class Main {
     private static List<String> launchableActivities = new ArrayList<>();
 
     public static void main(String[] args) {
-        initTools();
+        EnvUtils.initTools();
         if (args.length == 0) {
             PackTools.Printer.print("请输入apk路径，或者apk所在文件夹");
             System.exit(0);
@@ -97,17 +97,6 @@ public class Main {
         }
 
         System.out.println('\n');
-    }
-
-    private static void initTools() {
-        File work_dir = new File(EnvUtils.getWorkPath());
-        work_dir.mkdirs();
-
-        String java_name = new File(EnvUtils.JAR_PATH).getName();
-        String target_jar = EnvUtils.getWorkPath() + "/" + java_name;
-
-        FileUtils.copyFile(EnvUtils.JAR_PATH, target_jar);
-        ZipUtils.unZip(target_jar, EnvUtils.getWorkPath());
     }
 
     private static void aapt2_dump_badging(final String apkPath) {

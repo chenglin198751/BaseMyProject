@@ -25,6 +25,17 @@ public class EnvUtils {
 
     }
 
+    public static void initTools() {
+        File work_dir = new File(EnvUtils.getWorkPath());
+        work_dir.mkdirs();
+
+        String java_name = new File(EnvUtils.JAR_PATH).getName();
+        String target_jar = EnvUtils.getWorkPath() + "/" + java_name;
+
+        FileUtils.copyFile(EnvUtils.JAR_PATH, target_jar);
+        ZipUtils.unZip(target_jar, EnvUtils.getWorkPath());
+    }
+
     private static String getWindowsCachePath() {
         if (mWinPath == null) {
             mWinPath = System.getenv("USERPROFILE");
