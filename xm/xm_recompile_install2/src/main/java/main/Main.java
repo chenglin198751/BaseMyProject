@@ -1,48 +1,60 @@
 package main;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Objects;
 
 public class Main {
+    private final static String ASSETS_PLUGINS = "assets/plugins";
     private static String mPluginDir;
     private static String mPluginJarName;
     private static String mHostPath;
 
     public static void main(String[] args) {
         EnvUtils.initTools();
+        Map<String, String> configMap = ProFileReader.readProFile("plugin_configs.properties");
 
-//        if (args.length != 2) {
-//            PackTools.Printer.print("Please enter plugin path and jar name");
-//            System.exit(0);
-//        }
-//
-//        mPluginDir = args[0]; //D:\AndroidCode\develop_xmkw\plugins\app_info
-//        mApkJarName = args[1]; //recommend.jar
+        if (configMap.isEmpty()) {
+            PackTools.Printer.print("plugin_configs.properties is empty!");
+            System.exit(0);
+        }
+
         mHostPath = EnvUtils.getCurrentPath() + "/host.apk";
+        //示例：D:\AndroidCode\develop_xmkw\plugins\app_info
+        mPluginDir = configMap.get("plugin_dir");
+        //示例：recommend.jar
+        mPluginJarName = configMap.get("plugin_jar_name");
+
         if (!(new File(mHostPath).exists())) {
             PackTools.Printer.print(mHostPath);
             PackTools.Printer.print("host.apk not exists");
             System.exit(0);
         }
 
-        mPluginDir = "D:/AndroidCode/develop_xmkw/plugins/app_info";
-        mPluginJarName = "recommend.jar";
+        // 1.先编译构建指定的插件apk
+        String pluginApkPath = gradlewPluginApk();
+        if (pluginApkPath == null) {
+            PackTools.Printer.print("gradlew plugin apk failed");
+            System.exit(0);
+        }
 
-//        String pluginApkPath = gradlewPluginApk();
-//        if (pluginApkPath == null) {
-//            PackTools.Printer.print("gradlew plugin apk failed");
-//            System.exit(0);
-//        }
+        // 2.把编译好的插件apk复制到工作目录
+        copyPluginApk(pluginApkPath);
 
-        String pluginApkPath = "D:/AndroidCode/develop_xmkw/plugins/app_info/app/build/outputs/apk/debug/app-debug.apk";
+        // 3.使用WinRAR无损替换插件apk
+        String tempHostApk = replacePluginByWinRAR();
 
-        String pluginJarPath = copyPluginApk(pluginApkPath);
-
-        String tempHostApk = replacePluginByWinRAR(pluginJarPath);
-
+        // 4.对齐替换后的apk
         String alignedApkPath = alignedHostApk(tempHostApk);
 
-        signedHostApk(alignedApkPath);
+        // 5.重新签名apk
+        String signedApkPath = signedHostApk(alignedApkPath);
+
+        // 6.安装apk
+        installApk(signedApkPath);
+
+        // 7.删除无用文件
+        deleteUselessFiles();
     }
 
 
@@ -72,7 +84,7 @@ public class Main {
      * 把编译好的插件apk复制到工作目录
      */
     private static String copyPluginApk(String pluginApkPath) {
-        String dir = EnvUtils.getCurrentPath() + "/assets/plugins";
+        String dir = EnvUtils.getCurrentPath() + "/" + ASSETS_PLUGINS;
         String pluginJarPath = dir + "/" + mPluginJarName;
         File dir_f = new File(dir);
         if (!dir_f.exists()) {
@@ -82,43 +94,18 @@ public class Main {
         return pluginJarPath;
     }
 
-//    /**
-//     * 使用WinRAR把host.apk中的插件jar给替换掉
-//     */
-//    private static String replacePluginByWinRAR(String pluginJarPath) {
-//        String tempHostApk = mHostPath.replace(".apk", "_temp.apk");
-//        FileUtils.copyFile(mHostPath, tempHostApk);
-//
-//        PackTools.Printer.print("1111111="+pluginJarPath);
-////        String jarPath2 = EnvUtils.getCurrentPath().replace(EnvUtils.getCurrentPath() + "/","");
-////        PackTools.Printer.print("22222="+jarPath2);
-//        //"-ibck"
-//        String[] cmds = {"tools/WinRAR/WinRAR.exe", "a", "-ep1","-o+", tempHostApk, "assets/plugins/"+mPluginJarName};
-//        PackTools.Printer.print("2222222="+EnvUtils.getCurrentPath());
-//        PackTools.Printer.print("333333333="+"assets/plugins/"+mPluginJarName);
-//
-////        String[] cmds = {"tools/WinRAR/WinRAR.exe", "a", "-ibck", "-o+", tempHostApk, "D:/work/assets/plugins/" + mApkJarName};
-//
-//
-//        CmdTask2 cmdTask = new CmdTask2(cmds,EnvUtils.getCurrentPath());
-//        cmdTask.run(true);
-//        return tempHostApk;
-//    }
-
-private static String replacePluginByWinRAR(String pluginJarPath) {
-    String tempHostApk = mHostPath.replace(".apk", "_temp.apk");
-    FileUtils.copyFile(mHostPath, tempHostApk);
-
-    // 用相对路径，并确认工作目录下有该文件
-    String relativePath = "assets/plugins/";
-    boolean exists = new File(EnvUtils.getCurrentPath(), relativePath).exists();
-    System.out.println("File exists for WinRAR: " + exists); // 必须为 true
-
-    String[] cmds = {"tools/WinRAR/WinRAR.exe", "a", "-ibck", "-o+", tempHostApk, relativePath};
-    CmdTask2 cmdTask = new CmdTask2(cmds, EnvUtils.getCurrentPath());
-    cmdTask.run(true);
-    return tempHostApk;
-}
+    /**
+     * 使用WinRAR无损替换插件apk
+     */
+    private static String replacePluginByWinRAR() {
+        String tempHostApk = mHostPath.replace(".apk", "_temp.apk");
+        FileUtils.copyFile(mHostPath, tempHostApk);
+        String relativePath = ASSETS_PLUGINS + "/";
+        String[] cmds = {"tools/WinRAR/WinRAR.exe", "a", "-ibck", "-o+", tempHostApk, relativePath};
+        CmdTask2 cmdTask = new CmdTask2(cmds, EnvUtils.getCurrentPath());
+        cmdTask.run(true);
+        return tempHostApk;
+    }
 
     /**
      * 对齐替换后的apk
@@ -147,5 +134,17 @@ private static String replacePluginByWinRAR(String pluginJarPath) {
         CmdTask2 cmdTask = new CmdTask2(cmds);
         cmdTask.run(true);
         return signedApkPath;
+    }
+
+    private static void installApk(String signedApkPath) {
+        String[] cmds = {"adb", "install", signedApkPath};
+        CmdTask2 cmdTask = new CmdTask2(cmds);
+        cmdTask.run(true);
+    }
+
+    private static void deleteUselessFiles() {
+        FileUtils.delete(EnvUtils.getCurrentPath() + "/host_temp.apk");
+        FileUtils.delete(EnvUtils.getCurrentPath() + "/signed.apk.idsig");
+        FileUtils.delete(EnvUtils.getCurrentPath() + "/aligned.apk");
     }
 }

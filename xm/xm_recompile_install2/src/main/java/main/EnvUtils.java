@@ -3,7 +3,6 @@ package main;
 import java.io.File;
 
 public class EnvUtils {
-    public static final String temp_dir = System.currentTimeMillis() + "";
     public static final String JAR_PATH = new File(System.getProperty("java.class.path")).getAbsolutePath();
     private static final String OS = System.getProperty("os.name").toLowerCase();
     private static String mWinPath = null;
@@ -21,7 +20,7 @@ public class EnvUtils {
     }
 
     public static String getWorkPath() {
-        return getWindowsCachePath() + "/check_workspace/" + temp_dir;
+        return getWindowsCachePath() + "/jar_workspace";
     }
 
     public static String getCurrentPath() {
@@ -29,6 +28,7 @@ public class EnvUtils {
     }
 
     public static void initTools() {
+        FileUtils.delete(getWorkPath());
         File work_dir = new File(EnvUtils.getWorkPath());
         work_dir.mkdirs();
 
@@ -57,13 +57,5 @@ public class EnvUtils {
 
     public static String getToolsPath() {
         return getWorkPath() + "/tools";
-    }
-
-    public static String getApksigner() {
-        return EnvUtils.getToolsPath() + "/apksigner.jar";
-    }
-
-    public static String getAapt2() {
-        return EnvUtils.getToolsPath() + "/aapt2.exe";
     }
 }
