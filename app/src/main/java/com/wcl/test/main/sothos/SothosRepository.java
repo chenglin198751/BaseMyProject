@@ -17,6 +17,9 @@ public class SothosRepository {
         dbHelper = new SothosDbHelper(context);
     }
 
+    /**
+     * 插入单条埋点事件
+     */
     public void insertEvent(String data) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -26,6 +29,9 @@ public class SothosRepository {
         db.close();
     }
 
+    /**
+     * 获取所有埋点事件
+     */
     public List<String> getAllEvents() {
         List<String> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -38,6 +44,18 @@ public class SothosRepository {
         return list;
     }
 
+    /**
+     * 删除单条埋点事件
+     */
+    public void deleteEvent(Integer id) {
+        List<Integer> ids = new ArrayList<>();
+        ids.add(id);
+        deleteEvents(ids);
+    }
+
+    /**
+     * 删除多条埋点事件
+     */
     public void deleteEvents(List<Integer> ids) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         for (int id : ids) {

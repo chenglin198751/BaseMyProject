@@ -8,9 +8,15 @@ import java.util.Map;
 
 public class SothosEventManager {
     private SothosRepository mSothosRepository = null;
+    private SothosTimer mSothosTimer = null;
+
+    private final Runnable uploadDataTask = () -> {
+//        SothosHttpUploader.doGet()
+    };
 
     private SothosEventManager() {
         mSothosRepository = new SothosRepository(BaseApp.getApp());
+        mSothosTimer = new SothosTimer();
     }
 
     private static final class InstanceHolder {
@@ -24,6 +30,7 @@ public class SothosEventManager {
 
     public void onEvent(String eventId, Map<String, String> params) {
         try {
+            mSothosTimer.start(uploadDataTask);
             String json = toJson(eventId, params);
             mSothosRepository.insertEvent(json);
         } catch (Throwable t) {
