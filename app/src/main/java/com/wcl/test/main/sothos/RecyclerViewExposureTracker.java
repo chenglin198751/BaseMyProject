@@ -13,10 +13,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class RecyclerViewExposureTracker {
-    private static final long EXPOSURE_DELAY = 2000L; // 2秒
+    private long exposureDelay = 2000L; // 默认 2秒
+    private float visibleRatio = 0.5f;  // 默认 50%
+
     private final RecyclerView recyclerView;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Set<Integer> exposedSet = new HashSet<>(); // 记录已曝光的item
+    private final Set<Integer> exposedSet = new HashSet<>(); // 已曝光过的item
 
     private Runnable exposureTask;
     private OnExposureListener listener;
@@ -34,35 +36,51 @@ public class RecyclerViewExposureTracker {
         this.listener = listener;
     }
 
+    /** 设置延迟时间（毫秒） */
+    public void setExposureDelay(long delayMillis) {
+        this.exposureDelay = delayMillis;
+    }
+
+    /** 设置可见比例 (0f ~ 1f) */
+    public void setVisibleRatio(float ratio) {
+        this.visibleRatio = Math.max(0f, Math.min(ratio, 1f));
+    }
+
     private void init() {
+        // 监听滚动状态
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
                 super.onScrollStateChanged(rv, newState);
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // 停止滚动 → 延迟2秒执行曝光检测
-                    if (exposureTask != null) {
-                        handler.removeCallbacks(exposureTask);
-                    }
-
-                    exposureTask = () -> checkExposure(rv);
-                    handler.postDelayed(exposureTask, EXPOSURE_DELAY);
-
+                    scheduleExposureCheck();
                 } else {
-                    // 滚动中 → 取消检测
-                    if (exposureTask != null) {
-                        handler.removeCallbacks(exposureTask);
-                    }
+                    cancelExposureCheck();
                 }
             }
         });
+
+        // 初始 attach → 页面刚打开时
+        recyclerView.post(this::scheduleExposureCheck);
+    }
+
+    private void scheduleExposureCheck() {
+        cancelExposureCheck();
+        exposureTask = () -> checkExposure(recyclerView);
+        handler.postDelayed(exposureTask, exposureDelay);
+    }
+
+    private void cancelExposureCheck() {
+        if (exposureTask != null) {
+            handler.removeCallbacks(exposureTask);
+        }
     }
 
     private void checkExposure(RecyclerView rv) {
         RecyclerView.LayoutManager lm = rv.getLayoutManager();
         if (!(lm instanceof LinearLayoutManager)) {
-            return; // 这里只处理 LinearLayoutManager，其他可扩展
+            return; // 这里只处理 LinearLayoutManager，其他类型可以扩展
         }
 
         LinearLayoutManager layoutManager = (LinearLayoutManager) lm;
@@ -73,7 +91,7 @@ public class RecyclerViewExposureTracker {
             View itemView = layoutManager.findViewByPosition(i);
             if (itemView != null && isVisibleEnough(itemView, rv)) {
                 if (!exposedSet.contains(i)) {
-                    exposedSet.add(i); // 标记已曝光
+                    exposedSet.add(i); // 记录已曝光
                     if (listener != null) {
                         listener.onItemExposed(i);
                     } else {
@@ -97,7 +115,7 @@ public class RecyclerViewExposureTracker {
         int itemBottom = itemTop + itemView.getHeight();
 
         int visibleHeight = Math.min(itemBottom, rvBottom) - Math.max(itemTop, rvTop);
-        return visibleHeight >= itemView.getHeight() / 2; // 至少50%可见才算
+        return visibleHeight >= itemView.getHeight() * visibleRatio;
     }
 
     public void reset() {
