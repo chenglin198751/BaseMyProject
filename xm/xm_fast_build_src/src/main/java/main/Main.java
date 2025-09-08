@@ -67,7 +67,15 @@ public class Main {
         String name = file.getName();
         String[] cmds = {"cmd", "/c", "gradlew", ":plugins:" + name + ":app:assembleDebug"};
         CmdTask2 cmdTask = new CmdTask2(cmds, mPluginDir);
-        cmdTask.run(true);
+        CmdTask2.Outs outs = cmdTask.run(true);
+        for (String line : outs.getInputList()) {
+            if (line.contains("BUILD FAILED")) {
+                PackTools.Printer.print("编译失败！");
+                System.exit(0);
+                return null;
+            }
+        }
+
         File debugDir = new File(mPluginDir + "/app/build/outputs/apk/debug");
         if (debugDir.listFiles() != null) {
             for (File apk : Objects.requireNonNull(debugDir.listFiles())) {
