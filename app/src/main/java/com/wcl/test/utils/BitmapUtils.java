@@ -244,14 +244,14 @@ public class BitmapUtils {
     }
 
     /**
-     * 按原图比例缩放裁剪图片
+     * 压缩图片到指定尺寸，保持比例。如果原图比目标尺寸小，则直接返回原图。
      *
      * @param activity       Activity
      * @param imageLocalPath 图片文件所在的路径
-     * @param imageWidth     想要被缩放到的target图片宽度，会根据此宽度和原图的比例，去计算target图片高度
+     * @param targetWidth    想要被缩放到的target图片宽度，会根据此宽度和原图的比例，去计算target图片高度
      * @param callback       回调监听
      */
-    public static void createScaledBitmap(final Activity activity, final String imageLocalPath, final int imageWidth, final OnCompressBitmapListener<String> callback) {
+    public static void createScaledBitmap(final Activity activity, final String imageLocalPath, int targetWidth, final OnCompressBitmapListener<String> callback) {
         if (callback == null) {
             throw new NullPointerException("OnCompressBitmapListener must not null");
         }
@@ -261,46 +261,18 @@ public class BitmapUtils {
             return;
         }
 
-        // 获取原始图片宽高
-        final int[] size = getBitmapWidthHeight(imageLocalPath);
-        if (size[0] <= 0 || size[1] <= 0) {
-            callback.onSucceed(null);
-            return;
-        }
-
-        // 原图宽度小于等于目标宽度则直接返回原图路径
-        if (size[0] <= imageWidth) {
-            callback.onSucceed(imageLocalPath);
-            return;
-        }
 
         new Thread() {
             @Override
             public void run() {
                 super.run();
-
-                float scale = (float) size[0] / imageWidth;
-                int imageHeight = Math.round((float) size[1] / scale);
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = getOptionSize(scale);
-
-                Bitmap bitmap = BitmapFactory.decodeFile(imageLocalPath, options);
-                if (bitmap == null) {
-                    callback.onSucceed(null);
-                    return;
-                }
-
-                Bitmap targetBitmap = Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, true);
-                bitmap.recycle();
-
+                Bitmap targetBitmap = resizeBitmap(imageLocalPath, targetWidth);
                 saveBitmap(targetBitmap, new OnCompressBitmapListener<>() {
                     @Override
                     public void onSucceed(final String path) {
                         if (!targetBitmap.isRecycled()) {
                             targetBitmap.recycle();
                         }
-
                         if (activity != null && !activity.isFinishing()) {
                             activity.runOnUiThread(() -> callback.onSucceed(path));
                         }
@@ -500,6 +472,72 @@ public class BitmapUtils {
         matrix.postScale(scaleWidth, scaleHeight);
         Bitmap bmpScale = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         return bmpScale;
+    }
+
+    /**
+     * 按需高效压缩本地图片到指定最大宽度，保持原图比例，避免OOM。
+     *
+     * @param imageLocalPath 本地图片绝对路径
+     * @param targetWidth    目标最大宽度
+     * @return 压缩后的Bitmap，如果解码失败返回null
+     */
+    public static Bitmap resizeBitmap(String imageLocalPath, int targetWidth) {
+        if (imageLocalPath == null || imageLocalPath.isEmpty()) {
+            return null;
+        }
+
+        // 第一步：只解码图片尺寸（不加载像素数据，避免OOM）
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imageLocalPath, options);
+        int srcWidth = options.outWidth;
+        int srcHeight = options.outHeight;
+
+        if (srcWidth <= 0 || srcHeight <= 0) {
+            return null; // 文件不是有效图片
+        }
+
+        // 如果原图宽度比目标宽度小，直接解码原图
+        if (srcWidth <= targetWidth) {
+            options.inJustDecodeBounds = false;
+            return BitmapFactory.decodeFile(imageLocalPath, options);
+        }
+
+        // 计算缩放比例
+        float scale = (float) targetWidth / srcWidth;
+
+        // 计算目标高度，保持比例
+        int targetHeight = Math.round(srcHeight * scale);
+
+        // 计算inSampleSize（为2的幂，越大越省内存）
+        int inSampleSize = 1;
+        if (scale < 1.0f) {
+            float invScale = 1.0f / scale;
+            inSampleSize = (int) Math.floor(invScale);
+            // 只取2的幂，防止图片失真
+            int powerOfTwo = 1;
+            while (powerOfTwo * 2 <= inSampleSize) {
+                powerOfTwo *= 2;
+            }
+            inSampleSize = powerOfTwo;
+        }
+
+        // 第二步：按比例缩小解码图片
+        options.inSampleSize = inSampleSize;
+        options.inJustDecodeBounds = false;
+        Bitmap sampledBitmap = BitmapFactory.decodeFile(imageLocalPath, options);
+        if (sampledBitmap == null) {
+            return null;
+        }
+
+        // 可能还需要再精确缩放到目标宽度（因为inSampleSize近似值可能偏大）
+        if (sampledBitmap.getWidth() != targetWidth) {
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(sampledBitmap, targetWidth, targetHeight, true);
+            sampledBitmap.recycle(); // 释放中间Bitmap
+            return scaledBitmap;
+        } else {
+            return sampledBitmap;
+        }
     }
 
     /**
