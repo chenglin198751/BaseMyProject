@@ -1,4 +1,4 @@
-package com.wcl.test.main.sothos;
+package com.wcl.test.test.sothos;
 
 import android.content.ContentValues;
 import android.content.Context;

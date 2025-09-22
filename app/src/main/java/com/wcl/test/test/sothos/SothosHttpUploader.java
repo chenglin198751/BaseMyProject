@@ -1,4 +1,4 @@
-package com.wcl.test.main.sothos;
+package com.wcl.test.test.sothos;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

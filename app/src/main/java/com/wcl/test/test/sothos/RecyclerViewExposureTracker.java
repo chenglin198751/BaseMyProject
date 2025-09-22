@@ -1,4 +1,4 @@
-package com.wcl.test.main.sothos;
+package com.wcl.test.test.sothos;
 
 import android.os.Handler;
 import android.os.Looper;
