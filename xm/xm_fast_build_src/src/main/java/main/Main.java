@@ -31,6 +31,9 @@ public class Main {
             System.exit(0);
         }
 
+        // 0.先删除无用文件
+        deleteUselessFiles();
+
         // 1.先编译构建指定的插件apk
         String pluginApkPath = gradlewPluginApk();
         if (pluginApkPath == null) {
@@ -93,6 +96,9 @@ public class Main {
      */
     private static String copyPluginApk(String pluginApkPath) {
         String dir = EnvUtils.getCurrentPath() + "/" + ASSETS_PLUGINS;
+        FileUtils.delete(dir);
+        new File(dir).mkdirs();
+
         String pluginJarPath = dir + "/" + mPluginJarName;
         File dir_f = new File(dir);
         if (!dir_f.exists()) {
