@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.wcl.test.base.BaseFragment;
 
 /**
- * Helper class to manage showing and switching tab fragments.
+ * 用于管理显示和切换 tab Fragment 的辅助类。
  * Created by chenglin on 2017-11-28.
  */
 public class ShowFragmentHelper {
@@ -20,11 +20,11 @@ public class ShowFragmentHelper {
     private int mSelectedTab = -1;
 
     /**
-     * Constructor.
+     * 构造函数
      *
-     * @param fragmentManager Use getSupportFragmentManager() in Activity,
-     *                        getChildFragmentManager() in Fragment.
-     * @param fragmentClasses Array of fragment classes to manage.
+     * @param fragmentManager 在 Activity 里请使用 getSupportFragmentManager()，
+     *                        在 Fragment 里请使用 getChildFragmentManager()。
+     * @param fragmentClasses 需要管理的 Fragment 类数组。
      */
     public ShowFragmentHelper(FragmentManager fragmentManager, Class<? extends BaseFragment>[] fragmentClasses) {
         if (fragmentClasses == null || fragmentClasses.length == 0) {
@@ -35,7 +35,7 @@ public class ShowFragmentHelper {
         this.mFragmentClasses = fragmentClasses;
         this.mFragArray = new BaseFragment[fragmentClasses.length];
 
-        // Attempt to restore fragments from FragmentManager after configuration change
+        // 尝试从 FragmentManager 恢复已存在的 fragment 实例（可能被销毁过）
         for (int i = 0; i < fragmentClasses.length; i++) {
             Fragment existing = fragmentManager.findFragmentByTag(fragmentClasses[i].getName());
             if (existing instanceof BaseFragment) {
@@ -58,8 +58,6 @@ public class ShowFragmentHelper {
             fragment = createFragment(index, args);
             mFragArray[index] = fragment;
             addFragment(viewId, fragment, ft);
-        } else if (args != null && fragment.getArguments() == null) {
-            fragment.setArguments(args);
         }
 
         showOnlyFragment(ft, index);
