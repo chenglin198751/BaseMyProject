@@ -20,9 +20,6 @@ import com.wcl.test.utils.AppBaseUtils;
 public class MainFirstFragment extends BaseFragment {
     private MainFirstFragLayoutBinding mViewBinding;
 
-    //    final String apk_path = "http://qd.shouji.qihucdn.com/media/c30635207cc46df7347d17fe78348c6d/63639203a802f.apk";
-    final String apk_path = "http://qd.shouji.qihucdn.com/media/eb1b2f401965fce6f75198d3a5af1299/6305873c18c53.apk";
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

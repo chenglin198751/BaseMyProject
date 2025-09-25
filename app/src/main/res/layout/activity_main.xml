@@ -50,17 +50,4 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/bannerViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="80dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingStart="30dp"
-        android:paddingEnd="30dp" />
-
-
-
 </RelativeLayout>

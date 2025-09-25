@@ -15,7 +15,24 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.wcl.test.utils.AppBaseUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+
+
+//List<String> imageList = Arrays.asList(
+//        "https://qd.shouji.qihucdn.com/media/7596e61dd2bc80488dbca79665ec1252/660127d7974f7.png",
+//        "https://d02.qd.shouji.360tpcdn.com/media/3768e5340f2139e71661b805718e4cce/67d3e3a7d7717.png",
+//        "https://qd.shouji.qihucdn.com/media/80d15cfc4174f0bb48e9231400160487/6602aa5c7dfde.png",
+//        "https://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png",
+//        "https://qd.shouji.qihucdn.com/media/3471cdbe7ce5812df964fbd68226edc0/6602aa4ad6b7f.png"
+//);
+//
+//
+//AutoGalleryBannerView2 autoGalleryBannerView2 = new AutoGalleryBannerView2(mViewBinding.bannerViewPager);
+//        autoGalleryBannerView2.setDataList(imageList);
+//        autoGalleryBannerView2.setItemMargin(-10);
+
 
 public class AutoGalleryBannerView2 implements DefaultLifecycleObserver {
     private final ViewPager2 bannerViewPager;
