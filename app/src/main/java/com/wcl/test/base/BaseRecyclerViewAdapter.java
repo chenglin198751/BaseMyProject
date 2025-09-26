@@ -1,5 +1,7 @@
 package com.wcl.test.base;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -10,43 +12,50 @@ import java.util.List;
  * weichenglin create in 15/9/17
  */
 public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
-    protected List<T> list = new ArrayList<T>();
+    protected final List<T> list = new ArrayList<>();
 
     @Override
     public int getItemCount() {
         return list.size();
     }
 
+    @MainThread
     public void clear() {
+        int size = list.size();
         list.clear();
-        notifyDataSetChanged();
+        if (size > 0) {
+            notifyItemRangeRemoved(0, size);
+        }
     }
 
-    private int getItemPosition(T t) {
+    public int getItemPosition(@NonNull T t) {
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).equals(t)) {
+            if (t.equals(list.get(i))) {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
 
+    @MainThread
     public void appendDataList(Collection<? extends T> collection) {
-        if (null != collection) {
+        if (collection != null && !collection.isEmpty()) {
+            int start = list.size();
             list.addAll(collection);
-            notifyDataSetChanged();
+            notifyItemRangeInserted(start, collection.size());
         }
     }
 
     public List<T> getData() {
-        return list;
+        return new ArrayList<>(list);
     }
 
+    @MainThread
     public void setDataList(Collection<? extends T> collection) {
-        if (null != collection) {
-            list.clear();
+        list.clear();
+        if (collection != null && !collection.isEmpty()) {
             list.addAll(collection);
-            notifyDataSetChanged();
         }
+        notifyDataSetChanged();
     }
 }
