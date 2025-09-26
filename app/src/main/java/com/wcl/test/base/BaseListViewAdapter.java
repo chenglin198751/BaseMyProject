@@ -6,65 +6,74 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * weichenglin create in 15/9/17
  */
 public abstract class BaseListViewAdapter<T> extends BaseAdapter {
-    protected List<T> list = new ArrayList<T>();
-    protected LayoutInflater inflater;
+    protected final List<T> list = new ArrayList<>();
+    protected final LayoutInflater inflater;
 
-    public BaseListViewAdapter(Context context) {
+    public BaseListViewAdapter(@NonNull Context context) {
         super();
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+        this.inflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
-        return list == null ? 0 : list.size();
+        return list.size();
     }
 
     @Override
-    public T getItem(int arg0) {
-        if (arg0 >= list.size()) {
+    @Nullable
+    public T getItem(int position) {
+        if (position < 0 || position >= list.size()) {
             return null;
         }
-        return list.get(arg0);
+        return list.get(position);
     }
 
     @Override
-    public long getItemId(int arg0) {
-        return arg0;
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
-    public abstract View getView(int i, View view, ViewGroup viewGroup);
+    @NonNull
+    public abstract View getView(int position, View convertView, ViewGroup parent);
 
+    @MainThread
     public void clear() {
         list.clear();
         notifyDataSetChanged();
     }
 
-    public void appendDataList(Collection<? extends T> collection) {
-        if (null != collection) {
+    @MainThread
+    public void appendDataList(@NonNull Collection<? extends T> collection) {
+        if (!collection.isEmpty()) {
             list.addAll(collection);
             notifyDataSetChanged();
         }
     }
 
     public List<T> getData() {
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
-    public void setDataList(Collection<? extends T> collection) {
-        if (null != collection) {
-            list.clear();
+    @MainThread
+    public void setDataList(@Nullable Collection<? extends T> collection) {
+        list.clear();
+        if (collection != null && !collection.isEmpty()) {
             list.addAll(collection);
-            notifyDataSetChanged();
         }
+        notifyDataSetChanged();
     }
 }
