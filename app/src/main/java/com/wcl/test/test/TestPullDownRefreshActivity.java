@@ -72,17 +72,12 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         if (isRefresh) {
             List<DataItem> list = new ArrayList<>();
             list.add(createBannerItem());
-            list.addAll(getDatas(count));
+            list.addAll(createDatas(count));
             mAdapter.setDataList(list);
         } else {
             mAdapter.appendDataList(createDatas(count));
         }
         return mAdapter.getCount() <= 20;
-    }
-
-    @NonNull
-    private List<DataItem> getDatas(int count) {
-        return createDatas(count);
     }
 
     private DataItem createBannerItem() {
@@ -110,11 +105,12 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         return list;
     }
 
-    private static class MyAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.ViewHolder> {
+    // -------------------- Adapter --------------------
+    private static class MyAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder> {
         private final Context mContext;
 
         public MyAdapter(Context context) {
-            super(context, 0); // 我们会根据 viewType 动态 inflate
+            super(context, 0); // 多布局，不用 layoutId
             this.mContext = context;
         }
 
@@ -130,50 +126,31 @@ public class TestPullDownRefreshActivity extends BaseActivity {
 
         @NonNull
         @Override
-        protected ViewHolder createViewHolder(@NonNull View itemView) {
-            // 不会走这里，改成用 getView 里的多布局逻辑
-            throw new UnsupportedOperationException("Use getView instead for multi-type.");
-        }
-
-        @Override
-        protected void bindViewHolder(@NonNull ViewHolder holder, @NonNull DataItem item, int position) {
-
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            int viewType = getItemViewType(position);
+        protected BaseListViewHolder createViewHolder(@NonNull ViewGroup parent, int viewType) {
             if (viewType == VIEW_TYPE_BANNER) {
-                BannerHolder holder;
-                if (convertView == null) {
-                    convertView = View.inflate(mContext, R.layout.banner_layout, null);
-                    holder = new BannerHolder(convertView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (BannerHolder) convertView.getTag();
-                }
-                holder.bind(getData().get(position));
+                View view = View.inflate(mContext, R.layout.banner_layout, null);
+                return new BannerHolderBaseList(view);
             } else {
-                ListHolder holder;
-                if (convertView == null) {
-                    convertView = View.inflate(mContext, R.layout.test_item_2, null);
-                    holder = new ListHolder(convertView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ListHolder) convertView.getTag();
-                }
-                holder.bind(getData().get(position), position);
+                View view = View.inflate(mContext, R.layout.test_item_2, null);
+                return new ListHolderBaseList(view);
             }
-            return convertView;
+        }
+
+        @Override
+        protected void bindViewHolder(@NonNull BaseListViewHolder holder, @NonNull DataItem item, int position) {
+            if (holder instanceof BannerHolderBaseList) {
+                ((BannerHolderBaseList) holder).bind(item);
+            } else if (holder instanceof ListHolderBaseList) {
+                ((ListHolderBaseList) holder).bind(item, position);
+            }
         }
 
         // 普通Item
-        static class ListHolder extends ViewHolder {
+        static class ListHolderBaseList extends BaseListViewHolder {
             TextView title;
             ImageView webImageView;
 
-            public ListHolder(@NonNull View itemView) {
+            public ListHolderBaseList(@NonNull View itemView) {
                 super(itemView);
             }
 
@@ -191,10 +168,10 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         }
 
         // BannerItem
-        static class BannerHolder extends ViewHolder {
+        static class BannerHolderBaseList extends BaseListViewHolder {
             Banner banner;
 
-            public BannerHolder(@NonNull View itemView) {
+            public BannerHolderBaseList(@NonNull View itemView) {
                 super(itemView);
             }
 
@@ -211,6 +188,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         }
     }
 
+    // -------------------- Data Model --------------------
     private static class DataItem {
         public int viewType;
         public String imgUrl;
