@@ -166,7 +166,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 是否显示在顶部挖口屏内
      */
     protected boolean onDisplayInCutoutMode() {
-        return true;
+        return false;
     }
 
     @CallSuper

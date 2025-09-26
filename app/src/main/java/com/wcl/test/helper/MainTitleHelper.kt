@@ -1,53 +1,61 @@
 package com.wcl.test.helper
 
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import com.wcl.test.R
 import com.wcl.test.base.BaseActivity
 
 /**
- * Created by chenglin on 2017-5-23.
+ * Activity 标题栏辅助类
+ * Created by chenglin on 2017-5-23
  */
-class MainTitleHelper(private val mBaseActivity: BaseActivity) {
-    private val mTitleView: View
-    private val mTitleTv: TextView
+class MainTitleHelper(private val activity: BaseActivity) {
+
+    private val titleView: View by lazy { activity.findViewById(R.id.main_title) }
+    private val titleTextView: TextView by lazy { titleView.findViewById<TextView>(R.id.title_text) }
+    private val backBtn: View by lazy { titleView.findViewById<View>(R.id.back_btn) }
 
     /**
-     * 设置标题
+     * 标题文字
      */
-    public var title: String?
-        get() = mTitleTv.text.toString()
-        set(titleStr) {
-            mTitleTv.text = titleStr
+    var title: String?
+        get() = titleTextView.text.toString()
+        set(value) {
+            titleTextView.text = value
         }
 
     /**
-     * 设置标题
+     * 设置标题文字资源 id
      */
-    fun setTitle(title_resId: Int) {
-        mTitleTv.setText(title_resId)
+    fun setTitle(titleResId: Int) {
+        titleTextView.setText(titleResId)
     }
 
     /**
      * 隐藏标题栏
      */
     fun hideTitleBar() {
-        mTitleView.visibility = View.GONE
+        titleView.visibility = View.GONE
     }
 
     /**
-     * 设置左上角返回图片的点击监听事件
+     * 显示标题栏
      */
-    fun setReturnListener(listener: View.OnClickListener?) {
-        mTitleView.findViewById<View>(R.id.back_btn).setOnClickListener(listener)
+    fun showTitleBar() {
+        titleView.visibility = View.VISIBLE
+    }
+
+    /**
+     * 设置返回按钮点击事件，默认 finish Activity
+     */
+    fun setReturnListener(listener: (() -> Unit)? = null) {
+        backBtn.setOnClickListener {
+            listener?.invoke() ?: activity.finish()
+        }
     }
 
     init {
-        mTitleView = mBaseActivity.findViewById(R.id.main_title)
-        mTitleTv = mTitleView.findViewById(R.id.title_text)
-        mTitleView.findViewById<View>(R.id.back_btn).setOnClickListener { mBaseActivity.finish() }
+        // 默认返回按钮点击 finish
+        setReturnListener()
     }
 }

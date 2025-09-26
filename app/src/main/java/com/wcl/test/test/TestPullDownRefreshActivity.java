@@ -35,7 +35,6 @@ public class TestPullDownRefreshActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.test_pull_down_refresh_layout);
-
         getTitleHelper().setTitle("测试");
 
         mListView = findViewById(R.id.list_view);
