@@ -58,7 +58,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             @Override
             public void onLoadMore() {
                 mPullToRefreshView.postDelayed(() -> {
-                    boolean hasData = setData(5, false);
+                    boolean hasData = setData(10, false);
                     if (hasData) {
                         mPullToRefreshView.finishLoadMore();
                     } else {
@@ -78,7 +78,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         } else {
             mAdapter.appendDataList(createDatas(count));
         }
-        return mAdapter.getCount() <= 20;
+        return mAdapter.getCount() <= 100;
     }
 
     @NonNull
