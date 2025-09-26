@@ -45,6 +45,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final int BACK_EXIT_INTERVAL = 3000;
 
     @Override
+    protected boolean onDisplayInCutoutMode() {
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
