@@ -2,20 +2,17 @@ package com.wcl.test.test;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
-import com.wcl.test.base.BaseRecyclerViewAdapter;
-import com.wcl.test.base.BaseRecyclerViewHolder;
+import com.wcl.test.base.BaseListViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.SmartImageLoader;
@@ -28,9 +25,10 @@ import java.util.List;
 public class TestPullDownRefreshActivity extends BaseActivity {
     private static final int VIEW_TYPE_BANNER = 0;
     private static final int VIEW_TYPE_LIST = 1;
-    private PullToRefreshView mPullToRefreshView;
-    private MyAdapter mAdapter;
 
+    private PullToRefreshView mPullToRefreshView;
+    private ListView mListView;
+    private MyAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +36,14 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         setContentLayout(R.layout.test_pull_down_refresh_layout);
 
         getTitleHelper().setTitle("测试");
-        RecyclerView mRecyclerView = findViewById(R.id.recycler_view);
-        mPullToRefreshView = findViewById(R.id.swipe_refresh);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mPullToRefreshView.autoRefresh();
 
+        mListView = findViewById(R.id.list_view);
+        mPullToRefreshView = findViewById(R.id.swipe_refresh);
+
+        mAdapter = new MyAdapter(this);
+        mListView.setAdapter(mAdapter);
+
+        mPullToRefreshView.autoRefresh();
         mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
             @Override
             public void onRefresh() {
@@ -65,15 +66,10 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                 }, 1500);
             }
         });
-
-
-        mAdapter = new MyAdapter(this);
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     private boolean setData(int count, boolean isRefresh) {
         if (isRefresh) {
-            mAdapter.getData().clear();
             List<DataItem> list = new ArrayList<>();
             list.add(createBannerItem());
             list.addAll(getDatas(count));
@@ -81,7 +77,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         } else {
             mAdapter.appendDataList(createDatas(count));
         }
-        return mAdapter.getItemCount() <= 20;
+        return mAdapter.getCount() <= 20;
     }
 
     @NonNull
@@ -114,10 +110,11 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         return list;
     }
 
-    private static class MyAdapter extends BaseRecyclerViewAdapter<DataItem> {
+    private static class MyAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.ViewHolder> {
         private final Context mContext;
 
         public MyAdapter(Context context) {
+            super(context, 0); // 我们会根据 viewType 动态 inflate
             this.mContext = context;
         }
 
@@ -126,61 +123,93 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             return getData().get(position).viewType;
         }
 
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
         @NonNull
         @Override
-        public BaseRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            if (viewType == VIEW_TYPE_BANNER) {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.banner_layout, parent, false);
-                return new BannerHolder(view);
-            } else {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_2, parent, false);
-                return new ListHolder(view);
-            }
+        protected ViewHolder createViewHolder(@NonNull View itemView) {
+            // 不会走这里，改成用 getView 里的多布局逻辑
+            throw new UnsupportedOperationException("Use getView instead for multi-type.");
         }
 
         @Override
-        public void onBindViewHolder(@NonNull BaseRecyclerViewHolder holder, int position) {
-            if (holder instanceof ListHolder listHolder) {
-                listHolder.onBind(position);
-            } else if (holder instanceof BannerHolder bannerHolder) {
-                Banner banner = (Banner) bannerHolder.itemView;
-                banner.setAdapter(new BannerImageLoader(getData().get(position).bannerImgUrl));
-                banner.setBannerGalleryEffect(30, 10); //画廊效果
-                banner.start();
-                bannerHolder.onBind(position);
+        protected void bindViewHolder(@NonNull ViewHolder holder, @NonNull DataItem item, int position) {
+
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            int viewType = getItemViewType(position);
+            if (viewType == VIEW_TYPE_BANNER) {
+                BannerHolder holder;
+                if (convertView == null) {
+                    convertView = View.inflate(mContext, R.layout.banner_layout, null);
+                    holder = new BannerHolder(convertView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (BannerHolder) convertView.getTag();
+                }
+                holder.bind(getData().get(position));
+                return convertView;
+            } else {
+                ListHolder holder;
+                if (convertView == null) {
+                    convertView = View.inflate(mContext, R.layout.test_item_2, null);
+                    holder = new ListHolder(convertView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ListHolder) convertView.getTag();
+                }
+                holder.bind(getData().get(position), position);
+                return convertView;
             }
         }
 
-        class ListHolder extends BaseRecyclerViewHolder {
+        // 普通Item
+        static class ListHolder extends ViewHolder {
             TextView title;
             ImageView webImageView;
 
-            public ListHolder(View itemView) {
+            public ListHolder(@NonNull View itemView) {
                 super(itemView);
+            }
+
+            @Override
+            protected void initViews(@NonNull View itemView) {
                 title = itemView.findViewById(R.id.title);
                 webImageView = itemView.findViewById(R.id.image_view);
             }
 
-            @Override
-            public void onBind(final int position) {
+            public void bind(DataItem item, int position) {
                 title.setText("标题 - " + position);
-                SmartImageLoader.load(webImageView, getData().get(position).imgUrl, //
+                SmartImageLoader.load(webImageView, item.imgUrl,
                         AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(8f));
             }
         }
 
-        class BannerHolder extends BaseRecyclerViewHolder {
+        // BannerItem
+        static class BannerHolder extends ViewHolder {
+            Banner banner;
 
-            public BannerHolder(View itemView) {
+            public BannerHolder(@NonNull View itemView) {
                 super(itemView);
             }
 
             @Override
-            public void onBind(final int position) {
+            protected void initViews(@NonNull View itemView) {
+                banner = (Banner) itemView;
+            }
+
+            public void bind(DataItem item) {
+                banner.setAdapter(new BannerImageLoader(item.bannerImgUrl));
+                banner.setBannerGalleryEffect(30, 10);
+                banner.start();
             }
         }
-
-
     }
 
     private static class DataItem {
