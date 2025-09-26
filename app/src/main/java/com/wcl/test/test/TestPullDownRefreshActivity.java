@@ -154,7 +154,6 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                     holder = (BannerHolder) convertView.getTag();
                 }
                 holder.bind(getData().get(position));
-                return convertView;
             } else {
                 ListHolder holder;
                 if (convertView == null) {
@@ -165,8 +164,8 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                     holder = (ListHolder) convertView.getTag();
                 }
                 holder.bind(getData().get(position), position);
-                return convertView;
             }
+            return convertView;
         }
 
         // 普通Item
