@@ -2,32 +2,34 @@ package com.wcl.test.test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import com.youth.banner.Banner;
-import java.util.ArrayList;
-import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
-import com.wcl.test.base.BaseListViewAdapter;
+import com.wcl.test.base.BaseRecyclerViewAdapter;
+import com.wcl.test.base.BaseRecyclerViewHolder;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
-import com.youth.banner.transformer.ZoomOutPageTransformer;
+import com.youth.banner.Banner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestPullDownRefreshActivity extends BaseActivity {
+    private static final int VIEW_TYPE_BANNER = 0;
+    private static final int VIEW_TYPE_LIST = 1;
     private PullToRefreshView mPullToRefreshView;
-    private ListView mListView;
     private MyAdapter mAdapter;
-
-    private List<String> imagesList = new ArrayList<>();
 
 
     @Override
@@ -35,54 +37,30 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.test_pull_down_refresh_layout);
 
-        imagesList.add("https://qd.shouji.qihucdn.com/media/7596e61dd2bc80488dbca79665ec1252/660127d7974f7.png");
-        imagesList.add("https://d02.qd.shouji.360tpcdn.com/media/3768e5340f2139e71661b805718e4cce/67d3e3a7d7717.png");
-        imagesList.add("https://qd.shouji.qihucdn.com/media/80d15cfc4174f0bb48e9231400160487/6602aa5c7dfde.png");
-        imagesList.add("https://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png");
-        imagesList.add("https://qd.shouji.qihucdn.com/media/3471cdbe7ce5812df964fbd68226edc0/6602aa4ad6b7f.png");
-
         getTitleHelper().setTitle("测试");
-        mListView = (ListView) findViewById(R.id.list_view);
-        Banner banner = (Banner) View.inflate(this, R.layout.banner_layout, null);
-        banner.setAdapter(new BannerImageLoader(imagesList));
-//        banner.setPageTransformer(new ZoomOutPageTransformer());
-        banner.setBannerGalleryEffect(30, 10); //画廊效果
-        banner.start();
-
-        AbsListView.LayoutParams params = new AbsListView.LayoutParams(-1, AppConstants.screenWidth / 2);
-        banner.setLayoutParams(params);
-        mListView.addHeaderView(banner);
-
-
-        mPullToRefreshView = (PullToRefreshView) findViewById(R.id.swipe_refresh);
-
+        RecyclerView mRecyclerView = findViewById(R.id.recycler_view);
+        mPullToRefreshView = findViewById(R.id.swipe_refresh);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mPullToRefreshView.autoRefresh();
 
         mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
             @Override
             public void onRefresh() {
-                mPullToRefreshView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.clear();
-                        setData(10, true);
-                        mPullToRefreshView.finishRefresh();
-                    }
+                mPullToRefreshView.postDelayed(() -> {
+                    mAdapter.clear();
+                    setData(10, true);
+                    mPullToRefreshView.finishRefresh();
                 }, 1500);
             }
 
             @Override
             public void onLoadMore() {
-                mPullToRefreshView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        boolean hasData = setData(5, false);
-                        if (hasData) {
-                            mPullToRefreshView.finishLoadMore();
-                        } else {
-                            mPullToRefreshView.finishLoadMoreWithNoMoreData();
-                        }
-
+                mPullToRefreshView.postDelayed(() -> {
+                    boolean hasData = setData(5, false);
+                    if (hasData) {
+                        mPullToRefreshView.finishLoadMore();
+                    } else {
+                        mPullToRefreshView.finishLoadMoreWithNoMoreData();
                     }
                 }, 1500);
             }
@@ -90,68 +68,124 @@ public class TestPullDownRefreshActivity extends BaseActivity {
 
 
         mAdapter = new MyAdapter(this);
-        mListView.setAdapter(mAdapter);
-//        setData(10, true);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private boolean setData(int count, boolean isRefresh) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            list.add("" + (mAdapter.getCount() + i));
-        }
-
         if (isRefresh) {
+            mAdapter.getData().clear();
+            List<DataItem> list = new ArrayList<>();
+            list.add(createBannerItem());
+            list.addAll(getDatas(count));
             mAdapter.setDataList(list);
         } else {
-            mAdapter.appendDataList(list);
+            mAdapter.appendDataList(createDatas(count));
         }
-
-        if (mAdapter.getCount() > 20) {
-            return false;
-        }
-
-        return true;
+        return mAdapter.getItemCount() <= 20;
     }
 
-    private static class MyAdapter extends BaseListViewAdapter<String> {
-        private List<String> imagesList = new ArrayList<>();
-        private Context mContext;
+    @NonNull
+    private List<DataItem> getDatas(int count) {
+        return createDatas(count);
+    }
+
+    private DataItem createBannerItem() {
+        List<String> bannerImgs = new ArrayList<>();
+        bannerImgs.add("https://qd.shouji.qihucdn.com/media/7596e61dd2bc80488dbca79665ec1252/660127d7974f7.png");
+        bannerImgs.add("https://d02.qd.shouji.360tpcdn.com/media/3768e5340f2139e71661b805718e4cce/67d3e3a7d7717.png");
+        bannerImgs.add("https://qd.shouji.qihucdn.com/media/80d15cfc4174f0bb48e9231400160487/6602aa5c7dfde.png");
+        bannerImgs.add("https://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png");
+        bannerImgs.add("https://qd.shouji.qihucdn.com/media/3471cdbe7ce5812df964fbd68226edc0/6602aa4ad6b7f.png");
+
+        DataItem item = new DataItem();
+        item.viewType = VIEW_TYPE_BANNER;
+        item.bannerImgUrl = bannerImgs;
+        return item;
+    }
+
+    private List<DataItem> createDatas(int count) {
+        List<DataItem> list = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            DataItem item = new DataItem();
+            item.viewType = VIEW_TYPE_LIST;
+            item.imgUrl = "https://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png";
+            list.add(item);
+        }
+        return list;
+    }
+
+    private static class MyAdapter extends BaseRecyclerViewAdapter<DataItem> {
+        private final Context mContext;
 
         public MyAdapter(Context context) {
-            super(context);
-            mContext = context;
-
-
-            imagesList.add("http://img.zcool.cn/community/0166c756e1427432f875520f7cc838.jpg");
-            imagesList.add("http://img.zcool.cn/community/018fdb56e1428632f875520f7b67cb.jpg");
-            imagesList.add("http://img.zcool.cn/community/01c8dc56e1428e6ac72531cbaa5f2c.jpg");
-            imagesList.add("http://img.zcool.cn/community/01fd2756e142716ac72531cbf8bbbf.jpg");
-            imagesList.add("http://pic31.nipic.com/20130727/6949918_163332595163_2.jpg");
-
-            imagesList.addAll(imagesList);
-            imagesList.addAll(imagesList);
-            imagesList.addAll(imagesList);
-            imagesList.addAll(imagesList);
-            imagesList.addAll(imagesList);
-            imagesList.addAll(imagesList);
+            this.mContext = context;
         }
-
 
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = View.inflate(mContext, R.layout.test_item_2, null);
-                convertView.setClickable(true);
+        public int getItemViewType(int position) {
+            return getData().get(position).viewType;
+        }
+
+        @NonNull
+        @Override
+        public BaseRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            if (viewType == VIEW_TYPE_BANNER) {
+                View view = LayoutInflater.from(mContext).inflate(R.layout.banner_layout, parent, false);
+                return new BannerHolder(view);
+            } else {
+                View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_2, parent, false);
+                return new ListHolder(view);
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull BaseRecyclerViewHolder holder, int position) {
+            if (holder instanceof ListHolder listHolder) {
+                listHolder.onBind(position);
+            } else if (holder instanceof BannerHolder bannerHolder) {
+                Banner banner = (Banner) bannerHolder.itemView;
+                banner.setAdapter(new BannerImageLoader(getData().get(position).bannerImgUrl));
+                banner.setBannerGalleryEffect(30, 10); //画廊效果
+                banner.start();
+                bannerHolder.onBind(position);
+            }
+        }
+
+        class ListHolder extends BaseRecyclerViewHolder {
+            TextView title;
+            ImageView webImageView;
+
+            public ListHolder(View itemView) {
+                super(itemView);
+                title = itemView.findViewById(R.id.title);
+                webImageView = itemView.findViewById(R.id.image_view);
             }
 
-            TextView title = (TextView) convertView.findViewById(R.id.title);
-            ImageView webImageView = convertView.findViewById(R.id.image_view);
-            title.setText("标题 - " + position);
-            SmartImageLoader.load(webImageView, imagesList.get(position), AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(100f), 0);
-
-            return convertView;
+            @Override
+            public void onBind(final int position) {
+                title.setText("标题 - " + position);
+                SmartImageLoader.load(webImageView, getData().get(position).imgUrl, //
+                        AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(8f));
+            }
         }
+
+        class BannerHolder extends BaseRecyclerViewHolder {
+
+            public BannerHolder(View itemView) {
+                super(itemView);
+            }
+
+            @Override
+            public void onBind(final int position) {
+            }
+        }
+
+
     }
 
-
+    private static class DataItem {
+        public int viewType;
+        public String imgUrl;
+        public List<String> bannerImgUrl;
+    }
 }
