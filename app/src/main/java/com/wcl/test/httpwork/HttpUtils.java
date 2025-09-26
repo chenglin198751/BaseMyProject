@@ -45,8 +45,8 @@ import okhttp3.Response;
 //4、补充：如果还想要更安全，让服务器把返回结果用DES加密一下，客户端再解密使用。工具类：DESUtils.java
 
 /**
- * Created by chenglin on 2017-5-24.
- * 资料：http://liuwangshu.cn/application/network/6-okhttp3.html
+ * 优化后的 HttpUtils
+ * 功能：同步/异步 GET/POST、上传图片、下载文件（断点续传）、重试机制、UI线程回调
  */
 public class HttpUtils {
 
@@ -57,38 +57,33 @@ public class HttpUtils {
     public interface HttpDownloadCallback {
         void onFinished(boolean isSuccessful, String filePath, String error);
 
-        //fileTotalSize  文件总大小
-        //fileDowningSize  文件已经下载的大小
-        //percent  文件下载的进度百分比
         void onProgress(long fileTotalSize, long fileDowningSize, float percent);
     }
 
-    //用于扩展一些网络功能，比如写入header,写入cookies等操作
     public static class HttpBuilder {
         public Map<String, String> headersMap = null;
     }
 
-    private final static String TAG = "HttpUtils";
+    private static final String TAG = "HttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
-    private static final String HTTP_DOWNLOAD_PATH = FileUtils.getExternalPath() + "/download";
-    public static final OkHttpClient mOkHttpClient;
+    private static final File DOWNLOAD_DIR = new File(FileUtils.getExternalPath(), "download");
+    private static final OkHttpClient mOkHttpClient;
     private static final List<String> mDowningUrls = new ArrayList<>();
 
     static {
-        new File(HTTP_DOWNLOAD_PATH).mkdirs();
+        DOWNLOAD_DIR.mkdirs();
 
-        final OkHttpClient.Builder builder = new OkHttpClient
-                .Builder()
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .readTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .addInterceptor(new RetryInterceptor(1));
 
         if (!EnvToggle.isDebug()) {
-            //禁用抓包工具抓包
             builder.proxy(Proxy.NO_PROXY);
         }
+
         mOkHttpClient = builder.build();
     }
 
@@ -96,10 +91,9 @@ public class HttpUtils {
     }
 
     /**
-     * 重试拦截器
-     */
+     * RetryInterceptor
+     **/
     public static class RetryInterceptor implements Interceptor {
-        //最大重试次数。假如设置为3次重试的话，则最大可能请求4次（默认1次+3次重试）
         private final int maxRetry;
 
         public RetryInterceptor(int maxRetry) {
@@ -113,245 +107,156 @@ public class HttpUtils {
             long start = System.currentTimeMillis();
             Response response = chain.proceed(request);
             long end = System.currentTimeMillis();
-            final String url = response.request().url().toString();
-            AppLogUtils.v(TAG, "网络请求时间：" + url + " -- " + (end - start) + "毫秒");
+            AppLogUtils.v(TAG, "网络请求时间：" + response.request().url() + " -- " + (end - start) + "ms");
 
             while (!response.isSuccessful() && retryNum < maxRetry) {
                 retryNum++;
                 response.close();
+                long retryStart = System.currentTimeMillis();
                 response = chain.proceed(request);
-                AppLogUtils.v(TAG, "第 " + retryNum + " 次重试");
+                AppLogUtils.v(TAG, "第 " + retryNum + " 次重试,耗时：" + (System.currentTimeMillis() - retryStart) + "ms");
             }
             return response;
         }
     }
 
     /**
-     * 通用的okhttp3.Callback封装
-     */
-    private static okhttp3.Callback createOkhttp3Callback(final Context context, final HttpCallback httpBack) {
+     * 通用 UI 线程回调
+     **/
+    private static void postToUi(Runnable r) {
+        AppBaseUtils.getUiHandler().post(r);
+    }
+
+    private static boolean isContextValid(Context context) {
+        return context != null && (!(context instanceof Activity) || (!((Activity) context).isFinishing() && !((Activity) context).isDestroyed()));
+    }
+
+    private static String parseResponseBody(Response response) throws IOException {
+        String result = response.body().string();
+        if (!TextUtils.isEmpty(result) && result.startsWith("\ufeff")) {
+            result = result.substring(1);
+        }
+        response.body().close();
+        response.close();
+        return result;
+    }
+
+    /**
+     * 构建 FormBody
+     **/
+    private static FormBody buildFormBody(Map<String, Object> params) {
+        FormBody.Builder builder = new FormBody.Builder();
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            builder.add(entry.getKey(), String.valueOf(entry.getValue()));
+        }
+        return builder.build();
+    }
+
+    /**
+     * 异步 GET/POST 封装
+     **/
+    private static okhttp3.Callback createOkHttpCallback(final Context context, final HttpCallback callback) {
         return new okhttp3.Callback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull final IOException e) {
-                e.printStackTrace();
-                if (context == null) {
-                    return;
-                }
-
-                if (context instanceof Activity) {
-                    if (!isFinished(context)) {
-                        httpOnUiThread.onResponse(httpBack, false, e.toString());
-                    }
-                } else {
-                    httpOnUiThread.onResponse(httpBack, false, e.toString());
-                }
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                if (!isContextValid(context)) return;
+                postToUi(() -> callback.onResponse(false, e.toString()));
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
-                if (context == null) {
-                    return;
-                }
-
-                if (!response.isSuccessful() || response.body() == null) {
-                    httpOnUiThread.onResponse(httpBack, false, response.toString());
-                    return;
-                }
-
-                //有时服务端返回json带了bom头，会导致解析异常
-                String result = response.body().string();
-                if (!TextUtils.isEmpty(result) && result.startsWith("\ufeff")) {
-                    result = result.substring(1);
-                }
-                response.body().close();
-                response.close();
-
-                if (context instanceof Activity) {
-                    if (!isFinished(context)) {
-                        httpOnUiThread.onResponse(httpBack, true, result);
-                    }
-                } else {
-                    httpOnUiThread.onResponse(httpBack, true, result);
-                }
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!isContextValid(context)) return;
+                String result = response.isSuccessful() && response.body() != null ? parseResponseBody(response) : null;
+                postToUi(() -> callback.onResponse(response.isSuccessful() && result != null, result != null ? result : response.toString()));
             }
         };
     }
 
     /**
-     * 通用的异步post请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
-     */
-    public static void post(final Context context, String url, Map<String, Object> params, final HttpUtils.HttpCallback httpCallback) {
-        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
-        builder.headersMap = null;
-        HttpUtils.postWithBuilder(context, url, params, builder, httpCallback);
+     * POST 异步
+     **/
+    public static void post(final Context context, String url, Map<String, Object> params, final HttpCallback callback) {
+        postWithBuilder(context, url, params, new HttpBuilder(), callback);
     }
 
-    public static void postWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
+    public static void postWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback callback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            httpCallback.onResponse(false, (url + " 不是有效的URL"));
+            callback.onResponse(false, url + " 不是有效URL");
             return;
         }
 
-        FormBody.Builder FormBuilder = new FormBody.Builder();
-        if (builder == null) {
-            builder = new HttpBuilder();
-        }
-
-        if (params == null) {
-            params = new HashMap<>();
-        }
+        if (params == null) params = new HashMap<>();
         addCommonData(params);
+        if (builder == null) builder = new HttpBuilder();
 
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            FormBuilder.add(key, value + "");
-        }
-
-        RequestBody body = FormBuilder.build();
+        FormBody body = buildFormBody(params);
         Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
         if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
-        Request request = requestBuilder.build();
-
-        Call call = mOkHttpClient.newCall(request);
-        call.enqueue(createOkhttp3Callback(context, httpCallback));
+        mOkHttpClient.newCall(requestBuilder.build()).enqueue(createOkHttpCallback(context, callback));
     }
 
     /**
-     * 通用的异步get请求，为了防止内存泄露：当Activity finish后，不会再返回请求结果
-     */
-    public static void get(final Context context, final String url, Map<String, Object> params, final HttpCallback httpCallback) {
-        HttpUtils.HttpBuilder builder = new HttpUtils.HttpBuilder();
-        builder.headersMap = null;
-        HttpUtils.getWithBuilder(context, url, params, builder, httpCallback);
+     * GET 异步
+     **/
+    public static void get(final Context context, String url, Map<String, Object> params, final HttpCallback callback) {
+        getWithBuilder(context, url, params, new HttpBuilder(), callback);
     }
 
-    public static void getWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback httpCallback) {
-        final String url2 = buildGetParams(url, params);
-        Request.Builder requestBuilder = new Request.Builder().url(url2).get();
+    public static void getWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback callback) {
+        final String urlWithParams = buildGetParams(url, params);
+        Request.Builder requestBuilder = new Request.Builder().url(urlWithParams).get();
         if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
             requestBuilder.headers(Headers.of(builder.headersMap));
         }
-        Request request = requestBuilder.build();
-
-        Call call = mOkHttpClient.newCall(request);
-        call.enqueue(createOkhttp3Callback(context, httpCallback));
+        mOkHttpClient.newCall(requestBuilder.build()).enqueue(createOkHttpCallback(context, callback));
     }
 
     /**
-     * 同步get请求，必须放到线程中
-     */
+     * 同步 GET/POST
+     **/
     public static String syncGet(final String url) {
         Request request = new Request.Builder().url(url).get().build();
-
-        try {
-            Response response = mOkHttpClient.newCall(request).execute();
-            if (response.body() == null) {
-                response.close();
-                return null;
-            }
-            if (response.isSuccessful()) {
-                //有时服务端返回json带了bom头，会导致解析异常
-                String tempStr = response.body().string();
-                if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
-                    tempStr = tempStr.substring(1);
-                }
-                response.body().close();
-                response.close();
-                return tempStr;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
+        try (Response response = mOkHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) return null;
+            return parseResponseBody(response);
+        } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 
-    /**
-     * 同步post请求，必须放到线程中
-     */
     public static String syncPost(final String url, Map<String, Object> params) {
-        FormBody.Builder FormBuilder = new FormBody.Builder();
-
-        if (params == null) {
-            params = new HashMap<>();
-        }
+        if (params == null) params = new HashMap<>();
         addCommonData(params);
+        Request request = new Request.Builder().url(url).post(buildFormBody(params)).build();
 
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            FormBuilder.add(key, value + "");
-        }
-
-        RequestBody body = FormBuilder.build();
-        Request.Builder requestBuilder = new Request
-                .Builder()
-                .url(url)
-                .post(body);
-        Request request = requestBuilder.build();
-
-        try {
-            Response response = mOkHttpClient.newCall(request).execute();
-            if (response.body() == null) {
-                response.close();
-                return null;
-            }
-            if (response.isSuccessful()) {
-                //有时服务端返回json带了bom头，会导致解析异常
-                String result = response.body().string();
-                if (!TextUtils.isEmpty(result) && result.startsWith("\ufeff")) {
-                    result = result.substring(1);
-                }
-                response.body().close();
-                response.close();
-                return result;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
+        try (Response response = mOkHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) return null;
+            return parseResponseBody(response);
+        } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**
-     * 通用的上传图片 注：此方法暂时不可用，因为还没测试
-     */
-    public static void uploadImage(String reqUrl, HashMap<String, Object> params, String picKey, String filePath) {
-        if (TextUtils.isEmpty(filePath)) {
-            return;
-        }
+     * 上传图片
+     **/
+    public static void uploadImage(String url, Map<String, Object> params, String picKey, String filePath) {
+        if (TextUtils.isEmpty(filePath)) return;
         File file = new File(filePath);
-        if (!file.exists()) {
-            return;
-        }
+        if (!file.exists()) return;
 
-        if (params == null) {
-            params = new HashMap<>();
-        }
+        if (params == null) params = new HashMap<>();
         addCommonData(params);
 
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder();
-        multipartBodyBuilder.setType(MultipartBody.FORM);
+        MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        params.forEach((k, v) -> multipartBuilder.addFormDataPart(k, String.valueOf(v)));
+        multipartBuilder.addFormDataPart(picKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
 
-        //遍历map中所有参数到builder
-        for (String key : params.keySet()) {
-            multipartBodyBuilder.addFormDataPart(key, params.get(key) + "");
-        }
-
-        //遍历paths中所有图片绝对路径到builder，并约定key如“upload”作为后台接受多张图片的key
-        multipartBodyBuilder.addFormDataPart(picKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
-        RequestBody requestBody = multipartBodyBuilder.build();
-        Request.Builder RequestBuilder = new Request.Builder();
-        RequestBuilder.url(reqUrl);
-        RequestBuilder.post(requestBody);
-        Request request = RequestBuilder.build();
-
+        Request request = new Request.Builder().url(url).post(multipartBuilder.build()).build();
         mOkHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -360,276 +265,139 @@ public class HttpUtils {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    //有时服务端返回json带了bom头，会导致解析异常
-                    String result = response.body().string();
-                    if (!TextUtils.isEmpty(result) && result.startsWith("\ufeff")) {
-                        result = result.substring(1);
-                    }
-                }
-
+                if (response.isSuccessful() && response.body() != null) parseResponseBody(response);
             }
         });
-
     }
 
     /**
-     * 同步下载文件：支持断点续传，必须在非UI线程下载
-     *
-     * @param fileUrl 下载文件URL地址
-     */
-    public static String syncDownloadFile(final String fileUrl) {
-        return syncDownloadFile(fileUrl, null);
+     * 异步下载文件
+     **/
+    public static void downloadFile(final String fileUrl, final HttpDownloadCallback callback) {
+        if (callback == null) throw new NullPointerException("HttpDownloadCallback不能为空");
+        if (TextUtils.isEmpty(fileUrl)) {
+            callback.onFinished(false, null, "下载URL不能为空");
+            return;
+        }
+        if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
+            callback.onFinished(false, null, fileUrl + " 不是有效URL");
+            return;
+        }
+
+        AppThreadPoolExecutor.getExecutor().execute(() -> syncDownloadFile(fileUrl, callback));
     }
 
     /**
-     * 同步下载文件：支持断点续传，必须在非UI线程下载
-     *
-     * @param fileUrl      下载文件URL地址
-     * @param downCallback 下载回调
-     */
-    private static String syncDownloadFile(final String fileUrl, final HttpDownloadCallback downCallback) {
-        if (AppBaseUtils.isUiThread()) {
-            throw new RuntimeException("Synchronized download file cannot be in UI thread");
-        } else if (TextUtils.isEmpty(fileUrl)) {
-            throw new NullPointerException("fileUrl is null");
-        } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
-            String error = fileUrl + " is not a valid Url";
-            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
-            return null;
-        } else if (mDowningUrls.contains(fileUrl)) {
-            String error = String.format("the file url:%s is downloading", fileUrl);
-            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
+     * 同步下载文件（断点续传）
+     **/
+    private static String syncDownloadFile(final String fileUrl, final HttpDownloadCallback callback) {
+        if (AppBaseUtils.isUiThread()) throw new RuntimeException("同步下载不能在UI线程执行");
+        if (mDowningUrls.contains(fileUrl)) {
+            postToUi(() -> callback.onFinished(false, null, "文件正在下载中"));
             return null;
         }
 
-        InputStream inputStream = null;
         mDowningUrls.add(fileUrl);
+        File downFile = new File(getDownLoadFilePath(fileUrl));
+        File tempFile = new File(downFile.getAbsolutePath() + ".temp");
+        long contentLength = getFileContentLength(fileUrl);
+        long downloadedLength = tempFile.exists() ? tempFile.length() : 0;
 
-        try {
-            final String downPath = getDownLoadFilePath(fileUrl);
-            final String tempPath = downPath + ".temp";
-
-            final File downFile = new File(downPath);
-            final File tempFile = new File(tempPath);
-
-            long downloadLength = 0;
-            final long contentLength = getFileContentLength(fileUrl);
-
-            if (downFile.exists() && downFile.length() == contentLength) {
-                tempFile.delete();
-                AppLogUtils.d(TAG, "The file already exist");
-                FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
-                return downPath;
+        try (RandomAccessFile outFile = new RandomAccessFile(tempFile, "rws")) {
+            Request.Builder requestBuilder = new Request.Builder().url(fileUrl).get();
+            if (downloadedLength > 0 && downloadedLength < contentLength) {
+                requestBuilder.addHeader("RANGE", "bytes=" + downloadedLength + "-" + contentLength);
+                outFile.seek(downloadedLength);
             }
 
-            if (tempFile.exists()) {
-                downloadLength = tempFile.length();
-            }
-
-            //====start 下载异常边界处理start:发生概率极低，不用太在意====
-            if (downloadLength == contentLength) {
-                boolean isSuccess = tempFile.renameTo(downFile);
-                if (isSuccess) {
-                    FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
-                    return downPath;
-                } else {
-                    if (tempFile.delete()) {
-                        downloadLength = 0;
-                    }
+            try (Response response = mOkHttpClient.newCall(requestBuilder.build()).execute()) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    postToUi(() -> callback.onFinished(false, null, "下载失败"));
+                    return null;
                 }
-            } else if (downloadLength > contentLength) {
-                if (tempFile.delete()) {
-                    downloadLength = 0;
-                }
-            }
-            //====end 下载异常边界处理end:发生概率极低，不用太在意====
 
-            final Request.Builder builder = new Request.Builder().url(fileUrl).get();
-            final RandomAccessFile savedFile = new RandomAccessFile(tempFile, "rws");
-
-            // 跳过已经下载的字节，实现断点续传
-            if (downloadLength > 0) {
-                savedFile.seek(downloadLength);
-
-                // HTTP请求是有一个Header的，里面有个Range属性是定义下载区域的，它接收的值是一个区间范围，
-                // 比如：Range:bytes=0-10000。这样我们就可以按照一定的规则，将一个大文件拆分为若干很小的部分，
-                // 然后分批次的下载，每个小块下载完成之后，再合并到文件中；这样即使下载中断了，重新下载时，
-                // 也可以通过文件的字节长度来判断下载的起始点，然后重启断点续传的过程，直到最后完成下载过程。
-                if (contentLength > downloadLength) {
-                    builder.addHeader("RANGE", "bytes=" + downloadLength + "-" + contentLength);
-                }
-            }
-
-            //开始启动下载
-            final Request request = builder.build();
-            final Response response = mOkHttpClient.newCall(request).execute();
-            if (response.body() == null) {
-                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, "Response.body() is null");
-                return null;
-            }
-            if (!response.isSuccessful()) {
-                response.body().close();
-                response.close();
-                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, response.message());
-                return null;
-            }
-
-            inputStream = response.body().byteStream();
-            byte[] buffer = new byte[2048];
-            int len;
-            long sum = downloadLength;
-            long timeStamp = System.currentTimeMillis();
-            int lastProgress = 0;
-
-            while ((len = inputStream.read(buffer)) != -1) {
-                savedFile.write(buffer, 0, len);
-
-                //计算下载进度
-                if (downCallback != null) {
-                    sum += len;
-                    int progress1 = (int) (sum * 1.0f / contentLength * 100f);
-                    if (lastProgress != progress1) {
-                        lastProgress = progress1;
-                        if (System.currentTimeMillis() - timeStamp > 1000L) {
-                            timeStamp = System.currentTimeMillis();
-                            float progress2 = (sum * 1f / contentLength);
-                            progress2 = AppBaseUtils.formatFloat(progress2, 2);
-                            FileHttpDownloadCallback.onProgress(downCallback, contentLength, sum, progress2);
+                try (InputStream input = response.body().byteStream()) {
+                    byte[] buffer = new byte[2048];
+                    int len;
+                    long sum = downloadedLength;
+                    long lastUpdate = System.currentTimeMillis();
+                    while ((len = input.read(buffer)) != -1) {
+                        outFile.write(buffer, 0, len);
+                        sum += len;
+                        int progress = (int) (sum * 100 / contentLength);
+                        if (System.currentTimeMillis() - lastUpdate > 500) {
+                            final long fSum = sum;
+                            postToUi(() -> callback.onProgress(contentLength, fSum, fSum * 1f / contentLength));
+                            lastUpdate = System.currentTimeMillis();
                         }
                     }
                 }
             }
 
-            inputStream.close();
-            savedFile.close();
-            response.body().close();
-            response.close();
-            inputStream = null;
-
-            //下载完成后把.temp的文件重命名为原文件
-            if (tempFile.exists() && tempFile.length() == contentLength) {
-                boolean isSuccess = tempFile.renameTo(downFile);
-                if (isSuccess) {
-                    FileHttpDownloadCallback.onFinished(downCallback, fileUrl, downPath);
-                    return downPath;
-                }
+            if (tempFile.length() == contentLength && tempFile.renameTo(downFile)) {
+                postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
+                return downFile.getAbsolutePath();
             } else {
-                String error = "downloaded failed:tempFile.length() != contentLength";
-                FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
+                postToUi(() -> callback.onFinished(false, null, "下载失败"));
                 return null;
             }
-        } catch (Throwable t) {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
+        } catch (Throwable t) {
             t.printStackTrace();
-            String error = t.toString();
-            AppLogUtils.w(TAG, "download failed:" + error);
-            FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
+            postToUi(() -> callback.onFinished(false, null, t.toString()));
             return null;
+        } finally {
+            mDowningUrls.remove(fileUrl);
         }
-
-        // 兜底的下载callback
-        String error = "download failed:unknown";
-        FileHttpDownloadCallback.onFailure(downCallback, fileUrl, error);
-        return null;
     }
 
     /**
-     * 异步下载文件的方法：支持断点续传
-     *
-     * @param fileUrl          下载文件地址
-     * @param downloadCallback 下载的回调监听
-     */
-    public static void downloadFile(final String fileUrl, final HttpDownloadCallback downloadCallback) {
-        if (downloadCallback == null) {
-            throw new NullPointerException("HttpDownloadCallback 不能为空");
-        } else if (TextUtils.isEmpty(fileUrl)) {
-            downloadCallback.onFinished(false, null, "下载URL不能为空");
-            return;
-        } else if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
-            downloadCallback.onFinished(false, null, fileUrl + " 不是有效的URL");
-            return;
-        }
-
-        AppThreadPoolExecutor.getExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                syncDownloadFile(fileUrl, downloadCallback);
+     * 获取文件长度
+     **/
+    private static long getFileContentLength(String url) {
+        Request request = new Request.Builder().url(url).build();
+        try (Response response = mOkHttpClient.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                return response.body().contentLength();
             }
-        });
-    }
-
-    /**
-     * 获取被下载的文件的长度
-     */
-    private static long getFileContentLength(String downloadUrl) {
-        Request request = new Request.Builder().url(downloadUrl).build();
-        try {
-            Response response = mOkHttpClient.newCall(request).execute();
-            if (response.body() == null) {
-                response.close();
-                return 0;
-            }
-            if (response.isSuccessful()) {
-                long contentLength = response.body().contentLength();
-                response.body().close();
-                response.close();
-                return contentLength;
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (IOException ignored) {
         }
         return 0;
     }
 
-    private static class FileHttpDownloadCallback {
-        public static void onFinished(HttpDownloadCallback downloadCallback, String fileUrl, String filePath) {
-            mDowningUrls.remove(fileUrl);
-            if (downloadCallback != null) {
-                AppBaseUtils.getUiHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        downloadCallback.onFinished(true, filePath, null);
-                    }
-                });
-            }
-        }
+    /**
+     * 构建 GET 参数
+     **/
+    public static String buildGetParams(String url, Map<String, Object> params) {
+        if (params == null) params = new HashMap<>();
+        addCommonData(params);
 
-        public static void onProgress(HttpDownloadCallback downloadCallback, long fileTotalSize, long fileDowningSize, float percent) {
-            if (downloadCallback != null) {
-                AppBaseUtils.getUiHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        downloadCallback.onProgress(fileTotalSize, fileDowningSize, percent);
-                    }
-                });
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            if (sb.isEmpty() && !url.contains("?")) {
+                sb.append("?").append(entry.getKey()).append("=").append(entry.getValue());
+            } else {
+                sb.append("&").append(entry.getKey()).append("=").append(entry.getValue());
             }
         }
-
-        public static void onFailure(HttpDownloadCallback downloadCallback, String fileUrl, String error) {
-            AppLogUtils.w(TAG, error);
-            mDowningUrls.remove(fileUrl);
-            if (downloadCallback != null) {
-                AppBaseUtils.getUiHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        downloadCallback.onFinished(false, null, error);
-                    }
-                });
-            }
-        }
+        return url + sb.toString();
     }
 
     /**
-     * 通用字段
-     */
+     * 文件下载路径
+     **/
+    public static String getDownLoadFilePath(String fileUrl) {
+        return new File(DOWNLOAD_DIR, AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl)).getAbsolutePath();
+    }
+
+    private static String getSuffixNameByHttpUrl(final String url) {
+        int index = url.lastIndexOf(".");
+        return index > 0 ? url.substring(index) : "";
+    }
+
+    /**
+     * 添加公共参数
+     **/
     private static void addCommonData(Map<String, Object> params) {
         params.put("deviceId", DeviceUtils.getDeviceId());
         params.put("product", Build.MODEL);
@@ -641,67 +409,5 @@ public class HttpUtils {
         params.put("phone", "android");
         params.put("channel", AppBaseUtils.getChannel());
         params.put("packageName", AppBaseUtils.getPackageName());
-    }
-
-    /**
-     * 构建get请求参数
-     */
-    public static String buildGetParams(String url, Map<String, Object> params) {
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        addCommonData(params);
-
-        StringBuilder params2 = new StringBuilder();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            if (params2.length() <= 0 && !url.contains("?")) {
-                params2.append("?").append(key).append("=").append(value);
-            } else {
-                params2.append("&").append(key).append("=").append(value);
-            }
-        }
-
-        if (!TextUtils.isEmpty(url)) {
-            return url + params2;
-        } else {
-            return params2.toString();
-        }
-    }
-
-    /**
-     * 根据下载文件URL得到文件的后缀名
-     */
-    private static String getSuffixNameByHttpUrl(final String url) {
-        int index = url.lastIndexOf(".");
-        if (index > 0) {
-            return url.substring(index);
-        }
-        return "";
-    }
-
-    /**
-     * 根据下载文件URL得到文件的下载路径
-     */
-    public static String getDownLoadFilePath(String fileUrl) {
-        return HTTP_DOWNLOAD_PATH + File.separator + AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl);
-    }
-
-    private static class httpOnUiThread {
-        public static void onResponse(final HttpCallback httpCallback, boolean isSuccessful, String result) {
-            AppBaseUtils.getUiHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    httpCallback.onResponse(isSuccessful, result);
-                }
-            });
-        }
-    }
-
-    private static boolean isFinished(Context context) {
-        Activity activity = (Activity) context;
-        return activity == null || activity.isFinishing() || activity.isDestroyed();
     }
 }
