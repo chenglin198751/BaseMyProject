@@ -157,7 +157,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             }
 
             @Override
-            protected void onCreateView(@NonNull View itemView) {
+            protected void bindViews(@NonNull View itemView) {
                 title = itemView.findViewById(R.id.title);
                 webImageView = itemView.findViewById(R.id.image_view);
             }
@@ -179,7 +179,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             }
 
             @Override
-            protected void onCreateView(@NonNull View itemView) {
+            protected void bindViews(@NonNull View itemView) {
                 banner = (Banner) itemView;
             }
 

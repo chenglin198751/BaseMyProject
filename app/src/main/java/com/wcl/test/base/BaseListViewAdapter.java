@@ -98,13 +98,13 @@ public abstract class BaseListViewAdapter<T, VH extends BaseListViewAdapter.Base
 
         public BaseListViewHolder(@NonNull View itemView) {
             this.itemView = itemView;
-            onCreateView(itemView);
+            bindViews(itemView);
         }
 
         /**
          * 初始化控件
          */
-        protected abstract void onCreateView(@NonNull View itemView);
+        protected abstract void bindViews(@NonNull View itemView);
 
         /**
          * 绑定数据，子类必须实现
