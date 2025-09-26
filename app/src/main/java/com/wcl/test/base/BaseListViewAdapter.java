@@ -12,14 +12,12 @@ import java.util.List;
 /**
  * 通用的 ListView Adapter，支持多布局
  */
-public abstract class BaseListViewAdapter<T, VH extends BaseListViewAdapter.BaseListViewHolder> extends android.widget.BaseAdapter {
+public abstract class BaseListViewAdapter<T, VH extends BaseListViewAdapter.BaseListViewHolder<T>> extends android.widget.BaseAdapter {
     protected final Context mContext;
-    private final int mLayoutId; // 如果只有单布局可以用，否则传0
     private final List<T> mData = new ArrayList<>();
 
-    public BaseListViewAdapter(Context context, int layoutId) {
+    public BaseListViewAdapter(Context context) {
         this.mContext = context;
-        this.mLayoutId = layoutId;
     }
 
     public void setDataList(List<T> list) {
@@ -95,15 +93,22 @@ public abstract class BaseListViewAdapter<T, VH extends BaseListViewAdapter.Base
         return convertView;
     }
 
-    // ----------- ViewHolder 基类 -----------
-    public static abstract class BaseListViewHolder {
-        public final View itemView;
+    public abstract static class BaseListViewHolder<T> {
+        protected final View itemView;
 
         public BaseListViewHolder(@NonNull View itemView) {
             this.itemView = itemView;
             initViews(itemView);
         }
 
+        /**
+         * 初始化控件
+         */
         protected abstract void initViews(@NonNull View itemView);
+
+        /**
+         * 绑定数据，子类必须实现
+         */
+        public abstract void onBind(@NonNull T item, int position);
     }
 }

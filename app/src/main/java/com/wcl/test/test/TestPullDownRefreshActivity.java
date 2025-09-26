@@ -2,6 +2,7 @@ package com.wcl.test.test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -72,12 +73,17 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         if (isRefresh) {
             List<DataItem> list = new ArrayList<>();
             list.add(createBannerItem());
-            list.addAll(createDatas(count));
+            list.addAll(getDatas(count));
             mAdapter.setDataList(list);
         } else {
             mAdapter.appendDataList(createDatas(count));
         }
         return mAdapter.getCount() <= 20;
+    }
+
+    @NonNull
+    private List<DataItem> getDatas(int count) {
+        return createDatas(count);
     }
 
     private DataItem createBannerItem() {
@@ -105,12 +111,12 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         return list;
     }
 
-    // -------------------- Adapter --------------------
-    private static class MyAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder> {
+    // ---------------- Adapter ----------------
+    private static class MyAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder<DataItem>> {
         private final Context mContext;
 
         public MyAdapter(Context context) {
-            super(context, 0); // 多布局，不用 layoutId
+            super(context);
             this.mContext = context;
         }
 
@@ -126,31 +132,27 @@ public class TestPullDownRefreshActivity extends BaseActivity {
 
         @NonNull
         @Override
-        protected BaseListViewHolder createViewHolder(@NonNull ViewGroup parent, int viewType) {
+        protected BaseListViewHolder<DataItem> createViewHolder(@NonNull ViewGroup parent, int viewType) {
             if (viewType == VIEW_TYPE_BANNER) {
-                View view = View.inflate(mContext, R.layout.banner_layout, null);
-                return new BannerHolderBaseList(view);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.banner_layout, parent, false);
+                return new BannerHolder(view);
             } else {
-                View view = View.inflate(mContext, R.layout.test_item_2, null);
-                return new ListHolderBaseList(view);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_2, parent, false);
+                return new ListHolder(view);
             }
         }
 
         @Override
-        protected void bindViewHolder(@NonNull BaseListViewHolder holder, @NonNull DataItem item, int position) {
-            if (holder instanceof BannerHolderBaseList) {
-                ((BannerHolderBaseList) holder).bind(item);
-            } else if (holder instanceof ListHolderBaseList) {
-                ((ListHolderBaseList) holder).bind(item, position);
-            }
+        protected void bindViewHolder(@NonNull BaseListViewHolder<DataItem> holder, @NonNull DataItem item, int position) {
+            holder.onBind(item, position);
         }
 
         // 普通Item
-        static class ListHolderBaseList extends BaseListViewHolder {
+        static class ListHolder extends BaseListViewHolder<DataItem> {
             TextView title;
             ImageView webImageView;
 
-            public ListHolderBaseList(@NonNull View itemView) {
+            public ListHolder(@NonNull View itemView) {
                 super(itemView);
             }
 
@@ -160,7 +162,8 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                 webImageView = itemView.findViewById(R.id.image_view);
             }
 
-            public void bind(DataItem item, int position) {
+            @Override
+            public void onBind(@NonNull DataItem item, int position) {
                 title.setText("标题 - " + position);
                 SmartImageLoader.load(webImageView, item.imgUrl,
                         AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(8f));
@@ -168,10 +171,10 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         }
 
         // BannerItem
-        static class BannerHolderBaseList extends BaseListViewHolder {
+        static class BannerHolder extends BaseListViewHolder<DataItem> {
             Banner banner;
 
-            public BannerHolderBaseList(@NonNull View itemView) {
+            public BannerHolder(@NonNull View itemView) {
                 super(itemView);
             }
 
@@ -180,7 +183,8 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                 banner = (Banner) itemView;
             }
 
-            public void bind(DataItem item) {
+            @Override
+            public void onBind(@NonNull DataItem item, int position) {
                 banner.setAdapter(new BannerImageLoader(item.bannerImgUrl));
                 banner.setBannerGalleryEffect(30, 10);
                 banner.start();
@@ -188,7 +192,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         }
     }
 
-    // -------------------- Data Model --------------------
+    // ---------------- Data Model ----------------
     private static class DataItem {
         public int viewType;
         public String imgUrl;
