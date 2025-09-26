@@ -1,67 +1,82 @@
 package com.wcl.test.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
+import android.util.TypedValue;
+import android.widget.LinearLayout;
 
-import com.wcl.test.utils.AppBaseUtils;
+import androidx.annotation.Nullable;
 
-public class CornerFrameLayout extends FrameLayout {
-    private float topLeftRadius;
-    private float topRightRadius;
-    private float bottomLeftRadius;
-    private float bottomRightRadius;
-    private Path clipPath;
+import com.wcl.test.R;
+
+/**
+ * 带圆角的 LinearLayout
+ * 支持 XML 属性和代码设置圆角
+ */
+public class CornerFrameLayout extends LinearLayout {
+
+    private final RectF roundRect = new RectF();
+    private final Path clipPath = new Path();
+    private float cornerRadiusPx = dpToPx(8);
 
     public CornerFrameLayout(Context context) {
         super(context);
-        init();
+        init(context, null);
     }
 
-    public CornerFrameLayout(Context context, AttributeSet attrs) {
+    public CornerFrameLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context, attrs);
     }
 
-    public CornerFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CornerFrameLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context, attrs);
     }
 
-    private void init() {
-        clipPath = new Path();
+    private void init(Context context, @Nullable AttributeSet attrs) {
+        setWillNotDraw(false);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CornerViewGroup);
+            cornerRadiusPx = a.getDimension(R.styleable.CornerViewGroup_corner, cornerRadiusPx);
+            a.recycle();
+        }
     }
 
-    public void setCorner(int radii) {
-        setCorner(radii, radii, radii, radii);
-    }
-
-    public void setCorner(float topLeft, float topRight, float bottomLeft, float bottomRight) {
-        this.topLeftRadius = AppBaseUtils.dip2px(topLeft);
-        this.topRightRadius = AppBaseUtils.dip2px(topRight);
-        this.bottomLeftRadius = AppBaseUtils.dip2px(bottomLeft);
-        this.bottomRightRadius = AppBaseUtils.dip2px(bottomRight);
+    /**
+     * 代码设置圆角
+     *
+     * @param dp 圆角，单位 dp
+     */
+    public void setCorner(float dp) {
+        this.cornerRadiusPx = dpToPx(dp);
         invalidate();
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        roundRect.set(0, 0, getWidth(), getHeight());
         clipPath.reset();
-        RectF rect = new RectF(0, 0, w, h);
-        float[] radii = {topLeftRadius, topLeftRadius, topRightRadius, topRightRadius,
-                bottomRightRadius, bottomRightRadius, bottomLeftRadius, bottomLeftRadius};
-        clipPath.addRoundRect(rect, radii, Path.Direction.CW);
+        clipPath.addRoundRect(roundRect, cornerRadiusPx, cornerRadiusPx, Path.Direction.CW);
     }
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
-        int save = canvas.save();
+    public void draw(Canvas canvas) {
+        canvas.save();
         canvas.clipPath(clipPath);
-        super.dispatchDraw(canvas);
-        canvas.restoreToCount(save);
+        super.draw(canvas);
+        canvas.restore();
     }
-}    
+
+    private float dpToPx(float dp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
+    }
+}

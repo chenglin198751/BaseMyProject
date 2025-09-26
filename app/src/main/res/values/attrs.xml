@@ -69,4 +69,10 @@
         <attr name="android:maxLines" />
         <attr name="ui_maxNumber" />
     </declare-styleable>
+
+    <declare-styleable name="CornerViewGroup">
+        <!-- 圆角大小 -->
+        <attr name="corner" format="dimension" />
+    </declare-styleable>
+
 </resources>

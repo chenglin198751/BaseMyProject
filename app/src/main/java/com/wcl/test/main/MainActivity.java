@@ -35,6 +35,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             R.string.host_first_tab, R.string.host_second_tab,
             R.string.host_third_tab, R.string.host_fourth_tab
     };
+    @SuppressWarnings("unchecked")
     private final Class<? extends BaseFragment>[] FRAGMENTS = new Class[]{
             MainFirstFragment.class, MainSecondFragment.class, MainThirdFragment.class, MainFourthFragment.class
     };

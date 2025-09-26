@@ -1,60 +1,61 @@
 package com.wcl.test.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
+import android.graphics.Path;
 import android.graphics.RectF;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.util.TypedValue;
+import android.widget.LinearLayout;
 
-import com.wcl.test.utils.AppBaseUtils;
+import androidx.annotation.Nullable;
+
+import com.wcl.test.R;
 
 /**
- * Created by chenglin on 2017-6-21.
+ * 带圆角的 LinearLayout
+ * 支持 XML 属性和代码设置圆角
  */
+public class CornerRelativeLayout extends LinearLayout {
 
-public class CornerRelativeLayout extends RelativeLayout {
-    public CornerRelativeLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
-    }
+    private final RectF roundRect = new RectF();
+    private final Path clipPath = new Path();
+    private float cornerRadiusPx = dpToPx(8);
 
     public CornerRelativeLayout(Context context) {
         super(context);
-        init();
+        init(context, null);
     }
 
-    private final RectF roundRect = new RectF();
-    private int corner = 4;
-    private final Paint maskPaint = new Paint();
-    private final Paint zonePaint = new Paint();
+    public CornerRelativeLayout(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
+    }
 
-    private void init() {
-        maskPaint.setAntiAlias(true);
-        maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+    public CornerRelativeLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs);
+    }
 
-        zonePaint.setAntiAlias(true);
-        zonePaint.setColor(Color.WHITE);
+    private void init(Context context, @Nullable AttributeSet attrs) {
+        setWillNotDraw(false);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
 
-        if (getTag() != null && getTag() instanceof String tag) {
-            if (TextUtils.isDigitsOnly(tag.trim())) {
-                corner = Integer.parseInt(tag.trim());
-            }
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CornerViewGroup);
+            cornerRadiusPx = a.getDimension(R.styleable.CornerViewGroup_corner, cornerRadiusPx);
+            a.recycle();
         }
-        corner = AppBaseUtils.dip2px(corner);
     }
 
     /**
-     * 设置View 的显示角度
+     * 代码设置圆角
      *
-     * @param corner 单位是像素
+     * @param dp 圆角，单位 dp
      */
-    public void setCorner(int corner) {
-        this.corner = corner;
+    public void setCorner(float dp) {
+        this.cornerRadiusPx = dpToPx(dp);
         invalidate();
     }
 
@@ -62,14 +63,20 @@ public class CornerRelativeLayout extends RelativeLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         roundRect.set(0, 0, getWidth(), getHeight());
+        clipPath.reset();
+        clipPath.addRoundRect(roundRect, cornerRadiusPx, cornerRadiusPx, Path.Direction.CW);
     }
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.saveLayer(roundRect, zonePaint, Canvas.ALL_SAVE_FLAG);
-        canvas.drawRoundRect(roundRect, corner, corner, zonePaint);
-        canvas.saveLayer(roundRect, maskPaint, Canvas.ALL_SAVE_FLAG);
+        canvas.save();
+        canvas.clipPath(clipPath);
         super.draw(canvas);
         canvas.restore();
+    }
+
+    private float dpToPx(float dp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
     }
 }
