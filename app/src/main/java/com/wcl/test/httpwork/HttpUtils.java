@@ -127,8 +127,8 @@ public class HttpUtils {
         AppBaseUtils.getUiHandler().post(r);
     }
 
-    private static boolean isContextValid(Context context) {
-        return context != null && (!(context instanceof Activity) || (!((Activity) context).isFinishing() && !((Activity) context).isDestroyed()));
+    private static boolean isDestroyed(Context context) {
+        return context == null || (context instanceof Activity && (((Activity) context).isFinishing() || ((Activity) context).isDestroyed()));
     }
 
     private static String parseResponseBody(Response response) throws IOException {
@@ -159,13 +159,13 @@ public class HttpUtils {
         return new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (!isContextValid(context)) return;
+                if (isDestroyed(context)) return;
                 postToUi(() -> callback.onResponse(false, e.toString()));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!isContextValid(context)) return;
+                if (isDestroyed(context)) return;
                 String result = response.isSuccessful() && response.body() != null ? parseResponseBody(response) : null;
                 postToUi(() -> callback.onResponse(response.isSuccessful() && result != null, result != null ? result : response.toString()));
             }
@@ -214,7 +214,7 @@ public class HttpUtils {
     }
 
     /**
-     * 同步 GET/POST
+     * 同步 GET 请求
      **/
     public static String syncGet(final String url) {
         Request request = new Request.Builder().url(url).get().build();
@@ -227,6 +227,9 @@ public class HttpUtils {
         }
     }
 
+    /**
+     * 同步 POST 请求
+     **/
     public static String syncPost(final String url, Map<String, Object> params) {
         if (params == null) params = new HashMap<>();
         addCommonData(params);
@@ -374,7 +377,7 @@ public class HttpUtils {
 
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if (sb.isEmpty() && !url.contains("?")) {
+            if (sb.length() == 0 && !url.contains("?")) {
                 sb.append("?").append(entry.getKey()).append("=").append(entry.getValue());
             } else {
                 sb.append("&").append(entry.getKey()).append("=").append(entry.getValue());
