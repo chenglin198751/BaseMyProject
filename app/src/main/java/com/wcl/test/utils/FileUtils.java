@@ -2,14 +2,13 @@ package com.wcl.test.utils;
 
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.wcl.test.base.BaseApp;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -17,12 +16,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileUtils {
+
+    private static final String TAG = "FileUtils";
 
     /**
      * 不需要存储权限
@@ -45,14 +44,11 @@ public class FileUtils {
         return file.getAbsolutePath();
     }
 
-    /**
-     * 得到文件夹大小
-     */
     public static long getFolderSize(File folder) {
         long size = 0;
         if (folder.isDirectory()) {
             File[] files = folder.listFiles();
-            if (files == null || files.length == 0) {
+            if (files == null) {
                 return size;
             }
             for (File file : files) {
@@ -68,188 +64,136 @@ public class FileUtils {
         return size;
     }
 
-    /**
-     * 删文件或者目录
-     */
     public static void delete(String file2) {
         File file = new File(file2);
-        if (file.exists()) {
-            if (file.isFile()) {
-                file.delete();
-            } else if (file.isDirectory()) {
-                File files[] = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    delete(files[i].getAbsolutePath());
-                }
-            }
-            file.delete();
-        }
-    }
+        if (!file.exists()) return;
 
-    /**
-     * 把String字符串追加写入文件
-     */
-    public static void writeFile(String file_path, String text) {
-        if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
+        if (file.isFile()) {
+            boolean deleted = file.delete();
+            if (!deleted) {
+                Log.e(TAG, "Failed to delete file: " + file2);
+            }
             return;
         }
 
-        try {
-            // 追加模式写入
-            FileWriter fileWriter = new FileWriter(file_path, true);
-            fileWriter.write(text);
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File subFile : files) {
+                delete(subFile.getAbsolutePath());
+            }
+        }
+
+        boolean deleted = file.delete();
+        if (!deleted) {
+            Log.e(TAG, "Failed to delete directory: " + file2);
         }
     }
 
-    /**
-     * 读取文件，返回String
-     */
-    private static String readFileString(String file_path) {
-        if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
-            return null;
+    public static void writeFile(String file_path, String text) {
+        if (TextUtils.isEmpty(file_path)) return;
+
+        File file = new File(file_path);
+        if (!file.exists()) {
+            try {
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
+                file.createNewFile();
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to create file: " + file_path, e);
+                return;
+            }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                Path path = Paths.get(file_path);
-                return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            StringBuilder contentBuilder = new StringBuilder();
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(file_path));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    contentBuilder.append(line).append("\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return contentBuilder.toString();
+        try (FileWriter fileWriter = new FileWriter(file_path, true)) {
+            fileWriter.write(text);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to write file: " + file_path, e);
+        }
+    }
+
+    private static String readFileString(String file_path) {
+        if (TextUtils.isEmpty(file_path)) return null;
+
+        try {
+            Path path = Paths.get(file_path);
+            return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to read file as string: " + file_path, e);
         }
         return null;
     }
 
     public static List<String> readFileLines(String filePath) {
         List<String> lines = new ArrayList<>();
+        if (TextUtils.isEmpty(filePath)) return lines;
+
         try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                lines = Files.readAllLines(Paths.get(filePath));
-            } else {
-                FileReader reader = new FileReader(filePath);
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    lines.add(line);
-                }
-                bufferedReader.close();
-                reader.close();
-            }
+            Path path = Paths.get(filePath);
+            lines.addAll(Files.readAllLines(path, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to read file lines: " + filePath, e);
         }
         return lines;
     }
 
     public static void writeFileLines(String filePath, Iterable<String> lines) {
+        if (TextUtils.isEmpty(filePath)) return;
+
+        File file = new File(filePath);
         try {
-            // 覆盖模式写入
-            FileWriter fileWriter = new FileWriter(filePath, false);
-            for (String line : lines) {
-                fileWriter.write(line);
-                fileWriter.write(System.lineSeparator());
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
             }
-            fileWriter.close();
+            try (FileWriter fileWriter = new FileWriter(file, false)) {
+                for (String line : lines) {
+                    fileWriter.write(line);
+                    fileWriter.write(System.lineSeparator());
+                }
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to write file lines: " + filePath, e);
         }
     }
 
     public static void copyDirectory(File fromDir, File toDir) {
-        try {
-            if (!fromDir.isDirectory()) {
-                return;
-            }
+        if (!fromDir.isDirectory()) return;
 
-            if (!toDir.exists()) {
-                toDir.mkdirs();
-            }
-
-            File[] files = fromDir.listFiles();
-            for (File file : files) {
-                String strFrom = fromDir + File.separator + file.getName();
-                String strTo = toDir + File.separator + file.getName();
-                if (file.isDirectory()) {
-                    copyDirectory(new File(strFrom), new File(strTo));
-                }
-                if (file.isFile()) {
-                    copyFile(new File(strFrom), new File(strTo));
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("copy Directory error = " + e.toString());
-        }
-
-    }
-
-    public static void copyFile(File source, File dest) {
-        if (source == null || dest == null) {
+        if (!toDir.exists() && !toDir.mkdirs()) {
+            Log.e(TAG, "Failed to create target directory: " + toDir.getAbsolutePath());
             return;
         }
 
-        try {
-            if (dest.exists()) {
-                dest.delete();
-            }
+        File[] files = fromDir.listFiles();
+        if (files == null) return;
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Files.copy(source.toPath(), dest.toPath());
+        for (File file : files) {
+            File targetFile = new File(toDir, file.getName());
+            if (file.isDirectory()) {
+                copyDirectory(file, targetFile);
             } else {
-                FileInputStream sourceOutStream = new FileInputStream(source);
-                FileOutputStream targetOutStream = new FileOutputStream(dest);
-                FileChannel sourceChannel = sourceOutStream.getChannel();
-                FileChannel targetChannel = targetOutStream.getChannel();
-                sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
-                sourceChannel.close();
-                targetChannel.close();
-                sourceOutStream.close();
-                targetOutStream.close();
+                copyFile(file, targetFile);
             }
-        } catch (IOException e) {
-            System.out.println("copy file error = " + e);
         }
     }
 
-    public static String MD5(String input) {
+    public static void copyFile(File source, File dest) {
+        if (source == null || dest == null) return;
+
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(input.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : messageDigest) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
+            if (dest.exists() && !dest.delete()) {
+                Log.e(TAG, "Failed to delete existing file: " + dest.getAbsolutePath());
+                return;
             }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+
+            if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
+                Log.e(TAG, "Failed to create parent directories for: " + dest.getAbsolutePath());
+                return;
+            }
+
+            Files.copy(source.toPath(), dest.toPath());
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to copy file from " + source.getAbsolutePath() + " to " + dest.getAbsolutePath(), e);
         }
-        return null;
     }
 }

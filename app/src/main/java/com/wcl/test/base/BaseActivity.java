@@ -18,7 +18,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -26,7 +28,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.gson.Gson;
 import com.wcl.test.R;
 import com.wcl.test.helper.MainTitleHelper;
-import com.wcl.test.main.MainActivity;
+import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
@@ -34,42 +36,31 @@ import com.wcl.test.widget.WaitDialog;
 import java.util.List;
 
 /**
- * Activity的基类
+ * Activity 基类
  *
  * @author weiChengLin 2013-06-20
  */
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
-    private BroadcastReceiver mBroadcastReceiver = null;
-    protected final static Gson gson = AppConstants.gson;
+    public static final String CLASS_NAME = "MainActivity";
+    protected static final Gson gson = AppConstants.gson;
+
+    private BroadcastReceiver mBroadcastReceiver;
     private MainTitleHelper mTitleHelper;
-    private BaseViewHelper mBaseViewHelper = null;
+    private BaseViewHelper mBaseViewHelper;
     private WaitDialog mWaitDialog;
     private RelativeLayout mBaseRootView;
-    private View mContentView = null;
+    private View mContentView;
     private ViewGroup mNestedParentLayout;
-    public WindowInsetsControllerCompat windowInsetsController;
 
     @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (AppConstants.Toggle.isGrayscale) {
-            Paint paint = new Paint();
-            ColorMatrix colorMatrix = new ColorMatrix();
-            colorMatrix.setSaturation(0f);
-            paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-            getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
-        }
-
-        windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        setLightStatusBarColor(true);
-        //设置是否沉浸状态栏，false 表示沉浸，true表示不沉浸
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        applyGrayScaleIfNeeded();
 
         if (onKeepSingleActivity()) {
             Bundle bundle = new Bundle();
-            bundle.putString("activity_name", this.getClass().getName());
+            bundle.putString("activity_name", getClass().getName());
             EventBus.sendBroadcast(EventBus.System.ACTION_KEEP_SINGLE_ACTIVITY, bundle);
         }
         registerBroadcastReceiver();
@@ -83,46 +74,47 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             mTitleHelper.setTitle(getTitle().toString());
         }
 
+        setupSystemBars();
+        setupInsetsIfNeeded();
+    }
+
+    private void applyGrayScaleIfNeeded() {
+        if (AppConstants.Toggle.isGrayscale) {
+            Paint paint = new Paint();
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0f);
+            paint.setColorFilter(new ColorMatrixColorFilter(matrix));
+            getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
+        }
+    }
+
+    private void setupSystemBars() {
+        // 边到边（edge-to-edge），false沉浸式，true不沉浸
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        if (!AppBaseUtils.isEdgeToEdge()) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
+        // 状态栏黑色文字
+        View decorView = getWindow().getDecorView();
+        new WindowInsetsControllerCompat(getWindow(), decorView)
+                .setAppearanceLightStatusBars(true);
+    }
+
+    // 是否显示在顶部挖口屏内
+    private void setupInsetsIfNeeded() {
+        if (!onDisplayInCutoutMode()) {
+            ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
+                int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+                int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+                v.setPadding(0, statusBarHeight, 0, navBarHeight);
+                return insets;
+            });
+        }
     }
 
     public BaseActivity getContext() {
         return this;
-    }
-
-    /**
-     * 已弃用，请使用 {@link #setContentLayout}.
-     */
-    @Deprecated
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
-    }
-
-    /**
-     * 已弃用，请使用 {@link #setContentLayout}.
-     */
-    @Deprecated
-    @Override
-    public void setContentView(View view) {
-        super.setContentView(view);
-    }
-
-    /**
-     * 已弃用，请使用 {@link #setContentLayout}.
-     */
-    @Deprecated
-    @Override
-    public void setContentView(View view, ViewGroup.LayoutParams params) {
-        super.setContentView(view, params);
-    }
-
-    /**
-     * 已弃用，请使用 {@link #setContentLayout}.
-     */
-    @Deprecated
-    @Override
-    public void addContentView(View view, ViewGroup.LayoutParams params) {
-        super.addContentView(view, params);
     }
 
     /**
@@ -139,9 +131,9 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     public final void setContentLayout(final View layoutView) {
         if (mContentView != null && mContentView.getParent() != null) {
             mBaseRootView.removeView(mContentView);
-            mContentView = null;
         }
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.addRule(RelativeLayout.BELOW, R.id.main_title);
         mContentView = layoutView;
         mBaseRootView.addView(mContentView, params);
@@ -158,7 +150,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     @Override
     public void setTitle(CharSequence title) {
-        mTitleHelper.setTitle(title.toString());
+        mTitleHelper.setTitle(title != null ? title.toString() : "");
     }
 
     /**
@@ -170,6 +162,58 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         return false;
     }
 
+    /**
+     * 是否显示在顶部挖口屏内
+     */
+    protected boolean onDisplayInCutoutMode() {
+        return false;
+    }
+
+    @CallSuper
+    @Override
+    public void onBroadcastReceiver(String action, Bundle bundle) {
+        if (EventBus.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(action) && onKeepSingleActivity()) {
+            String className = getClass().getName();
+            if (bundle != null && className.equals(bundle.getString("activity_name"))) {
+                finish();
+            }
+        } else if (EventBus.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
+            if (!getClass().getSimpleName().equals(CLASS_NAME)) {
+                finish();
+            }
+        } else {
+            //通知Activity里面所有的fragment接收广播
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof BaseFragment && fragment.isAdded()) {
+                    ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
+                }
+            }
+        }
+    }
+
+    private void registerBroadcastReceiver() {
+        if (mBroadcastReceiver != null) return;
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (EventBus.ACTION_BASE_BROADCAST.equals(intent.getAction())) {
+                    String childAction = intent.getStringExtra("action");
+                    onBroadcastReceiver(childAction, intent.getBundleExtra("bundle"));
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(EventBus.ACTION_BASE_BROADCAST);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        if (mBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+            mBroadcastReceiver = null;
+        }
+    }
+
     @CallSuper
     @Override
     protected void onDestroy() {
@@ -177,54 +221,17 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         unregisterBroadcastReceiver();
     }
 
-
-    @CallSuper
-    @Override
-    public void onBroadcastReceiver(String action, Bundle bundle) {
-        if (EventBus.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(action)) {
-            //根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
-            if (onKeepSingleActivity()) {
-                String className = this.getClass().getName();
-                if (bundle != null && className.equals(bundle.getString("activity_name"))) {
-                    finish();
-                }
-            }
-        } else if (EventBus.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
-            //只保留MainActivity不关闭
-            if (!this.getClass().getSimpleName().equals(MainActivity.CLASS_NAME)) {
-                finish();
-            }
-        } else if (EventBus.System.ACTION_BASE_BROADCAST.equals(action)) {
-            //通知Activity里面所有的fragment接收广播
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-            if (fragments.size() > 0) {
-                for (Fragment fragment : fragments) {
-                    if (fragment instanceof BaseFragment) {
-                        ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * 显示等待的对话框
-     */
     @Override
     public final WaitDialog showWaitDialog() {
         if (mWaitDialog == null) {
-            mWaitDialog = new WaitDialog(getContext());
+            mWaitDialog = new WaitDialog(this);
         }
-
         if (!mWaitDialog.isShowing() && !isFinishing()) {
             mWaitDialog.show();
         }
         return mWaitDialog;
     }
 
-    /**
-     * 取消等待的对话框
-     */
     @Override
     public final void dismissWaitDialog() {
         if (mWaitDialog != null && !isFinishing()) {
@@ -237,13 +244,8 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      */
     @Override
     public final void showProgress(String text) {
-        hideProgress();
-        if (!TextUtils.isEmpty(text)) {
-            mBaseViewHelper.setLoadingText(text);
-        } else {
-            mBaseViewHelper.setLoadingText(null);
-        }
-        addLoadView();
+        mBaseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
+        attachHelperView();
     }
 
     /**
@@ -251,30 +253,13 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      */
     @Override
     public final void hideProgress() {
-        clearLoadingView();
+        detachHelperView();
     }
 
-    /**
-     * 清除contentView里面的加载进度
-     */
-    private void clearLoadingView() {
-        if (mBaseViewHelper.getView() == null) {
-            return;
-        }
-        ViewGroup parent = (ViewGroup) mBaseViewHelper.getView().getParent();
-        if (parent != null) {
-            parent.removeView(mBaseViewHelper.getView());
-        }
-    }
-
-    /**
-     * 显示没有网络的界面
-     */
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
-        hideNoNetView();
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
-        addLoadView();
+        attachHelperView();
     }
 
     /**
@@ -282,7 +267,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      */
     @Override
     public final void hideNoNetView() {
-        clearLoadingView();
+        detachHelperView();
     }
 
     /**
@@ -290,9 +275,13 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      */
     @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
-        hideEmptyView();
         mBaseViewHelper.showEmptyText(text, listener);
-        addLoadView();
+        attachHelperView();
+    }
+
+    @Override
+    public final void hideEmptyView() {
+        detachHelperView();
     }
 
     /**
@@ -303,60 +292,26 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         mNestedParentLayout = parent;
     }
 
-    /**
-     * 设置状态栏底色和文字颜色，true为黑色，false为白色
-     */
-    protected void setLightStatusBarColor(boolean isLightBar) {
-        //设置状态栏底色为白色
-        getWindow().setStatusBarColor(Color.WHITE);
-        // 控制状态栏字体颜色，true为黑色，false为白色
-        windowInsetsController.setAppearanceLightStatusBars(isLightBar);
-    }
-
-    /**
-     * 清除空数据的界面
-     */
-    @Override
-    public final void hideEmptyView() {
-        clearLoadingView();
-    }
-
-    private void addLoadView() {
-        mBaseViewHelper.getView().setClickable(true);
+    private void attachHelperView() {
+        View view = mBaseViewHelper.getView();
+        if (view.getParent() != null) ((ViewGroup) view.getParent()).removeView(view);
+        view.setClickable(true);
 
         if (mNestedParentLayout != null) {
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
-            mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
+            mNestedParentLayout.addView(view,
+                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             params.addRule(RelativeLayout.BELOW, R.id.main_title);
-            mBaseRootView.addView(mBaseViewHelper.getView(), params);
+            mBaseRootView.addView(view, params);
         }
     }
 
-    private void registerBroadcastReceiver() {
-        if (mBroadcastReceiver == null) {
-            mBroadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (intent.getAction().equals(EventBus.System.ACTION_BASE_BROADCAST)) {
-                        String myAction = intent.getStringExtra("action");
-                        onBroadcastReceiver(myAction, intent.getBundleExtra("bundle"));
-                    }
-                }
-            };
-
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(EventBus.System.ACTION_BASE_BROADCAST);
-            LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, intentFilter);
+    private void detachHelperView() {
+        View view = mBaseViewHelper.getView();
+        if (view != null && view.getParent() instanceof ViewGroup) {
+            ((ViewGroup) view.getParent()).removeView(view);
         }
     }
-
-    private void unregisterBroadcastReceiver() {
-        if (mBroadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mBroadcastReceiver);
-            mBroadcastReceiver = null;
-        }
-    }
-
 }

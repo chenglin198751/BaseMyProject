@@ -259,6 +259,7 @@
 
     1、防止重复多次点击的类：OnSingleClickListener 
     2、比如，3秒内点击10次。支持自定义点击时间间隔和次数：OnMultipleClickListener
+    3、简单的防止多次点击的类：if (SingleClickUtils.singleClick(R.id.button + "")){}
 
 **60、js和android WebView通信：**
 
@@ -291,7 +292,7 @@
 **67、ConsecutiveScrollerLayout 是Android下支持多个滑动布局：**
 
     (RecyclerView、WebView、ScrollView等)和普通控件(TextView、ImageView、LinearLayou、自定义View等)持续连贯滑动的容器,
-    它使所有的子View像一个整体一样连续顺畅滑动。并且支持布局吸顶功能： https://github.com/donkingliang/ConsecutiveScroller
+    它使所有的子View像一个整体一样连续顺畅滑动。并且支持布局吸顶功能： ConsecutiveScroller
 
 **68、一款时间选择器：**
 
@@ -544,6 +545,8 @@
     2、完全仿微信的图片选择，并且提供了多种图片加载接口，选择图片后可以旋转，可以裁剪成矩形或圆形，可以配置各种其他的参数：
     https://github.com/jeasonlzy/ImagePicker
 
+    3、图片选择器：PhotosPicker
+
 
 **106、Android8.0 及以上TextView控件可以适应宽度显示全文字：**
     
@@ -566,3 +569,7 @@
 
     AgentWeb 是一个基于的 Android WebView ，极度容易使用以及功能强大的库，提供了 Android WebView 一系列的问题解决方案 ，并且轻量和极度灵活，详细使用请参照上面的 Sample
     https://github.com/Justson/AgentWeb?tab=readme-ov-file
+
+**109、DragRelativeLayout：**
+
+    可实现自由拖拽的布局

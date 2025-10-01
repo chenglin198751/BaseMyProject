@@ -1,0 +1,21 @@
+7zxa.dll             7z decompression library.
+Default.SFX          GUI RAR SFX module
+Descript.ion         File descriptions
+License.txt          License for use and distribution
+Order.htm            Registration information
+Rar.exe              Console RAR
+Rar.txt              Console RAR manual
+RarLng.dll           Language resources
+RarExt.dll           WinRAR shell extension
+RarFiles.lst         Sort order for solid archives
+ReadMe.txt           Brief WinRAR overview
+Uninstall.exe        Uninstall program
+Uninstall.lst        Uninstall list file
+UnRAR.exe            Freeware tool to extract from RAR archives
+WhatsNew.txt         What is new in this version
+WinCon.SFX           Console RAR SFX module
+WinRAR.exe           WinRAR
+WinRAR.chm           WinRAR help file
+Zip.SFX              GUI ZIP SFX module
+RarExt64.dll         WinRAR shell extension for Windows x64
+UNACEV2.DLL          ACE decompression library

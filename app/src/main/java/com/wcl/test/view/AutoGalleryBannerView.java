@@ -33,6 +33,9 @@ import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.SmartImageLoader;
 
 public class AutoGalleryBannerView extends RelativeLayout implements DefaultLifecycleObserver {
+    private static final long AUTO_PLAY_INTERVAL = 5000L;
+    private static final float MIN_SCALE = 0.8f;
+
     private ViewPager mViewPager;
     private List<BannerDataItem> mDataList = new ArrayList<>();
     private BannerAdapter mAdapter;
@@ -51,22 +54,25 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
     }
 
     public void setDataList(List<BannerDataItem> dataList) {
-        mDataList = dataList;
+        this.mDataList = dataList != null ? dataList : new ArrayList<>();
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     private void init() {
         FragmentActivity activity = (FragmentActivity) AppBaseUtils.getActivityFromContext(getContext());
-        if (activity != null){
+        if (activity != null) {
             activity.getLifecycle().addObserver(this);
         }
 
-        AutoGalleryBannerView.this.setClipChildren(false);
+        setClipChildren(false);
         mViewPager = new ViewPager(getContext());
         mViewPager.setPageMargin(-AppBaseUtils.dip2px(24f));
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.setPageTransformer(false, new ScaleTransformer());
-
         mViewPager.setClipChildren(false);
+
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -2);
         params.leftMargin = AppBaseUtils.dip2px(20f);
         params.rightMargin = AppBaseUtils.dip2px(20f);
@@ -79,12 +85,9 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
         isFinish = false;
-        startTimer(new Runnable() {
-            @Override
-            public void run() {
-                if (isAutoPlay) {
-                    mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
-                }
+        startTimer(() -> {
+            if (isAutoPlay && mViewPager != null) {
+                mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
             }
         });
     }
@@ -110,76 +113,100 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        int action = ev.getAction();
-        if (action == MotionEvent.ACTION_UP
-                || action == MotionEvent.ACTION_CANCEL
-                || action == MotionEvent.ACTION_OUTSIDE) {
-            isAutoPlay = true;
-        } else if (action == MotionEvent.ACTION_DOWN) {
-            isAutoPlay = false;
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+                isAutoPlay = false;
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_OUTSIDE:
+                isAutoPlay = true;
+                break;
         }
         return super.dispatchTouchEvent(ev);
     }
 
     private void startTimer(final Runnable runnable) {
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
         mTimer = new Timer();
         mTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
             public void run() {
                 if (!isFinish) {
                     AppBaseUtils.getUiHandler().post(runnable);
                 } else {
                     cancel();
-                    mTimer.cancel();
-                    mTimer = null;
+                    if (mTimer != null) {
+                        mTimer.cancel();
+                        mTimer = null;
+                    }
                 }
             }
-        }, 5 * 1000, 5 * 1000);
+        }, AUTO_PLAY_INTERVAL, AUTO_PLAY_INTERVAL);
     }
 
     private class BannerAdapter extends PagerAdapter {
         private Context mContext;
 
         private BannerAdapter(Context context) {
-            mContext = context;
+            this.mContext = context;
         }
 
         @Override
         public int getCount() {
-            return Integer.MAX_VALUE;
+            return mDataList.isEmpty() ? 0 : Integer.MAX_VALUE;
         }
 
         @Override
-        public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
-            return view == o;
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
         }
 
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.auto_gallery_banner_item, null);
-            int newPos = (position - 1 + mDataList.size()) % mDataList.size();
+            if (mDataList.isEmpty()) {
+                return new View(mContext); // 返回空视图防止崩溃
+            }
+
+            View view = LayoutInflater.from(mContext).inflate(R.layout.auto_gallery_banner_item, container, false);
+            int index = position % mDataList.size();
+            BannerDataItem item = mDataList.get(index);
+
             ImageView img = view.findViewById(R.id.image);
             ImageView childImg = view.findViewById(R.id.child_img);
-            SmartImageLoader.load(img, mDataList.get(newPos).url, -1, -1, 0);
-            setImageBitmap(childImg, mDataList.get(newPos).childUrl);
+
+            SmartImageLoader.load(img, item.url, -1, -1, 0);
+            setImageBitmap(childImg, item.childUrl);
+
             container.addView(view);
             return view;
         }
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            container.removeView((View) object);
+            View view = (View) object;
+            ImageView childImg = view.findViewById(R.id.child_img);
+            Glide.with(view).clear(childImg); // 清理 Glide 加载任务
+            container.removeView(view);
         }
     }
 
     private void setImageBitmap(final ImageView img, String url) {
+        if (img == null || url == null || url.isEmpty()) return;
+
         Glide.with(getContext())
                 .asBitmap()
                 .load(url)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NotNull Bitmap resource, Transition<? super Bitmap> transition) {
-                        img.setImageBitmap(resource);
+                        if (img != null) {
+                            img.setImageBitmap(resource);
+                        }
                     }
                 });
     }
@@ -189,36 +216,26 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
         public String childUrl;
     }
 
-
-    private final class ScaleTransformer implements ViewPager.PageTransformer {
-        private final float MINSCALE = 0.8f;//最小缩放值
-
-        /**
-         * position取值特点：
-         * 假设页面从0～1，则：
-         * 第一个页面position变化为[0,-1]
-         * 第二个页面position变化为[1,0]
-         *
-         * @param view
-         * @param v
-         */
+    private static final class ScaleTransformer implements ViewPager.PageTransformer {
         @Override
-        public void transformPage(@NonNull View view, float v) {
+        public void transformPage(@NonNull View view, float position) {
             View childImg = view.findViewById(R.id.child_img);
             float scale;
 
-
-            if (v > 1 || v < -1) {
-                scale = MINSCALE;
-            } else if (v < 0) {
-                scale = MINSCALE + (1 + v) * (1 - MINSCALE);
+            if (position > 1 || position < -1) {
+                scale = MIN_SCALE;
+            } else if (position < 0) {
+                scale = MIN_SCALE + (1 + position) * (1 - MIN_SCALE);
             } else {
-                scale = MINSCALE + (1 - v) * (1 - MINSCALE);
+                scale = MIN_SCALE + (1 - position) * (1 - MIN_SCALE);
             }
-            view.setScaleY(scale);
+
             view.setScaleX(scale);
-            childImg.setScaleY(scale);
-            childImg.setScaleX(scale);
+            view.setScaleY(scale);
+            if (childImg != null) {
+                childImg.setScaleX(scale);
+                childImg.setScaleY(scale);
+            }
         }
     }
 }

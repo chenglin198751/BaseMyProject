@@ -1,6 +1,5 @@
 package com.wcl.test.base;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,22 +18,20 @@ import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
 
-import java.util.List;
-
 /**
- * Created by chenglin on 2017-9-14.
+ * BaseFragment 基类
  */
-
 public abstract class BaseFragment extends Fragment implements ImplBaseView, OnBroadcastListener {
-    protected final static Gson gson = AppConstants.gson;
-    private BaseViewHelper mBaseViewHelper = null;
-    private RelativeLayout mContentView;
-    private ViewGroup mNestedParentLayout;
+    protected static final Gson gson = AppConstants.gson;
+
+    private BaseViewHelper baseViewHelper;
+    private RelativeLayout rootLayout;
+    private ViewGroup nestedParentLayout;
 
     @NonNull
     public BaseActivity getContext() {
-        if (getActivity() == null) {
-            throw new NullPointerException("getActivity() is NullPointerException");
+        if (!(getActivity() instanceof BaseActivity)) {
+            throw new IllegalStateException("Activity must be a BaseActivity");
         }
         return (BaseActivity) getActivity();
     }
@@ -42,12 +39,9 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     @CallSuper
     @Override
     public void onBroadcastReceiver(String action, Bundle bundle) {
-        List<Fragment> fragments = getChildFragmentManager().getFragments();
-        if (fragments.size() > 0) {
-            for (Fragment childFragment : fragments) {
-                if (childFragment instanceof BaseFragment) {
-                    ((BaseFragment) childFragment).onBroadcastReceiver(action, bundle);
-                }
+        for (Fragment childFragment : getChildFragmentManager().getFragments()) {
+            if (childFragment instanceof BaseFragment && childFragment.isAdded()) {
+                ((BaseFragment) childFragment).onBroadcastReceiver(action, bundle);
             }
         }
     }
@@ -55,40 +49,31 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBaseViewHelper = new BaseViewHelper(getContext());
+        baseViewHelper = new BaseViewHelper(getContext());
     }
 
     @CallSuper
     @Deprecated
     @Override
-    public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mContentView = (RelativeLayout) inflater.inflate(R.layout.base_fragment_layout, container, false);
-        return mContentView;
+    public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        rootLayout = (RelativeLayout) inflater.inflate(R.layout.base_fragment_layout, container, false);
+        return rootLayout;
     }
 
     @CallSuper
     @Deprecated
     @Override
-    public final void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (getContentLayout() > 0) {
-            mContentView.addView(View.inflate(getContext(), getContentLayout(), null), new RelativeLayout.LayoutParams(-1, -1));
+            View content = LayoutInflater.from(getContext()).inflate(getContentLayout(), rootLayout, false);
+            rootLayout.addView(content, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else if (getContentView() != null) {
-            mContentView.addView(getContentView(), new RelativeLayout.LayoutParams(-1, -1));
+            rootLayout.addView(getContentView(), new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
 
         onViewCreated(savedInstanceState, view);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     protected abstract int getContentLayout();
@@ -98,133 +83,93 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
     }
 
     /**
-     * 所有的业务逻辑在这里写
+     * 所有业务逻辑在这里处理
      */
     protected abstract void onViewCreated(Bundle savedInstanceState, View view);
 
     /**
-     * 响应Activity 的 onBackPressed() 方法，需要手动实现。
+     * 响应 Activity 的 onBackPressed()
      *
-     * @return true 是可以返回，否则不能返回
+     * @return true 可以返回，false 禁止返回
      */
     public boolean onBackPressed() {
         return true;
     }
 
-    /**
-     * 显示等待的对话框
-     */
     @Override
     public final WaitDialog showWaitDialog() {
         return getContext().showWaitDialog();
     }
 
     @Override
-    public void dismissWaitDialog() {
+    public final void dismissWaitDialog() {
         getContext().dismissWaitDialog();
     }
 
-    /**
-     * 显示嵌入式进度条
-     */
     @Override
     public final void showProgress(String text) {
         clearLoadingView();
-        if (!TextUtils.isEmpty(text)) {
-            mBaseViewHelper.setLoadingText(text);
-        } else {
-            mBaseViewHelper.setLoadingText(null);
-        }
-
-        addLoadView();
+        baseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
+        attachHelperView();
     }
 
-    public void setShowStyle(int style) {
-        mBaseViewHelper.setShowStyle(style);
+    public void setLoadingShowPosition(int position) {
+        baseViewHelper.setLoadingShowPosition(position);
     }
 
-
-    /**
-     * 清除嵌入式进度条
-     */
     @Override
     public final void hideProgress() {
         clearLoadingView();
     }
 
-    /**
-     * 清除contentView里面的加载进度
-     */
-    private void clearLoadingView() {
-        if (getView() == null) {
-            return;
-        }
-
-        if (mBaseViewHelper.getView() == null) {
-            return;
-        }
-        ViewGroup parent = (ViewGroup) mBaseViewHelper.getView().getParent();
-        if (parent != null) {
-            parent.removeView(mBaseViewHelper.getView());
-        }
-    }
-
-    /**
-     * 显示没有网络的界面
-     */
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
         hideNoNetView();
-        mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
-        addLoadView();
+        baseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
+        attachHelperView();
     }
 
-    /**
-     * 清除没有网络的界面
-     */
     @Override
     public final void hideNoNetView() {
         clearLoadingView();
     }
 
-    /**
-     * 显示空数据的界面
-     */
     @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
         hideEmptyView();
-        mBaseViewHelper.showEmptyText(text, listener);
-        addLoadView();
+        baseViewHelper.showEmptyText(text, listener);
+        attachHelperView();
     }
 
-    /**
-     * 清除空数据的界面
-     */
     @Override
     public final void hideEmptyView() {
         clearLoadingView();
     }
 
-    /**
-     * 设置空页面或者无网页面要附加的Parent Layout，不设置是整个父布局。
-     */
     @Override
     public void setNestedParentLayout(ViewGroup parent) {
-        mNestedParentLayout = parent;
+        nestedParentLayout = parent;
     }
 
-    private void addLoadView() {
-        if (getView() == null) {
-            return;
-        }
-        mBaseViewHelper.getView().setClickable(true);
+    private void attachHelperView() {
+        if (getView() == null) return;
 
-        if (mNestedParentLayout != null) {
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -1);
-            mNestedParentLayout.addView(mBaseViewHelper.getView(), params);
+        View helperView = baseViewHelper.getView();
+        if (helperView.getParent() != null)
+            ((ViewGroup) helperView.getParent()).removeView(helperView);
+        helperView.setClickable(true);
+
+        if (nestedParentLayout != null) {
+            nestedParentLayout.addView(helperView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
-            mContentView.addView(mBaseViewHelper.getView(), params);
+            rootLayout.addView(helperView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
+    }
+
+    private void clearLoadingView() {
+        if (getView() == null || baseViewHelper.getView() == null) return;
+
+        ViewGroup parent = (ViewGroup) baseViewHelper.getView().getParent();
+        if (parent != null) parent.removeView(baseViewHelper.getView());
     }
 }

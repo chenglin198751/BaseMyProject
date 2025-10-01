@@ -3,16 +3,6 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
-
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
-        maven { url 'https://maven.aliyun.com/repository/central' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        maven { url 'https://maven.aliyun.com/repository/spring' }
-        maven { url 'https://maven.aliyun.com/repository/spring-plugin' }
-        maven { url 'https://maven.aliyun.com/repository/grails-core' }
-        maven { url 'https://maven.aliyun.com/repository/apache-snapshots' }
         maven { url "https://jitpack.io" }
     }
 }
@@ -22,19 +12,12 @@ dependencyResolutionManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
-
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
-        maven { url 'https://maven.aliyun.com/repository/central' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        maven { url 'https://maven.aliyun.com/repository/spring' }
-        maven { url 'https://maven.aliyun.com/repository/spring-plugin' }
-        maven { url 'https://maven.aliyun.com/repository/grails-core' }
-        maven { url 'https://maven.aliyun.com/repository/apache-snapshots' }
         maven { url "https://jitpack.io" }
     }
 }
 rootProject.name = "BaseMyProject"
 include ':app'
 include ':test_jar_lib'
+
+include ':xm_fast_build_src'
+project(':xm_fast_build_src').projectDir = file('xm/xm_fast_build_src')

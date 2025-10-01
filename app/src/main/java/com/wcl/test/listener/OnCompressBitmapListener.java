@@ -5,4 +5,6 @@ package com.wcl.test.listener;
  */
 public interface OnCompressBitmapListener<T> {
     void onSucceed(T t);
+
+    void onFailed(String s);
 }

@@ -20,7 +20,7 @@ public class AppHelper {
     private final static String PROCESS_NAME = AppBaseUtils.getPackageName();
 
     /**
-     * 判断是不是UI主进程，因为有些东西只能在UI主进程初始化
+     * 判断是不是app主进程，因为有些东西只能在app主进程初始化
      */
     public static boolean isAppMainProcess(Context context) {
         try {

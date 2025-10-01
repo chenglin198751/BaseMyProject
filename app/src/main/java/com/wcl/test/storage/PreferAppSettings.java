@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import com.wcl.test.base.BaseApp;
 
 public class PreferAppSettings {
-    private static String update_dialog_times = "update_dialog_times";//更新对话框
+    private static final String update_dialog_times = "update_dialog_times";//更新对话框
     private static final String LAST_ALBUM_ID = "LAST_ALBUM_ID";
 
     private static SharedPreferences getPreferences(final Context context) {

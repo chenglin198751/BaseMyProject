@@ -1,27 +1,31 @@
 package com.wcl.test.listener;
 
+import android.os.SystemClock;
 import android.view.View;
 
 public abstract class OnSingleClickListener implements View.OnClickListener {
-    private long mLastClickTime;
+    private static final long DEFAULT_INTERVAL = 1000L;
 
-    //时间间隔：比如1000毫秒内只能点击一次
-    private long timeInterval = 1000L;
+    private long lastClickTime;
+    private long interval = DEFAULT_INTERVAL;
 
     public OnSingleClickListener() {
+        this(DEFAULT_INTERVAL);
     }
 
     public OnSingleClickListener(long interval) {
-        this.timeInterval = interval;
+        if (interval <= 0) {
+            throw new IllegalArgumentException("Interval must be greater than 0");
+        }
+        this.interval = interval;
     }
 
     @Override
-    @Deprecated
     public void onClick(View v) {
-        long nowTime = System.currentTimeMillis();
-        if (nowTime - mLastClickTime > timeInterval) {
+        long nowTime = SystemClock.elapsedRealtime();
+        if (nowTime - lastClickTime > interval) {
             onSingleClick(v);
-            mLastClickTime = nowTime;
+            lastClickTime = nowTime;
         }
     }
 

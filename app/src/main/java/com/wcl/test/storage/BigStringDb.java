@@ -14,146 +14,140 @@ import java.util.List;
 
 public class BigStringDb implements BigStringBase {
 
-    private BigStringDb() {
-    }
-
     private static final class InstanceHolder {
-        static final BigStringDb INSTANCE = new BigStringDb();
+        private static final BigStringDb INSTANCE = new BigStringDb();
     }
 
     public static BigStringDb getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
+    private static class DBHelperHolder {
+        private static final BigDbSQLite INSTANCE = new BigDbSQLite();
+    }
+
+    private BigStringDb() {
+    }
+
     @Override
     public List<String> getAllKeys() {
         List<String> keys = new ArrayList<>();
-        BigDbSQLite dbHelper = new BigDbSQLite();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db = DBHelperHolder.INSTANCE.getReadableDatabase();
 
-        String[] columns = new String[]{BigDbSQLite.T_KEY};
-        Cursor cursor = db.query(BigDbSQLite.TABLE_NAME, columns, null, null, null, null, null);
-
-        if (cursor != null) {
+        try (Cursor cursor = db.query(BigDbSQLite.TABLE_NAME, new String[]{BigDbSQLite.T_KEY}, null, null, null, null, null)) {
             while (cursor.moveToNext()) {
                 keys.add(cursor.getString(0));
             }
-            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        db.close();
-        dbHelper.close();
         return keys;
     }
 
     @Override
     public boolean put(String key, String value) {
-        List<String> keys = new ArrayList<>();
-        keys.add(key);
-        List<String> values = new ArrayList<>();
-        values.add(value);
-        return putValues(keys, values);
+        return putValues(Collections.singletonList(key), Collections.singletonList(value));
     }
 
     @Override
     public String get(String key) {
-        List<String> keys = new ArrayList<>();
-        keys.add(key);
-
-        List<String> values = getValues(keys);
-        if (values != null && values.size() > 0) {
-            return values.get(0);
-        } else {
-            return null;
-        }
+        List<String> values = getValues(Collections.singletonList(key));
+        return (values != null && !values.isEmpty()) ? values.get(0) : null;
     }
-
 
     @Override
     public boolean putValues(List<String> keys, List<String> values) {
-        if (keys == null || keys.size() == 0) {
+        if (keys == null || keys.isEmpty() || values == null || values.isEmpty() || keys.size() != values.size()) {
             return false;
-        } else if (values == null || values.size() == 0) {
-            return false;
-        } else if (keys.size() != values.size()) {
-            throw new IllegalArgumentException("keys.size() != values.size()");
         }
 
-        BigDbSQLite dbHelper = new BigDbSQLite();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
+        SQLiteDatabase db = DBHelperHolder.INSTANCE.getWritableDatabase();
+        db.beginTransaction();
         int count = 0;
-        for (int i = 0; i < keys.size(); i++) {
-            ContentValues contents = new ContentValues();
-            contents.put(BigDbSQLite.T_KEY, keys.get(i));
-            contents.put(BigDbSQLite.T_VALUE, values.get(i));
-            long row_id = db.replace(BigDbSQLite.TABLE_NAME, null, contents);
-            if (row_id > 0) {
-                count++;
+
+        try {
+            ContentValues contentValues = new ContentValues();
+            for (int i = 0; i < keys.size(); i++) {
+                contentValues.clear();
+                contentValues.put(BigDbSQLite.T_KEY, keys.get(i));
+                contentValues.put(BigDbSQLite.T_VALUE, values.get(i));
+                long rowId = db.replace(BigDbSQLite.TABLE_NAME, null, contentValues);
+                if (rowId > 0) {
+                    count++;
+                }
             }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
         }
 
-        db.close();
-        dbHelper.close();
         return count == keys.size();
     }
 
     @Override
     public List<String> getValues(List<String> keys) {
-        if (keys == null || keys.size() == 0) {
+        if (keys == null || keys.isEmpty()) {
             return null;
         }
 
         List<String> values = new ArrayList<>();
-        BigDbSQLite dbHelper = new BigDbSQLite();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db = DBHelperHolder.INSTANCE.getReadableDatabase();
 
-        String[] selectionArgs = new String[keys.size()];
-        keys.toArray(selectionArgs);
-
+        String[] selectionArgs = keys.toArray(new String[0]);
         String selection = TextUtils.join(",", Collections.nCopies(keys.size(), "?"));
-        String sql_query = String.format("SELECT %s FROM %s WHERE %s in (%s)", BigDbSQLite.T_VALUE, BigDbSQLite.TABLE_NAME, BigDbSQLite.T_KEY, selection);
 
-        Cursor cursor = db.rawQuery(sql_query, selectionArgs);
-        if (cursor != null) {
+        try (Cursor cursor = db.query(
+                BigDbSQLite.TABLE_NAME,
+                new String[]{BigDbSQLite.T_VALUE},
+                BigDbSQLite.T_KEY + " IN (" + selection + ")",
+                selectionArgs,
+                null, null, null)) {
+
             while (cursor.moveToNext()) {
                 values.add(cursor.getString(0));
             }
-            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        db.close();
-        dbHelper.close();
         return values;
     }
 
     @Override
     public boolean remove(String key) {
-        List<String> keys = new ArrayList<>();
-        keys.add(key);
-        return remove(keys);
+        return remove(Collections.singletonList(key));
     }
 
     @Override
     public boolean remove(List<String> keys) {
-        if (keys == null || keys.size() == 0) {
+        if (keys == null || keys.isEmpty()) {
             return false;
         }
 
-        BigDbSQLite dbHelper = new BigDbSQLite();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
+        SQLiteDatabase db = DBHelperHolder.INSTANCE.getWritableDatabase();
+        db.beginTransaction();
         int count = 0;
-        for (int i = 0; i < keys.size(); i++) {
-            String selection = BigDbSQLite.T_KEY + " = ?";
-            int deletedRows = db.delete(BigDbSQLite.TABLE_NAME, selection, new String[]{keys.get(i)});
-            if (deletedRows > 0) {
-                count++;
+
+        try {
+            for (String key : keys) {
+                int deletedRows = db.delete(
+                        BigDbSQLite.TABLE_NAME,
+                        BigDbSQLite.T_KEY + " = ?",
+                        new String[]{key});
+                if (deletedRows > 0) {
+                    count++;
+                }
             }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
         }
 
-        db.close();
-        dbHelper.close();
         return count == keys.size();
     }
 
@@ -169,15 +163,13 @@ public class BigStringDb implements BigStringBase {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            final String sql = String.format("create table %s(%s primary key,%s)", TABLE_NAME, T_KEY, T_VALUE);
+            final String sql = String.format("CREATE TABLE %s(%s TEXT PRIMARY KEY, %s TEXT)", TABLE_NAME, T_KEY, T_VALUE);
             db.execSQL(sql);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            // 数据库升级逻辑（可根据需要实现）
         }
     }
-
 }
-
-

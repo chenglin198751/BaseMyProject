@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.text.TextUtils;
-import android.view.View;
 
-import com.wcl.test.base.BaseActivity;
 import com.wcl.test.R;
+import com.wcl.test.base.BaseActivity;
 
 /**
  * Created by chenglin on 2017-8-23.
@@ -41,11 +41,10 @@ public class BaseWebViewActivity extends BaseActivity {
         parseParams();
         init();
 
-        getTitleHelper().setReturnListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+
+        getTitleHelper().setReturnListener(() -> {
+            onBackPressed();
+            return kotlin.Unit.INSTANCE;
         });
     }
 

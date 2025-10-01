@@ -1,11 +1,11 @@
 package com.wcl.test.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Scroller;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
@@ -13,18 +13,14 @@ import androidx.annotation.Nullable;
 
 
 public class DragRelativeLayout extends RelativeLayout {
-    public static final int TOUCH_THRESHOLD = 3;
-    public int margin_edge;
-    private Scroller scroller;
+    private static final int TOUCH_THRESHOLD = 10;
+    private static final int MARGIN_EDGE = 0;
     private float downX, downY;
     private float lastX, lastY;
     private float curX, curY;
-    private int lastOffset;
-    private int width, height;
-    private int viewHeight;
-    private int viewWidth;
+    private int mParentWidth, mParentHeight;
     private OnClickListener mListener;
-    private Rect mRect;
+    private ValueAnimator mScrollAnimator;
 
     public DragRelativeLayout(@NonNull Context context) {
         super(context);
@@ -41,38 +37,44 @@ public class DragRelativeLayout extends RelativeLayout {
         init(context, attrs);
     }
 
+
     private void init(Context context, AttributeSet attrs) {
-//        resolveAttr(context, attrs);
-        scroller = new Scroller(getContext());
-        margin_edge = 0;
+
     }
 
-    public void setRectF(Rect rect) {
-        mRect = rect;
-        height = mRect.height();
-        width = mRect.width();
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
     }
 
-//    private void resolveAttr(Context context, AttributeSet attrs) {
-//        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.DragFrameLayout);
-//        margin_edge = array.getDimensionPixelSize(R.styleable.DragFrameLayout_margin_edge, 0);
-//        array.recycle();
-//    }
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mScrollAnimator != null) {
+            mScrollAnimator.cancel();
+            mScrollAnimator = null;
+        }
+    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        viewWidth = getWidth();
-        viewHeight = getHeight();
+        ViewGroup parent = (ViewGroup) getParent();
+        if (parent != null) {
+            mParentWidth = parent.getWidth();
+            mParentHeight = parent.getHeight();
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (scroller.computeScrollOffset()) {
+        if (isAnimatorRunning()) {
             return super.onTouchEvent(event);
         }
+
         curX = event.getRawX();
         curY = event.getRawY();
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = lastX = event.getRawX();
@@ -84,99 +86,84 @@ public class DragRelativeLayout extends RelativeLayout {
                 lastY = curY;
                 break;
             case MotionEvent.ACTION_UP:
-                onScrollEdge();
+                performViewClick();
+                scrollToEdgeAnimation();
                 break;
         }
         return true;
     }
 
+
     private void onMove() {
-        int dx = (int) (curX - lastX);
-        int dy = (int) (curY - lastY);
+        float dx = curX - lastX;
+        float dy = curY - lastY;
 
-        if (getLeft() + dx < margin_edge) {
-            dx = 0;
-        } else if (getLeft() + viewWidth + dx > width - margin_edge) {
-            dx = 0;
+        int newLeft = (int) (getLeft() + dx);
+        int newTop = (int) (getTop() + dy);
+        int newRight = (int) (getRight() + dx);
+        int newBottom = (int) (getBottom() + dy);
+
+        // 限制拖动范围在父 View 内
+        if (newLeft < 0) {
+            newLeft = 0;
+            newRight = getWidth();
+        } else if (newRight > mParentWidth) {
+            newRight = mParentWidth;
+            newLeft = mParentWidth - getWidth();
         }
 
-        if (getTop() + dy < margin_edge) {
-            dy = 0;
-        } else if (getTop() + viewHeight + dy > height - margin_edge) {
-            dy = 0;
+        if (newTop < 0) {
+            newTop = 0;
+            newBottom = getHeight();
+        } else if (newBottom > mParentHeight) {
+            newBottom = mParentHeight;
+            newTop = mParentHeight - getHeight();
         }
-        setPosition1(dx, dy);
-        //setPosition2(dx, dy);
-        //setPosition3(dx, dy);
-        //setPosition4(dx, dy);
+
+        layout(newLeft, newTop, newRight, newBottom);
+        lastX = curX;
+        lastY = curY;
     }
 
-    private void setPosition1(int dx, int dy) {
-        layout(getLeft() + dx, getTop() + dy, getLeft() + viewWidth + dx, getTop() + viewHeight + dy);
+    // 松手后滚动到屏幕边缘
+    private void scrollToEdgeAnimation() {
+        int targetLeft;
+
+        if (getLeft() < mParentWidth / 2 - getWidth() / 2) {
+            targetLeft = 0;
+        } else {
+            targetLeft = mParentWidth;
+        }
+
+        mScrollAnimator = ValueAnimator.ofFloat(curX, targetLeft);
+        mScrollAnimator.addUpdateListener(animation -> {
+            curX = (float) animation.getAnimatedValue();
+            onMove();
+            lastX = curX;
+        });
+        mScrollAnimator.setDuration(300);
+        mScrollAnimator.start();
     }
 
-    private void setPosition2(int dx, int dy) {
-        offsetLeftAndRight(dx);
-        offsetTopAndBottom(dy);
-    }
-
-    int transX = 0;
-    int transY = 0;
-
-    /**
-     * 需要修正实现方式
-     *
-     * @param dx
-     * @param dy
-     */
-    private void setPosition3(int dx, int dy) {
-        transX += dx;
-        transY += dy;
-        setTranslationX(transX);
-        setTranslationY(transY);
-    }
-
-    private void setPosition4(int dx, int dy) {
-        LayoutParams layoutParams = (LayoutParams) getLayoutParams();
-        layoutParams.rightMargin = layoutParams.rightMargin - dx;
-        layoutParams.topMargin = layoutParams.topMargin + dy;
-        setLayoutParams(layoutParams);
-    }
-
-    private void onScrollEdge() {
+    // 拖拽松手后，执行view的点击事件
+    private void performViewClick() {
         if (Math.abs(curX - downX) < TOUCH_THRESHOLD && Math.abs(curY - downY) < TOUCH_THRESHOLD) {
             if (mListener != null) {
+                if (isAnimatorRunning()) {
+                    return;
+                }
                 mListener.onClick(this);
             }
-            return;
         }
-//        int dx;
-//        if (getLeft() > (width - getRight())) {
-//            dx = width - getRight() - margin_edge;
-//        } else {
-//            dx = margin_edge - getLeft();
-//        }
-//        lastOffset = 0;
-//        scroller.startScroll(getScrollX(), getScrollY(), dx, 0);
-//        invalidate();
+    }
+
+    private boolean isAnimatorRunning() {
+        return mScrollAnimator != null && mScrollAnimator.isRunning();
     }
 
     @Override
-    public void computeScroll() {
-        if (scroller.computeScrollOffset()) {
-            int dx = scroller.getCurrX() - lastOffset;
-            lastOffset = scroller.getCurrX();
-            setPosition1(dx, 0);
-            //setPosition2(dx, 0);
-            //setPosition3(dx, 0);
-            //setPosition4(dx, 0);
-            invalidate();
-        }
-        super.computeScroll();
-    }
-
-    public void setOnClickListener2(OnClickListener listener2) {
-        this.mListener = listener2;
+    public void setOnClickListener(OnClickListener listener) {
+        this.mListener = listener;
     }
 
 }

@@ -16,7 +16,7 @@ public class DeviceUtils {
         Context context = BaseApp.getApp();
         try {
             if (TextUtils.isEmpty(m2)) {
-                m2 = MD5Util.md5LowerCase(getWifiMac(context) + getAndroidId(context));
+                m2 = MD5Util.md5(getWifiMac(context) + getAndroidId(context));
             }
             return m2;
         } catch (Throwable tr) {

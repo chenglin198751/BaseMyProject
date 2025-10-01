@@ -17,18 +17,31 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class BigStringFile implements BigStringBase {
     private String mCachedPath = null;
+
+    private static final class InstanceHolder {
+        private static final BigStringFile INSTANCE = new BigStringFile("big_files");
+    }
+
+    public static BigStringFile getInstance() {
+        return BigStringFile.InstanceHolder.INSTANCE;
+    }
 
     private BigStringFile() {
     }
 
-    public BigStringFile(String dir_name) {
+    private BigStringFile(String dir_name) {
         if (TextUtils.isEmpty(dir_name)) {
             throw new NullPointerException("BigStringFile() dir_name is null");
         }
-        mCachedPath = getExternalPath() + File.separator + dir_name;
+        String externalPath = getExternalPath();
+        mCachedPath = new File(externalPath, dir_name).getAbsolutePath();
+
+        File folder = new File(mCachedPath);
+        if (!folder.exists() && !folder.mkdirs()) {
+            throw new IllegalStateException("Failed to create directory: " + mCachedPath);
+        }
     }
 
     @Override
@@ -53,16 +66,12 @@ public class BigStringFile implements BigStringBase {
             return false;
         }
 
-        new File(mCachedPath).mkdirs();
-        String filePath = mCachedPath + File.separator + key;
-        File file = new File(filePath);
-        try {
-            file.delete();
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        File folder = new File(mCachedPath);
+        if (!folder.exists() && !folder.mkdirs()) {
+            return false;
         }
 
+        String filePath = new File(mCachedPath, key).getAbsolutePath();
         writeFile(filePath, value);
         return true;
     }
@@ -73,7 +82,7 @@ public class BigStringFile implements BigStringBase {
             return null;
         }
 
-        String file_path = mCachedPath + File.separator + key;
+        String file_path = new File(mCachedPath, key).getAbsolutePath();
         return readFileString(file_path);
     }
 
@@ -114,7 +123,7 @@ public class BigStringFile implements BigStringBase {
             return false;
         }
 
-        String file_path = mCachedPath + File.separator + key;
+        String file_path = new File(mCachedPath, key).getAbsolutePath();
         return new File(file_path).delete();
     }
 
@@ -130,22 +139,25 @@ public class BigStringFile implements BigStringBase {
     }
 
     private static String readFileString(String file_path) {
-        if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
+        File file = new File(file_path);
+        if (TextUtils.isEmpty(file_path) || !file.exists()) {
             return null;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
                 Path path = Paths.get(file_path);
-                return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+                byte[] bytes = Files.readAllBytes(path);
+                return new String(bytes, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            StringBuilder contentBuilder = new StringBuilder();
+            long length = file.length();
+            StringBuilder contentBuilder = new StringBuilder((int) length);
             BufferedReader reader = null;
             try {
-                reader = new BufferedReader(new FileReader(file_path));
+                reader = new BufferedReader(new FileReader(file));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     contentBuilder.append(line).append("\n");
@@ -167,22 +179,26 @@ public class BigStringFile implements BigStringBase {
     }
 
     private static String getExternalPath() {
-        File file = BaseApp.getApp().getExternalFilesDir("");
+        BaseApp app = BaseApp.getApp();
+        if (app == null) {
+            throw new IllegalStateException("Application context is null");
+        }
+
+        File file = app.getExternalFilesDir(null);
         if (file == null) {
-            file = BaseApp.getApp().getFilesDir();
+            file = app.getFilesDir();
         }
         return file.getAbsolutePath();
     }
 
     private static void writeFile(String file_path, String text) {
-        if (TextUtils.isEmpty(file_path) || !new File(file_path).exists()) {
+        File file = new File(file_path);
+        if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
             return;
         }
 
-        try {
-            FileWriter fileWriter = new FileWriter(file_path, false);
+        try (FileWriter fileWriter = new FileWriter(file, false)) {
             fileWriter.write(text);
-            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -242,3 +242,15 @@
 **12、批量导入aar jar：**
 
     implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
+
+**13、Android Sdk下载：**
+
+    1、https://dl.google.com/android/repository/repository2-1.xml 是个xml文件，里面有.zip的文件名
+    2、然后手拼url下载：
+        https://dl.google.com/android/repository/platform-34_r02.zip
+        https://dl.google.com/android/repository/platform-35_r02.zip
+        https://dl.google.com/android/repository/platform-36_r02.zip
+
+**14、project.exec在gradle 9.0后被弃用：**
+
+    使用project.services.get(ExecOperations).exec平替project.exec

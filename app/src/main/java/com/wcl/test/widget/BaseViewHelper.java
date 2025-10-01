@@ -12,17 +12,14 @@ import com.wcl.test.utils.AppBaseUtils;
 
 
 public class BaseViewHelper {
-    private Context mContext;
+    private final Context mContext;
     private View mView;
-    private LinearLayout mLoadingLinear;
-    private LinearLayout mEmptyLinear;
-    private LinearLayout mNoNetLinear;
     private View.OnClickListener mTempClickListener;
     public static final int TOP_STYLE = 1;
     public static final int CENTER_STYLE = 2;
-    private int mStyle = CENTER_STYLE;
+    private int mShowPosition = CENTER_STYLE;
 
-    private View.OnClickListener mClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (mTempClickListener != null) {
@@ -35,8 +32,8 @@ public class BaseViewHelper {
         mContext = context;
     }
 
-    public void setShowStyle(int style) {
-        mStyle = style;
+    public void setLoadingShowPosition(int position) {
+        mShowPosition = position;
     }
 
     /**
@@ -51,7 +48,7 @@ public class BaseViewHelper {
      */
     public void setLoadingText(String text) {
         mView = View.inflate(mContext, R.layout.base_loading_layout, null);
-        mLoadingLinear = mView.findViewById(R.id.loading_linear);
+        LinearLayout mLoadingLinear = mView.findViewById(R.id.loading_linear);
         TextView textView = mView.findViewById(R.id.text);
 
         if (text != null) {
@@ -61,7 +58,7 @@ public class BaseViewHelper {
             textView.setVisibility(View.GONE);
         }
 
-        if (mStyle == TOP_STYLE) {
+        if (mShowPosition == TOP_STYLE) {
             mLoadingLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             mLoadingLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {
@@ -79,10 +76,10 @@ public class BaseViewHelper {
      */
     public void showEmptyText(String text, View.OnClickListener listener) {
         mView = View.inflate(mContext, R.layout.base_empty_layout, null);
-        mEmptyLinear = mView.findViewById(R.id.empty_linear);
+        LinearLayout mEmptyLinear = mView.findViewById(R.id.empty_linear);
         TextView textView = mEmptyLinear.findViewById(R.id.empty_text);
 
-        if (mStyle == TOP_STYLE) {
+        if (mShowPosition == TOP_STYLE) {
             mEmptyLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             mEmptyLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {
@@ -106,9 +103,9 @@ public class BaseViewHelper {
      */
     public void showNoNetView(String text, View.OnClickListener listener) {
         mView = View.inflate(mContext, R.layout.base_no_net_layout, null);
-        mNoNetLinear = mView.findViewById(R.id.no_net_linear);
+        LinearLayout mNoNetLinear = mView.findViewById(R.id.no_net_linear);
 
-        if (mStyle == TOP_STYLE) {
+        if (mShowPosition == TOP_STYLE) {
             mNoNetLinear.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             mNoNetLinear.setPadding(0, AppBaseUtils.dip2px(30f), 0, 0);
         } else {

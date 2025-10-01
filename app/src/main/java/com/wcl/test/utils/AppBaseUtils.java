@@ -13,6 +13,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
@@ -60,17 +62,24 @@ public class AppBaseUtils {
     /**
      * 判断手机是否联网
      */
-    public static boolean hasNet() {
-        ConnectivityManager manager = (ConnectivityManager) BaseApp.getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager == null) {
+    public static boolean isNetAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) BaseApp.getApp().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
             return false;
         }
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        if (networkInfo == null || !networkInfo.isAvailable()) {
-            return false;
+
+        Network network = connectivityManager.getActiveNetwork();
+        if (network != null) {
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            if (capabilities != null) {
+                return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+            }
         }
         return true;
     }
+
 
     public static String getString(int id) {
         return BaseApp.getApp().getResources().getString(id);
@@ -447,78 +456,6 @@ public class AppBaseUtils {
     }
 
     /**
-     * 获取指定域名的ip地址
-     */
-    public static String getHostIP(final String serverHost) {
-        final String[] res = new String[1];
-        res[0] = "";
-        final ThreadSync sync = new ThreadSync();
-        try {
-            sync.pause();
-            final Thread tr = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String hostIP = "";
-                    // 系统函数方式
-                    try {
-                        java.net.InetAddress addr = java.net.InetAddress.getByName(serverHost);
-                        if (addr != null) {
-                            hostIP = addr.getHostAddress();
-                        }
-                    } catch (Throwable tr) {
-                        tr.printStackTrace();
-                    }
-
-                    if (!TextUtils.isEmpty(hostIP)) {
-                        res[0] = hostIP;
-                        sync.resume();
-                        return;
-                    }
-
-                    if (Thread.currentThread().isInterrupted()) {
-                        return;
-                    }
-                    // ping 命令方式
-                    try {
-                        Process p = Runtime.getRuntime().exec("/system/bin/ping -c " + 1 + " " + serverHost);
-                        p.waitFor();
-                        BufferedReader buf = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-                        String str = "";
-                        while ((str = buf.readLine()) != null) {
-                            int startIndex = str.indexOf("(");
-                            int endIndex = str.indexOf(")");
-                            if ((startIndex >= 0) && (endIndex >= 0)) {
-                                hostIP = str.substring(startIndex + 1, endIndex);
-                                break;
-                            }
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    res[0] = hostIP;
-                    sync.resume();
-                }
-            });
-            tr.start();
-
-            if (sync.isPaused()) {
-                // 等15秒钟
-                sync.callWait(15000);
-            }
-            tr.interrupt();
-        } catch (Throwable tr) {
-            tr.printStackTrace();
-        } finally {
-            if (sync != null) {
-                sync.exit();
-            }
-        }
-
-        return res[0];
-    }
-
-    /**
      * 执行adb shell 命令来滑动屏幕
      */
     public static void exec() {
@@ -699,5 +636,25 @@ public class AppBaseUtils {
             t.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 重启应用
+     */
+    public static void restartApplication(Context mContext) {
+        try {
+            Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mContext.startActivity(intent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isEdgeToEdge() {
+        return Build.VERSION.SDK_INT >= 35 && BaseApp.getApp().getApplicationInfo().targetSdkVersion >= 35;
     }
 }

@@ -12,6 +12,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
+import com.bumptech.glide.request.target.Target;
 import com.wcl.test.GlideApp;
 import com.wcl.test.GlideRequest;
 import com.wcl.test.R;
@@ -69,10 +70,10 @@ public class SmartImageLoader {
 
     /**
      * 加载图片使其变为圆角或者圆形，radius传入的单位是px.
-     * 如果 radius <0  , 那么就是纯圆圈图片;
-     * 如果 radius = 0 , 那么就是直角图片;
-     * 如果 radius >0 , 是圆角图片
-     * 如果imageWidth = -1 && imageHeight == -1 ，就是加载原图
+     * 如果 radius<0  , 那么就是纯圆圈图片;
+     * 如果 radius= 0 , 那么就是直角图片;
+     * 如果 radius>0 , 是圆角图片
+     * 如果imageWidth<=0 && imageHeight<=0 ，就是加载原图
      *
      * @param imageView   ImageView
      * @param object      图片地址Url、图片文件file
@@ -118,15 +119,14 @@ public class SmartImageLoader {
             return;
         }
 
-        if (object instanceof String) {
-            String url = (String) object;
+        if (object instanceof String url) {
             if (TextUtils.isEmpty(url)) {
                 imageView.setImageDrawable(centerDrawable);
                 return;
             }
         }
 
-        GlideRequest glideRequest = GlideApp
+        GlideRequest<Drawable> glideRequest = GlideApp
                 .with(imageView.getContext())
                 .applyDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_ARGB_8888))
                 .load(object)
@@ -135,6 +135,8 @@ public class SmartImageLoader {
 
         if (imageWidth > 0 && imageHeight > 0) {
             glideRequest = glideRequest.override(imageWidth, imageHeight);
+        }else {
+            glideRequest = glideRequest.override(Target.SIZE_ORIGINAL);
         }
 
         if (scaleType == ImageLoaderBuilder.CENTER_CROP) {

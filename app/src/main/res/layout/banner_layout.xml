@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/convenientBanner"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:delay_time="1500"
-    app:indicator_height="5dp"
-    app:indicator_margin="3dp"
-    app:indicator_width="5dp"
-    app:is_auto_play="true" />
+    android:layout_height="200dp"
+    app:banner_loop_time="1500"
+    app:banner_indicator_height="5dp"
+    app:banner_indicator_margin="3dp"
+    app:banner_indicator_normal_width="5dp"
+    app:banner_auto_loop="true" />

@@ -1,70 +1,114 @@
 package com.wcl.test.base;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
- * weichenglin create in 15/9/17
+ * 通用的 ListView Adapter，支持多布局
  */
-public abstract class BaseListViewAdapter<T> extends BaseAdapter {
-    protected List<T> list = new ArrayList<T>();
-    protected LayoutInflater inflater;
+public abstract class BaseListViewAdapter<T, VH extends BaseListViewAdapter.BaseListViewHolder<T>> extends android.widget.BaseAdapter {
+    protected final Context mContext;
+    private final List<T> mData = new ArrayList<>();
 
     public BaseListViewAdapter(Context context) {
-        super();
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.mContext = context;
+    }
 
+    public void setDataList(List<T> list) {
+        mData.clear();
+        if (list != null) {
+            mData.addAll(list);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void appendDataList(List<T> list) {
+        if (list != null) {
+            mData.addAll(list);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        mData.clear();
+        notifyDataSetChanged();
+    }
+
+    public List<T> getData() {
+        return mData;
     }
 
     @Override
     public int getCount() {
-        return list == null ? 0 : list.size();
+        return mData.size();
     }
 
     @Override
-    public T getItem(int arg0) {
-        if (arg0 >= list.size()) {
-            return null;
-        }
-        return list.get(arg0);
+    public T getItem(int position) {
+        return mData.get(position);
     }
 
     @Override
-    public long getItemId(int arg0) {
-        return arg0;
+    public long getItemId(int position) {
+        return position;
     }
+
+    // 默认单布局，子类可重写
+    @Override
+    public int getItemViewType(int position) {
+        return 0;
+    }
+
+    // 默认一个布局，子类可重写
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
+
+    @NonNull
+    protected abstract VH createViewHolder(@NonNull ViewGroup parent, int viewType);
+
+    protected abstract void bindViewHolder(@NonNull VH holder, @NonNull T item, int position);
 
     @Override
-    public abstract View getView(int i, View view, ViewGroup viewGroup);
-
-    public void clear() {
-        list.clear();
-        notifyDataSetChanged();
-    }
-
-    public void appendDataList(Collection<? extends T> collection) {
-        if (null != collection) {
-            list.addAll(collection);
-            notifyDataSetChanged();
+    public View getView(int position, View convertView, ViewGroup parent) {
+        int viewType = getItemViewType(position);
+        VH holder;
+        if (convertView == null) {
+            holder = createViewHolder(parent, viewType);
+            convertView = holder.itemView;
+            convertView.setTag(holder);
+        } else {
+            //noinspection unchecked
+            holder = (VH) convertView.getTag();
         }
+
+        bindViewHolder(holder, getItem(position), position);
+        return convertView;
     }
 
-    public List<T> getData() {
-        return list;
-    }
+    public abstract static class BaseListViewHolder<T> {
+        protected final View itemView;
 
-    public void setDataList(Collection<? extends T> collection) {
-        if (null != collection) {
-            list.clear();
-            list.addAll(collection);
-            notifyDataSetChanged();
+        public BaseListViewHolder(@NonNull View itemView) {
+            this.itemView = itemView;
+            bindViews(itemView);
         }
+
+        /**
+         * 初始化控件
+         */
+        protected abstract void bindViews(@NonNull View itemView);
+
+        /**
+         * 绑定数据，子类必须实现
+         */
+        public abstract void onBind(@NonNull T item, int position);
     }
 }
