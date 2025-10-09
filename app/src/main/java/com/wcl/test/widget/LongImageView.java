@@ -50,7 +50,7 @@ public class LongImageView extends WebView {
             return;
         }
 
-        int pictureWidth = BitmapUtils.getBitmapWidthHeight(file.getAbsolutePath())[0];
+        int pictureWidth = BitmapUtils.getBitmapSize(file.getAbsolutePath())[0];
         float scale = (showWidth * 1f / pictureWidth * 1f) * 100f;
         setInitialScale((int) scale);
 
