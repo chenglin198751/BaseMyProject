@@ -546,6 +546,21 @@
     https://github.com/jeasonlzy/ImagePicker
 
     3、图片选择器：PhotosPicker
+    public class MyActivity extends AppCompatActivity {
+    private PhotoPicker photoPicker;
+    
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            photoPicker = PhotoPicker.from(this, path -> {
+                Log.d("PhotoPicker", "选中图片路径: " + path);
+            });
+        }
+    
+        private void choosePhoto() {
+            photoPicker.start();
+        }
+    }    
 
 
 **106、Android8.0 及以上TextView控件可以适应宽度显示全文字：**
