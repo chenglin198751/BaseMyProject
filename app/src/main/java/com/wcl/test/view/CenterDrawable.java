@@ -7,6 +7,7 @@ import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
 
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.R;
@@ -27,17 +28,17 @@ public class CenterDrawable extends Drawable {
 
     public CenterDrawable(@DrawableRes int resId, float radius) {
         super();
-        if (radius != RECTANGLE) {
-            if (radius > 0) {
-                mRadius = radius;
-            } else if (radius < 0) {
-                mRadius = 1000;
-            }
-        } else {
+
+        if (radius == RECTANGLE) {
             mRadius = 0;
+        } else if (radius < 0) {
+            mRadius = 1000;
+        } else {
+            mRadius = radius;
         }
-        mDrawable = BaseApp.getApp().getResources().getDrawable(resId);
-        mPaint.setColor(BaseApp.getApp().getResources().getColor(R.color.image_bg));
+
+        mDrawable = ContextCompat.getDrawable(BaseApp.getApp(), resId);
+        mPaint.setColor(ContextCompat.getColor(BaseApp.getApp(), R.color.image_bg));
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setAntiAlias(true);
     }
@@ -66,12 +67,25 @@ public class CenterDrawable extends Drawable {
     }
 
     @Override
-    public void setAlpha(int arg0) {
+    public void setAlpha(int alpha) {
+        mPaint.setAlpha(alpha);
+        invalidateSelf();
     }
 
     @Override
-    public void setColorFilter(ColorFilter arg0) {
+    public void setColorFilter(ColorFilter colorFilter) {
+        mPaint.setColorFilter(colorFilter);
+        invalidateSelf();
     }
 
+    @Override
+    public int getIntrinsicWidth() {
+        return mDrawable != null ? mDrawable.getIntrinsicWidth() : super.getIntrinsicWidth();
+    }
 
+    @Override
+    public int getIntrinsicHeight() {
+        return mDrawable != null ? mDrawable.getIntrinsicHeight() : super.getIntrinsicHeight();
+    }
 }
+
