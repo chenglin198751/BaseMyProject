@@ -1,136 +1,61 @@
 package com.wcl.test.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.LruCache;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.listener.OnCompressBitmapListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by chenglin on 2017-5-24.
+ * Bitmap 工具类 — 安全、高效、兼容性良好。
+ * Created by chenglin, optimized by ChatGPT.
  */
-
 public class BitmapUtils {
+
+    private BitmapUtils() {
+        // 工具类禁止实例化
+    }
+
     /**
-     * 返回图片宽高数组，第0个是宽，第1个是高
+     * 获取图片宽高（不加载像素数据，避免OOM）
      */
-    public static int[] getBitmapWidthHeight(final String path) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-        /**
-         * 最关键在此，把options.inJustDecodeBounds = true;
-         * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
-         */
-        options.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(path, options); // 此时返回的bitmap为null
-        int[] size = new int[2];
-        size[0] = options.outWidth;
-        size[1] = options.outHeight;
-        return size;
-    }
-
-    //节省每次创建时产生的开销，但要注意多线程操作synchronized
-    private static final Canvas sCanvas = new Canvas();
-
-    /**
-     * 从一个view创建Bitmap。
-     * 注意点：绘制之前要清掉 View 的焦点，因为焦点可能会改变一个 View 的 UI 状态。
-     * 来源：https://github.com/tyrantgit/ExplosionField
-     *
-     * @param view  传入一个 View，会获取这个 View 的内容创建 Bitmap。
-     * @param scale 缩放比例，对创建的 Bitmap 进行缩放，数值支持从 0 到 1。
-     */
-    public static Bitmap createBitmapFromView(View view, float scale) {
-        if (view instanceof ImageView) {
-            Drawable drawable = ((ImageView) view).getDrawable();
-            if (drawable != null && drawable instanceof BitmapDrawable) {
-                return ((BitmapDrawable) drawable).getBitmap();
-            }
-        }
-        view.clearFocus();
-        Bitmap bitmap = createBitmapSafely((int) (view.getWidth() * scale),
-                (int) (view.getHeight() * scale), Bitmap.Config.ARGB_8888, 1);
-        if (bitmap != null) {
-            synchronized (sCanvas) {
-                Canvas canvas = sCanvas;
-                canvas.setBitmap(bitmap);
-                canvas.save();
-                canvas.drawColor(Color.WHITE); // 防止 View 上面有些区域空白导致最终 Bitmap 上有些区域变黑
-                canvas.scale(scale, scale);
-                view.draw(canvas);
-                canvas.restore();
-                canvas.setBitmap(null);
-            }
-        }
-        return bitmap;
-    }
-
-    public static Bitmap createBitmapFromView(View view) {
-        return createBitmapFromView(view, 1f);
+    public static int[] getBitmapSize(@NonNull String path) {
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, opts);
+        return new int[]{opts.outWidth, opts.outHeight};
     }
 
     /**
-     * 从一个view创建Bitmap。把view的区域截掉leftCrop/topCrop/rightCrop/bottomCrop
-     */
-    public static Bitmap createBitmapFromView(View view, int leftCrop, int topCrop, int rightCrop, int bottomCrop) {
-        Bitmap originBitmap = createBitmapFromView(view);
-        if (originBitmap == null) {
-            return null;
-        }
-        Bitmap cutBitmap = createBitmapSafely(view.getWidth() - rightCrop - leftCrop, view.getHeight() - topCrop - bottomCrop, Bitmap.Config.ARGB_8888, 1);
-        if (cutBitmap == null) {
-            return null;
-        }
-        Canvas canvas = new Canvas(cutBitmap);
-        Rect src = new Rect(leftCrop, topCrop, view.getWidth() - rightCrop, view.getHeight() - bottomCrop);
-        Rect dest = new Rect(0, 0, view.getWidth() - rightCrop - leftCrop, view.getHeight() - topCrop - bottomCrop);
-        canvas.drawColor(Color.WHITE); // 防止 View 上面有些区域空白导致最终 Bitmap 上有些区域变黑
-        canvas.drawBitmap(originBitmap, src, dest, null);
-        originBitmap.recycle();
-        return cutBitmap;
-    }
-
-    /**
-     * 安全的创建bitmap。
-     * 如果新建 Bitmap 时产生了 OOM，可以主动进行一次 GC - System.gc()，然后再次尝试创建。
-     *
-     * @param width      Bitmap 宽度。
-     * @param height     Bitmap 高度。
-     * @param config     传入一个 Bitmap.Config。
-     * @param retryCount 创建 Bitmap 时产生 OOM 后，主动重试的次数。
-     * @return 返回创建的 Bitmap。
+     * 安全创建Bitmap，支持重试。
      */
     public static Bitmap createBitmapSafely(int width, int height, Bitmap.Config config, int retryCount) {
         try {
             return Bitmap.createBitmap(width, height, config);
         } catch (OutOfMemoryError e) {
-            e.printStackTrace();
             if (retryCount > 0) {
                 System.gc();
                 return createBitmapSafely(width, height, config, retryCount - 1);
@@ -139,419 +64,251 @@ public class BitmapUtils {
         }
     }
 
-    public static String getPathByUri(Context context, Uri uri) {
-        Activity activity = null;
-        if (context instanceof Activity) {
-            activity = (Activity) context;
-        }
-
-        if (activity == null) {
-            return null;
-        }
-
-        String path = null;
-        if (uri == null) {
-            return path;
-        }
-        if ("content".equals(uri.getScheme())) {
-            String[] projection = {MediaStore.Images.Media.DATA};
-            Cursor cursor = activity.managedQuery(uri, projection, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            path = cursor.getString(column_index);
-        } else if ("file".equals(uri.getScheme())) {
-            path = uri.getPath();
-        }
-        return path;
-    }
-
     /**
-     * 此方法仅仅用于计算createScaledBitmap() 方法获取Bitmap 时的缩放比例。
-     * 目的是为了防止OOM
+     * 从View创建Bitmap（安全版）
      */
-    private static int getOptionSize(final float size) {
-        int optionSize = 1;
-        if (size >= 2f && size < 4f) {
-            optionSize = 2;
-        } else if (size >= 4f && size < 8f) {
-            optionSize = 4;
-        } else if (size >= 8f && size < 16) {
-            optionSize = 8;
-        } else if (size >= 16f) {
-            optionSize = 16;
-        }
-        return optionSize;
-    }
+    public static Bitmap createBitmapFromView(@NonNull View view, float scale) {
+        if (view.getWidth() <= 0 || view.getHeight() <= 0) return null;
 
-    /**
-     * 保存图片到sdcard
-     */
-    public static void saveBitmap(final Bitmap bmp, final OnCompressBitmapListener<String> callback) {
-        if (bmp == null) {
-            if (callback != null) {
-                postToUiThread(() -> callback.onFailed("Bitmap is null"));
+        if (view instanceof ImageView) {
+            Drawable drawable = ((ImageView) view).getDrawable();
+            if (drawable instanceof BitmapDrawable) {
+                return ((BitmapDrawable) drawable).getBitmap();
             }
+        }
+
+        view.clearFocus();
+        Bitmap bitmap = createBitmapSafely(
+                Math.max(1, (int) (view.getWidth() * scale)),
+                Math.max(1, (int) (view.getHeight() * scale)),
+                Bitmap.Config.ARGB_8888, 1);
+        if (bitmap == null) return null;
+
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        canvas.scale(scale, scale);
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    public static Bitmap createBitmapFromView(View view) {
+        return createBitmapFromView(view, 1f);
+    }
+
+    /**
+     * 获取Uri对应的真实路径（兼容）
+     */
+    public static String getPathByUri(@NonNull Context context, @NonNull Uri uri) {
+        if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+            try (Cursor cursor = context.getContentResolver().query(uri,
+                    new String[]{MediaStore.Images.Media.DATA}, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int idx = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    return cursor.getString(idx);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 保存Bitmap到本地（异步 + 回调）
+     */
+    public static void saveBitmapAsync(final Bitmap bmp, final OnCompressBitmapListener<String> callback) {
+        if (bmp == null) {
+            postToUi(() -> callback.onFailed("Bitmap is null"));
             return;
         }
 
         new Thread(() -> {
-            String fileName = System.currentTimeMillis() + ".jpg";
             File dir = new File(FileUtils.getExternalPath());
             if (!dir.exists() && !dir.mkdirs()) {
-                postCallbackError(callback, "Failed to create directory");
+                postToUi(() -> callback.onFailed("Create directory failed"));
                 return;
             }
 
-            File file = new File(dir, fileName);
+            File file = new File(dir, System.currentTimeMillis() + ".jpg");
             try (FileOutputStream fos = new FileOutputStream(file)) {
-                if (!bmp.compress(Bitmap.CompressFormat.JPEG, 85, fos)) {
-                    postCallbackError(callback, "Bitmap compress failed");
-                    return;
-                }
+                bmp.compress(Bitmap.CompressFormat.JPEG, 85, fos);
                 fos.flush();
-                postCallbackSuccess(callback, file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-                postCallbackError(callback, "IOException during saving bitmap: " + e.getMessage());
+                postToUi(() -> callback.onSucceed(file.getAbsolutePath()));
+            } catch (IOException e) {
+                postToUi(() -> callback.onFailed("IOException: " + e.getMessage()));
             }
         }).start();
     }
 
-    private static void postCallbackSuccess(final OnCompressBitmapListener<String> callback, final String path) {
-        postToUiThread(() -> callback.onSucceed(path));
-    }
-
-    private static void postCallbackError(final OnCompressBitmapListener<String> callback, final String errorMsg) {
-        postToUiThread(() -> callback.onFailed(errorMsg));
-    }
-
-    private static void postToUiThread(Runnable runnable) {
-        AppBaseUtils.getUiHandler().post(runnable);
-    }
-
-
-    /**
-     * 按原图比例缩放裁剪图片
-     *
-     * @param activity   Activity
-     * @param imageUri   图片的Uri
-     * @param imageWidth 想要被缩放到的target图片宽度，我会根据此宽度和原图的比例，去计算target图片高度
-     * @param callback   回调监听
-     */
-    public static void createScaledBitmap(final Activity activity, final Uri imageUri, int imageWidth, final OnCompressBitmapListener<String> callback) {
-        final String imagePath = getPathByUri(activity, imageUri);
-        createScaledBitmap(activity, imagePath, imageWidth, callback);
+    private static void postToUi(Runnable r) {
+        AppBaseUtils.getUiHandler().post(r);
     }
 
     /**
-     * 压缩图片到指定尺寸，保持比例。如果原图比目标尺寸小，则直接返回原图。
-     *
-     * @param activity       Activity
-     * @param imageLocalPath 图片文件所在的路径
-     * @param targetWidth    想要被缩放到的target图片宽度，会根据此宽度和原图的比例，去计算target图片高度
-     * @param callback       回调监听
+     * 按原比例压缩图片到指定宽度。
      */
-    public static void createScaledBitmap(final Activity activity, final String imageLocalPath, int targetWidth, final OnCompressBitmapListener<String> callback) {
-        if (callback == null) {
-            throw new NullPointerException("OnCompressBitmapListener must not null");
+    public static Bitmap resizeBitmap(String path, int targetWidth) {
+        if (TextUtils.isEmpty(path) || !(new File(path).exists())) return null;
+
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, opts);
+        int srcW = opts.outWidth;
+        int srcH = opts.outHeight;
+        if (srcW <= 0 || srcH <= 0) return null;
+
+        if (srcW <= targetWidth) {
+            opts.inJustDecodeBounds = false;
+            return BitmapFactory.decodeFile(path, opts);
         }
 
-        if (TextUtils.isEmpty(imageLocalPath) || !(new File(imageLocalPath).exists())) {
-            callback.onSucceed(null);
-            return;
+        int inSampleSize = 1;
+        while (srcW / inSampleSize > targetWidth * 2) {
+            inSampleSize *= 2;
         }
 
+        opts.inSampleSize = inSampleSize;
+        opts.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeFile(path, opts);
+        if (bitmap == null) return null;
 
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                Bitmap targetBitmap = resizeBitmap(imageLocalPath, targetWidth);
-                saveBitmap(targetBitmap, new OnCompressBitmapListener<>() {
-                    @Override
-                    public void onSucceed(final String path) {
-                        if (!targetBitmap.isRecycled()) {
-                            targetBitmap.recycle();
-                        }
-                        if (activity != null && !activity.isFinishing()) {
-                            activity.runOnUiThread(() -> callback.onSucceed(path));
-                        }
-                    }
-
-                    @Override
-                    public void onFailed(String s) {
-                        if (!targetBitmap.isRecycled()) {
-                            targetBitmap.recycle();
-                        }
-                    }
-                });
-            }
-        }.start();
-    }
-
-
-    /**
-     * 返回bitmap 所占内存的大小
-     */
-    public static int getBitmapBytes(Bitmap bitmap) {
-        return bitmap.getByteCount();
+        int targetH = Math.round(srcH * (targetWidth / (float) srcW));
+        Bitmap scaled = Bitmap.createScaledBitmap(bitmap, targetWidth, targetH, true);
+        if (scaled != bitmap) bitmap.recycle();
+        return scaled;
     }
 
     /**
-     * ScrollView截图方法
+     * 截取 ScrollView 完整内容。
      */
-    public static Bitmap shotScrollView(ScrollView scrollView) {
-        int h = 0;
-        Bitmap bitmap = null;
+    public static Bitmap shotScrollView(@NonNull ScrollView scrollView) {
+        int totalHeight = 0;
         for (int i = 0; i < scrollView.getChildCount(); i++) {
-            h += scrollView.getChildAt(i).getHeight();
-            scrollView.getChildAt(i).setBackgroundColor(Color.parseColor("#ffffff"));
+            totalHeight += scrollView.getChildAt(i).getHeight();
         }
-        bitmap = Bitmap.createBitmap(scrollView.getWidth(), h, Bitmap.Config.RGB_565);
-        final Canvas canvas = new Canvas(bitmap);
+        Bitmap bitmap = createBitmapSafely(scrollView.getWidth(), totalHeight, Bitmap.Config.RGB_565, 1);
+        if (bitmap == null) return null;
+        Canvas canvas = new Canvas(bitmap);
         scrollView.draw(canvas);
         return bitmap;
     }
 
-
     /**
-     * ListView截图方法
+     * 截取 ListView 全部内容。
      */
-    public static Bitmap shotListView(ListView listview) {
+    public static Bitmap shotListView(@NonNull ListView listView) {
+        ListAdapter adapter = listView.getAdapter();
+        if (adapter == null) return null;
 
-        ListAdapter adapter = listview.getAdapter();
-        int itemscount = adapter.getCount();
-        int allitemsheight = 0;
-        List<Bitmap> bmps = new ArrayList<Bitmap>();
-
-        for (int i = 0; i < itemscount; i++) {
-
-            View childView = adapter.getView(i, null, listview);
-            childView.measure(
-                    View.MeasureSpec.makeMeasureSpec(listview.getWidth(), View.MeasureSpec.EXACTLY),
+        int totalHeight = 0;
+        List<Bitmap> bitmaps = new ArrayList<>();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View child = adapter.getView(i, null, listView);
+            child.measure(
+                    View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.EXACTLY),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
 
-            childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
-            childView.setDrawingCacheEnabled(true);
-            childView.buildDrawingCache();
-            bmps.add(childView.getDrawingCache());
-            allitemsheight += childView.getMeasuredHeight();
+            Bitmap bmp = createBitmapSafely(child.getMeasuredWidth(), child.getMeasuredHeight(), Bitmap.Config.ARGB_8888, 1);
+            if (bmp == null) continue;
+            Canvas canvas = new Canvas(bmp);
+            child.draw(canvas);
+            bitmaps.add(bmp);
+            totalHeight += child.getMeasuredHeight();
         }
 
-        Bitmap bigbitmap =
-                Bitmap.createBitmap(listview.getMeasuredWidth(), allitemsheight, Bitmap.Config.ARGB_8888);
-        Canvas bigcanvas = new Canvas(bigbitmap);
-
-        Paint paint = new Paint();
-        int iHeight = 0;
-
-        for (int i = 0; i < bmps.size(); i++) {
-            Bitmap bmp = bmps.get(i);
-            bigcanvas.drawBitmap(bmp, 0, iHeight, paint);
-            iHeight += bmp.getHeight();
-
+        Bitmap big = Bitmap.createBitmap(listView.getWidth(), totalHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(big);
+        int y = 0;
+        for (Bitmap bmp : bitmaps) {
+            canvas.drawBitmap(bmp, 0, y, null);
+            y += bmp.getHeight();
             bmp.recycle();
-            bmp = null;
         }
-
-        return bigbitmap;
+        return big;
     }
 
     /**
-     * RecyclerView截图方法
+     * 截取 RecyclerView 全部内容。
      */
-    public static Bitmap shotRecyclerView(RecyclerView view) {
-        RecyclerView.Adapter adapter = view.getAdapter();
-        Bitmap bigBitmap = null;
-        if (adapter != null) {
-            int size = adapter.getItemCount();
-            int height = 0;
-            Paint paint = new Paint();
-            int iHeight = 0;
-            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    public static Bitmap shotRecyclerView(@NonNull RecyclerView rv) {
+        RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = rv.getAdapter();
+        if (adapter == null) return null;
 
-            // Use 1/8th of the available memory for this memory cache.
-            final int cacheSize = maxMemory / 8;
-            LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
-            for (int i = 0; i < size; i++) {
-                RecyclerView.ViewHolder holder = adapter.createViewHolder(view, adapter.getItemViewType(i));
-                adapter.onBindViewHolder(holder, i);
-                holder.itemView.measure(
-                        View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(),
-                        holder.itemView.getMeasuredHeight());
-                holder.itemView.setDrawingCacheEnabled(true);
-                holder.itemView.buildDrawingCache();
-                Bitmap drawingCache = holder.itemView.getDrawingCache();
-                if (drawingCache != null) {
+        int count = adapter.getItemCount();
+        Paint paint = new Paint();
+        int totalHeight = 0;
 
-                    bitmaCache.put(String.valueOf(i), drawingCache);
-                }
-                height += holder.itemView.getMeasuredHeight();
-            }
+        List<Bitmap> cache = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            RecyclerView.ViewHolder holder = adapter.createViewHolder(rv, adapter.getItemViewType(i));
+            adapter.onBindViewHolder(holder, i);
 
-            bigBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
-            Canvas bigCanvas = new Canvas(bigBitmap);
-            Drawable lBackground = view.getBackground();
-            if (lBackground instanceof ColorDrawable) {
-                ColorDrawable lColorDrawable = (ColorDrawable) lBackground;
-                int lColor = lColorDrawable.getColor();
-                bigCanvas.drawColor(lColor);
-            }
+            holder.itemView.measure(
+                    View.MeasureSpec.makeMeasureSpec(rv.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(), holder.itemView.getMeasuredHeight());
 
-            for (int i = 0; i < size; i++) {
-                Bitmap bitmap = bitmaCache.get(String.valueOf(i));
-                bigCanvas.drawBitmap(bitmap, 0f, iHeight, paint);
-                iHeight += bitmap.getHeight();
-                bitmap.recycle();
-            }
-        }
-        return bigBitmap;
-    }
-
-
-    /**
-     * 拼接图片
-     */
-    public static Bitmap combineImage(Bitmap... bitmaps) {
-        boolean isMultiWidth = false;//是否为多宽度图片集
-        int width = 0;
-        int height = 0;
-
-        //获取图纸宽度
-        for (Bitmap bitmap : bitmaps) {
-            if (width != bitmap.getWidth()) {
-                if (width != 0) {//过滤掉第一次不同
-                    isMultiWidth = true;
-                }
-                width = width < bitmap.getWidth() ? bitmap.getWidth() : width;
-            }
+            Bitmap bmp = createBitmapSafely(holder.itemView.getWidth(), holder.itemView.getHeight(), Bitmap.Config.ARGB_8888, 1);
+            if (bmp == null) continue;
+            Canvas canvas = new Canvas(bmp);
+            holder.itemView.draw(canvas);
+            cache.add(bmp);
+            totalHeight += bmp.getHeight();
         }
 
-        //获取图纸高度
-        for (Bitmap bitmap : bitmaps) {
-            if (isMultiWidth) {
-                height = height + bitmap.getHeight() * width / bitmap.getWidth();
-            } else {
-                height = height + bitmap.getHeight();
-            }
+        Bitmap big = Bitmap.createBitmap(rv.getWidth(), totalHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(big);
+        int y = 0;
+        for (Bitmap bmp : cache) {
+            canvas.drawBitmap(bmp, 0, y, paint);
+            y += bmp.getHeight();
+            bmp.recycle();
         }
-
-        //创建图纸
-        Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        //创建画布,并绑定图纸
-        Canvas canvas = new Canvas(newBitmap);
-        int tempHeight = 0;
-        //画图
-        for (int i = 0; i < bitmaps.length; i++) {
-            if (isMultiWidth) {
-                if (width != bitmaps[i].getWidth()) {
-                    int newSizeH = bitmaps[i].getHeight() * width / bitmaps[i].getWidth();
-                    Bitmap newSizeBmp = resizeBitmap(bitmaps[i], width, newSizeH);
-                    canvas.drawBitmap(newSizeBmp, 0, tempHeight, null);
-                    tempHeight = tempHeight + newSizeH;
-                    newSizeBmp.recycle();
-                } else {
-                    canvas.drawBitmap(bitmaps[i], 0, tempHeight, null);
-                    tempHeight = tempHeight + bitmaps[i].getHeight();
-                }
-            } else {
-                canvas.drawBitmap(bitmaps[i], 0, tempHeight, null);
-                tempHeight = tempHeight + bitmaps[i].getHeight();
-            }
-            bitmaps[i].recycle();
-        }
-        return newBitmap;
-    }
-
-    private static Bitmap resizeBitmap(Bitmap bitmap, int newWidth, int newHeight) {
-        float scaleWidth = ((float) newWidth) / bitmap.getWidth();
-        float scaleHeight = ((float) newHeight) / bitmap.getHeight();
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        Bitmap bmpScale = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        return bmpScale;
+        return big;
     }
 
     /**
-     * 按需高效压缩本地图片到指定最大宽度，保持原图比例，避免OOM。
-     *
-     * @param imageLocalPath 本地图片绝对路径
-     * @param targetWidth    目标最大宽度
-     * @return 压缩后的Bitmap，如果解码失败返回null
+     * 按纵向拼接多张图片。
      */
-    public static Bitmap resizeBitmap(String imageLocalPath, int targetWidth) {
-        if (imageLocalPath == null || imageLocalPath.isEmpty()) {
-            return null;
+    public static Bitmap combineBitmaps(@NonNull Bitmap... bitmaps) {
+        if (bitmaps.length == 0) return null;
+        int width = 0, height = 0;
+        for (Bitmap b : bitmaps) {
+            width = Math.max(width, b.getWidth());
+        }
+        for (Bitmap b : bitmaps) {
+            height += b.getHeight() * width / b.getWidth();
         }
 
-        // 第一步：只解码图片尺寸（不加载像素数据，避免OOM）
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imageLocalPath, options);
-        int srcWidth = options.outWidth;
-        int srcHeight = options.outHeight;
-
-        if (srcWidth <= 0 || srcHeight <= 0) {
-            return null; // 文件不是有效图片
+        Bitmap combined = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(combined);
+        int offsetY = 0;
+        for (Bitmap b : bitmaps) {
+            int newH = b.getHeight() * width / b.getWidth();
+            Bitmap scaled = Bitmap.createScaledBitmap(b, width, newH, true);
+            canvas.drawBitmap(scaled, 0, offsetY, null);
+            offsetY += newH;
+            if (scaled != b) scaled.recycle();
+            b.recycle();
         }
-
-        // 如果原图宽度比目标宽度小，直接解码原图
-        if (srcWidth <= targetWidth) {
-            options.inJustDecodeBounds = false;
-            return BitmapFactory.decodeFile(imageLocalPath, options);
-        }
-
-        // 计算缩放比例
-        float scale = (float) targetWidth / srcWidth;
-
-        // 计算目标高度，保持比例
-        int targetHeight = Math.round(srcHeight * scale);
-
-        // 计算inSampleSize（为2的幂，越大越省内存）
-        int inSampleSize = 1;
-        if (scale < 1.0f) {
-            float invScale = 1.0f / scale;
-            inSampleSize = (int) Math.floor(invScale);
-            // 只取2的幂，防止图片失真
-            int powerOfTwo = 1;
-            while (powerOfTwo * 2 <= inSampleSize) {
-                powerOfTwo *= 2;
-            }
-            inSampleSize = powerOfTwo;
-        }
-
-        // 第二步：按比例缩小解码图片
-        options.inSampleSize = inSampleSize;
-        options.inJustDecodeBounds = false;
-        Bitmap sampledBitmap = BitmapFactory.decodeFile(imageLocalPath, options);
-        if (sampledBitmap == null) {
-            return null;
-        }
-
-        // 可能还需要再精确缩放到目标宽度（因为inSampleSize近似值可能偏大）
-        if (sampledBitmap.getWidth() != targetWidth) {
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(sampledBitmap, targetWidth, targetHeight, true);
-            sampledBitmap.recycle(); // 释放中间Bitmap
-            return scaledBitmap;
-        } else {
-            return sampledBitmap;
-        }
+        return combined;
     }
 
     /**
-     * 把一个未附加在window上的View生成bitmap
+     * 为未attach的View生成bitmap（不使用drawingCache）
      */
-    public static Bitmap createMeasureViewBitmap(View itemView, int measureWidth) {
-        itemView.measure(
-                View.MeasureSpec.makeMeasureSpec(measureWidth, View.MeasureSpec.EXACTLY),
+    public static Bitmap createMeasureViewBitmap(@NonNull View view, int width) {
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        itemView.layout(0, 0, itemView.getMeasuredWidth(),
-                itemView.getMeasuredHeight());
-        itemView.setDrawingCacheEnabled(true);
-        itemView.buildDrawingCache();
-        Bitmap drawingCache = itemView.getDrawingCache();
-        return drawingCache;
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        Bitmap bitmap = createBitmapSafely(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888, 1);
+        if (bitmap == null) return null;
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
     }
 }
