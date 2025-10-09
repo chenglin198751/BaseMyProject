@@ -560,8 +560,8 @@
         private void choosePhoto() {
             photoPicker.start();
         }
-    }    
-
+    }
+    4、支持单张，多张，拍照：PhotoPicker2
 
 **106、Android8.0 及以上TextView控件可以适应宽度显示全文字：**
     
