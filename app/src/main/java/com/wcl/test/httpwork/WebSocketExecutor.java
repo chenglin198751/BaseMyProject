@@ -3,11 +3,17 @@ package com.wcl.test.httpwork;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.wcl.test.utils.AppLogUtils;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,49 +22,80 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-
 /**
- * Created by weichenglin  on 2018/7/9
+ * WebSocket 管理器
+ * 优化点：
+ * 1. 修复线程安全问题，使用 AtomicBoolean 和 AtomicInteger
+ * 2. 使用 ScheduledExecutorService 替代 Timer，更高效且线程安全
+ * 3. 优化资源释放逻辑，避免内存泄漏
+ * 4. 添加连接状态枚举，状态管理更清晰
+ * 5. 优化重连机制，避免重复连接
+ * 6. 添加空指针检查和异常处理
+ * 7. 支持主动取消重连任务
+ * 8. 优化日志输出
+ *
+ * Created by weichenglin on 2018/7/9
  */
 public class WebSocketExecutor {
-    private final static int NORMAL_CLOSURE_STATUS = 1000;
-    private final static int OKHTTP_TIMEOUT = 30;
-    private final static int DEFAULT_HEARTBEAT_TIMES = 30;
-    private final static int DEFAULT_RECONNECT_COUNT = 10;
-    private final static int DEFAULT_RECONNECT_SECONDS = 5;
-    private final static String WS_URL = "";
+    private static final String TAG = "WebSocketExecutor";
+    private static final int NORMAL_CLOSURE_STATUS = 1000;
+    private static final int OKHTTP_TIMEOUT = 30;
+    private static final int DEFAULT_HEARTBEAT_INTERVAL = 30;
+    private static final int DEFAULT_RECONNECT_COUNT = 10;
+    private static final int DEFAULT_RECONNECT_INTERVAL = 5;
+    private static final int MAX_SEND_RECONNECT_COUNT = 10;
+    private static final String WS_URL = ""; // TODO: 配置实际的 WebSocket URL
 
-    private int mHeartbeatIntervalSeconds = DEFAULT_HEARTBEAT_TIMES;  //心跳时间间隔
-    private int mReconnectCount = DEFAULT_RECONNECT_COUNT;  //连接失败后的重连次数
-    private int mReconnectIntervalSeconds = DEFAULT_RECONNECT_SECONDS;  //连接失败后每次重连的时间间隔
+    // 连接状态枚举
+    private enum ConnectionState {
+        DISCONNECTED,   // 未连接
+        CONNECTING,     // 连接中
+        CONNECTED,      // 已连接
+        DISCONNECTING   // 断开中
+    }
+
+    // 配置参数
+    private int mHeartbeatIntervalSeconds = DEFAULT_HEARTBEAT_INTERVAL;
+    private int mReconnectCount = DEFAULT_RECONNECT_COUNT;
+    private int mReconnectIntervalSeconds = DEFAULT_RECONNECT_INTERVAL;
     private ByteString mHeartbeatBytes = ByteString.encodeUtf8("");
 
-    private static volatile OkHttpClient mOkHttpClient;
-    private int mReconnectIndex = 0;
-    private SocketListener mSocketListener;
-    private WebSocket mSocket;
-    private Runnable mReConnectRunnable;
-    private Runnable mSendRunnable;
-    private Runnable mTimerRunnable;
-    private Timer mTimer;
-    private boolean isDestroy = false;
-    private boolean isConnect = false;
-    private int mWhenSendReconnectIndex = 0;
+    // OkHttpClient 单例（整个应用共享）
+    private static volatile OkHttpClient sOkHttpClient;
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    // 连接状态相关
+    private final AtomicInteger mCurrentReconnectIndex = new AtomicInteger(0);
+    private final AtomicInteger mSendReconnectIndex = new AtomicInteger(0);
+    private final AtomicBoolean mIsDestroyed = new AtomicBoolean(false);
+    private volatile ConnectionState mConnectionState = ConnectionState.DISCONNECTED;
+
+    // WebSocket 相关
+    private volatile WebSocket mWebSocket;
+    private volatile SocketListener mSocketListener;
+
+    // 线程调度相关
+    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
+    private ScheduledExecutorService mScheduledExecutor;
+    private ScheduledFuture<?> mHeartbeatFuture;
+    private Runnable mReconnectRunnable;
 
     public WebSocketExecutor() {
         initWebSocket();
+        initScheduledExecutor();
     }
 
+    /**
+     * 初始化 OkHttpClient（双重检查锁单例）
+     */
     private void initWebSocket() {
-        if (mOkHttpClient == null) {
+        if (sOkHttpClient == null) {
             synchronized (WebSocketExecutor.class) {
-                if (mOkHttpClient == null) {
-                    mOkHttpClient = new OkHttpClient.Builder()
+                if (sOkHttpClient == null) {
+                    sOkHttpClient = new OkHttpClient.Builder()
                             .readTimeout(OKHTTP_TIMEOUT, TimeUnit.SECONDS)
                             .writeTimeout(OKHTTP_TIMEOUT, TimeUnit.SECONDS)
                             .connectTimeout(OKHTTP_TIMEOUT, TimeUnit.SECONDS)
+                            .retryOnConnectionFailure(true) // 启用自动重试
                             .build();
                 }
             }
@@ -66,331 +103,472 @@ public class WebSocketExecutor {
     }
 
     /**
-     * 启动长连接。如果连接失败，会在失败的回调onFailure 里启动重连。
+     * 初始化线程调度器
      */
-    public void connect(SocketListener listener) {
-        mSocketListener = listener;
-        Request request = new Request.Builder().url(WS_URL).build();
-        mOkHttpClient.newWebSocket(request, new EchoWebSocketListener());
+    private void initScheduledExecutor() {
+        if (mScheduledExecutor == null || mScheduledExecutor.isShutdown()) {
+            mScheduledExecutor = new ScheduledThreadPoolExecutor(1, r -> {
+                Thread thread = new Thread(r, "WebSocket-Scheduler");
+                thread.setDaemon(true); // 设置为守护线程
+                return thread;
+            });
+        }
     }
 
     /**
-     * 断开连接时执行销毁动作，避免内存泄漏
+     * 连接 WebSocket
+     *
+     * @param listener 连接状态监听器
      */
-    public void disconnect() {
-        isDestroy = true;
-        if (mReConnectRunnable != null) {
-            mHandler.removeCallbacks(mReConnectRunnable);
-        }
-        if (mSendRunnable != null) {
-            mHandler.removeCallbacks(mSendRunnable);
-        }
-        if (mTimerRunnable != null) {
-            mHandler.removeCallbacks(mTimerRunnable);
-        }
-        if (mSocket != null) {
-            mSocket.close(NORMAL_CLOSURE_STATUS, "close");
-            mSocket = null;
-        }
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
-        }
-        AppLogUtils.d("socket", "断开连接");
-    }
-
-    /**
-     * 重连机制，当webSocket连接失败时，启动重连机制。
-     */
-    private void retryReconnect() {
-        if (isDestroy) {
+    public synchronized void connect(@NonNull SocketListener listener) {
+        if (mIsDestroyed.get()) {
+            AppLogUtils.w(TAG, "WebSocket 已销毁，无法连接");
             return;
         }
 
-        if (mReConnectRunnable == null) {
-            mReConnectRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (!isDestroy) {
-                        connect(mSocketListener);
-                        mReconnectIndex++;
-                    }
-                }
-            };
+        // 避免重复连接
+        if (mConnectionState == ConnectionState.CONNECTED ||
+                mConnectionState == ConnectionState.CONNECTING) {
+            AppLogUtils.d(TAG, "WebSocket 正在连接或已连接，状态: " + mConnectionState);
+            return;
         }
 
-        if (mReconnectIndex < mReconnectCount) {
-            mHandler.postDelayed(mReConnectRunnable, mReconnectIntervalSeconds * 1000);
-        } else {
-            mReconnectIndex = 0;
+        mSocketListener = listener;
+        mConnectionState = ConnectionState.CONNECTING;
+
+        try {
+            Request request = new Request.Builder()
+                    .url(WS_URL)
+                    .build();
+            sOkHttpClient.newWebSocket(request, new EchoWebSocketListener());
+            AppLogUtils.d(TAG, "开始连接 WebSocket");
+        } catch (Exception e) {
+            AppLogUtils.e(TAG, "连接 WebSocket 异常: " + e.getMessage());
+            mConnectionState = ConnectionState.DISCONNECTED;
+            scheduleReconnect();
         }
     }
 
     /**
-     * 是否正在重连
+     * 断开连接并释放资源
      */
-    public boolean isRetryReconnecting() {
-        if (mReconnectIndex > 0) {
-            return true;
-        } else {
-            return false;
+    public synchronized void disconnect() {
+        AppLogUtils.d(TAG, "主动断开 WebSocket 连接");
+        mIsDestroyed.set(true);
+        mConnectionState = ConnectionState.DISCONNECTING;
+
+        // 取消重连任务
+        cancelReconnect();
+
+        // 停止心跳
+        stopHeartbeat();
+
+        // 关闭 WebSocket
+        closeWebSocket();
+
+        // 关闭调度器
+        shutdownScheduler();
+
+        mConnectionState = ConnectionState.DISCONNECTED;
+        mSocketListener = null;
+    }
+
+    /**
+     * 关闭 WebSocket 连接
+     */
+    private void closeWebSocket() {
+        WebSocket socket = mWebSocket;
+        if (socket != null) {
+            try {
+                socket.close(NORMAL_CLOSURE_STATUS, "Client closed connection");
+            } catch (Exception e) {
+                AppLogUtils.e(TAG, "关闭 WebSocket 异常: " + e.getMessage());
+            } finally {
+                mWebSocket = null;
+            }
         }
+    }
+
+    /**
+     * 关闭调度器
+     */
+    private void shutdownScheduler() {
+        if (mScheduledExecutor != null && !mScheduledExecutor.isShutdown()) {
+            try {
+                mScheduledExecutor.shutdown();
+                if (!mScheduledExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                    mScheduledExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                mScheduledExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    /**
+     * 重连机制
+     */
+    private void scheduleReconnect() {
+        if (mIsDestroyed.get()) {
+            return;
+        }
+
+        int currentIndex = mCurrentReconnectIndex.get();
+        if (currentIndex >= mReconnectCount) {
+            AppLogUtils.w(TAG, "重连次数已达上限: " + mReconnectCount);
+            mCurrentReconnectIndex.set(0);
+            notifyReconnectFailed();
+            return;
+        }
+
+        // 取消之前的重连任务
+        cancelReconnect();
+
+        mReconnectRunnable = () -> {
+            if (!mIsDestroyed.get() && mConnectionState != ConnectionState.CONNECTED) {
+                int index = mCurrentReconnectIndex.incrementAndGet();
+                AppLogUtils.d(TAG, "尝试第 " + index + " 次重连");
+
+                mMainHandler.post(() -> {
+                    if (!mIsDestroyed.get() && mSocketListener != null) {
+                        connect(mSocketListener);
+                    }
+                });
+            }
+        };
+
+        long delayMillis = mReconnectIntervalSeconds * 1000L;
+        mMainHandler.postDelayed(mReconnectRunnable, delayMillis);
+        AppLogUtils.d(TAG, "将在 " + mReconnectIntervalSeconds + " 秒后进行第 "
+                + (currentIndex + 1) + " 次重连");
+    }
+
+    /**
+     * 取消重连任务
+     */
+    private void cancelReconnect() {
+        if (mReconnectRunnable != null) {
+            mMainHandler.removeCallbacks(mReconnectRunnable);
+            mReconnectRunnable = null;
+        }
+    }
+
+    /**
+     * 通知重连失败
+     */
+    private void notifyReconnectFailed() {
+        SocketListener listener = mSocketListener;
+        if (listener != null) {
+            mMainHandler.post(() -> {
+                // 可以添加重连失败的回调
+                AppLogUtils.e(TAG, "重连失败，已达最大重连次数");
+            });
+        }
+    }
+
+    /**
+     * 检查是否正在重连
+     */
+    public boolean isReconnecting() {
+        return mCurrentReconnectIndex.get() > 0;
     }
 
     /**
      * 发送数据
+     *
+     * @param byteString 要发送的数据
      */
-    public void send(final ByteString byteString) {
-        if (mSendRunnable == null) {
-            mSendRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    //每次发送数据时，都需要检查连接是否正常，如果未连接就需要启动连接
-                    if (mSocket != null && mSocketListener != null) {
-                        if (!isConnect() && !isRetryReconnecting()) {
-                            if (mWhenSendReconnectIndex < 10) {
-                                mReconnectIndex = 0;
-                                connect(mSocketListener);
+    public void send(@Nullable ByteString byteString) {
+        if (byteString == null) {
+            AppLogUtils.w(TAG, "发送数据为空");
+            return;
+        }
 
-                                //此变量为普通成员变量，生命周期与外界生成 WebSocketExecutor 单例的生命周期一致。
-                                //目的是避免服务器出错时，发送消息时会无限次重连。
-                                mWhenSendReconnectIndex++;
-                            }
-                            return;
-                        }
-                    }
+        if (mIsDestroyed.get()) {
+            AppLogUtils.w(TAG, "WebSocket 已销毁，无法发送数据");
+            return;
+        }
 
-                    if (mSocket != null && byteString != null) {
-                        mSocket.send(byteString);
-                    }
+        // 检查连接状态
+        if (!isConnected() && !isReconnecting()) {
+            int sendReconnectCount = mSendReconnectIndex.get();
+            if (sendReconnectCount < MAX_SEND_RECONNECT_COUNT) {
+                AppLogUtils.d(TAG, "连接断开，尝试重连后发送");
+                mCurrentReconnectIndex.set(0);
+                mSendReconnectIndex.incrementAndGet();
+
+                SocketListener listener = mSocketListener;
+                if (listener != null) {
+                    connect(listener);
                 }
-            };
+            } else {
+                AppLogUtils.w(TAG, "发送重连次数已达上限，放弃发送");
+            }
+            return;
         }
 
-        //WebSocket发送消息交给Handler UI 主线程，避免多线程操作的问题
-        //其实WebSocket内部的send方法已经实现synchronized线程安全
-        if (isUiThread()) {
-            mSendRunnable.run();
+        WebSocket socket = mWebSocket;
+        if (socket != null) {
+            try {
+                boolean success = socket.send(byteString);
+                if (!success) {
+                    AppLogUtils.w(TAG, "发送数据失败，消息队列可能已满");
+                }
+            } catch (Exception e) {
+                AppLogUtils.e(TAG, "发送数据异常: " + e.getMessage());
+            }
         } else {
-            mHandler.post(mSendRunnable);
+            AppLogUtils.w(TAG, "WebSocket 连接为空，无法发送数据");
         }
-
     }
 
     /**
-     * webSocket是否和服务器正常连接
+     * 发送文本数据
      */
-    public boolean isConnect() {
-        return isConnect;
+    public void send(@Nullable String text) {
+        if (text != null) {
+            send(ByteString.encodeUtf8(text));
+        }
     }
 
     /**
-     * 配置webSocket的连接参数，具体看代码
+     * 检查是否已连接
      */
-    public void setConfigBuilder(ConfigBuilder builder) {
-        if (builder != null) {
-            if (builder.getHeartbeatIntervalSeconds() > 0) {
-                mHeartbeatIntervalSeconds = builder.getHeartbeatIntervalSeconds();
-            }
-            if (builder.getReconnectCount() > 0) {
-                mReconnectCount = builder.getReconnectCount();
-            }
-            if (builder.getReconnectIntervalSeconds() > 0) {
-                mReconnectIntervalSeconds = builder.getReconnectIntervalSeconds();
-            }
-            mHeartbeatBytes = builder.getHeartbeatBytes();
+    public boolean isConnected() {
+        return mConnectionState == ConnectionState.CONNECTED &&
+                mWebSocket != null &&
+                !mIsDestroyed.get();
+    }
+
+    /**
+     * 配置 WebSocket 参数
+     */
+    public void setConfig(@NonNull ConfigBuilder builder) {
+        if (builder.getHeartbeatIntervalSeconds() > 0) {
+            mHeartbeatIntervalSeconds = builder.getHeartbeatIntervalSeconds();
+        }
+        if (builder.getReconnectCount() > 0) {
+            mReconnectCount = builder.getReconnectCount();
+        }
+        if (builder.getReconnectIntervalSeconds() > 0) {
+            mReconnectIntervalSeconds = builder.getReconnectIntervalSeconds();
+        }
+        ByteString heartbeat = builder.getHeartbeatBytes();
+        if (heartbeat != null) {
+            mHeartbeatBytes = heartbeat;
         }
     }
 
     /**
      * 设置心跳数据
      */
-    public synchronized void setHeartbeatBytes(ByteString heartbeatBytes) {
-        if (heartbeatBytes != null) {
-            if (!heartbeatBytes.equals(mHeartbeatBytes)) {
-                mHeartbeatBytes = heartbeatBytes;
+    public synchronized void setHeartbeatBytes(@Nullable ByteString heartbeatBytes) {
+        if (heartbeatBytes != null && !heartbeatBytes.equals(mHeartbeatBytes)) {
+            mHeartbeatBytes = heartbeatBytes;
+            // 如果心跳已启动，重启心跳以使用新数据
+            if (mHeartbeatFuture != null && !mHeartbeatFuture.isCancelled()) {
+                stopHeartbeat();
+                startHeartbeat();
             }
-        }
-    }
-
-    private final class EchoWebSocketListener extends WebSocketListener {
-
-        @Override
-        public void onOpen(WebSocket webSocket, Response response) {
-            super.onOpen(webSocket, response);
-            AppLogUtils.d("socket", "webSocket onOpen");
-            mSocket = webSocket;
-            isConnect = true;
-            mReconnectIndex = 0;
-
-            if (mSocketListener != null) {
-                mSocketListener.onOpen(webSocket, response);
-            }
-            startHeartbeat();
-        }
-
-        @Override
-        public void onMessage(WebSocket webSocket, ByteString bytes) {
-            super.onMessage(webSocket, bytes);
-            AppLogUtils.d("socket", "webSocket ByteString onMessage");
-            mSocket = webSocket;
-            isConnect = true;
-
-            if (mSocketListener != null) {
-                mSocketListener.onMessage(webSocket, bytes);
-            }
-        }
-
-        @Override
-        public void onMessage(WebSocket webSocket, String text) {
-            super.onMessage(webSocket, text);
-            mSocket = webSocket;
-            isConnect = true;
-            AppLogUtils.d("socket", "webSocket String onMessage = " + text);
-
-            if (mSocketListener != null) {
-                mSocketListener.onMessage(webSocket, text);
-            }
-        }
-
-        @Override
-        public void onClosed(WebSocket webSocket, int code, String reason) {
-            super.onClosed(webSocket, code, reason);
-            mSocket = webSocket;
-            isConnect = false;
-
-            if (mSocketListener != null) {
-                mSocketListener.onClosed(webSocket, code, reason);
-            }
-        }
-
-        @Override
-        public void onClosing(WebSocket webSocket, int code, String reason) {
-            super.onClosing(webSocket, code, reason);
-            mSocket = webSocket;
-            isConnect = false;
-        }
-
-        @Override
-        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-            super.onFailure(webSocket, t, response);
-            AppLogUtils.d("socket", "webSocket connect onFailure");
-            mSocket = webSocket;
-            isConnect = false;
-
-            if (mSocketListener != null) {
-                mSocketListener.onFailure(webSocket, t, response);
-            }
-            retryReconnect();
-        }
-
-        // 心跳包,定时不停的发送
-        private void startHeartbeat() {
-            if (mTimer == null) {
-                mTimer = new Timer();
-                TimerTask timerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (mTimerRunnable == null) {
-                            mTimerRunnable = new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        if (!isDestroy) {
-                                            if (isConnect() && mSocket != null && mHeartbeatBytes != null) {
-                                                mSocket.send(mHeartbeatBytes);
-                                            }
-                                        } else {
-                                            cancel();
-                                            if (mTimer != null) {
-                                                mTimer.cancel();
-                                                mTimer = null;
-                                            }
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            };
-                        }
-                        mHandler.post(mTimerRunnable);
-                    }
-                };
-                mTimer.schedule(timerTask, 0, mHeartbeatIntervalSeconds * 1000);
-            }
-        }
-    }
-
-    public static final class ConfigBuilder {
-        private ByteString mHeartbeatBytes = ByteString.encodeUtf8("");
-        private int mHeartbeatIntervalSeconds = -1;
-        private int mReconnectCount = -1;
-        private int mReconnectIntervalSeconds = -1;
-
-        /**
-         * 设置心跳数据
-         *
-         * @param data ByteString类型
-         */
-        public ConfigBuilder setHeartbeatBytes(ByteString data) {
-            mHeartbeatBytes = data;
-            return this;
-        }
-
-        public ByteString getHeartbeatBytes() {
-            return mHeartbeatBytes;
-        }
-
-        /**
-         * 设置心跳的时间间隔
-         *
-         * @param intervalSeconds 单位秒
-         */
-        public ConfigBuilder setHeartbeatIntervalSeconds(int intervalSeconds) {
-            mHeartbeatIntervalSeconds = intervalSeconds;
-            return this;
-        }
-
-        public int getHeartbeatIntervalSeconds() {
-            return mHeartbeatIntervalSeconds;
-        }
-
-        /**
-         * 设置webSocket连接发生错误时的重试次数
-         *
-         * @param count Int类型
-         */
-        public ConfigBuilder setReconnectCount(int count) {
-            mReconnectCount = count;
-            return this;
-        }
-
-        public int getReconnectCount() {
-            return mReconnectCount;
-        }
-
-        /**
-         * 设置webSocket连接发生错误时重试的时间间隔
-         *
-         * @param intervalSeconds 单位秒
-         */
-        public ConfigBuilder setReconnectIntervalSeconds(int intervalSeconds) {
-            mReconnectIntervalSeconds = intervalSeconds;
-            return this;
-        }
-
-        public int getReconnectIntervalSeconds() {
-            return mReconnectIntervalSeconds;
         }
     }
 
     /**
-     * 判断当前线程是不是UI线程
+     * 启动心跳
      */
-    private boolean isUiThread() {
-        return Looper.getMainLooper() == Looper.myLooper();
+    private synchronized void startHeartbeat() {
+        if (mIsDestroyed.get()) {
+            return;
+        }
+
+        // 停止之前的心跳
+        stopHeartbeat();
+
+        initScheduledExecutor();
+
+        try {
+            mHeartbeatFuture = mScheduledExecutor.scheduleWithFixedDelay(
+                    this::sendHeartbeat,
+                    0,
+                    mHeartbeatIntervalSeconds,
+                    TimeUnit.SECONDS
+            );
+            AppLogUtils.d(TAG, "心跳已启动，间隔: " + mHeartbeatIntervalSeconds + " 秒");
+        } catch (Exception e) {
+            AppLogUtils.e(TAG, "启动心跳异常: " + e.getMessage());
+        }
     }
 
+    /**
+     * 停止心跳
+     */
+    private synchronized void stopHeartbeat() {
+        if (mHeartbeatFuture != null && !mHeartbeatFuture.isCancelled()) {
+            mHeartbeatFuture.cancel(false);
+            mHeartbeatFuture = null;
+            AppLogUtils.d(TAG, "心跳已停止");
+        }
+    }
+
+    /**
+     * 发送心跳包
+     */
+    private void sendHeartbeat() {
+        if (mIsDestroyed.get()) {
+            stopHeartbeat();
+            return;
+        }
+
+        WebSocket socket = mWebSocket;
+        ByteString heartbeat = mHeartbeatBytes;
+
+        if (isConnected() && socket != null && heartbeat != null) {
+            try {
+                boolean success = socket.send(heartbeat);
+                if (success) {
+                    AppLogUtils.v(TAG, "心跳发送成功");
+                } else {
+                    AppLogUtils.w(TAG, "心跳发送失败");
+                }
+            } catch (Exception e) {
+                AppLogUtils.e(TAG, "发送心跳异常: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * WebSocket 监听器
+     */
+    private final class EchoWebSocketListener extends WebSocketListener {
+
+        @Override
+        public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
+            AppLogUtils.d(TAG, "WebSocket 连接成功");
+            mWebSocket = webSocket;
+            mConnectionState = ConnectionState.CONNECTED;
+            mCurrentReconnectIndex.set(0);
+            mSendReconnectIndex.set(0);
+
+            startHeartbeat();
+
+            SocketListener listener = mSocketListener;
+            if (listener != null) {
+                mMainHandler.post(() -> listener.onOpen(webSocket, response));
+            }
+        }
+
+        @Override
+        public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
+            AppLogUtils.v(TAG, "收到二进制消息，长度: " + bytes.size());
+
+            SocketListener listener = mSocketListener;
+            if (listener != null) {
+                mMainHandler.post(() -> listener.onMessage(webSocket, bytes));
+            }
+        }
+
+        @Override
+        public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
+            AppLogUtils.v(TAG, "收到文本消息: " + text);
+
+            SocketListener listener = mSocketListener;
+            if (listener != null) {
+                mMainHandler.post(() -> listener.onMessage(webSocket, text));
+            }
+        }
+
+        @Override
+        public void onClosing(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+            AppLogUtils.d(TAG, "WebSocket 正在关闭，code: " + code + ", reason: " + reason);
+            mConnectionState = ConnectionState.DISCONNECTING;
+        }
+
+        @Override
+        public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+            AppLogUtils.d(TAG, "WebSocket 已关闭，code: " + code + ", reason: " + reason);
+            mConnectionState = ConnectionState.DISCONNECTED;
+            stopHeartbeat();
+
+            SocketListener listener = mSocketListener;
+            if (listener != null) {
+                mMainHandler.post(() -> listener.onClosed(webSocket, code, reason));
+            }
+
+            // 非主动断开时尝试重连
+            if (!mIsDestroyed.get() && code != NORMAL_CLOSURE_STATUS) {
+                scheduleReconnect();
+            }
+        }
+
+        @Override
+        public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t,
+                              @Nullable Response response) {
+            AppLogUtils.e(TAG, "WebSocket 连接失败: " + t.getMessage());
+            mConnectionState = ConnectionState.DISCONNECTED;
+            stopHeartbeat();
+
+            SocketListener listener = mSocketListener;
+            if (listener != null) {
+                mMainHandler.post(() -> listener.onFailure(webSocket, t, response));
+            }
+
+            // 失败后尝试重连
+            if (!mIsDestroyed.get()) {
+                scheduleReconnect();
+            }
+        }
+    }
+
+    /**
+     * 配置构建器
+     */
+    public static final class ConfigBuilder {
+        private ByteString heartbeatBytes = ByteString.encodeUtf8("");
+        private int heartbeatIntervalSeconds = -1;
+        private int reconnectCount = -1;
+        private int reconnectIntervalSeconds = -1;
+
+        public ConfigBuilder setHeartbeatBytes(@NonNull ByteString data) {
+            this.heartbeatBytes = data;
+            return this;
+        }
+
+        public ByteString getHeartbeatBytes() {
+            return heartbeatBytes;
+        }
+
+        public ConfigBuilder setHeartbeatIntervalSeconds(int intervalSeconds) {
+            this.heartbeatIntervalSeconds = intervalSeconds;
+            return this;
+        }
+
+        public int getHeartbeatIntervalSeconds() {
+            return heartbeatIntervalSeconds;
+        }
+
+        public ConfigBuilder setReconnectCount(int count) {
+            this.reconnectCount = count;
+            return this;
+        }
+
+        public int getReconnectCount() {
+            return reconnectCount;
+        }
+
+        public ConfigBuilder setReconnectIntervalSeconds(int intervalSeconds) {
+            this.reconnectIntervalSeconds = intervalSeconds;
+            return this;
+        }
+
+        public int getReconnectIntervalSeconds() {
+            return reconnectIntervalSeconds;
+        }
+    }
+
+    /**
+     * WebSocket 状态监听器
+     */
     public interface SocketListener {
         void onOpen(WebSocket webSocket, Response response);
 
