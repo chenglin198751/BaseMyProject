@@ -1,19 +1,3 @@
-/*
- * Tencent is pleased to support the open source community by making QMUI_Android available.
- *
- * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
- *
- * Licensed under the MIT License (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- *
- * http://opensource.org/licenses/MIT
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.wcl.test.widget;
 
 import android.annotation.SuppressLint;
@@ -26,45 +10,33 @@ import android.view.ViewGroup;
 
 import com.wcl.test.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * 该 layout 使子 View 类似 CSS 中的 float:left 效果, 从左到右排列子 View 并自动换行。支持以下特性：
- * <ul>
- * <li>使用 {@link #setChildVerticalSpacing(int)} 和 {@link #setChildHorizontalSpacing(int)} 控制子 View 的垂直/水平间距</li>
- * <li>使用 {@link #setGravity(int)} 控制子 View 的对齐方向 (左对齐/居中/右对齐)</li>
- * <li>使用 {@link #setMaxNumber(int)} 和 {@link #setMaxLines(int)} 控制子 View 的最多个数或最大行数</li>
- * </ul>
- * <p>在 xml 中采用 {@link R.styleable#FlowLayout} 控制以上属性。</p>
+ * 优化版 FlowLayout（自动换行布局）
+ * 支持特性：
+ * - 控制水平/垂直间距
+ * - 控制对齐方式（左/中/右）
+ * - 控制最大行数或最大 item 数
+ * - 行数变化监听
  */
 public class FlowLayout extends ViewGroup {
+
     private int mChildHorizontalSpacing;
     private int mChildVerticalSpacing;
-    /**
-     * 对齐方式，目前支持 {@link Gravity#CENTER_HORIZONTAL}, {@link Gravity#LEFT} 和 {@link Gravity#RIGHT}
-     */
     private int mGravity;
 
-    private static final int LINES = 0;
-    private static final int NUMBER = 1;
-    private int mMaxMode = LINES;
+    private static final int MODE_LINES = 0;
+    private static final int MODE_NUMBER = 1;
+
+    private int mMaxMode = MODE_LINES;
     private int mMaximum = Integer.MAX_VALUE;
     private int mLineCount = 0;
     private OnLineCountChangeListener mOnLineCountChangeListener;
 
-    /**
-     * <p>每一行的item数目，下标表示行下标，在onMeasured的时候计算得出，供onLayout去使用。</p>
-     * <p>若mItemNumberInEachLine[x]==0，则表示第x行已经没有item了</p>
-     */
-    private int[] mItemNumberInEachLine;
-    /**
-     * <p>每一行的item的宽度和（包括item直接的间距），下标表示行下标，
-     * 如 mWidthSumInEachLine[x]表示第x行的item的宽度和（包括item直接的间距）</p>
-     * <p>在onMeasured的时候计算得出，供onLayout去使用</p>
-     */
-    private int[] mWidthSumInEachLine;
-    /**
-     * onMeasure过程中实际参与measure的子View个数
-     */
-    private int measuredChildCount;
+    private final List<Integer> mLineItemCounts = new ArrayList<>();
+    private final List<Integer> mLineWidthSums = new ArrayList<>();
 
     public FlowLayout(Context context) {
         this(context, null);
@@ -80,336 +52,144 @@ public class FlowLayout extends ViewGroup {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        TypedArray array = context.obtainStyledAttributes(attrs,
-                R.styleable.FlowLayout);
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
         mChildHorizontalSpacing = array.getDimensionPixelSize(
                 R.styleable.FlowLayout_ui_childHorizontalSpacing, 0);
         mChildVerticalSpacing = array.getDimensionPixelSize(
                 R.styleable.FlowLayout_ui_childVerticalSpacing, 0);
         mGravity = array.getInteger(R.styleable.FlowLayout_android_gravity, Gravity.LEFT);
+
         int maxLines = array.getInt(R.styleable.FlowLayout_android_maxLines, -1);
-        if (maxLines >= 0) {
-            setMaxLines(maxLines);
-        }
+        if (maxLines >= 0) setMaxLines(maxLines);
+
         int maxNumber = array.getInt(R.styleable.FlowLayout_ui_maxNumber, -1);
-        if (maxNumber >= 0) {
-            setMaxNumber(maxNumber);
-        }
+        if (maxNumber >= 0) setMaxNumber(maxNumber);
+
         array.recycle();
     }
 
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
         int maxLineHeight = 0;
+        int totalHeight = getPaddingTop();
+        int lineWidth = getPaddingLeft();
+        int parentWidth = (widthMode == MeasureSpec.EXACTLY) ? widthSize : Integer.MAX_VALUE;
 
-        int resultWidth;
-        int resultHeight;
+        mLineItemCounts.clear();
+        mLineWidthSums.clear();
 
-        final int count = getChildCount();
+        int childCount = getChildCount();
+        int measuredCount = 0;
 
-        mItemNumberInEachLine = new int[count];
-        mWidthSumInEachLine = new int[count];
-        int lineIndex = 0;
+        for (int i = 0; i < childCount; i++) {
+            if (mMaxMode == MODE_NUMBER && measuredCount >= mMaximum) break;
+            View child = getChildAt(i);
+            if (child.getVisibility() == GONE) continue;
 
-        // 若FloatLayout指定了MATCH_PARENT或固定宽度，则需要使子View换行
-        if (widthSpecMode == MeasureSpec.EXACTLY) {
-            resultWidth = widthSpecSize;
+            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
-            measuredChildCount = 0;
+            int childW = child.getMeasuredWidth();
+            int childH = child.getMeasuredHeight();
 
-            // 下一个子View的position
-            int childPositionX = getPaddingLeft();
-            int childPositionY = getPaddingTop();
-
-            // 子View的Right最大可达到的x坐标
-            int childMaxRight = widthSpecSize - getPaddingRight();
-
-            for (int i = 0; i < count; i++) {
-                if (mMaxMode == NUMBER && measuredChildCount >= mMaximum) {
-                    // 超出最多数量，则不再继续
-                    break;
-                } else if (mMaxMode == LINES && lineIndex >= mMaximum) {
-                    // 超出最多行数，则不再继续
-                    break;
-                }
-
-                final View child = getChildAt(i);
-                if (child.getVisibility() == GONE) {
-                    continue;
-                }
-
-                final LayoutParams childLayoutParams = child.getLayoutParams();
-                final int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
-                        getPaddingLeft() + getPaddingRight(), childLayoutParams.width);
-                final int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
-                        getPaddingTop() + getPaddingBottom(), childLayoutParams.height);
-                child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-
-                final int childw = child.getMeasuredWidth();
-                maxLineHeight = Math.max(maxLineHeight, child.getMeasuredHeight());
-                // 需要换行
-                if (childPositionX + childw > childMaxRight) {
-                    // 如果换行后超出最大行数，则不再继续
-                    if (mMaxMode == LINES) {
-                        if (lineIndex + 1 >= mMaximum) {
-                            break;
-                        }
-                    }
-                    mWidthSumInEachLine[lineIndex] -= mChildHorizontalSpacing; // 后面每次加item都会加上一个space，这样的话每行都会为最后一个item多加一次space，所以在这里减一次
-                    lineIndex++; // 换行
-                    childPositionX = getPaddingLeft(); // 下一行第一个item的x
-                    childPositionY += maxLineHeight + mChildVerticalSpacing; // 下一行第一个item的y
-                }
-                mItemNumberInEachLine[lineIndex]++;
-                mWidthSumInEachLine[lineIndex] += (childw + mChildHorizontalSpacing);
-                childPositionX += (childw + mChildHorizontalSpacing);
-                measuredChildCount++;
-            }
-            // 如果最后一个item不是刚好在行末（即lineCount最后没有+1，也就是mWidthSumInEachLine[lineCount]非0），则要减去最后一个item的space
-            if (mWidthSumInEachLine.length > 0 && mWidthSumInEachLine[lineIndex] > 0) {
-                mWidthSumInEachLine[lineIndex] -= mChildHorizontalSpacing;
-            }
-            if (heightSpecMode == MeasureSpec.UNSPECIFIED) {
-                resultHeight = childPositionY + maxLineHeight + getPaddingBottom();
-            } else if (heightSpecMode == MeasureSpec.AT_MOST) {
-                resultHeight = childPositionY + maxLineHeight + getPaddingBottom();
-                resultHeight = Math.min(resultHeight, heightSpecSize);
-            } else {
-                resultHeight = heightSpecSize;
+            // 换行判断
+            if (lineWidth + childW + getPaddingRight() > parentWidth) {
+                mLineItemCounts.add(mLineWidthSums.size(), measuredCount - getTotalItems());
+                mLineWidthSums.add(lineWidth - mChildHorizontalSpacing - getPaddingLeft());
+                totalHeight += maxLineHeight + mChildVerticalSpacing;
+                lineWidth = getPaddingLeft();
+                maxLineHeight = 0;
+                if (mMaxMode == MODE_LINES && mLineWidthSums.size() >= mMaximum) break;
             }
 
-        } else {
-            // 不计算换行，直接一行铺开
-            resultWidth = getPaddingLeft() + getPaddingRight();
-            measuredChildCount = 0;
-
-            for (int i = 0; i < count; i++) {
-                if (mMaxMode == NUMBER) {
-                    // 超出最多数量，则不再继续
-                    if (measuredChildCount > mMaximum) {
-                        break;
-                    }
-                } else if (mMaxMode == LINES) {
-                    // 超出最大行数，则不再继续
-                    if (1 > mMaximum) {
-                        break;
-                    }
-                }
-                final View child = getChildAt(i);
-                if (child.getVisibility() == GONE) {
-                    continue;
-                }
-                final LayoutParams childLayoutParams = child.getLayoutParams();
-                final int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
-                        getPaddingLeft() + getPaddingRight(), childLayoutParams.width);
-                final int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
-                        getPaddingTop() + getPaddingBottom(), childLayoutParams.height);
-                child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-                resultWidth += child.getMeasuredWidth();
-                maxLineHeight = Math.max(maxLineHeight, child.getMeasuredHeight());
-                measuredChildCount++;
-            }
-            if (measuredChildCount > 0) {
-                resultWidth += mChildHorizontalSpacing * (measuredChildCount - 1);
-            }
-            resultHeight = maxLineHeight + getPaddingTop() + getPaddingBottom();
-            if (mItemNumberInEachLine.length > 0) {
-                mItemNumberInEachLine[lineIndex] = count;
-            }
-            if (mWidthSumInEachLine.length > 0) {
-                mWidthSumInEachLine[0] = resultWidth;
-            }
+            lineWidth += childW + mChildHorizontalSpacing;
+            maxLineHeight = Math.max(maxLineHeight, childH);
+            measuredCount++;
         }
-        setMeasuredDimension(resultWidth, resultHeight);
-        int meausureLineCount = lineIndex + 1;
-        if(mLineCount != meausureLineCount){
-            if(mOnLineCountChangeListener != null){
-                mOnLineCountChangeListener.onChange(mLineCount, meausureLineCount);
-            }
-            mLineCount = meausureLineCount;
+
+        // 最后一行补上
+        if (measuredCount > getTotalItems()) {
+            mLineItemCounts.add(measuredCount - getTotalItems());
+            mLineWidthSums.add(lineWidth - mChildHorizontalSpacing - getPaddingLeft());
+            totalHeight += maxLineHeight;
         }
+
+        totalHeight += getPaddingBottom();
+
+        int finalWidth = (widthMode == MeasureSpec.EXACTLY) ? widthSize
+                : Math.min(widthSize, lineWidth + getPaddingRight());
+        int finalHeight = (heightMode == MeasureSpec.EXACTLY) ? heightSize
+                : Math.min(totalHeight, heightSize);
+
+        setMeasuredDimension(finalWidth, finalHeight);
+
+        int newLineCount = mLineWidthSums.size();
+        if (mLineCount != newLineCount && mOnLineCountChangeListener != null) {
+            mOnLineCountChangeListener.onChange(mLineCount, newLineCount);
+        }
+        mLineCount = newLineCount;
+    }
+
+    private int getTotalItems() {
+        int total = 0;
+        for (int c : mLineItemCounts) total += c;
+        return total;
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        final int width = right - left;
-        // 按照不同gravity使用不同的布局，默认是left
-        switch (mGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-            case Gravity.LEFT:
-                layoutWithGravityLeft(width);
-                break;
-            case Gravity.RIGHT:
-                layoutWithGravityRight(width);
-                break;
-            case Gravity.CENTER_HORIZONTAL:
-                layoutWithGravityCenterHorizontal(width);
-                break;
-            default:
-                layoutWithGravityLeft(width);
-                break;
-        }
-    }
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        int parentWidth = r - l;
+        int childIndex = 0;
+        int y = getPaddingTop();
 
-    /**
-     * 将子View居中布局
-     */
-    private void layoutWithGravityCenterHorizontal(int parentWidth) {
-        int nextChildIndex = 0;
-        int nextChildPositionX;
-        int nextChildPositionY = getPaddingTop();
-        int lineHeight = 0;
-        int layoutChildCount = 0;
-        int layoutChildEachLine = 0;
+        for (int line = 0; line < mLineItemCounts.size(); line++) {
+            int countInLine = mLineItemCounts.get(line);
+            int lineWidth = mLineWidthSums.get(line);
+            int x = getStartXByGravity(parentWidth, lineWidth);
 
-        // 遍历每一行
-        for (int i = 0; i < mItemNumberInEachLine.length; i++) {
-            // 如果这一行已经没item了，则退出循环
-            if (mItemNumberInEachLine[i] == 0) {
-                break;
-            }
-
-            // 遍历该行内的元素，布局每个元素
-            nextChildPositionX = (parentWidth - getPaddingLeft() - getPaddingRight() - mWidthSumInEachLine[i]) / 2 + getPaddingLeft(); // 子 View 的最小 x 值
-            while (layoutChildEachLine < mItemNumberInEachLine[i]) {
-                final View childView = getChildAt(nextChildIndex);
-                if (childView.getVisibility() == GONE) {
-                    nextChildIndex++;
+            int lineHeight = 0;
+            for (int i = 0; i < countInLine && childIndex < getChildCount(); i++) {
+                View child = getChildAt(childIndex++);
+                if (child.getVisibility() == GONE) {
+                    i--;
                     continue;
                 }
-                final int childw = childView.getMeasuredWidth();
-                final int childh = childView.getMeasuredHeight();
-                childView.layout(nextChildPositionX, nextChildPositionY, nextChildPositionX + childw, nextChildPositionY + childh);
-                lineHeight = Math.max(lineHeight, childh);
-                nextChildPositionX += childw + mChildHorizontalSpacing;
-                layoutChildCount++;
-                layoutChildEachLine++;
-                nextChildIndex++;
-                if (layoutChildCount == measuredChildCount) {
-                    break;
-                }
+                int w = child.getMeasuredWidth();
+                int h = child.getMeasuredHeight();
+                child.layout(x, y, x + w, y + h);
+                x += w + mChildHorizontalSpacing;
+                lineHeight = Math.max(lineHeight, h);
             }
-
-            if (layoutChildCount == measuredChildCount) {
-                break;
-            }
-
-            // 一行结束了，整理一下，准备下一行
-            nextChildPositionY += (lineHeight + mChildVerticalSpacing);
-            lineHeight = 0;
-            layoutChildEachLine = 0;
+            y += lineHeight + mChildVerticalSpacing;
         }
 
-        int childCount = getChildCount();
-        for (int i = nextChildIndex; i < childCount; i++) {
-            final View childView = getChildAt(i);
-            if (childView.getVisibility() == View.GONE) {
-                continue;
-            }
-            childView.layout(0, 0, 0, 0);
-        }
-    }
-
-    /**
-     * 将子View靠左布局
-     */
-    private void layoutWithGravityLeft(int parentWidth) {
-        int childMaxRight = parentWidth - getPaddingRight();
-        int childPositionX = getPaddingLeft();
-        int childPositionY = getPaddingTop();
-        int lineHeight = 0;
-        final int childCount = getChildCount();
-        int layoutChildCount = 0;
-        for (int i = 0; i < childCount; i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() == GONE) {
-                continue;
-            }
-            if (layoutChildCount < measuredChildCount) {
-                final int childw = child.getMeasuredWidth();
-                final int childh = child.getMeasuredHeight();
-                if (childPositionX + childw > childMaxRight) {
-                    // 换行
-                    childPositionX = getPaddingLeft();
-                    childPositionY += (lineHeight + mChildVerticalSpacing);
-                    lineHeight = 0;
-                }
-                child.layout(childPositionX, childPositionY, childPositionX + childw, childPositionY + childh);
-                childPositionX += childw + mChildHorizontalSpacing;
-                lineHeight = Math.max(lineHeight, childh);
-                layoutChildCount++;
-            } else {
+        // 把剩余子View隐藏
+        for (; childIndex < getChildCount(); childIndex++) {
+            View child = getChildAt(childIndex);
+            if (child.getVisibility() != GONE) {
                 child.layout(0, 0, 0, 0);
             }
         }
     }
 
-    /**
-     * 将子View靠右布局
-     */
-    private void layoutWithGravityRight(int parentWidth) {
-        int nextChildIndex = 0;
-        int nextChildPositionX;
-        int nextChildPositionY = getPaddingTop();
-        int lineHeight = 0;
-        int layoutChildCount = 0;
-        int layoutChildEachLine = 0;
-
-        // 遍历每一行
-        for (int i = 0; i < mItemNumberInEachLine.length; i++) {
-            // 如果这一行已经没item了，则退出循环
-            if (mItemNumberInEachLine[i] == 0) {
-                break;
-            }
-
-            // 遍历该行内的元素，布局每个元素
-            nextChildPositionX = parentWidth - getPaddingRight() - mWidthSumInEachLine[i]; // 初始值为子 View 的最小 x 值
-            while (layoutChildEachLine < mItemNumberInEachLine[i]) {
-                final View childView = getChildAt(nextChildIndex);
-                if (childView.getVisibility() == GONE) {
-                    nextChildIndex++;
-                    continue;
-                }
-                final int childw = childView.getMeasuredWidth();
-                final int childh = childView.getMeasuredHeight();
-                childView.layout(nextChildPositionX, nextChildPositionY, nextChildPositionX + childw, nextChildPositionY + childh);
-                lineHeight = Math.max(lineHeight, childh);
-                nextChildPositionX += childw + mChildHorizontalSpacing;
-                layoutChildCount++;
-                layoutChildEachLine++;
-                nextChildIndex++;
-                if (layoutChildCount == measuredChildCount) {
-                    break;
-                }
-            }
-            if (layoutChildCount == measuredChildCount) {
-                break;
-            }
-
-            // 一行结束了，整理一下，准备下一行
-            nextChildPositionY += (lineHeight + mChildVerticalSpacing);
-            lineHeight = 0;
-            layoutChildEachLine = 0;
-        }
-
-        int childCount = getChildCount();
-        for (int i = nextChildIndex; i < childCount; i++) {
-            final View childView = getChildAt(i);
-            if (childView.getVisibility() == View.GONE) {
-                continue;
-            }
-            childView.layout(0, 0, 0, 0);
+    private int getStartXByGravity(int parentWidth, int lineWidth) {
+        switch (mGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
+            case Gravity.CENTER_HORIZONTAL:
+                return getPaddingLeft() + (parentWidth - getPaddingLeft() - getPaddingRight() - lineWidth) / 2;
+            case Gravity.RIGHT:
+                return parentWidth - getPaddingRight() - lineWidth;
+            default:
+                return getPaddingLeft();
         }
     }
 
-    /**
-     * 设置子 View 的对齐方式，目前支持 {@link Gravity#CENTER_HORIZONTAL}, {@link Gravity#LEFT} 和 {@link Gravity#RIGHT}
-     */
+    // ================== 公共方法 ==================
+
     public void setGravity(int gravity) {
         if (mGravity != gravity) {
             mGravity = gravity;
@@ -421,68 +201,42 @@ public class FlowLayout extends ViewGroup {
         return mGravity;
     }
 
-    /**
-     * 设置最多可显示的子View个数
-     * 注意该方法不会改变子View的个数，只会影响显示出来的子View个数
-     *
-     * @param maxNumber 最多可显示的子View个数
-     */
     public void setMaxNumber(int maxNumber) {
         mMaximum = maxNumber;
-        mMaxMode = NUMBER;
+        mMaxMode = MODE_NUMBER;
         requestLayout();
     }
 
-    /**
-     * 获取最多可显示的子View个数
-     */
     public int getMaxNumber() {
-        return mMaxMode == NUMBER ? mMaximum : -1;
+        return mMaxMode == MODE_NUMBER ? mMaximum : -1;
     }
 
-    /**
-     * 设置最多可显示的行数
-     * 注意该方法不会改变子View的个数，只会影响显示出来的子View个数
-     *
-     * @param maxLines 最多可显示的行数
-     */
     public void setMaxLines(int maxLines) {
         mMaximum = maxLines;
-        mMaxMode = LINES;
+        mMaxMode = MODE_LINES;
         requestLayout();
     }
 
-    public void setOnLineCountChangeListener(OnLineCountChangeListener onLineCountChangeListener) {
-        mOnLineCountChangeListener = onLineCountChangeListener;
+    public int getMaxLines() {
+        return mMaxMode == MODE_LINES ? mMaximum : -1;
+    }
+
+    public void setChildHorizontalSpacing(int spacing) {
+        mChildHorizontalSpacing = spacing;
+        requestLayout();
+    }
+
+    public void setChildVerticalSpacing(int spacing) {
+        mChildVerticalSpacing = spacing;
+        requestLayout();
+    }
+
+    public void setOnLineCountChangeListener(OnLineCountChangeListener listener) {
+        mOnLineCountChangeListener = listener;
     }
 
     public int getLineCount() {
         return mLineCount;
-    }
-
-    /**
-     * 获取最多可显示的行数
-     *
-     * @return 没有限制时返回-1
-     */
-    public int getMaxLines() {
-        return mMaxMode == LINES ? mMaximum : -1;
-    }
-
-    /**
-     * 设置子 View 的水平间距
-     */
-    public void setChildHorizontalSpacing(int spacing) {
-        mChildHorizontalSpacing = spacing;
-        invalidate();
-    }
-
-    /**
-     * 设置子 View 的垂直间距
-     */
-    public void setChildVerticalSpacing(int spacing) {
-        mChildVerticalSpacing = spacing;
-        invalidate();
     }
 
     public interface OnLineCountChangeListener {
