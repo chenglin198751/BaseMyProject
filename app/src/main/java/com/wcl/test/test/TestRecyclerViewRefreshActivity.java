@@ -20,7 +20,6 @@ import java.util.List;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
-import com.wcl.test.base.BaseRecyclerViewHolder;
 import com.wcl.test.listener.OnSingleClickListener;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;

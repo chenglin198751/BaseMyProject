@@ -11,7 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
-import com.wcl.test.common.CommonFragmentViewPagerAdapter;
+import com.wcl.test.common.CommonFragmentViewPager2Adapter;
 import com.wcl.test.widget.MyTabLayout;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class TestTabLayoutActivity extends BaseActivity {
     private ViewPager2 mViewPager;
-    private CommonFragmentViewPagerAdapter mFragmentAdapter;
+    private CommonFragmentViewPager2Adapter mFragmentAdapter;
     private List<Fragment> mFragList = new ArrayList<>();
     private MyTabLayout mTabLayout;
     private TabLayoutMediator mediator;
@@ -43,7 +43,7 @@ public class TestTabLayoutActivity extends BaseActivity {
             fragment.setArguments(bundle);
             mFragList.add(fragment);
         }
-        mFragmentAdapter = new CommonFragmentViewPagerAdapter(this, mFragList);
+        mFragmentAdapter = new CommonFragmentViewPager2Adapter(this, mFragList);
         mViewPager.setAdapter(mFragmentAdapter);
 
         mediator = new TabLayoutMediator(mTabLayout, mViewPager, (tab, position) -> {
