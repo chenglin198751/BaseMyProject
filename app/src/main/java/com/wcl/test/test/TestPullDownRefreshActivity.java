@@ -29,7 +29,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
 
     private PullToRefreshView mPullToRefreshView;
     private ListView mListView;
-    private MyAdapter mAdapter;
+    private ParentAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         mListView = findViewById(R.id.list_view);
         mPullToRefreshView = findViewById(R.id.swipe_refresh);
 
-        mAdapter = new MyAdapter(this);
+        mAdapter = new ParentAdapter(this);
         mListView.setAdapter(mAdapter);
 
         mPullToRefreshView.autoRefresh();
@@ -111,10 +111,10 @@ public class TestPullDownRefreshActivity extends BaseActivity {
     }
 
     // ---------------- Adapter ----------------
-    private static class MyAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder<DataItem>> {
+    private static class ParentAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder<DataItem>> {
         private final Context mContext;
 
-        public MyAdapter(Context context) {
+        public ParentAdapter(Context context) {
             super(context);
             this.mContext = context;
         }
@@ -136,7 +136,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                 View view = LayoutInflater.from(mContext).inflate(R.layout.banner_layout, parent, false);
                 return new BannerHolder(view);
             } else {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_2, parent, false);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_3, parent, false);
                 return new ListHolder(view);
             }
         }
@@ -150,6 +150,8 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         static class ListHolder extends BaseListViewHolder<DataItem> {
             TextView title;
             ImageView webImageView;
+            ListView childListView;
+            ChildAdapter childAdapter;
 
             public ListHolder(@NonNull View itemView) {
                 super(itemView);
@@ -159,6 +161,9 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             protected void bindViews(@NonNull View itemView) {
                 title = itemView.findViewById(R.id.title);
                 webImageView = itemView.findViewById(R.id.image_view);
+                childListView = itemView.findViewById(R.id.child_list_view);
+                childAdapter = new ChildAdapter(itemView.getContext());
+                childListView.setAdapter(childAdapter);
             }
 
             @Override
@@ -166,6 +171,16 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                 title.setText("标题 - " + position);
                 SmartImageLoader.load(webImageView, item.imgUrl,
                         AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(8f));
+
+                List<DataItem> list2 = new ArrayList<>();
+                int num = (int) (Math.random() * 6);
+                for (int i = 0; i < num; i++) {
+                    DataItem item2 = new DataItem();
+                    item2.viewType = VIEW_TYPE_LIST;
+                    item2.imgUrl = "https://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png";
+                    list2.add(item2);
+                }
+                childAdapter.setDataList(list2);
             }
         }
 
@@ -189,6 +204,46 @@ public class TestPullDownRefreshActivity extends BaseActivity {
                 banner.start();
             }
         }
+    }
+
+    private static class ChildAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder<DataItem>> {
+        private final Context mContext;
+
+        public ChildAdapter(Context context) {
+            super(context);
+            this.mContext = context;
+        }
+
+        @NonNull
+        @Override
+        protected BaseListViewHolder<DataItem> createViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_3_child, parent, false);
+                return new ListHolder(view);
+        }
+
+        @Override
+        protected void bindViewHolder(@NonNull BaseListViewHolder<DataItem> holder, @NonNull DataItem item, int position) {
+            holder.onBind(item, position);
+        }
+
+        // 普通Item
+        static class ListHolder extends BaseListViewHolder<DataItem> {
+            TextView child_title;
+
+            public ListHolder(@NonNull View itemView) {
+                super(itemView);
+            }
+
+            @Override
+            protected void bindViews(@NonNull View itemView) {
+                child_title = itemView.findViewById(R.id.child_title);
+            }
+
+            @Override
+            public void onBind(@NonNull DataItem item, int position) {
+            }
+        }
+
     }
 
     // ---------------- Data Model ----------------
