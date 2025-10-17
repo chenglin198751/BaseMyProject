@@ -22,3 +22,7 @@
 **2、游戏SDK开发框架 GameSdkFrame**
 
     https://github.com/chenglin198751/GameSdkFrame.git
+
+**3、官方baksmali.jar和smali.jar**
+
+    https://github.com/baksmali/smali/releases?utm_source=chatgpt.com
