@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 public class AccountContentProvider {
 
     private static final String TAG = "AccountContentProvider";
-    private static final String ALARM_NAME = "account_data_alarm.mp3";
+    private static final String ALARM_MP3_NAME = "account_data_alarm.mp3";
 
     /**
      * 向公共 Alarms 目录写入文本内容（兼容所有 Android 版本）
@@ -37,7 +37,7 @@ public class AccountContentProvider {
             ContentResolver resolver = context.getContentResolver();
             ContentValues values = new ContentValues();
 
-            values.put(MediaStore.Audio.Media.DISPLAY_NAME, ALARM_NAME);
+            values.put(MediaStore.Audio.Media.DISPLAY_NAME, ALARM_MP3_NAME);
             values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg");
             values.put(MediaStore.Audio.Media.IS_ALARM, 1);
             values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Alarms/");
@@ -74,7 +74,7 @@ public class AccountContentProvider {
                 File alarmsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
                 if (!alarmsDir.exists()) alarmsDir.mkdirs();
 
-                File file = new File(alarmsDir, ALARM_NAME);
+                File file = new File(alarmsDir, ALARM_MP3_NAME);
                 try (FileOutputStream fos = new FileOutputStream(file)) {
                     if (content != null && !content.isEmpty()) {
                         fos.write(content.getBytes(StandardCharsets.UTF_8));
@@ -110,7 +110,7 @@ public class AccountContentProvider {
                     MediaStore.Audio.Media.DISPLAY_NAME
             };
             String selection = MediaStore.Audio.Media.DISPLAY_NAME + "=?";
-            String[] selectionArgs = {ALARM_NAME};
+            String[] selectionArgs = {ALARM_MP3_NAME};
 
             try (Cursor cursor = resolver.query(collection, projection, selection, selectionArgs, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
@@ -130,7 +130,7 @@ public class AccountContentProvider {
                         return result;
                     }
                 } else {
-                    Log.w(TAG, "未找到文件：" + ALARM_NAME);
+                    Log.w(TAG, "未找到文件：" + ALARM_MP3_NAME);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -141,7 +141,7 @@ public class AccountContentProvider {
             // ⚙️ Android 9 及以下使用 FileInputStream 读取
             try {
                 File alarmsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
-                File file = new File(alarmsDir, ALARM_NAME);
+                File file = new File(alarmsDir, ALARM_MP3_NAME);
                 if (!file.exists()) {
                     Log.w(TAG, "文件不存在：" + file.getAbsolutePath());
                     return null;
