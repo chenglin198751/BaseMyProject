@@ -19,6 +19,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * AccountContentProvider
+ * 用于通过 MediaStore 在公共 Alarms 目录中读写共享账户数据文件，
+ * 支持 Android 各版本的兼容性处理，无需存储权限。
+ */
 public class AccountContentProvider {
 
     private static final String TAG = "AccountContentProvider";
