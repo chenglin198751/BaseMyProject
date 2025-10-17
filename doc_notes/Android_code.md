@@ -588,3 +588,7 @@
 **109、DragRelativeLayout：**
 
     可实现自由拖拽的布局
+
+**110、AccountContentProvider：**
+
+    使用系统铃声Alarms目录实现无需存储权限的账户信息共享方案
