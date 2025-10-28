@@ -15,7 +15,6 @@ import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -657,4 +656,11 @@ public class AppBaseUtils {
     public static boolean isEdgeToEdge() {
         return Build.VERSION.SDK_INT >= 35 && BaseApp.getApp().getApplicationInfo().targetSdkVersion >= 35;
     }
+
+    public static boolean isXiaomiDevice() {
+        return (Build.BRAND != null && Build.BRAND.toLowerCase().contains("xiaomi") ||
+                "xiaomi".equalsIgnoreCase(Build.MANUFACTURER)
+        );
+    }
+
 }

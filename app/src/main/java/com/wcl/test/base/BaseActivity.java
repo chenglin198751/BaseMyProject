@@ -10,6 +10,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -55,6 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        installFontScaleFactory();
         super.onCreate(savedInstanceState);
         applyGrayScaleIfNeeded();
 
@@ -312,6 +314,27 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         View view = mBaseViewHelper.getView();
         if (view != null && view.getParent() instanceof ViewGroup) {
             ((ViewGroup) view.getParent()).removeView(view);
+        }
+    }
+
+    /**
+     * 使用自定义的LayoutInflater.Factory2，
+     * 解决比如字号在小米手机上总是小一号的问题
+     */
+    private void installFontScaleFactory() {
+        if (AppBaseUtils.isXiaomiDevice()) {
+            LayoutInflater inflater = getLayoutInflater();
+            if (inflater.getFactory2() != null && inflater.getFactory2() instanceof FontScaleFactory) {
+                return;
+            }
+            LayoutInflater.Factory2 existingFactory2 = inflater.getFactory2();
+            float deltaPx = AppBaseUtils.dip2px(1f);
+            FontScaleFactory fsFactory = new FontScaleFactory(inflater, existingFactory2, getDelegate(), deltaPx);
+            try {
+                inflater.setFactory2(fsFactory);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
