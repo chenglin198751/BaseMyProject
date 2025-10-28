@@ -79,7 +79,13 @@
     getLifecycle().addObserver(new LifecycleEventObserver() {
         @Override
         public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
-            Log.v("tag_99","event = " + event);
+           if (event == Lifecycle.Event.ON_CREATE) {
+                // 当Activity或Fragment创建时执行此逻辑
+                Log.d("Lifecycle", "Component created");
+            } else if (event == Lifecycle.Event.ON_PAUSE) {
+                // 当Activity或Fragment暂停时执行此逻辑，例如保存数据
+                Log.d("Lifecycle", "Component paused, save data if needed");
+            }
         }
     });
 
