@@ -26,4 +26,19 @@
         android:text="删除"
         android:textColor="@color/white"
         android:textSize="14dp" />
+
+    <TextView
+        android:id="@+id/countdowner"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_below="@+id/btn_delete"
+        android:layout_alignLeft="@+id/btn_delete"
+        android:layout_alignRight="@+id/btn_delete"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:text="3分钟"
+        android:textColor="@color/white"
+        android:textSize="15dp" />
+
 </RelativeLayout>
