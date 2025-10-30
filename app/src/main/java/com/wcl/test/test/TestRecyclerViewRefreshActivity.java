@@ -3,19 +3,14 @@ package com.wcl.test.test;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
@@ -23,6 +18,9 @@ import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.listener.OnSingleClickListener;
 import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 资料：https://github.com/scwang90/SmartRefreshLayout
@@ -148,25 +146,16 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
             @Override
             public void onBind(final int position) {
-                Log.v("tag_5","position = " + position);
                 SmartImageLoader.load(imageView, getData().get(position).url, -1, -1, 0);
-                btnDelete.setText("删除 " + getAdapterPosition());
-                btnDelete.setTag(getData().get(position).url);
+                btnDelete.setText("删除");
                 btnDelete.setOnClickListener(new OnSingleClickListener() {
                     @Override
                     public void onSingleClick(View v) {
-                        String url = (String) v.getTag();
-                        int index = 0;
-                        for (int i = 0; i < getData().size(); i++) {
-                            if (getData().get(i).url.equals(url)){
-                                index = i;
-                                break;
-                            }
+                        int currentPosition = getAbsoluteAdapterPosition();
+                        if (currentPosition >= 0 && currentPosition < getData().size()) {
+                            getData().remove(currentPosition);
+                            notifyItemRemoved(currentPosition);
                         }
-
-                        Log.v("tag_999","index = " + index);
-                        getData().remove(index);
-                        notifyItemRemoved(index);
                     }
                 });
 
@@ -178,6 +167,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                     }
                 });
             }
+
 
         }
     }
