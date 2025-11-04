@@ -123,8 +123,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    public void onBroadcastReceiver(String myAction, Bundle bundle) {
-        super.onBroadcastReceiver(myAction, bundle);
+    public void onBroadcastReceiver(String eventKey, Object obj) {
+        super.onBroadcastReceiver(eventKey, obj);
     }
 
 }

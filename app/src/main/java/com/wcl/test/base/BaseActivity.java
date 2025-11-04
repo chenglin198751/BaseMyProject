@@ -1,9 +1,5 @@
 package com.wcl.test.base;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -24,7 +20,6 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.gson.Gson;
 import com.wcl.test.R;
@@ -44,8 +39,8 @@ import java.util.List;
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
     public static final String CLASS_NAME = "MainActivity";
     protected static final Gson gson = AppConstants.gson;
+    private final OnBroadcastListener eventObserver = this;
 
-    private BroadcastReceiver mBroadcastReceiver;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper;
     private WaitDialog mWaitDialog;
@@ -61,9 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         applyGrayScaleIfNeeded();
 
         if (onKeepSingleActivity()) {
-            Bundle bundle = new Bundle();
-            bundle.putString("activity_name", getClass().getName());
-            EventBus.sendBroadcast(EventBus.System.ACTION_KEEP_SINGLE_ACTIVITY, bundle);
+            EventBus2.get().post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
         }
         registerBroadcastReceiver();
 
@@ -173,13 +166,12 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     @CallSuper
     @Override
-    public void onBroadcastReceiver(String action, Bundle bundle) {
-        if (EventBus.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(action) && onKeepSingleActivity()) {
-            String className = getClass().getName();
-            if (bundle != null && className.equals(bundle.getString("activity_name"))) {
+    public void onBroadcastReceiver(String eventKey, Object obj) {
+        if (EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(eventKey) && onKeepSingleActivity()) {
+            if (getClass().getName().equals(obj)) {
                 finish();
             }
-        } else if (EventBus.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(action)) {
+        } else if (EventAction.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(eventKey)) {
             if (!getClass().getSimpleName().equals(CLASS_NAME)) {
                 finish();
             }
@@ -188,32 +180,18 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             for (Fragment fragment : fragments) {
                 if (fragment instanceof BaseFragment && fragment.isAdded()) {
-                    ((BaseFragment) fragment).onBroadcastReceiver(action, bundle);
+                    ((BaseFragment) fragment).onBroadcastReceiver(eventKey, obj);
                 }
             }
         }
     }
 
     private void registerBroadcastReceiver() {
-        if (mBroadcastReceiver != null) return;
-        mBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (EventBus.ACTION_BASE_BROADCAST.equals(intent.getAction())) {
-                    String childAction = intent.getStringExtra("action");
-                    onBroadcastReceiver(childAction, intent.getBundleExtra("bundle"));
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter(EventBus.ACTION_BASE_BROADCAST);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
+        EventBus2.get().register(eventObserver);
     }
 
     private void unregisterBroadcastReceiver() {
-        if (mBroadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
-            mBroadcastReceiver = null;
-        }
+        EventBus2.get().unregister(eventObserver);
     }
 
     @CallSuper

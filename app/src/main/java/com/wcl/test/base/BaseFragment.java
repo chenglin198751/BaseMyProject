@@ -38,10 +38,10 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
 
     @CallSuper
     @Override
-    public void onBroadcastReceiver(String action, Bundle bundle) {
+    public void onBroadcastReceiver(String eventKey, Object obj) {
         for (Fragment childFragment : getChildFragmentManager().getFragments()) {
             if (childFragment instanceof BaseFragment && childFragment.isAdded()) {
-                ((BaseFragment) childFragment).onBroadcastReceiver(action, bundle);
+                ((BaseFragment) childFragment).onBroadcastReceiver(eventKey, obj);
             }
         }
     }

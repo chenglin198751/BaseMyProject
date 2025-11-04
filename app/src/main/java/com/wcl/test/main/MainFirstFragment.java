@@ -2,16 +2,13 @@ package com.wcl.test.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
-import com.wcl.test.httpwork.HttpUtils;
-import com.wcl.test.test.TestPullDownRefreshActivity;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.test.TestRecyclerViewRefreshActivity;
 
 
 /**
@@ -30,14 +27,14 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
         mViewBinding.viewLeft.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), TestPullDownRefreshActivity.class);
+            Intent intent = new Intent(getContext(), TestRecyclerViewRefreshActivity.class);
             startActivity(intent);
         });
     }
 
     @Override
-    public void onBroadcastReceiver(String action, Bundle bundle) {
-        super.onBroadcastReceiver(action, bundle);
+    public void onBroadcastReceiver(String eventKey, Object obj) {
+        super.onBroadcastReceiver(eventKey, obj);
     }
 
     @Override
