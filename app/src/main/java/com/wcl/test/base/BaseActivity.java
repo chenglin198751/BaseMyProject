@@ -39,7 +39,6 @@ import java.util.List;
 public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
     public static final String CLASS_NAME = "MainActivity";
     protected static final Gson gson = AppConstants.gson;
-    private final OnBroadcastListener eventObserver = this;
 
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper;
@@ -187,11 +186,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     private void registerBroadcastReceiver() {
-        EventBus2.get().register(eventObserver);
+        EventBus2.get().register(this);
     }
 
     private void unregisterBroadcastReceiver() {
-        EventBus2.get().unregister(eventObserver);
+        EventBus2.get().unregister(this);
     }
 
     @CallSuper
