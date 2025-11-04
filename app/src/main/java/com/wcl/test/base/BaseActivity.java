@@ -165,9 +165,9 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     @CallSuper
     @Override
-    public void onBroadcastReceiver(String eventKey, Object obj) {
+    public void onBroadcastReceiver(String eventKey, Object data) {
         if (EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(eventKey) && onKeepSingleActivity()) {
-            if (getClass().getName().equals(obj)) {
+            if (getClass().getName().equals(data)) {
                 finish();
             }
         } else if (EventAction.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(eventKey)) {
@@ -179,7 +179,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             for (Fragment fragment : fragments) {
                 if (fragment instanceof BaseFragment && fragment.isAdded()) {
-                    ((BaseFragment) fragment).onBroadcastReceiver(eventKey, obj);
+                    ((BaseFragment) fragment).onBroadcastReceiver(eventKey, data);
                 }
             }
         }

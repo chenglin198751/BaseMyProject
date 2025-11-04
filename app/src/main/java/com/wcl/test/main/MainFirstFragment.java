@@ -33,8 +33,8 @@ public class MainFirstFragment extends BaseFragment {
     }
 
     @Override
-    public void onBroadcastReceiver(String eventKey, Object obj) {
-        super.onBroadcastReceiver(eventKey, obj);
+    public void onBroadcastReceiver(String eventKey, Object data) {
+        super.onBroadcastReceiver(eventKey, data);
     }
 
     @Override
