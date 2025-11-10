@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
-import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -60,7 +59,7 @@ public class HttpUtils {
         void onProgress(long fileTotalSize, long fileDowningSize, float percent);
     }
 
-    public static class HttpBuilder {
+    public static class Headers {
         public Map<String, String> headersMap = null;
     }
 
@@ -176,10 +175,10 @@ public class HttpUtils {
      * POST 异步
      **/
     public static void post(final Context context, String url, Map<String, Object> params, final HttpCallback callback) {
-        postWithBuilder(context, url, params, new HttpBuilder(), callback);
+        postWithHeaders(context, url, params, new Headers(), callback);
     }
 
-    public static void postWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback callback) {
+    public static void postWithHeaders(final Context context, final String url, Map<String, Object> params, Headers headers, final HttpCallback callback) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             callback.onResponse(false, url + " 不是有效URL");
             return;
@@ -187,12 +186,12 @@ public class HttpUtils {
 
         if (params == null) params = new HashMap<>();
         addCommonData(params);
-        if (builder == null) builder = new HttpBuilder();
+        if (headers == null) headers = new Headers();
 
         FormBody body = buildFormBody(params);
         Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
-        if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
-            requestBuilder.headers(Headers.of(builder.headersMap));
+        if (headers.headersMap != null && !headers.headersMap.isEmpty()) {
+            requestBuilder.headers(okhttp3.Headers.of(headers.headersMap));
         }
         mOkHttpClient.newCall(requestBuilder.build()).enqueue(createOkHttpCallback(context, callback));
     }
@@ -201,14 +200,14 @@ public class HttpUtils {
      * GET 异步
      **/
     public static void get(final Context context, String url, Map<String, Object> params, final HttpCallback callback) {
-        getWithBuilder(context, url, params, new HttpBuilder(), callback);
+        getWithHeaders(context, url, params, new Headers(), callback);
     }
 
-    public static void getWithBuilder(final Context context, final String url, Map<String, Object> params, HttpBuilder builder, final HttpCallback callback) {
+    public static void getWithHeaders(final Context context, final String url, Map<String, Object> params, Headers headers, final HttpCallback callback) {
         final String urlWithParams = buildGetParams(url, params);
         Request.Builder requestBuilder = new Request.Builder().url(urlWithParams).get();
-        if (builder.headersMap != null && !builder.headersMap.isEmpty()) {
-            requestBuilder.headers(Headers.of(builder.headersMap));
+        if (headers.headersMap != null && !headers.headersMap.isEmpty()) {
+            requestBuilder.headers(okhttp3.Headers.of(headers.headersMap));
         }
         mOkHttpClient.newCall(requestBuilder.build()).enqueue(createOkHttpCallback(context, callback));
     }
