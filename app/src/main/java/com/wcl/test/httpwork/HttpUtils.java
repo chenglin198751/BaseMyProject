@@ -215,7 +215,7 @@ public class HttpUtils {
     /**
      * 同步 GET 请求
      **/
-    public static String syncGet(final String url) {
+    public static String getSync(final String url) {
         Request request = new Request.Builder().url(url).get().build();
         try (Response response = mOkHttpClient.newCall(request).execute()) {
             if (!response.isSuccessful() || response.body() == null) return null;
@@ -229,7 +229,7 @@ public class HttpUtils {
     /**
      * 同步 POST 请求
      **/
-    public static String syncPost(final String url, Map<String, Object> params) {
+    public static String postSync(final String url, Map<String, Object> params) {
         if (params == null) params = new HashMap<>();
         addCommonData(params);
         Request request = new Request.Builder().url(url).post(buildFormBody(params)).build();
