@@ -281,21 +281,24 @@ public class HttpUtils {
      */
     private static String downloadFileSync(final String fileUrl, final HttpDownloadCallback callback) {
         if (AppBaseUtils.isUiThread()) throw new RuntimeException("同步下载不能在UI线程执行");
-        if (mDowningUrls.contains(fileUrl)) {
-            postToUi(() -> callback.onFinished(false, null, "文件正在下载中"));
-            return null;
-        }
 
+        // 检查文件是否已经完整下载
         File downFile = new File(getDownLoadFilePath(fileUrl));
         long contentLength = getFileContentLength(fileUrl);
-        if (downFile.exists()) {
-            if (contentLength == downFile.length()) {
-                postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
-                return downFile.getAbsolutePath();
-            }
+        if (downFile.exists() && contentLength > 0 && contentLength == downFile.length()) {
+            postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
+            return downFile.getAbsolutePath();
         }
 
-        mDowningUrls.add(fileUrl);
+        // 检查是否正在下载
+        synchronized (mDowningUrls) {
+            if (mDowningUrls.contains(fileUrl)) {
+                postToUi(() -> callback.onFinished(false, null, "文件正在下载中"));
+                return null;
+            }
+            mDowningUrls.add(fileUrl);
+        }
+
         File tempFile = new File(downFile.getAbsolutePath() + ".temp");
         long downloadedLength = tempFile.exists() ? tempFile.length() : 0;
 
