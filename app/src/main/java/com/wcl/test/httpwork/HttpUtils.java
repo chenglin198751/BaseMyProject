@@ -358,16 +358,18 @@ public class HttpUtils {
      */
     public static String buildGetParams(String url, Map<String, Object> params) {
         addCommonData(params);
-
         StringBuilder sb = new StringBuilder();
+        boolean first = true;
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if (sb.length() == 0 && !url.contains("?")) {
-                sb.append("?").append(entry.getKey()).append("=").append(entry.getValue());
+            if (first) {
+                sb.append(url.contains("?") ? "&" : "?");
+                first = false;
             } else {
-                sb.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+                sb.append("&");
             }
+            sb.append(entry.getKey()).append("=").append(entry.getValue());
         }
-        return url + sb.toString();
+        return url + sb;
     }
 
     /**
