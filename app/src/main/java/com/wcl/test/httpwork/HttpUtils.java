@@ -88,7 +88,7 @@ public class HttpUtils {
 
     /**
      * RetryInterceptor
-     **/
+     */
     public static class RetryInterceptor implements Interceptor {
         private final int maxRetry;
 
@@ -118,7 +118,7 @@ public class HttpUtils {
 
     /**
      * 通用 UI 线程回调
-     **/
+     */
     private static void postToUi(Runnable r) {
         AppBaseUtils.getUiHandler().post(r);
     }
@@ -139,7 +139,7 @@ public class HttpUtils {
 
     /**
      * 构建 FormBody
-     **/
+     */
     private static FormBody buildFormBody(Map<String, Object> params) {
         FormBody.Builder builder = new FormBody.Builder();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -173,7 +173,7 @@ public class HttpUtils {
 
     /**
      * POST 异步
-     **/
+     */
     public static void post(final Context context, String url, Map<String, Object> params, final HttpCallback callback) {
         postWithHeaders(context, url, params, null, callback);
     }
@@ -194,7 +194,7 @@ public class HttpUtils {
 
     /**
      * GET 异步
-     **/
+     */
     public static void get(final Context context, String url, Map<String, Object> params, final HttpCallback callback) {
         getWithHeaders(context, url, params, null, callback);
     }
@@ -207,7 +207,7 @@ public class HttpUtils {
 
     /**
      * 同步 GET 请求
-     **/
+     */
     public static String getSync(final String url) {
         Request request = new Request.Builder().url(url).get().build();
         try (Response response = mOkHttpClient.newCall(request).execute()) {
@@ -221,7 +221,7 @@ public class HttpUtils {
 
     /**
      * 同步 POST 请求
-     **/
+     */
     public static String postSync(final String url, Map<String, Object> params) {
         if (params == null) params = new HashMap<>();
         addCommonData(params);
@@ -238,7 +238,7 @@ public class HttpUtils {
 
     /**
      * 上传图片
-     **/
+     */
     public static void uploadImage(String url, Map<String, Object> params, String picKey, String filePath) {
         if (TextUtils.isEmpty(filePath)) return;
         File file = new File(filePath);
@@ -267,7 +267,7 @@ public class HttpUtils {
 
     /**
      * 异步下载文件
-     **/
+     */
     public static void downloadFile(final String fileUrl, final HttpDownloadCallback callback) {
         if (callback == null) throw new NullPointerException("HttpDownloadCallback不能为空");
         if (TextUtils.isEmpty(fileUrl)) {
@@ -284,7 +284,7 @@ public class HttpUtils {
 
     /**
      * 同步下载文件（断点续传）
-     **/
+     */
     private static String downloadFileSync(final String fileUrl, final HttpDownloadCallback callback) {
         if (AppBaseUtils.isUiThread()) throw new RuntimeException("同步下载不能在UI线程执行");
         if (mDowningUrls.contains(fileUrl)) {
@@ -347,7 +347,7 @@ public class HttpUtils {
 
     /**
      * 获取文件长度
-     **/
+     */
     private static long getFileContentLength(String url) {
         Request request = new Request.Builder().url(url).build();
         try (Response response = mOkHttpClient.newCall(request).execute()) {
@@ -361,7 +361,7 @@ public class HttpUtils {
 
     /**
      * 构建 GET 参数
-     **/
+     */
     public static String buildGetParams(String url, Map<String, Object> params) {
         if (params == null) params = new HashMap<>();
         addCommonData(params);
@@ -379,7 +379,7 @@ public class HttpUtils {
 
     /**
      * 文件下载路径
-     **/
+     */
     public static String getDownLoadFilePath(String fileUrl) {
         return new File(DOWNLOAD_DIR, AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl)).getAbsolutePath();
     }
@@ -391,7 +391,7 @@ public class HttpUtils {
 
     /**
      * 添加公共参数
-     **/
+     */
     private static void addCommonData(Map<String, Object> params) {
         params.put("deviceId", DeviceUtils.getDeviceId());
         params.put("product", Build.MODEL);
