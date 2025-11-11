@@ -183,10 +183,7 @@ public class HttpUtils {
             callback.onResponse(false, url + " 不是有效URL");
             return;
         }
-
-        if (params == null) params = new HashMap<>();
         addCommonData(params);
-
         FormBody body = buildFormBody(params);
         Request.Builder requestBuilder = buildBaseRequest(url, headers).post(body);
         mOkHttpClient.newCall(requestBuilder.build()).enqueue(createOkHttpCallback(context, callback));
@@ -223,7 +220,6 @@ public class HttpUtils {
      * 同步 POST 请求
      */
     public static String postSync(final String url, Map<String, Object> params) {
-        if (params == null) params = new HashMap<>();
         addCommonData(params);
         Request request = new Request.Builder().url(url).post(buildFormBody(params)).build();
 
@@ -244,9 +240,7 @@ public class HttpUtils {
         File file = new File(filePath);
         if (!file.exists()) return;
 
-        if (params == null) params = new HashMap<>();
         addCommonData(params);
-
         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         params.forEach((k, v) -> multipartBuilder.addFormDataPart(k, String.valueOf(v)));
         multipartBuilder.addFormDataPart(picKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
@@ -363,7 +357,6 @@ public class HttpUtils {
      * 构建 GET 参数
      */
     public static String buildGetParams(String url, Map<String, Object> params) {
-        if (params == null) params = new HashMap<>();
         addCommonData(params);
 
         StringBuilder sb = new StringBuilder();
@@ -393,6 +386,9 @@ public class HttpUtils {
      * 添加公共参数
      */
     private static void addCommonData(Map<String, Object> params) {
+        if (params == null) {
+            params = new HashMap<>();
+        }
         params.put("deviceId", DeviceUtils.getDeviceId());
         params.put("product", Build.MODEL);
         params.put("brand", Build.BRAND);
