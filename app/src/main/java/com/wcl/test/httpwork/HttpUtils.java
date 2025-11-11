@@ -286,10 +286,17 @@ public class HttpUtils {
             return null;
         }
 
-        mDowningUrls.add(fileUrl);
         File downFile = new File(getDownLoadFilePath(fileUrl));
-        File tempFile = new File(downFile.getAbsolutePath() + ".temp");
         long contentLength = getFileContentLength(fileUrl);
+        if (downFile.exists()) {
+            if (contentLength == downFile.length()) {
+                postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
+                return downFile.getAbsolutePath();
+            }
+        }
+
+        mDowningUrls.add(fileUrl);
+        File tempFile = new File(downFile.getAbsolutePath() + ".temp");
         long downloadedLength = tempFile.exists() ? tempFile.length() : 0;
 
         try (RandomAccessFile outFile = new RandomAccessFile(tempFile, "rws")) {
