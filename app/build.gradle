@@ -8,7 +8,7 @@ def apk_release_path, apk_debug_path
 
 android {
     namespace 'com.wcl.test'
-    compileSdk project.ext.COMPILE_SDK_VERSION
+    compileSdk = project.ext.COMPILE_SDK_VERSION
 
     defaultConfig {
         applicationId "com.wcl.test"
@@ -95,14 +95,14 @@ dependencies {
     implementation 'com.github.getActivity:GsonFactory:10.3'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
-    implementation  'io.github.scwang90:refresh-layout-kernel:3.0.0-alpha'
-    implementation  'io.github.scwang90:refresh-header-classics:3.0.0-alpha'
-    implementation  'io.github.scwang90:refresh-header-radar:3.0.0-alpha'
-    implementation  'io.github.scwang90:refresh-header-falsify:3.0.0-alpha'
-    implementation  'io.github.scwang90:refresh-header-material:3.0.0-alpha'
-    implementation  'io.github.scwang90:refresh-header-two-level:3.0.0-alpha'
-    implementation  'io.github.scwang90:refresh-footer-ball:3.0.0-alpha'
-    implementation  'io.github.scwang90:refresh-footer-classics:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-layout-kernel:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-header-classics:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-header-radar:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-header-falsify:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-header-material:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-header-two-level:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-footer-ball:3.0.0-alpha'
+    implementation 'io.github.scwang90:refresh-footer-classics:3.0.0-alpha'
 
     implementation 'io.github.youth5201314:banner:2.2.3'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
