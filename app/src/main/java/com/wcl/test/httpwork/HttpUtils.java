@@ -3,6 +3,7 @@ package com.wcl.test.httpwork;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.os.Environment;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -63,7 +64,7 @@ public class HttpUtils {
     private static final String TAG = "HttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
-    private static final File DOWNLOAD_DIR = BaseApp.getApp().getExternalFilesDir("download");
+    private static final File DOWNLOAD_DIR = BaseApp.getApp().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
     private static final OkHttpClient mOkHttpClient;
     private static final List<String> mDowningUrls = Collections.synchronizedList(new ArrayList<>());
 
