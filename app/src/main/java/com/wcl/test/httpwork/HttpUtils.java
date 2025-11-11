@@ -150,7 +150,7 @@ public class HttpUtils {
 
     /**
      * 异步 GET/POST 封装
-     **/
+     */
     private static okhttp3.Callback createOkHttpCallback(final Context context, final HttpCallback callback) {
         return new okhttp3.Callback() {
             @Override
@@ -162,8 +162,11 @@ public class HttpUtils {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (isDestroyed(context)) return;
-                String result = response.isSuccessful() && response.body() != null ? parseResponseBody(response) : null;
-                postToUi(() -> callback.onResponse(response.isSuccessful() && result != null, result != null ? result : response.toString()));
+
+                boolean isSuccessful = response.isSuccessful() && response.body() != null;
+                String result = isSuccessful ? parseResponseBody(response) : response.toString();
+
+                postToUi(() -> callback.onResponse(isSuccessful && result != null, result));
             }
         };
     }
@@ -185,10 +188,7 @@ public class HttpUtils {
         addCommonData(params);
 
         FormBody body = buildFormBody(params);
-        Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
-        if (headers != null && !headers.isEmpty()) {
-            requestBuilder.headers(okhttp3.Headers.of(headers));
-        }
+        Request.Builder requestBuilder = buildBaseRequest(url, headers).post(body);
         mOkHttpClient.newCall(requestBuilder.build()).enqueue(createOkHttpCallback(context, callback));
     }
 
@@ -201,10 +201,7 @@ public class HttpUtils {
 
     public static void getWithHeaders(final Context context, final String url, Map<String, Object> params, Map<String, String> headers, final HttpCallback callback) {
         final String urlWithParams = buildGetParams(url, params);
-        Request.Builder requestBuilder = new Request.Builder().url(urlWithParams).get();
-        if (headers != null && !headers.isEmpty()) {
-            requestBuilder.headers(okhttp3.Headers.of(headers));
-        }
+        Request.Builder requestBuilder = buildBaseRequest(urlWithParams, headers).get();
         mOkHttpClient.newCall(requestBuilder.build()).enqueue(createOkHttpCallback(context, callback));
     }
 
@@ -406,5 +403,13 @@ public class HttpUtils {
         params.put("phone", "android");
         params.put("channel", AppBaseUtils.getChannel());
         params.put("packageName", AppBaseUtils.getPackageName());
+    }
+
+    private static Request.Builder buildBaseRequest(String url, Map<String, String> headers) {
+        Request.Builder requestBuilder = new Request.Builder().url(url);
+        if (headers != null && !headers.isEmpty()) {
+            requestBuilder.headers(okhttp3.Headers.of(headers));
+        }
+        return requestBuilder;
     }
 }
