@@ -321,8 +321,7 @@ public class HttpUtils {
                     while ((len = input.read(buffer)) != -1) {
                         outFile.write(buffer, 0, len);
                         sum += len;
-                        int progress = (int) (sum * 100 / contentLength);
-                        if (System.currentTimeMillis() - lastUpdate > 500) {
+                        if (System.currentTimeMillis() - lastUpdate >= 1000) {
                             final long fSum = sum;
                             postToUi(() -> callback.onProgress(contentLength, fSum, fSum * 1f / contentLength));
                             lastUpdate = System.currentTimeMillis();
