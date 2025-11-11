@@ -71,7 +71,7 @@
 
         <provider
             android:name="com.wcl.test.CustomTorchFileProvider"
-            android:authorities="com.wcl.test.custom.file_provider"
+            android:authorities="${applicationId}.custom.file_provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

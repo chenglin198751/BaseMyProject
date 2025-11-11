@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths>
-    <root-path name="root-path" path="" />
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 仅映射 app 外部 files 的 download 子目录 -->
+    <external-files-path name="apk_downloads" path="download/" />
 </paths>
