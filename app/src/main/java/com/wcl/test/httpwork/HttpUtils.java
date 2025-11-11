@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class HttpUtils {
     private static final int TIME_OUT = 15;
     private static final File DOWNLOAD_DIR = new File(FileUtils.getExternalPath(), "download");
     private static final OkHttpClient mOkHttpClient;
-    private static final List<String> mDowningUrls = new ArrayList<>();
+    private static final List<String> mDowningUrls = Collections.synchronizedList(new ArrayList<>());
 
     static {
         DOWNLOAD_DIR.mkdirs();
