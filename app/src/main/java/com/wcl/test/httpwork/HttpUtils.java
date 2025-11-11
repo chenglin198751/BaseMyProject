@@ -8,11 +8,11 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.wcl.test.EnvToggle;
+import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppThreadPoolExecutor;
 import com.wcl.test.utils.DeviceUtils;
-import com.wcl.test.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class HttpUtils {
     private static final String TAG = "HttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final int TIME_OUT = 15;
-    private static final File DOWNLOAD_DIR = new File(FileUtils.getExternalPath(), "download");
+    private static final File DOWNLOAD_DIR = BaseApp.getApp().getExternalFilesDir("download");
     private static final OkHttpClient mOkHttpClient;
     private static final List<String> mDowningUrls = Collections.synchronizedList(new ArrayList<>());
 
