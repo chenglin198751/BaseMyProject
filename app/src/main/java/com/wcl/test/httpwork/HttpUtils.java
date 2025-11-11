@@ -281,13 +281,13 @@ public class HttpUtils {
             return;
         }
 
-        AppThreadPoolExecutor.getExecutor().execute(() -> syncDownloadFile(fileUrl, callback));
+        AppThreadPoolExecutor.getExecutor().execute(() -> downloadFileSync(fileUrl, callback));
     }
 
     /**
      * 同步下载文件（断点续传）
      **/
-    private static String syncDownloadFile(final String fileUrl, final HttpDownloadCallback callback) {
+    private static String downloadFileSync(final String fileUrl, final HttpDownloadCallback callback) {
         if (AppBaseUtils.isUiThread()) throw new RuntimeException("同步下载不能在UI线程执行");
         if (mDowningUrls.contains(fileUrl)) {
             postToUi(() -> callback.onFinished(false, null, "文件正在下载中"));
