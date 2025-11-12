@@ -58,3 +58,17 @@
         第2种：这种方式是把当前屏幕宽度按照比重分配：
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintHorizontal_weight="1"
+
+**8、放置在id为grid_layout的视图下方，并且占据grid_layout下方所有剩余空间：**
+
+        <RelativeLayout
+            android:id="@+id/relative_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/grid_layout">
+            
+        </RelativeLayout>
