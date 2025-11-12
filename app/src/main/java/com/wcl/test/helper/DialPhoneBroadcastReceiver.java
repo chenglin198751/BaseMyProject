@@ -43,9 +43,6 @@ public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 ToggleSettings.setLogEnable(isChecked);
-                if (AppBaseUtils.isDebuggable()){
-                    ToastUtils.show("操作无效，AndroidStudio运行安装的的apk，日志永远是开启");
-                }
             }
         });
 

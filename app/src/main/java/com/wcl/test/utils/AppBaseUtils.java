@@ -28,6 +28,7 @@ import android.widget.EditText;
 
 import androidx.annotation.RequiresApi;
 
+import com.wcl.test.BuildConfig;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;
@@ -56,7 +57,6 @@ public class AppBaseUtils {
     private static String mVerCode = null;
     private static String mVerName = null;
     private static int mStatusBarHeight = 0;
-    private static int isDebuggable = -1;
 
     /**
      * 判断手机是否联网
@@ -499,29 +499,6 @@ public class AppBaseUtils {
         }
 
         return mStatusBarHeight;
-    }
-
-    /**
-     * 判断是否为直接通过开发工具运行起来的状态
-     */
-    public static boolean isDebuggable() {
-        if (isDebuggable == -1) {
-            try {
-                PackageManager pm = BaseApp.getApp().getPackageManager();
-                PackageInfo packageInfo = pm.getPackageInfo(BaseApp.getApp().getPackageName(), 0);
-                boolean is_debug = (0 != (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE));
-                if (is_debug) {
-                    isDebuggable = 1;
-                } else {
-                    isDebuggable = 0;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                isDebuggable = 0;
-            }
-        }
-
-        return isDebuggable == 1;
     }
 
     /**

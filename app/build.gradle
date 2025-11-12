@@ -40,15 +40,15 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.release
-            buildConfigField 'boolean', 'ENV_DEBUG', 'false'
-            manifestPlaceholders.put("test_app_key", "test_debug")
+            buildConfigField 'boolean', 'LOG_ENABLED', 'true'
+            manifestPlaceholders.put("test_app_key", "debug_111111")
         }
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField 'boolean', 'ENV_DEBUG', 'true'
-            manifestPlaceholders.put("test_app_key", "test_release")
+            buildConfigField 'boolean', 'LOG_ENABLED', 'false'
+            manifestPlaceholders.put("test_app_key", "release_0000000")
         }
     }
 
