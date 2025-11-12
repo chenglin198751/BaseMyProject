@@ -8,10 +8,11 @@
     <View
         android:id="@+id/view_left"
         android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:background="@color/colorAccent"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
