@@ -3,6 +3,7 @@
 **1、ConstraintLayout使用说明：** 
 
     https://mp.weixin.qq.com/s/Z_TnoyMRYZEQXvlqiKX8Uw
+    官方不推荐在ConstraintLayout中使用match_parent，可以设置 0dp 配合约束代替match_parent
 
 **2、当设置一个view和另一个view上下对齐时，如果不指定强制约束宽高，那么宽高都会自适应；如果指定了约束宽高，那么宽高会和上顶部和下顶部对齐：**
 
@@ -30,6 +31,8 @@
     app:layout_constraintDimensionRatio="1:1"
     app:layout_constraintDimensionRatio="H,2:3"指的是 高:宽=2:3
     app:layout_constraintDimensionRatio="W,2:3"指的是 宽:高=2:3
+    app:layout_constrainedWidth="true"
+    app:layout_constrainedHeight="true
 
 **5、Barrier，设置栅栏，非常有用，某个view需要对齐另外一组view时用到：**
 
@@ -73,13 +76,13 @@
         
     </RelativeLayout>
 
-**10、角度定位：**
+**10、角度定位（textView2设置在textView1的右下角120°距离80dp的位置）：**
 
     layout_constraintCircle : 引用另一个小部件 id
     layout_constraintCircleRadius : 到另一个小部件中心的距离
     layout_constraintCircleAngle : 小部件应该在哪个角度（以度为单位，从 0 到 360）
 
-    xml代码示例：
+    // xml代码示例：
     <TextView
         android:id="@+id/textView1"
         android:layout_width="20dp"
@@ -97,3 +100,29 @@
         app:layout_constraintCircleRadius="80dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+**11、比如textView2的锚点是textView1，那么设置以下属性可以解决锚点textView1被gone的边距问题：**
+
+    layout_goneMarginStart
+    layout_goneMarginEnd  
+    layout_goneMarginLeft
+    layout_goneMarginTop
+    layout_goneMarginRight
+    layout_goneMarginBottom
+
+**12、居中设置：**
+
+    // 垂直水平居中：
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+
+    // 垂直居中
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+
+    // 水平居中
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
