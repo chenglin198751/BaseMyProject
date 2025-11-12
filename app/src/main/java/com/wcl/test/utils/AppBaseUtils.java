@@ -28,7 +28,6 @@ import android.widget.EditText;
 
 import androidx.annotation.RequiresApi;
 
-import com.wcl.test.BuildConfig;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;

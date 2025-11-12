@@ -1,6 +1,5 @@
 package com.wcl.test.httpwork;
 
-import com.wcl.test.BuildConfig;
 import com.wcl.test.EnvToggle;
 
 /**
