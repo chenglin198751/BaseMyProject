@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.qihoo360.common.ad.XmAdStrategy;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
@@ -27,8 +28,7 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
         mViewBinding.viewLeft.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), TestRecyclerViewRefreshActivity.class);
-            startActivity(intent);
+            XmAdStrategy.shouldShowAd("aaaaa11",XmAdStrategy.play_apk);
         });
     }
 

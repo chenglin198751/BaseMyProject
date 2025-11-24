@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonToken;
 import com.hjq.gson.factory.GsonFactory;
 import com.hjq.gson.factory.ParseExceptionCallback;
+import com.qihoo360.common.ad.XmAdStrategy;
 import com.wcl.test.utils.AppLogUtils;
 
 /**
@@ -39,5 +40,7 @@ public class MainApp extends BaseApp {
                 AppLogUtils.e("GsonFactory", "onParseMapItemException:类型解析异常：" + typeToken + "#" + fieldName + "，后台返回的类型为：" + jsonToken);
             }
         });
+
+        XmAdStrategy.initAdStrategyConfig();
     }
 }

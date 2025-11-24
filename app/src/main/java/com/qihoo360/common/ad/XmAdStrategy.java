@@ -1,11 +1,9 @@
 package com.qihoo360.common.ad;
 
-import android.support.annotation.Keep;
-import android.text.TextUtils;
+
+import androidx.annotation.Keep;
 
 import com.qihoo.utils.LogUtils;
-import com.qihoo360.common.HttpURLConnectionUtils;
-import com.qihoo360.common.helper.UrlUtils;
 
 import java.util.ArrayList;
 
@@ -21,16 +19,102 @@ public class XmAdStrategy {
     public static final String close_apk = "close_apk";
     public static final String open_h5 = "open_h5";
     public static final String close_h5 = "close_h5";
-    public static final String specific_game = "specific_game";
-    public static final String playing_apk = "playing_apk";
-    public static final String playing_h5 = "playing_h5";
+    public static final String play_apk = "play_apk";
+    public static final String play_h5 = "play_h5";
+
+    // 是否需要展示插屏广告
+    @Keep
+    public static boolean shouldShowAd(String game_id, String open_type) {
+        // 如果不是当日，则重置用户广告count等数据
+        LogUtils.i(TAG, "--------------------------------------------");
+        if (!XmAdStrategyUtils.isToday()) {
+            LogUtils.i(TAG, "It's not today. All data needs to be reset");
+            XmAdStrategyStorage.get().clear();
+            XmAdStrategyUtils.refreshSavedDateWithToday();
+        }
+
+        int totalCount = XmAdStrategyUtils.getAdShownTotalCount();
+        LogUtils.i(TAG, "getAdShownTotalCount()=" + totalCount + ",daily_max_ad_show_count=" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
+
+        if (totalCount < XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count) {
+            // 每次打开游戏，如果对应广告开关是开，则递增记录打开次数
+            int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameAdShownCount(game_id, open_type) + 1;
+
+            // 1、打开和关闭游戏：
+            if (open_apk.equals(open_type) || close_apk.equals(open_type) //
+                    || open_h5.equals(open_type) || close_h5.equals(open_type)) {
+                AdChildConfig adChildConfig = XmAdStrategyUtils.getAdChildConfig(open_type);
+                if (adChildConfig != null && adChildConfig.isOpen()) {
+                    if (isCounting(game_id, open_type)) {
+                        XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
+                    }
+                    ArrayList<Integer> ad_show_trigger_times = adChildConfig.ad_show_trigger_times;
+                    LogUtils.i(TAG, "打开or关闭游戏:game_id=" + game_id + ",ad_show_trigger_times=" + ad_show_trigger_times + ",adShownCountForSingleGame=" + singleGameAdShownCount);
+                    if (ad_show_trigger_times.contains(singleGameAdShownCount)) {
+                        // 展示广告后，则递增记录广告总count
+                        if (isCounting(game_id, open_type)) {
+                            LogUtils.v(TAG, "打开or关闭游戏:game_id=" + game_id + ",shouldShowAd=true" + ",getAdShownTotalCount()=" + (totalCount + 1));
+                            XmAdStrategyUtils.saveAdShownTotalCount(totalCount + 1);
+                        }
+                        return true;
+                    }
+                }
+            }
+
+            // 2、玩游戏中：
+            if (play_apk.equals(open_type) || play_h5.equals(open_type)) {
+                // 先检查玩游戏的特定游戏列表（优先级最高）
+                AdChildPlayConfig play_define_game = XmAdStrategyUtils.getAdConfig().play_define_game;
+                if (play_define_game != null && play_define_game.isOpen() //
+                        && play_define_game.define_game != null //
+                        && play_define_game.define_game.contains(game_id)) {
+                    return isShowAdInPlayingGame(game_id, open_type, false);
+                } else {
+                    // 普通玩游戏中
+                    return isShowAdInPlayingGame(game_id, open_type, true);
+                }
+            }
+        }
+
+        LogUtils.i(TAG, "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=false");
+        return false;
+    }
+
+    // 判断在玩游戏中是否需要展示广告
+    private static boolean isShowAdInPlayingGame(String game_id, String open_type, boolean isNormalPlayGame) {
+        // 普通玩游戏中
+        String tag2 = "玩游戏中命中特定游戏列表:";
+        if (isNormalPlayGame) {
+            tag2 = "普通玩游戏中:";
+        }
+        int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
+        int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameAdShownCount(game_id, open_type) + 1;
+        AdChildPlayConfig adChildPlayConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
+        if (adChildPlayConfig != null && adChildPlayConfig.isOpen()) {
+            XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
+            LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameAdShownCount=" + singleGameAdShownCount + ",define_game=" + adChildPlayConfig.define_game);
+            LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + adChildPlayConfig.play_ad_max_times);
+            if (playAdMaxTimes < adChildPlayConfig.play_ad_max_times) {
+                ArrayList<Integer> ad_show_trigger_minutes = adChildPlayConfig.ad_show_trigger_minutes;
+                LogUtils.i(TAG, tag2 + "ad_show_trigger_times=" + ad_show_trigger_minutes);
+                if (ad_show_trigger_minutes.contains(singleGameAdShownCount)) {
+                    XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
+                    XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
+                    LogUtils.v(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=true");
+                    return true;
+                }
+            }
+        }
+        LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=false");
+        return false;
+    }
 
     // 2025-11-19:默认不开始计数且返回播放广告，目的是兼容news插件bug(没加载到广告不返回任何回调)，
     // 插件是打开apk和H5（必须计数，不接受外部设置），
     // 主程是关闭apk和H5（默认不计数，外部设置是否计数）
     // 此方法被调用时一定是展示广告了
     public static void startCounting(String game_id, String open_type) {
-        LogUtils.d("IntersAd", "startCounting:" + game_id + "   open_type::" + open_type);
+        LogUtils.d(TAG, "IntersAd,startCounting(),game_id:" + game_id + ",open_type:" + open_type);
         if (close_apk.equals(open_type) || close_h5.equals(open_type)) {
             String key = game_id + "_" + open_type;
             if (!countingList.contains(key)) {
@@ -45,6 +129,17 @@ public class XmAdStrategy {
         }
     }
 
+    // 退出游戏时判断玩家玩了多少分钟，才会出现插屏广告
+    public static int getExitDuration(String open_type) {
+        if (close_apk.equals(open_type) || close_h5.equals(open_type)) {
+            AdChildConfig child = XmAdStrategyUtils.getAdChildConfig(open_type);
+            if (child != null && child.exit_duration > 0) {
+                return child.exit_duration;
+            }
+        }
+        return -1;
+    }
+
     // 判断是否需要计数
     private static boolean isCounting(String game_id, String open_type) {
         if (close_apk.equals(open_type) || close_h5.equals(open_type)) {
@@ -54,72 +149,29 @@ public class XmAdStrategy {
         return true;
     }
 
-    // 是否需要展示插屏广告
-    @Keep
-    public static boolean shouldShowAd(String game_id, String open_type) {
-        // 如果不是当日，则重置用户广告count等数据
-        LogUtils.i(TAG, "--------------------------------------------");
-        if (!XmAdStrategyUtils.isToday()) {
-            LogUtils.i(TAG, "It's not today. All data needs to be reset");
-            XmAdStrategyStorage.get().clear();
-            XmAdStrategyUtils.refreshSavedDateWithToday();
-        }
-
-        int totalCount = XmAdStrategyUtils.getAdShownTotalCount();
-        LogUtils.i(TAG, "getAdShownTotalCount()=" + totalCount + //
-                ",daily_max_ad_show_count=" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
-
-        if (totalCount < XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count) {
-            AdChildConfig adChildConfig = XmAdStrategyUtils.getAdChildConfig(open_type);
-            if (adChildConfig != null && adChildConfig.isAdOpen()) {
-                // 每次打开游戏，如果对应广告开关是开，则递增记录打开次数
-                int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameAdShownCount(game_id, open_type) + 1;
-                if (isCounting(game_id, open_type)) {
-                    XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
-                }
-
-                ArrayList<Integer> ad_show_trigger_times = adChildConfig.ad_show_trigger_times;
-                LogUtils.i(TAG, "game_id=" + game_id + //
-                        ",ad_show_trigger_times=" + ad_show_trigger_times + //
-                        ",adShownCountForSingleGame=" + singleGameAdShownCount);
-                if (ad_show_trigger_times.contains(singleGameAdShownCount)) {
-
-                    // 展示广告后，则递增记录广告总count
-                    if (isCounting(game_id, open_type)) {
-                        LogUtils.i(TAG, "game_id=" + game_id + ",shouldShowAd=true" + //
-                                ",getAdShownTotalCount()=" + (totalCount + 1));
-                        XmAdStrategyUtils.saveAdShownTotalCount(totalCount + 1);
-                    }
-                    return true;
-                }
-            }
-        }
-
-        LogUtils.i(TAG, "game_id=" + game_id + ",shouldShowAd=false");
-        return false;
-    }
-
     public static void initAdStrategyConfig() {
-        try {
-            if (!TextUtils.isEmpty(XmAdStrategyUtils.adConfJsonStr)) {
-                return;
-            }
+        XmAdStrategyUtils.adConfJsonStr = "{\"code\":0,\"msg\":\"ok\",\"data\":{\"close_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"5\"},\"close_h5\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"5\"},\"daily_max_ad_show_count\":10,\"open_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\"},\"open_h5\":{\"ad_show_trigger_times\":[\"1\",\"2\",\"4\",\"6\",\"8\",\"10\"],\"status\":\"1\"},\"play_apk\":{\"ad_show_trigger_minutes\":[\"1\",\"2\",\"3\"],\"status\":\"1\",\"play_ad_max_times\":\"3\"},\"play_define_game\":{\"ad_show_trigger_minutes\":[\"5\"],\"status\":\"1\",\"define_game\":[\"122\",\"234\",\"789\"],\"play_ad_max_times\":\"3\"},\"play_h5\":{\"ad_show_trigger_minutes\":[\"4\",\"6\",\"7\"],\"status\":\"1\",\"play_ad_max_times\":\"3\"}}}";
 
-            HttpURLConnectionUtils.get(UrlUtils.getAdConfUrl(), new HttpURLConnectionUtils.HttpCallback() {
-                @Override
-                public void onSuccess(String response) {
-                    LogUtils.i(TAG, "getAdStrategyConfig()=" + response);
-                    XmAdStrategyUtils.adConfJsonStr = response;
-                }
-
-                @Override
-                public void onError(Exception e) {
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            LogUtils.v(TAG, "initAdStrategyConfig() error:" + e);
-        }
+//        try {
+//            if (!TextUtils.isEmpty(XmAdStrategyUtils.adConfJsonStr)) {
+//                return;
+//            }
+//
+//            HttpURLConnectionUtils.get(UrlUtils.getAdConfUrl(), new HttpURLConnectionUtils.HttpCallback() {
+//                @Override
+//                public void onSuccess(String response) {
+//                    LogUtils.i(TAG, "getAdStrategyConfig()=" + response);
+//                    XmAdStrategyUtils.adConfJsonStr = response;
+//                }
+//
+//                @Override
+//                public void onError(Exception e) {
+//                }
+//            });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            LogUtils.v(TAG, "initAdStrategyConfig() error:" + e);
+//        }
     }
 }
 
