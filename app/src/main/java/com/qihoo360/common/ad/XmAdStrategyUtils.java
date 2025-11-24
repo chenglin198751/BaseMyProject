@@ -64,25 +64,25 @@ class XmAdStrategyUtils {
 
     // 保存当前设备、每日、单个游戏、其open_type广告展示的总count
     public static void saveSingleGameAdShownCount(String game_id, String open_type, int count) {
-        String key = game_id + "_" + open_type;
+        String key = "SingleGameAdShownCount_" + game_id + "_" + open_type;
         XmAdStrategyStorage.get().saveInt(key, count);
     }
 
     // 获取当前设备、每日、单个游戏、其open_type广告展示的总count
     public static int getSingleGameAdShownCount(String game_id, String open_type) {
-        String key = game_id + "_" + open_type;
+        String key = "SingleGameAdShownCount_" + game_id + "_" + open_type;
         return XmAdStrategyStorage.get().getInt(key, 0);
     }
 
     // 保存：只针对玩游戏中3个场景（play_apk,play_h5,play_define_game）：单用户单游戏，当天最多出现插屏广告的次数。
     public static void savePlayAdMaxTimes(String game_id, String open_type, int count) {
-        String key = game_id + "_" + open_type;
+        String key = "PlayAdMaxTimes_" + game_id + "_" + open_type;
         XmAdStrategyStorage.get().saveInt(key, count);
     }
 
     // 获取：只针对玩游戏中3个场景（play_apk,play_h5,play_define_game）：单用户单游戏，当天最多出现插屏广告的次数。
     public static int getPlayAdMaxTimes(String game_id, String open_type) {
-        String key = game_id + "_" + open_type;
+        String key = "PlayAdMaxTimes_" + game_id + "_" + open_type;
         return XmAdStrategyStorage.get().getInt(key, 0);
     }
 
