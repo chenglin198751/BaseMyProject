@@ -1,9 +1,13 @@
 package com.qihoo360.common.ad;
 
 
+import android.text.TextUtils;
+
 import androidx.annotation.Keep;
 
 import com.qihoo.utils.LogUtils;
+import com.qihoo360.common.HttpURLConnectionUtils;
+import com.qihoo360.common.helper.UrlUtils;
 
 import java.util.ArrayList;
 
@@ -130,28 +134,26 @@ public class XmAdStrategy {
     }
 
     public static void initAdStrategyConfig() {
-        XmAdStrategyUtils.adConfJsonStr = "{\"code\":0,\"msg\":\"ok\",\"data\":{\"close_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"6\"},\"close_h5\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"5\"},\"daily_max_ad_show_count\":10,\"open_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\"},\"open_h5\":{\"ad_show_trigger_times\":[\"1\",\"2\",\"4\",\"6\",\"8\",\"10\"],\"status\":\"1\"},\"play_apk\":{\"ad_show_trigger_minutes\":[\"1\",\"2\",\"3\"],\"status\":\"1\",\"play_ad_max_times\":\"3\"},\"play_define_game\":{\"ad_show_trigger_minutes\":[\"5\"],\"status\":\"1\",\"define_game\":[\"122\",\"234\",\"789\"],\"play_ad_max_times\":\"3\"},\"play_h5\":{\"ad_show_trigger_minutes\":[\"4\",\"6\",\"7\"],\"status\":\"0\",\"play_ad_max_times\":\"3\"}}}";
+        try {
+            if (!TextUtils.isEmpty(XmAdStrategyUtils.adConfJsonStr)) {
+                return;
+            }
 
-//        try {
-//            if (!TextUtils.isEmpty(XmAdStrategyUtils.adConfJsonStr)) {
-//                return;
-//            }
-//
-//            HttpURLConnectionUtils.get(UrlUtils.getAdConfUrl(), new HttpURLConnectionUtils.HttpCallback() {
-//                @Override
-//                public void onSuccess(String response) {
-//                    LogUtils.i(TAG, "getAdStrategyConfig()=" + response);
-//                    XmAdStrategyUtils.adConfJsonStr = response;
-//                }
-//
-//                @Override
-//                public void onError(Exception e) {
-//                }
-//            });
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            LogUtils.v(TAG, "initAdStrategyConfig() error:" + e);
-//        }
+            HttpURLConnectionUtils.get(UrlUtils.getAdConfUrl(), new HttpURLConnectionUtils.HttpCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    LogUtils.i(TAG, "getAdStrategyConfig()=" + response);
+                    XmAdStrategyUtils.adConfJsonStr = response;
+                }
+
+                @Override
+                public void onError(Exception e) {
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtils.v(TAG, "initAdStrategyConfig() error:" + e);
+        }
     }
 }
 
