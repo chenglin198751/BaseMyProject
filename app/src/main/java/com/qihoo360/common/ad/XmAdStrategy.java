@@ -63,49 +63,31 @@ public class XmAdStrategy {
 
             // 2、玩游戏中：
             if (play_apk.equals(open_type) || play_h5.equals(open_type)) {
-                // 先检查玩游戏的特定游戏列表（优先级最高）
-                AdChildPlayConfig play_define_game = XmAdStrategyUtils.getAdConfig().play_define_game;
-                if (play_define_game != null && play_define_game.isOpen() //
-                        && play_define_game.define_game != null //
-                        && play_define_game.define_game.contains(game_id)) {
-                    return isShowAdInPlayingGame(game_id, open_type, false);
-                } else {
-                    // 普通玩游戏中
-                    return isShowAdInPlayingGame(game_id, open_type, true);
+                // 先检查玩游戏的特定游戏列表（优先级最高），再检查普通玩游戏中
+                boolean isPlayDefineGame = XmAdStrategyUtils.isPlayDefineGame(game_id);
+                String tag2 = isPlayDefineGame ? "玩游戏中命中特定游戏列表:" : "普通玩游戏中:";
+                int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
+                AdChildPlayConfig adChildPlayConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
+                if (adChildPlayConfig != null && adChildPlayConfig.isOpen()) {
+                    if (isPlayDefineGame || adChildPlayConfig.isOpen()) {
+                        XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
+                        LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameAdShownCount=" + singleGameAdShownCount + ",define_game=" + adChildPlayConfig.define_game);
+                        LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + adChildPlayConfig.play_ad_max_times);
+                        if (playAdMaxTimes < adChildPlayConfig.play_ad_max_times) {
+                            ArrayList<Integer> ad_show_trigger_minutes = adChildPlayConfig.ad_show_trigger_minutes;
+                            LogUtils.i(TAG, tag2 + "ad_show_trigger_times=" + ad_show_trigger_minutes);
+                            if (ad_show_trigger_minutes.contains(singleGameAdShownCount)) {
+                                XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
+                                XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
+                                LogUtils.v(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=true");
+                                return true;
+                            }
+                        }
+                    }
                 }
             }
         }
-
         LogUtils.i(TAG, "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=false");
-        return false;
-    }
-
-    // 判断在玩游戏中是否需要展示广告
-    private static boolean isShowAdInPlayingGame(String game_id, String open_type, boolean isNormalPlayGame) {
-        // 普通玩游戏中
-        String tag2 = "玩游戏中命中特定游戏列表:";
-        if (isNormalPlayGame) {
-            tag2 = "普通玩游戏中:";
-        }
-        int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
-        int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameAdShownCount(game_id, open_type) + 1;
-        AdChildPlayConfig adChildPlayConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
-        if (adChildPlayConfig != null && adChildPlayConfig.isOpen()) {
-            XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
-            LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameAdShownCount=" + singleGameAdShownCount + ",define_game=" + adChildPlayConfig.define_game);
-            LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + adChildPlayConfig.play_ad_max_times);
-            if (playAdMaxTimes < adChildPlayConfig.play_ad_max_times) {
-                ArrayList<Integer> ad_show_trigger_minutes = adChildPlayConfig.ad_show_trigger_minutes;
-                LogUtils.i(TAG, tag2 + "ad_show_trigger_times=" + ad_show_trigger_minutes);
-                if (ad_show_trigger_minutes.contains(singleGameAdShownCount)) {
-                    XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
-                    XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
-                    LogUtils.v(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=true");
-                    return true;
-                }
-            }
-        }
-        LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=false");
         return false;
     }
 
