@@ -67,21 +67,19 @@ public class XmAdStrategy {
                 boolean isPlayDefineGame = XmAdStrategyUtils.isPlayDefineGame(game_id);
                 String tag2 = isPlayDefineGame ? "玩游戏中命中特定游戏列表:" : "普通玩游戏中:";
                 int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
-                AdChildPlayConfig adChildPlayConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
-                if (adChildPlayConfig != null && adChildPlayConfig.isOpen()) {
-                    if (isPlayDefineGame || adChildPlayConfig.isOpen()) {
-                        XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
-                        LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameAdShownCount=" + singleGameAdShownCount + ",define_game=" + adChildPlayConfig.define_game);
-                        LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + adChildPlayConfig.play_ad_max_times);
-                        if (playAdMaxTimes < adChildPlayConfig.play_ad_max_times) {
-                            ArrayList<Integer> ad_show_trigger_minutes = adChildPlayConfig.ad_show_trigger_minutes;
-                            LogUtils.i(TAG, tag2 + "ad_show_trigger_times=" + ad_show_trigger_minutes);
-                            if (ad_show_trigger_minutes.contains(singleGameAdShownCount)) {
-                                XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
-                                XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
-                                LogUtils.v(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=true");
-                                return true;
-                            }
+                AdChildPlayConfig playConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
+                if (isPlayDefineGame || (playConfig != null && playConfig.isOpen())) {
+                    XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
+                    LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameAdShownCount=" + singleGameAdShownCount + ",define_game=" + playConfig.define_game);
+                    LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + playConfig.play_ad_max_times);
+                    if (playAdMaxTimes < playConfig.play_ad_max_times) {
+                        ArrayList<Integer> ad_show_trigger_minutes = playConfig.ad_show_trigger_minutes;
+                        LogUtils.i(TAG, tag2 + "ad_show_trigger_times=" + ad_show_trigger_minutes);
+                        if (ad_show_trigger_minutes.contains(singleGameAdShownCount)) {
+                            XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
+                            XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
+                            LogUtils.v(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=true");
+                            return true;
                         }
                     }
                 }
@@ -132,7 +130,7 @@ public class XmAdStrategy {
     }
 
     public static void initAdStrategyConfig() {
-        XmAdStrategyUtils.adConfJsonStr = "{\"code\":0,\"msg\":\"ok\",\"data\":{\"close_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"5\"},\"close_h5\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"5\"},\"daily_max_ad_show_count\":10,\"open_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\"},\"open_h5\":{\"ad_show_trigger_times\":[\"1\",\"2\",\"4\",\"6\",\"8\",\"10\"],\"status\":\"1\"},\"play_apk\":{\"ad_show_trigger_minutes\":[\"1\",\"2\",\"3\"],\"status\":\"1\",\"play_ad_max_times\":\"3\"},\"play_define_game\":{\"ad_show_trigger_minutes\":[\"5\"],\"status\":\"1\",\"define_game\":[\"122\",\"234\",\"789\"],\"play_ad_max_times\":\"3\"},\"play_h5\":{\"ad_show_trigger_minutes\":[\"4\",\"6\",\"7\"],\"status\":\"1\",\"play_ad_max_times\":\"3\"}}}";
+        XmAdStrategyUtils.adConfJsonStr = "{\"code\":0,\"msg\":\"ok\",\"data\":{\"close_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"6\"},\"close_h5\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\",\"exit_duration\":\"5\"},\"daily_max_ad_show_count\":10,\"open_apk\":{\"ad_show_trigger_times\":[\"1\",\"3\",\"5\"],\"status\":\"1\"},\"open_h5\":{\"ad_show_trigger_times\":[\"1\",\"2\",\"4\",\"6\",\"8\",\"10\"],\"status\":\"1\"},\"play_apk\":{\"ad_show_trigger_minutes\":[\"1\",\"2\",\"3\"],\"status\":\"1\",\"play_ad_max_times\":\"3\"},\"play_define_game\":{\"ad_show_trigger_minutes\":[\"5\"],\"status\":\"1\",\"define_game\":[\"122\",\"234\",\"789\"],\"play_ad_max_times\":\"3\"},\"play_h5\":{\"ad_show_trigger_minutes\":[\"4\",\"6\",\"7\"],\"status\":\"0\",\"play_ad_max_times\":\"3\"}}}";
 
 //        try {
 //            if (!TextUtils.isEmpty(XmAdStrategyUtils.adConfJsonStr)) {
