@@ -182,7 +182,7 @@ class XmAdStrategyUtils {
                 adChildConfig = mAdConfig.open_h5;
                 break;
         }
-        return adChildConfig;
+        return adChildConfig == null ? new AdChildConfig() : adChildConfig;
     }
 
     public static AdChildPlayConfig getAdChildPlayConfig(String open_type) {
@@ -195,7 +195,7 @@ class XmAdStrategyUtils {
                 adChildPlayConfig = mAdConfig.play_h5;
                 break;
         }
-        return adChildPlayConfig;
+        return adChildPlayConfig == null ? new AdChildPlayConfig() : adChildPlayConfig;
     }
 
     public static boolean isToday() {
@@ -218,4 +218,5 @@ class XmAdStrategyUtils {
         AdChildPlayConfig play_define_game = XmAdStrategyUtils.getAdConfig().play_define_game;
         return play_define_game != null && play_define_game.isOpen() && play_define_game.define_game != null && play_define_game.define_game.contains(game_id);
     }
+
 }

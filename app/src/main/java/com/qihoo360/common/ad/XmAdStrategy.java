@@ -39,59 +39,106 @@ public class XmAdStrategy {
 
         int totalCount = XmAdStrategyUtils.getAdShownTotalCount();
         LogUtils.i(TAG, "getAdShownTotalCount()=" + totalCount + ",daily_max_ad_show_count=" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
+        String log1 = "game_id=" + game_id + ",open_type=" + open_type;
 
         if (totalCount < XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count) {
             int singleGameOpenTypeCount = XmAdStrategyUtils.getSingleGameOpenTypeCount(game_id, open_type) + 1;
-
-            // 1、打开和关闭游戏：
+            // 打开和关闭游戏：
             if (open_apk.equals(open_type) || close_apk.equals(open_type) //
                     || open_h5.equals(open_type) || close_h5.equals(open_type)) {
                 AdChildConfig adChildConfig = XmAdStrategyUtils.getAdChildConfig(open_type);
-                if (adChildConfig != null && adChildConfig.isOpen()) {
+                if (adChildConfig.isOpen()) {
                     if (isCounting(game_id, open_type)) {
                         // 每次打开游戏，如果对应广告开关是开，则递增记录打开或关闭总次数
                         XmAdStrategyUtils.saveSingleGameOpenTypeCount(game_id, open_type, singleGameOpenTypeCount);
                     }
                     ArrayList<Integer> ad_show_trigger_times = adChildConfig.ad_show_trigger_times;
-                    LogUtils.i(TAG, "game_id=" + game_id + ",open_type=" + open_type + //
-                            ",ad_show_trigger_times=" + ad_show_trigger_times + ",singleGameOpenTypeCount=" + singleGameOpenTypeCount);
+                    LogUtils.i(TAG, log1 + ",是第" + singleGameOpenTypeCount + "次" + ",配置=" + ad_show_trigger_times);
                     if (ad_show_trigger_times.contains(singleGameOpenTypeCount)) {
                         // 展示广告后，则递增记录广告总count
                         if (isCounting(game_id, open_type)) {
-                            LogUtils.v(TAG, "game_id=" + game_id + ",shouldShowAd=true" + ",getAdShownTotalCount()=" + (totalCount + 1));
+                            LogUtils.v(TAG, "shouldShowAd=true," + log1 + ",getAdShownTotalCount()=" + (totalCount + 1));
                             XmAdStrategyUtils.saveAdShownTotalCount(totalCount + 1);
+                        } else {
+                            LogUtils.v(TAG, "shouldShowAd=true," + log1 + ",但未开启计数");
                         }
                         return true;
+                    } else {
+                        LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",未满足触发次数");
                     }
+                } else {
+                    LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",status开关已关");
                 }
             }
+        } else {
+            LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",已展示广告次数>=配置的总数次");
+        }
+        return false;
+    }
 
-            // 2、玩游戏中：
+    // 获取游戏中展示插屏广告的触发分钟list
+    @Keep
+    public static ArrayList<Integer> getPlayingShowAdMinutes(String game_id, String open_type) {
+        // 如果不是当日，则重置用户广告count等数据
+        LogUtils.i(TAG, "--------------------------------------------");
+        if (!XmAdStrategyUtils.isToday()) {
+            LogUtils.i(TAG, "It's not today. All data needs to be reset");
+            XmAdStrategyStorage.get().clear();
+            XmAdStrategyUtils.refreshSavedDateWithToday();
+        }
+
+        int totalCount = XmAdStrategyUtils.getAdShownTotalCount();
+        LogUtils.i(TAG, "getAdShownTotalCount()=" + totalCount + ",daily_max_ad_show_count=" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
+        String log1 = "game_id=" + game_id + ",open_type=" + open_type;
+
+        if (totalCount < XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count) {
+            // 玩游戏中：
             if (play_apk.equals(open_type) || play_h5.equals(open_type)) {
                 // 先检查玩游戏的特定游戏列表（优先级最高），再检查普通玩游戏中
-                boolean isPlayDefineGame = XmAdStrategyUtils.isPlayDefineGame(game_id);
-                String tag2 = isPlayDefineGame ? "玩游戏中命中特定游戏列表:" : "普通玩游戏中:";
-                int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
                 AdChildPlayConfig playConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
-                if (isPlayDefineGame || (playConfig != null && playConfig.isOpen())) {
-                    XmAdStrategyUtils.saveSingleGameOpenTypeCount(game_id, open_type, singleGameOpenTypeCount);
-                    LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameOpenTypeCount=" + singleGameOpenTypeCount + ",define_game=" + playConfig.define_game);
-                    LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + playConfig.play_ad_max_times);
-                    if (playAdMaxTimes < playConfig.play_ad_max_times) {
-                        ArrayList<Integer> ad_show_trigger_minutes = playConfig.ad_show_trigger_minutes;
-                        LogUtils.i(TAG, tag2 + "ad_show_trigger_times=" + ad_show_trigger_minutes);
-                        if (ad_show_trigger_minutes.contains(singleGameOpenTypeCount)) {
-                            XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
-                            XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
-                            LogUtils.v(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=true");
-                            return true;
+                boolean isPlayDefineGame = XmAdStrategyUtils.isPlayDefineGame(game_id);
+                boolean iPlayNormalGame = playConfig.isOpen();
+                String log2 = isPlayDefineGame ? "玩游戏中命中特定游戏列表:" : "普通玩游戏中:";
+                int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
+
+                if (isPlayDefineGame || iPlayNormalGame) {
+                    LogUtils.i(TAG, log2 + log1 + ",特定游戏ID列表=" + playConfig.define_game);
+                    int adConfigTimes = Math.min(playConfig.play_ad_max_times, XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
+                    LogUtils.i(TAG, log2 + "已展示广告次数=" + playAdMaxTimes + ",配置的总次数=" + playConfig.play_ad_max_times);
+                    if (playAdMaxTimes < adConfigTimes) {
+                        int leftAdShownTimes = adConfigTimes - playAdMaxTimes;
+                        LogUtils.i(TAG, log2 + log1 + ",剩余广告次数=" + leftAdShownTimes);
+                        if (leftAdShownTimes > 0) {
+                            ArrayList<Integer> minutes;
+                            if (playConfig.ad_show_trigger_minutes.size() < leftAdShownTimes) {
+                                minutes = playConfig.ad_show_trigger_minutes;
+                            } else {
+                                minutes = new ArrayList<>(playConfig.ad_show_trigger_minutes.subList(0, leftAdShownTimes));
+                            }
+                            LogUtils.i(TAG, log2 + log1 + "配置的分钟数组:" + minutes);
+                            return minutes;
+                        } else {
+                            LogUtils.i(TAG, log2 + log1 + ",已展示广告次数>=配置的总数次");
                         }
+                    } else {
+                        LogUtils.v(TAG, "shouldShowAd=false," + log2 + log1 + ",已展示广告次数>=配置的总数次");
                     }
                 }
             }
+        } else {
+            LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",已展示广告次数>=配置的总数次");
         }
-        LogUtils.i(TAG, "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=false");
-        return false;
+        LogUtils.i(TAG, "配置的分钟数组:null");
+        return null;
+    }
+
+    // 玩游戏中，显示广告成功的回调
+    @Keep
+    public static void showAdOnPlayingSuccess(String game_id, String open_type) {
+        int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
+        XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
+        XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
+        LogUtils.v(TAG, "shouldShowAd=true,game_id=" + game_id + ",open_type=" + open_type);
     }
 
     // 2025-11-19:默认不开始计数且返回播放广告，目的是兼容news插件bug(没加载到广告不返回任何回调)，
