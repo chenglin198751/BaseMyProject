@@ -145,6 +145,7 @@ public class XmAdStrategy {
     // 插件是打开apk和H5（必须计数，不接受外部设置），
     // 主程是关闭apk和H5（默认不计数，外部设置是否计数）
     // 此方法被调用时一定是展示广告了
+    @Keep
     public static void startCounting(String game_id, String open_type) {
         LogUtils.d(TAG, "IntersAd,startCounting(),game_id:" + game_id + ",open_type:" + open_type);
         if (close_apk.equals(open_type) || close_h5.equals(open_type)) {
@@ -162,10 +163,11 @@ public class XmAdStrategy {
     }
 
     // 退出游戏时判断玩家玩了多少分钟，才会出现插屏广告
+    @Keep
     public static int getExitDuration(String open_type) {
         if (close_apk.equals(open_type) || close_h5.equals(open_type)) {
             AdChildConfig child = XmAdStrategyUtils.getAdChildConfig(open_type);
-            if (child != null && child.exit_duration > 0) {
+            if (child.exit_duration > 0) {
                 return child.exit_duration;
             }
         }
