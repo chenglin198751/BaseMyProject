@@ -41,8 +41,7 @@ public class XmAdStrategy {
         LogUtils.i(TAG, "getAdShownTotalCount()=" + totalCount + ",daily_max_ad_show_count=" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
 
         if (totalCount < XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count) {
-            // 每次打开游戏，如果对应广告开关是开，则递增记录打开次数
-            int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameAdShownCount(game_id, open_type) + 1;
+            int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameOpenOrCloseCount(game_id, open_type) + 1;
 
             // 1、打开和关闭游戏：
             if (open_apk.equals(open_type) || close_apk.equals(open_type) //
@@ -50,14 +49,16 @@ public class XmAdStrategy {
                 AdChildConfig adChildConfig = XmAdStrategyUtils.getAdChildConfig(open_type);
                 if (adChildConfig != null && adChildConfig.isOpen()) {
                     if (isCounting(game_id, open_type)) {
-                        XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
+                        // 每次打开游戏，如果对应广告开关是开，则递增记录打开或关闭总次数
+                        XmAdStrategyUtils.saveSingleGameOpenOrCloseCount(game_id, open_type, singleGameAdShownCount);
                     }
                     ArrayList<Integer> ad_show_trigger_times = adChildConfig.ad_show_trigger_times;
-                    LogUtils.i(TAG, "打开or关闭游戏:game_id=" + game_id + ",ad_show_trigger_times=" + ad_show_trigger_times + ",adShownCountForSingleGame=" + singleGameAdShownCount);
+                    LogUtils.i(TAG, "game_id=" + game_id + ",open_type=" + open_type + //
+                            ",ad_show_trigger_times=" + ad_show_trigger_times + ",adShownCountForSingleGame=" + singleGameAdShownCount);
                     if (ad_show_trigger_times.contains(singleGameAdShownCount)) {
                         // 展示广告后，则递增记录广告总count
                         if (isCounting(game_id, open_type)) {
-                            LogUtils.v(TAG, "打开or关闭游戏:game_id=" + game_id + ",shouldShowAd=true" + ",getAdShownTotalCount()=" + (totalCount + 1));
+                            LogUtils.v(TAG, "game_id=" + game_id + ",shouldShowAd=true" + ",getAdShownTotalCount()=" + (totalCount + 1));
                             XmAdStrategyUtils.saveAdShownTotalCount(totalCount + 1);
                         }
                         return true;
@@ -73,7 +74,7 @@ public class XmAdStrategy {
                 int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
                 AdChildPlayConfig playConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
                 if (isPlayDefineGame || (playConfig != null && playConfig.isOpen())) {
-                    XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, singleGameAdShownCount);
+                    XmAdStrategyUtils.saveSingleGameOpenOrCloseCount(game_id, open_type, singleGameAdShownCount);
                     LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameAdShownCount=" + singleGameAdShownCount + ",define_game=" + playConfig.define_game);
                     LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + playConfig.play_ad_max_times);
                     if (playAdMaxTimes < playConfig.play_ad_max_times) {
@@ -103,10 +104,10 @@ public class XmAdStrategy {
             String key = game_id + "_" + open_type;
             if (!countingList.contains(key)) {
                 countingList.add(key);
-                int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameAdShownCount(game_id, open_type);
+                int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameOpenOrCloseCount(game_id, open_type);
                 if (singleGameAdShownCount == 0) {
                     // 当第一次执行时，本地存储需要更新打开次数
-                    XmAdStrategyUtils.saveSingleGameAdShownCount(game_id, open_type, 1);
+                    XmAdStrategyUtils.saveSingleGameOpenOrCloseCount(game_id, open_type, 1);
                     XmAdStrategyUtils.saveAdShownTotalCount(1);
                 }
             }
