@@ -63,14 +63,14 @@ class XmAdStrategyUtils {
         return XmAdStrategyStorage.get().getInt(KEY_AD_SHOWN_TOTAL_COUNT, 0);
     }
 
-    // 保存：（计数）当前设备、每日、单个游戏、打开或关闭的总次数
-    public static void saveSingleGameOpenOrCloseCount(String game_id, String open_type, int count) {
+    // 保存：（计数）当前设备、每日、单个游戏、对应open_type的总次数
+    public static void saveSingleGameOpenTypeCount(String game_id, String open_type, int count) {
         String key = "OpenOrCloseCount_" + game_id + "_" + open_type;
         XmAdStrategyStorage.get().saveInt(key, count);
     }
 
-    // 获取：（计数）当前设备、每日、单个游戏、打开或关闭的总次数
-    public static int getSingleGameOpenOrCloseCount(String game_id, String open_type) {
+    // 获取：（计数）当前设备、每日、单个游戏、对应open_type的总次数
+    public static int getSingleGameOpenTypeCount(String game_id, String open_type) {
         String key = "OpenOrCloseCount_" + game_id + "_" + open_type;
         return XmAdStrategyStorage.get().getInt(key, 0);
     }

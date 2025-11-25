@@ -41,7 +41,7 @@ public class XmAdStrategy {
         LogUtils.i(TAG, "getAdShownTotalCount()=" + totalCount + ",daily_max_ad_show_count=" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
 
         if (totalCount < XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count) {
-            int singleGameOpenOrCloseCount = XmAdStrategyUtils.getSingleGameOpenOrCloseCount(game_id, open_type) + 1;
+            int singleGameOpenTypeCount = XmAdStrategyUtils.getSingleGameOpenTypeCount(game_id, open_type) + 1;
 
             // 1、打开和关闭游戏：
             if (open_apk.equals(open_type) || close_apk.equals(open_type) //
@@ -50,12 +50,12 @@ public class XmAdStrategy {
                 if (adChildConfig != null && adChildConfig.isOpen()) {
                     if (isCounting(game_id, open_type)) {
                         // 每次打开游戏，如果对应广告开关是开，则递增记录打开或关闭总次数
-                        XmAdStrategyUtils.saveSingleGameOpenOrCloseCount(game_id, open_type, singleGameOpenOrCloseCount);
+                        XmAdStrategyUtils.saveSingleGameOpenTypeCount(game_id, open_type, singleGameOpenTypeCount);
                     }
                     ArrayList<Integer> ad_show_trigger_times = adChildConfig.ad_show_trigger_times;
                     LogUtils.i(TAG, "game_id=" + game_id + ",open_type=" + open_type + //
-                            ",ad_show_trigger_times=" + ad_show_trigger_times + ",singleGameOpenOrCloseCount=" + singleGameOpenOrCloseCount);
-                    if (ad_show_trigger_times.contains(singleGameOpenOrCloseCount)) {
+                            ",ad_show_trigger_times=" + ad_show_trigger_times + ",singleGameOpenTypeCount=" + singleGameOpenTypeCount);
+                    if (ad_show_trigger_times.contains(singleGameOpenTypeCount)) {
                         // 展示广告后，则递增记录广告总count
                         if (isCounting(game_id, open_type)) {
                             LogUtils.v(TAG, "game_id=" + game_id + ",shouldShowAd=true" + ",getAdShownTotalCount()=" + (totalCount + 1));
@@ -74,13 +74,13 @@ public class XmAdStrategy {
                 int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
                 AdChildPlayConfig playConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
                 if (isPlayDefineGame || (playConfig != null && playConfig.isOpen())) {
-                    XmAdStrategyUtils.saveSingleGameOpenOrCloseCount(game_id, open_type, singleGameOpenOrCloseCount);
-                    LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameOpenOrCloseCount=" + singleGameOpenOrCloseCount + ",define_game=" + playConfig.define_game);
+                    XmAdStrategyUtils.saveSingleGameOpenTypeCount(game_id, open_type, singleGameOpenTypeCount);
+                    LogUtils.i(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",singleGameOpenTypeCount=" + singleGameOpenTypeCount + ",define_game=" + playConfig.define_game);
                     LogUtils.i(TAG, tag2 + "playAdMaxTimes=" + playAdMaxTimes + ",play_ad_max_times=" + playConfig.play_ad_max_times);
                     if (playAdMaxTimes < playConfig.play_ad_max_times) {
                         ArrayList<Integer> ad_show_trigger_minutes = playConfig.ad_show_trigger_minutes;
                         LogUtils.i(TAG, tag2 + "ad_show_trigger_times=" + ad_show_trigger_minutes);
-                        if (ad_show_trigger_minutes.contains(singleGameOpenOrCloseCount)) {
+                        if (ad_show_trigger_minutes.contains(singleGameOpenTypeCount)) {
                             XmAdStrategyUtils.savePlayAdMaxTimes(game_id, open_type, playAdMaxTimes + 1);
                             XmAdStrategyUtils.saveAdShownTotalCount(XmAdStrategyUtils.getAdShownTotalCount() + 1);
                             LogUtils.v(TAG, tag2 + "game_id=" + game_id + ",open_type=" + open_type + ",shouldShowAd=true");
@@ -104,10 +104,10 @@ public class XmAdStrategy {
             String key = game_id + "_" + open_type;
             if (!countingList.contains(key)) {
                 countingList.add(key);
-                int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameOpenOrCloseCount(game_id, open_type);
+                int singleGameAdShownCount = XmAdStrategyUtils.getSingleGameOpenTypeCount(game_id, open_type);
                 if (singleGameAdShownCount == 0) {
                     // 当第一次执行时，本地存储需要更新打开次数
-                    XmAdStrategyUtils.saveSingleGameOpenOrCloseCount(game_id, open_type, 1);
+                    XmAdStrategyUtils.saveSingleGameOpenTypeCount(game_id, open_type, 1);
                     XmAdStrategyUtils.saveAdShownTotalCount(1);
                 }
             }
