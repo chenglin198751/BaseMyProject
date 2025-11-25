@@ -1,8 +1,3 @@
-## 如何从手助获取包：
-    
-    从 https://openbox.mobilem.360.cn/third/getAppInfo?sid=xxx 中获取到下载链接，
-    然后将域名 shouji.360tpcdn.com 替换成 m.shouji.360tpcdn.com
-
 
 **1、BaseActivity 类：** 
 
@@ -592,3 +587,8 @@
 **110、AccountContentProvider：**
 
     使用系统铃声Alarms目录实现无需存储权限的账户信息共享方案
+	
+**111、加载和显示大图长图：**
+
+    https://github.com/davemorrissey/subsampling-scale-image-view
+	
