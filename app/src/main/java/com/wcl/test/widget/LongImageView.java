@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -13,12 +13,9 @@ import com.wcl.test.utils.BitmapUtils;
 
 import java.io.File;
 
-/**
- * Created by chenglin on 2018-1-20.
- */
-
 public class LongImageView extends WebView {
-    private boolean isDestroy = false;
+
+    private boolean isDestroyed = false;
 
     public LongImageView(Context context) {
         super(context);
@@ -31,112 +28,109 @@ public class LongImageView extends WebView {
     }
 
     private void init() {
-        WebSettings webSettings = getSettings();
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        webSettings.setSupportZoom(true);
-        webSettings.setBuiltInZoomControls(true);
-        webSettings.setDisplayZoomControls(false);//去掉系统难看的缩放按钮
+        WebSettings ws = getSettings();
+        ws.setLoadWithOverviewMode(true);
+        ws.setUseWideViewPort(true);
+        ws.setSupportZoom(true);
+        ws.setBuiltInZoomControls(true);
+        ws.setDisplayZoomControls(false);
+
+        // 更安全的 WebView 配置
+        ws.setJavaScriptEnabled(false);
+        ws.setAllowFileAccess(false);
+        ws.setDomStorageEnabled(false);
+        ws.setCacheMode(WebSettings.LOAD_NO_CACHE);
     }
 
     /**
-     * 加载长图，是利用WebView实现的。
-     * 一定要设置此控件的宽度，如果不设置，默认就是屏幕宽度
-     *
-     * @param file      本地图片文件
-     * @param showWidth 当前控件显示的宽度
+     * 判断是否已不可用（Activity 销毁 或 WebView 销毁）
+     */
+    private boolean isUnavailable() {
+        if (isDestroyed) return true;
+
+        Context ctx = getContext();
+        if (ctx instanceof Activity a) {
+            return a.isFinishing() || a.isDestroyed();
+        }
+        return false;
+    }
+
+    /**
+     * 加载本地长图
      */
     public void load(final File file, final int showWidth) {
-        if (file == null || !file.exists()) {
-            return;
-        }
+        if (file == null || !file.exists() || isUnavailable()) return;
 
         int pictureWidth = BitmapUtils.getBitmapSize(file.getAbsolutePath())[0];
-        float scale = (showWidth * 1f / pictureWidth * 1f) * 100f;
-        setInitialScale((int) scale);
+        int targetWidth = Math.max(showWidth, 1);
+        float scale = targetWidth * 1f / Math.max(1, pictureWidth);
 
-        loadUrl("file:" + file.getAbsolutePath());
+        // 使用 HTML 自动适配宽度，避免 setInitialScale()
+        String html =
+                "<html><body style='margin:0;padding:0;'>"
+                        + "<img style='width:100%;' src='file://" + file.getAbsolutePath() + "'/>"
+                        + "</body></html>";
+
+        loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
     }
 
     /**
-     * 加载长图，是利用WebView实现的。
-     * 一定要设置此控件的宽度，如果不设置，默认就是屏幕宽度
-     *
-     * @param url       网络图片URL
-     * @param showWidth 当前控件显示的宽度
+     * 加载网络长图
      */
     public void load(final String url, final int showWidth) {
         load(url, showWidth, null);
     }
 
-    /**
-     * 加载长图，是利用WebView实现的。
-     * 一定要设置此控件的宽度，如果不设置，默认就是屏幕宽度
-     *
-     * @param url          网络图片URL
-     * @param showWidth    当前控件显示的宽度
-     * @param httpCallback 下载监听
-     */
-    public void load(final String url, final int showWidth, final HttpUtils.HttpDownloadCallback httpCallback) {
-        if (TextUtils.isEmpty(url)) {
-            return;
-        }
-        if (!url.trim().toLowerCase().startsWith("http")) {
+    public void load(final String url, final int showWidth, final HttpUtils.HttpDownloadCallback callback) {
+        if (TextUtils.isEmpty(url) || !URLUtil.isNetworkUrl(url)) {
+            if (callback != null) callback.onFinished(false, null, "Invalid URL");
             return;
         }
 
         HttpUtils.downloadFile(url, new HttpUtils.HttpDownloadCallback() {
-            @Override
-            public void onFinished(boolean isSuccessful, String filePath, String error) {
-                if (isFinish()) {
-                    return;
-                }
 
-                if (isSuccessful) {
+            @Override
+            public void onFinished(boolean ok, String filePath, String err) {
+                if (isUnavailable()) return;
+
+                if (ok && filePath != null) {
                     load(new File(filePath), showWidth);
                 }
-                if (httpCallback != null) {
-                    httpCallback.onFinished(isSuccessful, filePath, error);
+
+                if (callback != null) {
+                    callback.onFinished(ok, filePath, err);
                 }
             }
 
             @Override
-            public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
-                if (httpCallback != null) {
-                    httpCallback.onProgress(fileTotalSize, fileDowningSize, percent);
+            public void onProgress(long total, long curr, float percent) {
+                if (!isUnavailable() && callback != null) {
+                    callback.onProgress(total, curr, percent);
                 }
             }
         });
-
     }
 
-    private boolean isFinish() {
-        if (getContext() instanceof Activity) {
-            Activity activity = (Activity) getContext();
-            return activity.isFinishing();
+    /**
+     * 更安全的 destroy()
+     */
+    public void safeDestroy() {
+        if (isDestroyed) return;
+        isDestroyed = true;
+
+        try {
+            stopLoading();
+            loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+            clearHistory();
+            removeAllViews();
+            super.destroy();
+        } catch (Exception ignored) {
         }
-        return true;
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        isDestroy = false;
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        safeDestroy();
         super.onDetachedFromWindow();
-
-        if (!isDestroy) {
-            isDestroy = true;
-            try {
-                loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-                clearHistory();
-                ((ViewGroup) getParent()).removeView(this);
-                destroy();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
