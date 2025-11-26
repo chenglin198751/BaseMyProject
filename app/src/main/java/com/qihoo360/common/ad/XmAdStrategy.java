@@ -71,7 +71,7 @@ public class XmAdStrategy {
                 }
             }
         } else {
-            LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",已展示广告次数>=配置的总数次");
+            LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",已展示广告次数" + totalCount + ">=配置的总数次" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
         }
         return false;
     }
@@ -105,30 +105,25 @@ public class XmAdStrategy {
                     LogUtils.i(TAG, log2 + log1 + ",特定游戏ID列表=" + playConfig.define_game);
                     int adConfigTimes = Math.min(playConfig.play_ad_max_times, XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
                     LogUtils.i(TAG, log2 + "已展示广告次数=" + playAdMaxTimes + ",配置的总次数=" + playConfig.play_ad_max_times);
-                    if (playAdMaxTimes < adConfigTimes) {
-                        int leftAdShownTimes = adConfigTimes - playAdMaxTimes;
-                        LogUtils.i(TAG, log2 + log1 + ",剩余广告次数=" + leftAdShownTimes);
-                        if (leftAdShownTimes > 0) {
-                            ArrayList<Integer> minutes;
-                            if (playConfig.ad_show_trigger_minutes.size() < leftAdShownTimes) {
-                                minutes = playConfig.ad_show_trigger_minutes;
-                            } else {
-                                minutes = new ArrayList<>(playConfig.ad_show_trigger_minutes.subList(0, leftAdShownTimes));
-                            }
-                            LogUtils.i(TAG, log2 + log1 + "配置的分钟数组:" + minutes);
-                            return minutes;
+                    int leftAdShownTimes = adConfigTimes - playAdMaxTimes;
+                    LogUtils.i(TAG, log2 + log1 + ",剩余广告次数=" + leftAdShownTimes);
+                    if (leftAdShownTimes > 0) {
+                        ArrayList<Integer> minutes;
+                        if (playConfig.ad_show_trigger_minutes.size() <= leftAdShownTimes) {
+                            minutes = playConfig.ad_show_trigger_minutes;
                         } else {
-                            LogUtils.i(TAG, log2 + log1 + ",已展示广告次数>=配置的总数次");
+                            minutes = new ArrayList<>(playConfig.ad_show_trigger_minutes.subList(0, leftAdShownTimes));
                         }
+                        LogUtils.i(TAG, "shouldShowAd=true," + log2 + log1 + "配置的分钟数组:" + minutes);
+                        return minutes;
                     } else {
-                        LogUtils.v(TAG, "shouldShowAd=false," + log2 + log1 + ",已展示广告次数>=配置的总数次");
+                        LogUtils.i(TAG, "shouldShowAd=false," + log2 + log1 + ",已展示广告次数" + playAdMaxTimes + ">=配置的总数次" + adConfigTimes);
                     }
                 }
             }
         } else {
-            LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",已展示广告次数>=配置的总数次");
+            LogUtils.v(TAG, "shouldShowAd=false," + log1 + ",已展示广告次数" + totalCount + ">=配置的总数次" + XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
         }
-        LogUtils.i(TAG, "配置的分钟数组:null");
         return null;
     }
 

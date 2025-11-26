@@ -162,7 +162,6 @@ class XmAdStrategyUtils {
             LogUtils.v(TAG, "getAdConfig() error:" + e);
             mAdConfig = null;
         }
-
         return mAdConfig != null ? mAdConfig : new AdConfig();
     }
 
@@ -170,16 +169,16 @@ class XmAdStrategyUtils {
         AdChildConfig adChildConfig = null;
         switch (open_type) {
             case XmAdStrategy.close_apk:
-                adChildConfig = mAdConfig.close_apk;
+                adChildConfig = getAdConfig().close_apk;
                 break;
             case XmAdStrategy.close_h5:
-                adChildConfig = mAdConfig.close_h5;
+                adChildConfig = getAdConfig().close_h5;
                 break;
             case XmAdStrategy.open_apk:
-                adChildConfig = mAdConfig.open_apk;
+                adChildConfig = getAdConfig().open_apk;
                 break;
             case XmAdStrategy.open_h5:
-                adChildConfig = mAdConfig.open_h5;
+                adChildConfig = getAdConfig().open_h5;
                 break;
         }
         return adChildConfig == null ? new AdChildConfig() : adChildConfig;
@@ -189,10 +188,10 @@ class XmAdStrategyUtils {
         AdChildPlayConfig adChildPlayConfig = null;
         switch (open_type) {
             case XmAdStrategy.play_apk:
-                adChildPlayConfig = mAdConfig.play_apk;
+                adChildPlayConfig = getAdConfig().play_apk;
                 break;
             case XmAdStrategy.play_h5:
-                adChildPlayConfig = mAdConfig.play_h5;
+                adChildPlayConfig = getAdConfig().play_h5;
                 break;
         }
         return adChildPlayConfig == null ? new AdChildPlayConfig() : adChildPlayConfig;
