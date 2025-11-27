@@ -591,4 +591,7 @@
 **111、加载和显示大图长图：**
 
     https://github.com/davemorrissey/subsampling-scale-image-view
-	
+
+**112、Handler实现的定时器：TimerWithHandler**
+
+    
