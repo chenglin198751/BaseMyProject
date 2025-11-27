@@ -18,6 +18,3 @@ dependencyResolutionManagement {
 rootProject.name = "BaseMyProject"
 include ':app'
 include ':test_jar_lib'
-
-include ':xm_fast_build_src'
-project(':xm_fast_build_src').projectDir = file('xm/xm_fast_build_src')
