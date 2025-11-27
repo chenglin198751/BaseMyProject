@@ -212,10 +212,4 @@ class XmAdStrategyUtils {
         XmAdStrategyStorage.get().saveString(KEY_TODAY, getToday());
     }
 
-    // 当前正在玩的游戏是不是在特定游戏列表中
-    public static boolean isPlayDefineGame(String game_id) {
-        AdChildPlayConfig play_define_game = XmAdStrategyUtils.getAdConfig().play_define_game;
-        return play_define_game != null && play_define_game.isOpen() && play_define_game.define_game != null && play_define_game.define_game.contains(game_id);
-    }
-
 }

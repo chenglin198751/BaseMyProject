@@ -95,13 +95,14 @@ public class XmAdStrategy {
             // 玩游戏中：
             if (play_apk.equals(open_type) || play_h5.equals(open_type)) {
                 // 先检查玩游戏的特定游戏列表（优先级最高），再检查普通玩游戏中
-                AdChildPlayConfig playConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
-                boolean isPlayDefineGame = XmAdStrategyUtils.isPlayDefineGame(game_id);
-                boolean iPlayNormalGame = playConfig.isOpen();
-                String log2 = isPlayDefineGame ? "玩游戏中命中特定游戏列表:" : "普通玩游戏中:";
+                AdChildPlayConfig defineConfig = XmAdStrategyUtils.getAdConfig().play_define_game;
+                AdChildPlayConfig normalConfig = XmAdStrategyUtils.getAdChildPlayConfig(open_type);
+                boolean isDefineGame = defineConfig != null && defineConfig.isOpen() && defineConfig.define_game != null && defineConfig.define_game.contains(game_id);
+                boolean iNormalGame = normalConfig.isOpen();
+                AdChildPlayConfig playConfig = isDefineGame ? defineConfig : normalConfig;
                 int playAdMaxTimes = XmAdStrategyUtils.getPlayAdMaxTimes(game_id, open_type);
-
-                if (isPlayDefineGame || iPlayNormalGame) {
+                if (isDefineGame || iNormalGame) {
+                    String log2 = isDefineGame ? "玩游戏中命中特定游戏列表:" : "普通玩游戏中:";
                     LogUtils.i(TAG, log2 + log1 + ",特定游戏ID列表=" + playConfig.define_game);
                     int adConfigTimes = Math.min(playConfig.play_ad_max_times, XmAdStrategyUtils.getAdConfig().daily_max_ad_show_count);
                     LogUtils.i(TAG, log2 + "已展示广告次数=" + playAdMaxTimes + ",配置的总次数=" + playConfig.play_ad_max_times);
