@@ -592,6 +592,21 @@
 
     https://github.com/davemorrissey/subsampling-scale-image-view
 
-**112、Handler实现的定时器：TimerWithHandler**
+**112、定时器,HandlerTimer 和 AlarmTimer：**
+
+    HandlerTimer：适合短间隔（1~10 秒）
+    AlarmTimer：长间隔（10秒或1分钟及以上），尤其需要唤醒 CPU 或后台执行
+
+    SimpleTimer timer = new HandlerTimer()
+            .setDelay(1000)
+            .setInterval(5000)
+            .onTick(new onTickListener() {
+                @Override
+                public void onTick() {
+                    Log.d("tag_99", "tick: ");
+                }
+            });
+    timer.start();
+    timer.stop();
 
     
