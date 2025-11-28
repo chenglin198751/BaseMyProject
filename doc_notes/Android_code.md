@@ -609,4 +609,7 @@
     timer.start();
     timer.stop();
 
+**113、可以设置多个监听的倒计时CountDownManager，适用于列表中倒计时秒杀：**
+
+    
     
