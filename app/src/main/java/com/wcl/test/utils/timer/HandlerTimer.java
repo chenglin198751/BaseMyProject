@@ -3,6 +3,9 @@ package com.wcl.test.utils.timer;
 import android.os.Handler;
 import android.os.Looper;
 
+/**
+ * 短间隔循环任务，推荐 1~10 秒执行一次
+ */
 public class HandlerTimer implements SimpleTimer {
 
     private final Handler handler = new Handler(Looper.getMainLooper());

@@ -10,6 +10,10 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
+/**
+ * 长间隔任务，推荐间隔 ≥ 1 分钟
+ * 需要系统唤醒 CPU 或后台执行的任务（即使设备锁屏或 Doze 模式下）
+ */
 public class AlarmTimer implements SimpleTimer {
     private static final String ACTION = "ALARM_TIMER_ACTION_" + System.currentTimeMillis();
     private final Context context;
