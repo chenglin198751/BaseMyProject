@@ -1,4 +1,4 @@
-package com.wcl.test.utils;
+package com.wcl.test.utils.timer;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * 倒计时管理器类，适用于列表中item展示倒计时秒杀
+ */
 public class CountDownManager {
         private static final CountDownManager INSTANCE = new CountDownManager();
         private final List<WeakReference<TickListener>> listeners = new ArrayList<>();
