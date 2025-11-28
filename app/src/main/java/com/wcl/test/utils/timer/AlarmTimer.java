@@ -22,8 +22,8 @@ public class AlarmTimer implements SimpleTimer {
     private boolean isRunning = false;
 
     // 配置参数
-    private long delayMinute = 0;
-    private long intervalMinute = 0;
+    private long delayMs = 0;
+    private long intervalMs = 0;
 
     private long nextTriggerTime;
 
@@ -35,14 +35,14 @@ public class AlarmTimer implements SimpleTimer {
     // ---------- SimpleTimer 接口实现 ---------- //
 
     @Override
-    public SimpleTimer setDelay(long delayMinute) {
-        this.delayMinute = delayMinute;
+    public SimpleTimer setDelay(long delayMs) {
+        this.delayMs = delayMs;
         return this;
     }
 
     @Override
-    public SimpleTimer setInterval(long intervalMinute) {
-        this.intervalMinute = intervalMinute;
+    public SimpleTimer setInterval(long intervalMs) {
+        this.intervalMs = intervalMs;
         return this;
     }
 
@@ -57,7 +57,7 @@ public class AlarmTimer implements SimpleTimer {
         stop(); // 先停止已有任务
         isRunning = true;
 
-        nextTriggerTime = System.currentTimeMillis() + delayMinute;
+        nextTriggerTime = System.currentTimeMillis() + delayMs;
 
         registerReceiver();
         scheduleAlarm(nextTriggerTime);
@@ -113,7 +113,7 @@ public class AlarmTimer implements SimpleTimer {
             });
 
             // 循环执行下一次
-            nextTriggerTime += intervalMinute;
+            nextTriggerTime += intervalMs;
             scheduleAlarm(nextTriggerTime);
         }
     };
