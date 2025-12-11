@@ -1,43 +1,91 @@
-//package com.wcl.test.base;
-//
-//import android.content.Intent;
-//import android.os.Bundle;
-//
-//import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-//
-//public class EventBus {
-//    public static final String ACTION_BASE_BROADCAST = "ACTION_SYS_BASE_BROADCAST";
-//
-//    public static void sendBroadcast(String action) {
-//        sendBroadcast(action, null);
-//    }
-//
-//    /**
-//     * 通用的发送广播，可以在任意位置发送
-//     */
-//    public static void sendBroadcast(String action, Bundle bundle) {
-//        if (bundle == null) {
-//            bundle = new Bundle();
-//        }
-//
-//        Intent intent = new Intent(ACTION_BASE_BROADCAST);
-//        intent.putExtra("action", action);
-//        intent.putExtra("bundle", bundle);
-//        LocalBroadcastManager.getInstance(BaseApp.getApp()).sendBroadcast(intent);
-//    }
-//
-//    public interface System {
-//        /**
-//         * 根据开关onKeepSingleActivity()：当前Activity无论打开多少，只保留最后打开的一个
-//         */
-//        String ACTION_KEEP_SINGLE_ACTIVITY = "ACTION_SYS_KEEP_SINGLE_ACTIVITY";
-//        /**
-//         * 关闭别的Activity，只保留MainActivity不关闭
-//         */
-//        String ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY = "ACTION_SYS_KEEP_MAIN_AND_CLOSE_ACTIVITY";
-//    }
-//
-//    public interface App {
-//        String action_test = "ACTION_TEST";
-//    }
-//}
+package com.wcl.test.base;
+
+import android.os.Handler;
+import android.os.Looper;
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * 全局事件总线，使用监听者模式
+ */
+public class EventBus {
+    private final CopyOnWriteArrayList<OnBroadcastListener> observers = new CopyOnWriteArrayList<>();
+    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+
+    private static final class InstanceHolder {
+        private static final EventBus INSTANCE = new EventBus();
+    }
+
+    private EventBus() {
+    }
+
+    public static EventBus get() {
+        return InstanceHolder.INSTANCE;
+    }
+
+
+    /**
+     * 注册监听者
+     */
+    void register(OnBroadcastListener observer) {
+        if (observer == null) {
+            throw new IllegalArgumentException("Observer cannot be null when registering.");
+        }
+        observers.addIfAbsent(observer);
+    }
+
+    /**
+     * 取消注册监听者
+     */
+    void unregister(OnBroadcastListener observer) {
+        if (observer == null) {
+            throw new IllegalArgumentException("Observer cannot be null when unregistering.");
+        }
+        observers.remove(observer);
+    }
+
+    /**
+     * 发送事件（主线程分发）
+     */
+    public void post(String eventKey, Object data) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            dispatch(eventKey, data);
+        } else {
+            MAIN_HANDLER.post(() -> dispatch(eventKey, data));
+        }
+    }
+
+    /**
+     * 延迟发送事件（主线程分发）
+     */
+    public void postDelay(String eventKey, Object data, long delayMillis) {
+        MAIN_HANDLER.postDelayed(() -> dispatch(eventKey, data), delayMillis);
+    }
+
+    /**
+     * 内部分发逻辑
+     */
+    private void dispatch(String eventKey, Object data) {
+        for (OnBroadcastListener observer : observers) {
+            try {
+                observer.onBroadcastReceiver(eventKey, data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 清除所有监听者
+     */
+    public void clear() {
+        observers.clear();
+    }
+
+    /**
+     * 获取当前注册监听者数量（调试用）
+     */
+    public int getObserverCount() {
+        return observers.size();
+    }
+}

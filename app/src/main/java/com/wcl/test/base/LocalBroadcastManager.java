@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * 使用ChatGPT优化的版本，2025-10-15
  * 源码是androidx.localbroadcastmanager.content.LocalBroadcastManager
  * 从源码独立出来，用ChatGPT优化，可以单独使用的类
+ * 现在暂时不用了 2025-12-11
  */
 public final class LocalBroadcastManager {
 

@@ -11,10 +11,8 @@ import android.widget.CompoundButton;
 
 import com.wcl.test.EnvToggle;
 import com.wcl.test.R;
-import com.wcl.test.base.EventBus2;
+import com.wcl.test.base.EventBus;
 import com.wcl.test.storage.ToggleSettings;
-import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.widget.ToastUtils;
 
 
 /**
@@ -26,7 +24,7 @@ public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(SECRET_CODE)) {
-            EventBus2.get().post(SECRET_CODE, null);
+            EventBus.get().post(SECRET_CODE, null);
         }
     }
 

@@ -55,7 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         applyGrayScaleIfNeeded();
 
         if (onKeepSingleActivity()) {
-            EventBus2.get().post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
+            EventBus.get().post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
         }
         registerBroadcastReceiver();
 
@@ -186,11 +186,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     private void registerBroadcastReceiver() {
-        EventBus2.get().register(this);
+        EventBus.get().register(this);
     }
 
     private void unregisterBroadcastReceiver() {
-        EventBus2.get().unregister(this);
+        EventBus.get().unregister(this);
     }
 
     @CallSuper
