@@ -611,5 +611,14 @@
 
 **113、可以设置多个监听的倒计时CountDownManager，适用于列表中倒计时秒杀：**
 
-    
-    
+**114、AppEventProvider：使用ContentProvider实现的轻量级跨进程通信方案：**
+
+    //发送数据
+    EventBus2.post("key111","支持跨进程：测试数据1111111");
+
+    // 注册并接收数据
+    EventBus2.EventCallback callback = data -> {
+        Log.d("tag_99", data);
+    };
+    // 取消注册
+    EventBus2.unregister("key111", callback);

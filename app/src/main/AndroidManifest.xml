@@ -49,7 +49,7 @@
 
         <activity android:name="com.wcl.test.test.TestRecyclerViewRefreshActivity" />
 
-        <activity android:name="com.wcl.test.test.TestFlexBoxActivity" />
+        <activity android:name="com.wcl.test.test.TestFlexBoxActivity" android:process=":test2"/>
 
         <activity android:name="com.wcl.test.test.TestTabLayoutActivity" />
 

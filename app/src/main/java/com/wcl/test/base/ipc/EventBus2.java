@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 多进程事件总线（类似 EventBus 风格）
  * 支持跨进程广播，仅限当前 App 内。
  */
-public class EventBusX {
+public class EventBus2 {
     private static final ConcurrentHashMap<String, CopyOnWriteArrayList<EventCallback>> localObservers = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, ContentObserver> contentObservers = new ConcurrentHashMap<>();
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
