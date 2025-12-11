@@ -13,10 +13,6 @@ import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.ActivityMainBinding;
 import com.wcl.test.helper.ShowFragmentHelper;
 import com.wcl.test.widget.ToastUtils;
-import com.wcl.test.widget.banner.AutoGalleryBannerView2;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final int TAB_FIRST = 0;
@@ -123,8 +119,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    public void onBroadcastReceiver(String eventKey, Object data) {
-        super.onBroadcastReceiver(eventKey, data);
+    public void onEvent(String eventKey, Object data) {
+        super.onEvent(eventKey, data);
     }
 
 }

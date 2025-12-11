@@ -9,7 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 全局事件总线，使用监听者模式
  */
 public class EventBus {
-    private final CopyOnWriteArrayList<OnBroadcastListener> observers = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<OnEventListener> observers = new CopyOnWriteArrayList<>();
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     private static final class InstanceHolder {
@@ -27,7 +27,7 @@ public class EventBus {
     /**
      * 注册监听者
      */
-    void register(OnBroadcastListener observer) {
+    void register(OnEventListener observer) {
         if (observer == null) {
             throw new IllegalArgumentException("Observer cannot be null when registering.");
         }
@@ -37,7 +37,7 @@ public class EventBus {
     /**
      * 取消注册监听者
      */
-    void unregister(OnBroadcastListener observer) {
+    void unregister(OnEventListener observer) {
         if (observer == null) {
             throw new IllegalArgumentException("Observer cannot be null when unregistering.");
         }
@@ -66,9 +66,9 @@ public class EventBus {
      * 内部分发逻辑
      */
     private void dispatch(String eventKey, Object data) {
-        for (OnBroadcastListener observer : observers) {
+        for (OnEventListener observer : observers) {
             try {
-                observer.onBroadcastReceiver(eventKey, data);
+                observer.onEvent(eventKey, data);
             } catch (Exception e) {
                 e.printStackTrace();
             }

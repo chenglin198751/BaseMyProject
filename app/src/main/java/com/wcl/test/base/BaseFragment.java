@@ -21,7 +21,7 @@ import com.wcl.test.widget.WaitDialog;
 /**
  * BaseFragment 基类
  */
-public abstract class BaseFragment extends Fragment implements ImplBaseView, OnBroadcastListener {
+public abstract class BaseFragment extends Fragment implements ImplBaseView, OnEventListener {
     protected static final Gson gson = AppConstants.gson;
 
     private BaseViewHelper baseViewHelper;
@@ -38,10 +38,10 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnB
 
     @CallSuper
     @Override
-    public void onBroadcastReceiver(String eventKey, Object data) {
+    public void onEvent(String eventKey, Object data) {
         for (Fragment childFragment : getChildFragmentManager().getFragments()) {
             if (childFragment instanceof BaseFragment && childFragment.isAdded()) {
-                ((BaseFragment) childFragment).onBroadcastReceiver(eventKey, data);
+                ((BaseFragment) childFragment).onEvent(eventKey, data);
             }
         }
     }

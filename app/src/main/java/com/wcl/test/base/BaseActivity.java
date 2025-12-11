@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author weiChengLin 2013-06-20
  */
-public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnBroadcastListener {
+public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnEventListener {
     public static final String CLASS_NAME = "MainActivity";
     protected static final Gson gson = AppConstants.gson;
 
@@ -164,7 +164,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
     @CallSuper
     @Override
-    public void onBroadcastReceiver(String eventKey, Object data) {
+    public void onEvent(String eventKey, Object data) {
         if (EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(eventKey) && onKeepSingleActivity()) {
             if (getClass().getName().equals(data)) {
                 finish();
@@ -178,7 +178,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             for (Fragment fragment : fragments) {
                 if (fragment instanceof BaseFragment && fragment.isAdded()) {
-                    ((BaseFragment) fragment).onBroadcastReceiver(eventKey, data);
+                    ((BaseFragment) fragment).onEvent(eventKey, data);
                 }
             }
         }

@@ -30,8 +30,8 @@ public class MainFirstFragment extends BaseFragment {
     }
 
     @Override
-    public void onBroadcastReceiver(String eventKey, Object data) {
-        super.onBroadcastReceiver(eventKey, data);
+    public void onEvent(String eventKey, Object data) {
+        super.onEvent(eventKey, data);
     }
 
     @Override
