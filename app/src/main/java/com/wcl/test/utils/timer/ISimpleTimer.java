@@ -1,21 +1,21 @@
 package com.wcl.test.utils.timer;
 
-public interface SimpleTimer {
+public interface ISimpleTimer {
 
     /**
      * 设置首次延迟
      */
-    SimpleTimer setDelay(long delayMs);
+    ISimpleTimer setDelay(long delayMs);
 
     /**
      * 设置执行时间间隔
      */
-    SimpleTimer setInterval(long interval);
+    ISimpleTimer setInterval(long interval);
 
     /**
      * 设置每次触发回调
      */
-    SimpleTimer onTick(onTickListener callback);
+    ISimpleTimer onTick(onTickListener callback);
 
     /**
      * 启动定时器

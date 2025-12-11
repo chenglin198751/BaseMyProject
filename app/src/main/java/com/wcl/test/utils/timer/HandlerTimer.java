@@ -6,7 +6,7 @@ import android.os.Looper;
 /**
  * 短间隔循环任务，推荐 1~10 秒执行一次
  */
-public class HandlerTimer implements SimpleTimer {
+public class HandlerTimer implements ISimpleTimer {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -34,19 +34,19 @@ public class HandlerTimer implements SimpleTimer {
     }
 
     @Override
-    public SimpleTimer setDelay(long delayMs) {
+    public ISimpleTimer setDelay(long delayMs) {
         this.delayMs = delayMs;
         return this;
     }
 
     @Override
-    public SimpleTimer setInterval(long interval) {
+    public ISimpleTimer setInterval(long interval) {
         this.intervalMs = interval;
         return this;
     }
 
     @Override
-    public SimpleTimer onTick(onTickListener callback) {
+    public ISimpleTimer onTick(onTickListener callback) {
         this.callback = callback;
         return this;
     }

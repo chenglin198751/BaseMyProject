@@ -14,7 +14,7 @@ import android.os.Looper;
  * 长间隔任务，推荐间隔 ≥ 1 分钟
  * 需要系统唤醒 CPU 或后台执行的任务（即使设备锁屏或 Doze 模式下）
  */
-public class AlarmTimer implements SimpleTimer {
+public class AlarmTimer implements ISimpleTimer {
     private static final String ACTION = "ALARM_TIMER_ACTION_" + System.currentTimeMillis();
     private final Context context;
     private final AlarmManager alarmManager;
@@ -39,19 +39,19 @@ public class AlarmTimer implements SimpleTimer {
     // ---------- SimpleTimer 接口实现 ---------- //
 
     @Override
-    public SimpleTimer setDelay(long delayMs) {
+    public ISimpleTimer setDelay(long delayMs) {
         this.delayMs = delayMs;
         return this;
     }
 
     @Override
-    public SimpleTimer setInterval(long intervalMs) {
+    public ISimpleTimer setInterval(long intervalMs) {
         this.intervalMs = intervalMs;
         return this;
     }
 
     @Override
-    public SimpleTimer onTick(onTickListener callback) {
+    public ISimpleTimer onTick(onTickListener callback) {
         this.callback = callback;
         return this;
     }
