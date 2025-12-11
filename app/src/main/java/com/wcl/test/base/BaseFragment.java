@@ -21,7 +21,7 @@ import com.wcl.test.widget.WaitDialog;
 /**
  * BaseFragment 基类
  */
-public abstract class BaseFragment extends Fragment implements ImplBaseView, OnEventListener {
+public abstract class BaseFragment extends Fragment implements ImplBaseView, OnEventBusListener {
     protected static final Gson gson = AppConstants.gson;
 
     private BaseViewHelper baseViewHelper;
