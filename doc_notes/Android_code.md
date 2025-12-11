@@ -614,11 +614,11 @@
 **114、AppEventProvider：使用ContentProvider实现的轻量级，限定在app内跨进程通信方案：**
 
     //发送数据
-    EventBus2.post("key111","支持跨进程：测试数据1111111");
+    EventBus2.post("key111",Bundle);
 
     // 注册并接收数据
-    EventBus2.EventCallback callback = data -> {
-        Log.d("tag_99", data);
+    EventBus2.EventCallback callback = bundle -> {
+        Log.d("tag_99", bundle);
     };
     // 取消注册
     EventBus2.unregister("key111", callback);
