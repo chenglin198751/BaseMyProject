@@ -299,19 +299,19 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 解决比如字号在小米手机上总是小一号的问题
      */
     private void installFontScaleFactory() {
-        if (AppBaseUtils.isXiaomiDevice()) {
-            LayoutInflater inflater = getLayoutInflater();
-            if (inflater.getFactory2() != null && inflater.getFactory2() instanceof FontScaleFactory) {
-                return;
-            }
-            LayoutInflater.Factory2 existingFactory2 = inflater.getFactory2();
-            float deltaPx = AppBaseUtils.dip2px(1f);
-            FontScaleFactory fsFactory = new FontScaleFactory(inflater, existingFactory2, getDelegate(), deltaPx);
-            try {
-                inflater.setFactory2(fsFactory);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if (AppBaseUtils.isXiaomiDevice()) {
+//            LayoutInflater inflater = getLayoutInflater();
+//            if (inflater.getFactory2() != null && inflater.getFactory2() instanceof FontScaleFactory) {
+//                return;
+//            }
+//            LayoutInflater.Factory2 existingFactory2 = inflater.getFactory2();
+//            float deltaPx = AppBaseUtils.dip2px(1f);
+//            FontScaleFactory fsFactory = new FontScaleFactory(inflater, existingFactory2, getDelegate(), deltaPx);
+//            try {
+//                inflater.setFactory2(fsFactory);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 }
