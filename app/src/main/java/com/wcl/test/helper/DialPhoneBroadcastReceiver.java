@@ -24,7 +24,7 @@ public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(SECRET_CODE)) {
-            EventBus.get().post(SECRET_CODE, null);
+            EventBus.post(SECRET_CODE, null);
         }
     }
 

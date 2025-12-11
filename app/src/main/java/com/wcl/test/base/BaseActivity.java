@@ -6,7 +6,6 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -55,7 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         applyGrayScaleIfNeeded();
 
         if (onKeepSingleActivity()) {
-            EventBus.get().post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
+            EventBus.post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
         }
         registerBroadcastReceiver();
 
@@ -186,11 +185,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     }
 
     private void registerBroadcastReceiver() {
-        EventBus.get().register(this);
+        EventBus.instance().register(this);
     }
 
     private void unregisterBroadcastReceiver() {
-        EventBus.get().unregister(this);
+        EventBus.instance().unregister(this);
     }
 
     @CallSuper

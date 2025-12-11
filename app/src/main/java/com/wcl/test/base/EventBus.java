@@ -19,7 +19,7 @@ public class EventBus {
     private EventBus() {
     }
 
-    public static EventBus get() {
+    public static EventBus instance() {
         return InstanceHolder.INSTANCE;
     }
 
@@ -47,19 +47,19 @@ public class EventBus {
     /**
      * 发送事件（主线程分发）
      */
-    public void post(String eventKey, Object data) {
+    public static void post(String eventKey, Object data) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            dispatch(eventKey, data);
+            instance().dispatch(eventKey, data);
         } else {
-            MAIN_HANDLER.post(() -> dispatch(eventKey, data));
+            MAIN_HANDLER.post(() -> instance().dispatch(eventKey, data));
         }
     }
 
     /**
      * 延迟发送事件（主线程分发）
      */
-    public void postDelay(String eventKey, Object data, long delayMillis) {
-        MAIN_HANDLER.postDelayed(() -> dispatch(eventKey, data), delayMillis);
+    public static void postDelay(String eventKey, Object data, long delayMillis) {
+        MAIN_HANDLER.postDelayed(() -> instance().dispatch(eventKey, data), delayMillis);
     }
 
     /**
