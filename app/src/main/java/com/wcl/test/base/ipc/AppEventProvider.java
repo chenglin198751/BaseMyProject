@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.wcl.test.BuildConfig;
 import com.wcl.test.utils.AppLogUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AppEventProvider extends ContentProvider {
     private static final String TAG = "AppEventProvider";
-    public static final String AUTHORITY = "your.package.eventbus";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.eventbus";
     public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
 
     public static final String METHOD_POST = "POST";
