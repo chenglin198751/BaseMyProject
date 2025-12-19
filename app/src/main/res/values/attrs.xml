@@ -57,17 +57,17 @@
         <attr name="corner_radius" format="integer" />
     </declare-styleable>
 
-
     <attr name="ui_childHorizontalSpacing" format="dimension" />
     <attr name="ui_childVerticalSpacing" format="dimension" />
     <attr name="ui_maxNumber" format="integer" />
-
+    <attr name="ui_clipLastItem" format="boolean" />
     <declare-styleable name="FlowLayout">
         <attr name="android:gravity" />
         <attr name="ui_childHorizontalSpacing" />
         <attr name="ui_childVerticalSpacing" />
         <attr name="android:maxLines" />
         <attr name="ui_maxNumber" />
+        <attr name="ui_clipLastItem" />
     </declare-styleable>
 
     <declare-styleable name="CornerViewGroup">

@@ -7,230 +7,341 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
-
 import com.wcl.test.R;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * 高性能 FlowLayout
- * 特点：
- * ✅ 支持左右中对齐
- * ✅ 支持最大行数 / 最大item数
- * ✅ 缓存行信息（避免重复measure）
- * ✅ 子View动态变化后仅重新计算布局
- */
 public class FlowLayout extends ViewGroup {
 
-    private int mHorizontalSpacing;
-    private int mVerticalSpacing;
-    private int mGravity = Gravity.LEFT;
+    private int mChildHorizontalSpacing;
+    private int mChildVerticalSpacing;
+    private int mGravity;
+    private boolean mClipLastItem;
 
-    private static final int MODE_LINES = 0;
-    private static final int MODE_NUMBER = 1;
-    private int mMaxMode = MODE_LINES;
+    private static final int LINES = 0;
+    private static final int NUMBER = 1;
+    private int mMaxMode = LINES;
     private int mMaximum = Integer.MAX_VALUE;
+    private int mLineCount = 0;
+    private OnLineCountChangeListener mOnLineCountChangeListener;
 
-    private final List<LineInfo> mLines = new ArrayList<>();
-    private int mLineCount;
+    private int[] mItemNumberInEachLine;
+    private int[] mWidthSumInEachLine;
+    private int measuredChildCount;
 
     public FlowLayout(Context context) {
         this(context, null);
     }
 
-    public FlowLayout(Context context, @Nullable AttributeSet attrs) {
+    public FlowLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public FlowLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public FlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
-        mHorizontalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_ui_childHorizontalSpacing, 0);
-        mVerticalSpacing = a.getDimensionPixelSize(R.styleable.FlowLayout_ui_childVerticalSpacing, 0);
-        mGravity = a.getInt(R.styleable.FlowLayout_android_gravity, Gravity.LEFT);
-        int maxLines = a.getInt(R.styleable.FlowLayout_android_maxLines, -1);
-        int maxNumber = a.getInt(R.styleable.FlowLayout_ui_maxNumber, -1);
-        if (maxLines > 0) setMaxLines(maxLines);
-        else if (maxNumber > 0) setMaxNumber(maxNumber);
-        a.recycle();
+        init(context, attrs);
+    }
+
+    private void init(Context context, AttributeSet attrs) {
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
+        mChildHorizontalSpacing = array.getDimensionPixelSize(R.styleable.FlowLayout_ui_childHorizontalSpacing, 0);
+        mChildVerticalSpacing = array.getDimensionPixelSize(R.styleable.FlowLayout_ui_childVerticalSpacing, 0);
+        mGravity = array.getInteger(R.styleable.FlowLayout_android_gravity, Gravity.LEFT);
+        mClipLastItem = array.getBoolean(R.styleable.FlowLayout_ui_clipLastItem, false);
+
+        int maxLines = array.getInt(R.styleable.FlowLayout_android_maxLines, -1);
+        if (maxLines >= 0) {
+            setMaxLines(maxLines);
+        }
+
+        int maxNumber = array.getInt(R.styleable.FlowLayout_ui_maxNumber, -1);
+        if (maxNumber >= 0) {
+            setMaxNumber(maxNumber);
+        }
+        array.recycle();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        mLines.clear();
-        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int maxWidth = (widthMode == MeasureSpec.UNSPECIFIED) ? Integer.MAX_VALUE : parentWidth - getPaddingLeft() - getPaddingRight();
+        int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        int totalHeight = getPaddingTop();
-        int lineWidth = 0, lineHeight = 0;
-        LineInfo currentLine = new LineInfo();
+        int maxLineHeight = 0;
+        int resultWidth;
+        int resultHeight;
 
-        int childCount = getChildCount();
-        int measuredItems = 0;
+        final int count = getChildCount();
 
-        for (int i = 0; i < childCount; i++) {
-            if (mMaxMode == MODE_NUMBER && measuredItems >= mMaximum) break;
-            View child = getChildAt(i);
+        mItemNumberInEachLine = new int[count];
+        mWidthSumInEachLine = new int[count];
+        int lineIndex = 0;
+
+        measuredChildCount = 0;
+
+        int childPositionX = getPaddingLeft();
+        int childPositionY = getPaddingTop();
+        int childMaxRight = (widthSpecMode == MeasureSpec.UNSPECIFIED ? Integer.MAX_VALUE : widthSpecSize - getPaddingRight());
+
+        for (int i = 0; i < count; i++) {
+            if (mMaxMode == NUMBER && measuredChildCount >= mMaximum) break;
+            if (mMaxMode == LINES && lineIndex >= mMaximum) break;
+
+            final View child = getChildAt(i);
             if (child.getVisibility() == GONE) continue;
 
-            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
-            int childW = child.getMeasuredWidth();
-            int childH = child.getMeasuredHeight();
+            LayoutParams lp = child.getLayoutParams();
+            int childWidthSpec = getChildMeasureSpec(widthMeasureSpec, getPaddingLeft() + getPaddingRight(), lp.width);
+            int childHeightSpec = getChildMeasureSpec(heightMeasureSpec, getPaddingTop() + getPaddingBottom(), lp.height);
+            child.measure(childWidthSpec, childHeightSpec);
 
-            // 超出一行换行
-            if (lineWidth + childW > maxWidth && !currentLine.views.isEmpty()) {
-                mLines.add(currentLine);
-                totalHeight += lineHeight + mVerticalSpacing;
+            int childw = child.getMeasuredWidth();
+            int childh = child.getMeasuredHeight();
+            maxLineHeight = Math.max(maxLineHeight, childh);
 
-                if (mMaxMode == MODE_LINES && mLines.size() >= mMaximum) break;
-
-                currentLine = new LineInfo();
-                lineWidth = 0;
-                lineHeight = 0;
+            // 关键逻辑：clipLastItem 严格裁剪最后一个 item
+            if (mClipLastItem && childPositionX + childw > childMaxRight) {
+                break; // 最后一个 item 放不下，直接舍弃
             }
 
-            currentLine.views.add(child);
-            currentLine.lineWidth = lineWidth + childW;
-            lineWidth += childW + mHorizontalSpacing;
-            lineHeight = Math.max(lineHeight, childH);
-            measuredItems++;
+            // 换行判断（非第一行）
+            if (childPositionX + childw > childMaxRight) {
+                lineIndex++;
+                if (mMaxMode == LINES && lineIndex >= mMaximum) break;
+                childPositionX = getPaddingLeft();
+                childPositionY += maxLineHeight + mChildVerticalSpacing;
+                maxLineHeight = childh;
+            }
+
+            mItemNumberInEachLine[lineIndex]++;
+            mWidthSumInEachLine[lineIndex] += childw + mChildHorizontalSpacing;
+            childPositionX += childw + mChildHorizontalSpacing;
+            measuredChildCount++;
         }
 
-        // 加入最后一行
-        if (!currentLine.views.isEmpty() &&
-                (mMaxMode != MODE_LINES || mLines.size() < mMaximum)) {
-            mLines.add(currentLine);
-            totalHeight += lineHeight;
+        if (widthSpecMode == MeasureSpec.EXACTLY) {
+            resultWidth = widthSpecSize;
+        } else {
+            resultWidth = childPositionX + getPaddingRight();
         }
 
-        totalHeight += getPaddingBottom();
-
-        mLineCount = mLines.size();
-
-        int finalWidth = (widthMode == MeasureSpec.EXACTLY) ? parentWidth :
-                getPaddingLeft() + getMaxLineWidth() + getPaddingRight();
-        int finalHeight = resolveSize(totalHeight, heightMeasureSpec);
-
-        setMeasuredDimension(finalWidth, finalHeight);
-    }
-
-    private int getMaxLineWidth() {
-        int max = 0;
-        for (LineInfo line : mLines) {
-            if (line.lineWidth > max) max = line.lineWidth;
+        if (heightSpecMode == MeasureSpec.UNSPECIFIED) {
+            resultHeight = childPositionY + maxLineHeight + getPaddingBottom();
+        } else if (heightSpecMode == MeasureSpec.AT_MOST) {
+            resultHeight = Math.min(childPositionY + maxLineHeight + getPaddingBottom(), heightSpecSize);
+        } else {
+            resultHeight = heightSpecSize;
         }
-        return max;
+
+        setMeasuredDimension(resultWidth, resultHeight);
+
+        int measureLineCount = lineIndex + 1;
+        if (mLineCount != measureLineCount && mOnLineCountChangeListener != null) {
+            mOnLineCountChangeListener.onChange(mLineCount, measureLineCount);
+        }
+        mLineCount = measureLineCount;
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int x, y = getPaddingTop();
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        int width = right - left;
+        switch (mGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
+            case Gravity.LEFT:
+                layoutWithGravityLeft(width);
+                break;
+            case Gravity.RIGHT:
+                layoutWithGravityRight(width);
+                break;
+            case Gravity.CENTER_HORIZONTAL:
+                layoutWithGravityCenter(width);
+                break;
+            default:
+                layoutWithGravityLeft(width);
+        }
+    }
 
-        for (LineInfo line : mLines) {
-            int lineHeight = line.getLineHeight();
-            int contentWidth = line.lineWidth;
-            x = getStartX(r - l, contentWidth);
+    private void layoutWithGravityLeft(int parentWidth) {
+        int childMaxRight = parentWidth - getPaddingRight();
+        int childPositionX = getPaddingLeft();
+        int childPositionY = getPaddingTop();
+        int lineHeight = 0;
+        int layoutChildCount = 0;
 
-            for (View child : line.views) {
-                if (child.getVisibility() == GONE) continue;
-                int w = child.getMeasuredWidth();
-                int h = child.getMeasuredHeight();
-                child.layout(x, y, x + w, y + h);
-                x += w + mHorizontalSpacing;
+        for (int i = 0; i < getChildCount(); i++) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() == GONE) continue;
+            if (layoutChildCount >= measuredChildCount) {
+                child.layout(0, 0, 0, 0);
+                continue;
             }
 
-            y += lineHeight + mVerticalSpacing;
+            int childw = child.getMeasuredWidth();
+            int childh = child.getMeasuredHeight();
+
+            // clipLastItem 严格裁剪
+            if (mClipLastItem && childPositionX + childw > childMaxRight) {
+                child.layout(0, 0, 0, 0);
+                continue;
+            }
+
+            if (childPositionX + childw > childMaxRight) {
+                childPositionX = getPaddingLeft();
+                childPositionY += lineHeight + mChildVerticalSpacing;
+                lineHeight = 0;
+            }
+
+            child.layout(childPositionX, childPositionY, childPositionX + childw, childPositionY + childh);
+            childPositionX += childw + mChildHorizontalSpacing;
+            lineHeight = Math.max(lineHeight, childh);
+            layoutChildCount++;
+        }
+    }
+
+    private void layoutWithGravityRight(int parentWidth) {
+        int nextChildIndex = 0;
+        int nextChildPositionY = getPaddingTop();
+        int lineHeight = 0;
+        int layoutChildCount = 0;
+        int layoutChildEachLine = 0;
+
+        for (int i = 0; i < mItemNumberInEachLine.length; i++) {
+            if (mItemNumberInEachLine[i] == 0) break;
+
+            int nextChildPositionX = parentWidth - getPaddingRight() - mWidthSumInEachLine[i];
+
+            layoutChildEachLine = 0;
+            while (layoutChildEachLine < mItemNumberInEachLine[i]) {
+                if (nextChildIndex >= getChildCount()) break;
+                final View child = getChildAt(nextChildIndex);
+                if (child.getVisibility() == GONE) {
+                    nextChildIndex++;
+                    continue;
+                }
+
+                if (mClipLastItem && nextChildPositionX + child.getMeasuredWidth() > parentWidth - getPaddingRight()) {
+                    child.layout(0, 0, 0, 0);
+                    nextChildIndex++;
+                    continue;
+                }
+
+                child.layout(nextChildPositionX, nextChildPositionY,
+                        nextChildPositionX + child.getMeasuredWidth(),
+                        nextChildPositionY + child.getMeasuredHeight());
+                nextChildPositionX += child.getMeasuredWidth() + mChildHorizontalSpacing;
+                lineHeight = Math.max(lineHeight, child.getMeasuredHeight());
+                layoutChildEachLine++;
+                layoutChildCount++;
+                nextChildIndex++;
+                if (layoutChildCount >= measuredChildCount) break;
+            }
+
+            nextChildPositionY += lineHeight + mChildVerticalSpacing;
+            lineHeight = 0;
         }
 
-        // 隐藏未布局子View
-        for (int i = getVisibleCount(); i < getChildCount(); i++) {
-            View child = getChildAt(i);
+        // 多余的子View置0
+        for (int i = nextChildIndex; i < getChildCount(); i++) {
+            final View child = getChildAt(i);
             if (child.getVisibility() != GONE) child.layout(0, 0, 0, 0);
         }
     }
 
-    @Override
-    protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
-        return new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    }
+    private void layoutWithGravityCenter(int parentWidth) {
+        int nextChildIndex = 0;
+        int nextChildPositionY = getPaddingTop();
+        int lineHeight = 0;
+        int layoutChildCount = 0;
 
-    @Override
-    public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new MarginLayoutParams(getContext(), attrs);
-    }
+        for (int i = 0; i < mItemNumberInEachLine.length; i++) {
+            if (mItemNumberInEachLine[i] == 0) break;
 
-    @Override
-    protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
-        return new MarginLayoutParams(p);
-    }
+            int nextChildPositionX = getPaddingLeft() + (parentWidth - getPaddingLeft() - getPaddingRight() - mWidthSumInEachLine[i]) / 2;
+            int layoutChildEachLine = 0;
 
+            while (layoutChildEachLine < mItemNumberInEachLine[i]) {
+                if (nextChildIndex >= getChildCount()) break;
+                final View child = getChildAt(nextChildIndex);
+                if (child.getVisibility() == GONE) {
+                    nextChildIndex++;
+                    continue;
+                }
 
-    private int getVisibleCount() {
-        int count = 0;
-        for (LineInfo line : mLines) count += line.views.size();
-        return count;
-    }
+                if (mClipLastItem && nextChildPositionX + child.getMeasuredWidth() > parentWidth - getPaddingRight()) {
+                    child.layout(0, 0, 0, 0);
+                    nextChildIndex++;
+                    continue;
+                }
 
-    private int getStartX(int parentWidth, int contentWidth) {
-        int available = parentWidth - getPaddingLeft() - getPaddingRight();
-        switch (mGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-            case Gravity.CENTER_HORIZONTAL:
-                return getPaddingLeft() + (available - contentWidth) / 2;
-            case Gravity.RIGHT:
-                return parentWidth - getPaddingRight() - contentWidth;
-            default:
-                return getPaddingLeft();
+                child.layout(nextChildPositionX, nextChildPositionY,
+                        nextChildPositionX + child.getMeasuredWidth(),
+                        nextChildPositionY + child.getMeasuredHeight());
+                nextChildPositionX += child.getMeasuredWidth() + mChildHorizontalSpacing;
+                lineHeight = Math.max(lineHeight, child.getMeasuredHeight());
+                layoutChildEachLine++;
+                layoutChildCount++;
+                nextChildIndex++;
+                if (layoutChildCount >= measuredChildCount) break;
+            }
+
+            nextChildPositionY += lineHeight + mChildVerticalSpacing;
+            lineHeight = 0;
+        }
+
+        for (int i = nextChildIndex; i < getChildCount(); i++) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() != GONE) child.layout(0, 0, 0, 0);
         }
     }
 
-    // =================== public api ===================
-
-    public void setChildHorizontalSpacing(int px) {
-        mHorizontalSpacing = px;
-        requestLayout();
-    }
-
-    public void setChildVerticalSpacing(int px) {
-        mVerticalSpacing = px;
-        requestLayout();
-    }
-
     public void setGravity(int gravity) {
-        mGravity = gravity;
+        if (mGravity != gravity) {
+            mGravity = gravity;
+            requestLayout();
+        }
+    }
+
+    public int getGravity() {
+        return mGravity;
+    }
+
+    public void setMaxNumber(int maxNumber) {
+        mMaximum = maxNumber;
+        mMaxMode = NUMBER;
         requestLayout();
+    }
+
+    public int getMaxNumber() {
+        return mMaxMode == NUMBER ? mMaximum : -1;
+    }
+
+    public void setMaxLines(int maxLines) {
+        mMaximum = maxLines;
+        mMaxMode = LINES;
+        requestLayout();
+    }
+
+    public int getMaxLines() {
+        return mMaxMode == LINES ? mMaximum : -1;
+    }
+
+    public void setChildHorizontalSpacing(int spacing) {
+        mChildHorizontalSpacing = spacing;
+        requestLayout();
+    }
+
+    public void setChildVerticalSpacing(int spacing) {
+        mChildVerticalSpacing = spacing;
+        requestLayout();
+    }
+
+    public void setOnLineCountChangeListener(OnLineCountChangeListener listener) {
+        mOnLineCountChangeListener = listener;
     }
 
     public int getLineCount() {
         return mLineCount;
     }
 
-    public void setMaxLines(int maxLines) {
-        mMaxMode = MODE_LINES;
-        mMaximum = maxLines;
-        requestLayout();
-    }
-
-    public void setMaxNumber(int maxNumber) {
-        mMaxMode = MODE_NUMBER;
-        mMaximum = maxNumber;
-        requestLayout();
-    }
-
-    // 内部结构
-    private static class LineInfo {
-        final List<View> views = new ArrayList<>();
-        int lineWidth;
-
-        int getLineHeight() {
-            int h = 0;
-            for (View v : views) {
-                if (v.getVisibility() != GONE)
-                    h = Math.max(h, v.getMeasuredHeight());
-            }
-            return h;
-        }
+    public interface OnLineCountChangeListener {
+        void onChange(int oldLineCount, int newLineCount);
     }
 }
