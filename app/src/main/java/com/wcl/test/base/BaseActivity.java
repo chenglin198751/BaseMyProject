@@ -97,13 +97,18 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     // 是否显示在顶部挖口屏内
     private void setupInsetsIfNeeded() {
         if (!onDisplayInCutoutMode()) {
-            ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
-                int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-                int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-                v.setPadding(0, statusBarHeight, 0, navBarHeight);
-                return insets;
-            });
+            setPaddingStatusBar();
         }
+    }
+
+    // 显示状态栏：默认View显示在缺口屏内
+    public void setPaddingStatusBar() {
+        ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
+            int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            v.setPadding(0, statusBarHeight, 0, navBarHeight);
+            return insets;
+        });
     }
 
     public BaseActivity getContext() {
