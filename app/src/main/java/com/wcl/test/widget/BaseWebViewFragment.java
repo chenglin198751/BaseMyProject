@@ -7,10 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieSyncManager;
+import android.view.ViewParent;
+import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,29 +24,19 @@ import androidx.annotation.NonNull;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 
-/**
- * Created by chenglin on 2017-9-20.
- */
 
 public class BaseWebViewFragment extends BaseFragment {
+
     private WebView mWebView;
-    private ProgressBar mPageLoadingProgressBar = null;
+    private ProgressBar mPageLoadingProgressBar;
     private String mUrl;
 
-    /**
-     * @return 构建一个MyWebViewFragment实例
-     */
     public static BaseWebViewFragment newInstance(String url) {
-        BaseWebViewFragment webViewFragment = new BaseWebViewFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("url", url);
-        webViewFragment.setArguments(bundle);
-        return webViewFragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        BaseWebViewFragment f = new BaseWebViewFragment();
+        Bundle b = new Bundle();
+        b.putString("url", url);
+        f.setArguments(b);
+        return f;
     }
 
     @Override
@@ -54,161 +46,139 @@ public class BaseWebViewFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(Bundle savedInstanceState, View view) {
-        parseSchema();
-        init();
-    }
-
-    private void parseSchema() {
-        mUrl = getArguments().getString("url");
-    }
-
-    public boolean onBackPressed() {
-        if (mWebView != null && mWebView.canGoBack()) {
-            mWebView.goBack();
-            return false;
-        } else {
-            requireActivity().finish();
-            return true;
-        }
+        mUrl = getArguments() != null ? getArguments().getString("url") : null;
+        init(view);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (mWebView != null && mWebView.canGoBack()) {
-                    mWebView.goBack();
-                } else {
-                    requireActivity().finish();
-                }
-            }
-        });
+        requireActivity().getOnBackPressedDispatcher().addCallback(this,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (mWebView != null && mWebView.canGoBack()) {
+                            mWebView.goBack();
+                        } else {
+                            requireActivity().finish();
+                        }
+                    }
+                });
     }
 
     @Override
-    public void onDestroy() {
-        if (mWebView != null) {
-            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-            mWebView.clearHistory();
-            ((ViewGroup) mWebView.getParent()).removeView(mWebView);
-            mWebView.destroy();
-            mWebView = null;
-        }
-        super.onDestroy();
+    public void onDestroyView() {
+        destroyWebView();
+        super.onDestroyView();
     }
 
-    private void init() {
-        mWebView = (WebView) getView().findViewById(R.id.web_view);
-        initProgressBar();
+    private void init(View root) {
+        mWebView = root.findViewById(R.id.web_view);
+        mPageLoadingProgressBar = root.findViewById(R.id.progressBar1);
+        mPageLoadingProgressBar.setMax(100);
+
+        setupWebView();
+        mWebView.loadUrl(mUrl);
+    }
+
+    private void setupWebView() {
+        WebSettings s = mWebView.getSettings();
+
+        s.setJavaScriptEnabled(true);
+        s.setDomStorageEnabled(true);
+        s.setUseWideViewPort(true);
+        s.setLoadWithOverviewMode(true);
+        s.setSupportZoom(true);
+        s.setBuiltInZoomControls(true);
+        s.setDisplayZoomControls(false);
+
+        // 安全：禁止 file:// 被 JS 访问
+        s.setAllowFileAccess(false);
+        s.setAllowContentAccess(false);
+        s.setUserAgentString(s.getUserAgentString());
 
         mWebView.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return handleUrl(view, request.getUrl().toString());
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return handleUrl(view, url);
+            }
+
+            private boolean handleUrl(WebView view, String url) {
 //                if (url.startsWith("weixin://wap")) {
 //                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 //                    getContext().startActivity(intent);
 //                    return true;
 //                }
+
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    view.loadUrl(url);
+                    return true;
+                }
+
+                // 非 http(s) 交给系统
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                } catch (Exception ignored) {
+                }
                 return true;
             }
 
             @Override
-            public void onPageStarted(WebView webView, String s, Bitmap bitmap) {
-                super.onPageStarted(webView, s, bitmap);
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 mPageLoadingProgressBar.setVisibility(View.VISIBLE);
-                mPageLoadingProgressBar.setProgress(1);
+                mPageLoadingProgressBar.setProgress(0);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
                 mPageLoadingProgressBar.setVisibility(View.GONE);
+                CookieManager.getInstance().flush();
             }
-
         });
 
         mWebView.setWebChromeClient(new WebChromeClient() {
 
             @Override
-            public boolean onJsConfirm(WebView arg0, String arg1, String arg2, JsResult arg3) {
-                return super.onJsConfirm(arg0, arg1, arg2, arg3);
-            }
-
-            @Override
-            public void onProgressChanged(WebView webView, int newProgress) {
-                super.onProgressChanged(webView, newProgress);
+            public void onProgressChanged(WebView view, int newProgress) {
                 mPageLoadingProgressBar.setProgress(newProgress);
             }
 
             @Override
-            public void onHideCustomView() {
-            }
-
-            @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                return super.onJsAlert(null, url, message, result);
+                return super.onJsAlert(view, url, message, result);
             }
         });
 
-        mWebView.setDownloadListener(new DownloadListener() {
-            @Override
-            public void onDownloadStart(final String url, final String userAgent,
-                                        final String contentDisposition, final String mimetype,
-                                        final long contentLength) {
-                CommonDialog myDialog = new CommonDialog(getActivity());
-                myDialog.setLeftButton(getString(R.string.ok), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Uri uri = Uri.parse(url);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        startActivity(intent);
-                    }
-                });
-                myDialog.setRightButton(getString(R.string.cancel), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-                myDialog.setMessage(R.string.dialog_download_file_message);
-                myDialog.show();
+        mWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+            } catch (Exception ignored) {
             }
         });
-
-        WebSettings webSetting = mWebView.getSettings();
-        webSetting.setAllowFileAccess(true);
-        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webSetting.setSupportZoom(true);
-        webSetting.setBuiltInZoomControls(true);
-        webSetting.setUseWideViewPort(true);
-        webSetting.setSupportMultipleWindows(false);
-        // webSetting.setLoadWithOverviewMode(true);
-        webSetting.setDomStorageEnabled(true);
-//        webSetting.setAppCacheEnabled(true);
-        // webSetting.setDatabaseEnabled(true);
-        webSetting.setDomStorageEnabled(true);
-        webSetting.setJavaScriptEnabled(true);
-        webSetting.setGeolocationEnabled(true);
-//        webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
-//        webSetting.setAppCachePath(getActivity().getDir("appcache", 0).getPath());
-        webSetting.setDatabasePath(getActivity().getDir("databases", 0).getPath());
-        webSetting.setGeolocationDatabasePath(getActivity().getDir("geolocation", 0).getPath());
-        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
-        String APP_NAME_UA = "";//自定义UA
-        webSetting.setUserAgentString(webSetting.getUserAgentString() + APP_NAME_UA);
-        mWebView.loadUrl(mUrl);
-
-        CookieSyncManager.createInstance(getActivity());
-        CookieSyncManager.getInstance().sync();
     }
 
-    private void initProgressBar() {
-        mPageLoadingProgressBar = (ProgressBar) getView().findViewById(R.id.progressBar1);
-        mPageLoadingProgressBar.setMax(100);
-        mPageLoadingProgressBar.setProgressDrawable(this.getResources().getDrawable(R.drawable.color_progressbar));
-    }
+    private void destroyWebView() {
+        if (mWebView == null) return;
 
+        mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+        mWebView.clearHistory();
+        mWebView.stopLoading();
+
+        ViewParent parent = mWebView.getParent();
+        if (parent instanceof ViewGroup) {
+            ((ViewGroup) parent).removeView(mWebView);
+        }
+
+        mWebView.destroy();
+        mWebView = null;
+    }
 }
