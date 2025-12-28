@@ -2,88 +2,71 @@ package com.wcl.test.widget;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 
-/**
- * Created by chenglin on 2017-8-23.
- */
-
 public class BaseWebViewActivity extends BaseActivity {
+
+    private static final String EXTRA_URL = "url";
+    private static final String EXTRA_TITLE = "title";
+
     private BaseWebViewFragment mWebViewFragment;
-    private String mUrl, mTitle;
+    private String mUrl;
+    private String mTitle;
 
     public static void start(Context context, String url, String title) {
         if (TextUtils.isEmpty(url)) {
-            throw new NullPointerException("url must is not null");
+            return;
         }
-
         Intent intent = new Intent(context, BaseWebViewActivity.class);
-        intent.putExtra("url", url);
-        intent.putExtra("title", title);
+        intent.putExtra(EXTRA_URL, url);
+        intent.putExtra(EXTRA_TITLE, title);
+
+        if (!(context instanceof android.app.Activity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         context.startActivity(intent);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getWindow().setFormat(PixelFormat.TRANSLUCENT); //防止网页中的视频闪烁的设置
         setContentLayout(R.layout.my_webview_layout);
         parseParams();
-        init();
 
-
-        getTitleHelper().setReturnListener(() -> {
-            onBackPressed();
-            return kotlin.Unit.INSTANCE;
-        });
+        FragmentManager fm = getSupportFragmentManager();
+        mWebViewFragment = (BaseWebViewFragment) fm.findFragmentById(R.id.fragment_base_id);
+        if (mWebViewFragment == null) {
+            mWebViewFragment = BaseWebViewFragment.newInstance(mUrl);
+            fm.beginTransaction().replace(R.id.fragment_base_id, mWebViewFragment).commit();
+        }
     }
 
     private void parseParams() {
-        mUrl = getIntent().getStringExtra("url");
-        mTitle = getIntent().getStringExtra("title");
+        Intent intent = getIntent();
+        mUrl = intent.getStringExtra(EXTRA_URL);
+        mTitle = intent.getStringExtra(EXTRA_TITLE);
 
-        Uri httpUri = Uri.parse(mUrl);
-        if (httpUri != null) {
-            String title = httpUri.getQueryParameter("title");
-            if (!TextUtils.isEmpty(title)) {
-                mTitle = title;
-            }
-            if (!TextUtils.isEmpty(mTitle)) {
-                getTitleHelper().setTitle(mTitle);
+        if (!TextUtils.isEmpty(mUrl)) {
+            try {
+                Uri uri = Uri.parse(mUrl);
+                String titleFromUrl = uri.getQueryParameter("title");
+                if (!TextUtils.isEmpty(titleFromUrl)) {
+                    mTitle = titleFromUrl;
+                }
+            } catch (Exception ignored) {
             }
         }
-    }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mWebViewFragment != null) {
-            mWebViewFragment.onDestroy();
+        if (!TextUtils.isEmpty(mTitle)) {
+            getTitleHelper().setTitle(mTitle);
         }
-        super.onDestroy();
     }
-
-    private void init() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        mWebViewFragment = BaseWebViewFragment.newInstance(mUrl);
-        ft.add(R.id.fragment_base_id, mWebViewFragment);
-        ft.commitAllowingStateLoss();
-    }
-
-
 }
