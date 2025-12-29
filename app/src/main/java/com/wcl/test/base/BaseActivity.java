@@ -45,6 +45,8 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     private RelativeLayout mBaseRootView;
     private View mContentView;
     private ViewGroup mNestedParentLayout;
+    public int statusBarHeight; //状态栏高度
+    public int navBarHeight; //虚拟导航栏高度
 
     @CallSuper
     @Override
@@ -67,6 +69,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
             mTitleHelper.setTitle(getTitle().toString());
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
+            statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            return insets;
+        });
         setupSystemBars();
         displayInCutoutMode(onDisplayInCutoutMode());
     }
@@ -99,12 +106,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         if (isDisplayInCutout) {
             mBaseRootView.setPadding(0, 0, 0, 0);
         } else {
-            ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
-                int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-                int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-                v.setPadding(0, statusBarHeight, 0, navBarHeight);
-                return insets;
-            });
+            mBaseRootView.setPadding(0, statusBarHeight, 0, navBarHeight);
         }
     }
 
