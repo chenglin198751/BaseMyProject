@@ -51,7 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
     protected void onCreate(Bundle savedInstanceState) {
         installFontScaleFactory();
         super.onCreate(savedInstanceState);
-        applyGrayScaleIfNeeded();
+        applyGrayScale();
 
         if (onKeepSingleActivity()) {
             EventBus.post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
@@ -68,10 +68,11 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         }
 
         setupSystemBars();
-        setupInsetsIfNeeded();
+        displayInCutoutMode(onDisplayInCutoutMode());
     }
 
-    private void applyGrayScaleIfNeeded() {
+    // 所有彩色变成黑白色
+    private void applyGrayScale() {
         if (AppConstants.Toggle.isGrayscale) {
             Paint paint = new Paint();
             ColorMatrix matrix = new ColorMatrix();
@@ -90,25 +91,21 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
 
         // 状态栏黑色文字
         View decorView = getWindow().getDecorView();
-        new WindowInsetsControllerCompat(getWindow(), decorView)
-                .setAppearanceLightStatusBars(true);
+        new WindowInsetsControllerCompat(getWindow(), decorView).setAppearanceLightStatusBars(true);
     }
 
-    // 是否显示在顶部挖口屏内
-    private void setupInsetsIfNeeded() {
-        if (!onDisplayInCutoutMode()) {
-            setPaddingStatusBar();
+    // 设置当前页面是否显示在缺口屏内
+    public void displayInCutoutMode(boolean isDisplayInCutout) {
+        if (isDisplayInCutout) {
+            mBaseRootView.setPadding(0, 0, 0, 0);
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
+                int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+                int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+                v.setPadding(0, statusBarHeight, 0, navBarHeight);
+                return insets;
+            });
         }
-    }
-
-    // 显示状态栏：默认View显示在缺口屏内
-    public void setPaddingStatusBar() {
-        ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
-            int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-            v.setPadding(0, statusBarHeight, 0, navBarHeight);
-            return insets;
-        });
     }
 
     public BaseActivity getContext() {
@@ -130,8 +127,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         if (mContentView != null && mContentView.getParent() != null) {
             mBaseRootView.removeView(mContentView);
         }
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.addRule(RelativeLayout.BELOW, R.id.main_title);
         mContentView = layoutView;
         mBaseRootView.addView(mContentView, params);

@@ -14,6 +14,7 @@ import com.wcl.test.databinding.MainFirstFragLayoutBinding;
  */
 public class MainFirstFragment extends BaseFragment {
     private MainFirstFragLayoutBinding mViewBinding;
+    private boolean isDisplay = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,7 +26,8 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
         mViewBinding.viewLeft.setOnClickListener(v -> {
-
+            isDisplay = !isDisplay;
+            getContext().displayInCutoutMode(isDisplay);
         });
     }
 

@@ -27,7 +27,7 @@ import com.wcl.test.base.BaseFragment;
 
 public class BaseWebViewFragment extends BaseFragment {
 
-    private WebView mWebView;
+    public WebView webView;
     private ProgressBar mPageLoadingProgressBar;
     private String mUrl;
 
@@ -53,18 +53,6 @@ public class BaseWebViewFragment extends BaseFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        requireActivity().getOnBackPressedDispatcher().addCallback(this,
-                new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-                        if (mWebView != null && mWebView.canGoBack()) {
-                            mWebView.goBack();
-                        } else {
-                            requireActivity().finish();
-                        }
-                    }
-                });
     }
 
     @Override
@@ -74,16 +62,16 @@ public class BaseWebViewFragment extends BaseFragment {
     }
 
     private void init(View root) {
-        mWebView = root.findViewById(R.id.web_view);
+        webView = root.findViewById(R.id.web_view);
         mPageLoadingProgressBar = root.findViewById(R.id.progressBar1);
         mPageLoadingProgressBar.setMax(100);
 
         setupWebView();
-        mWebView.loadUrl(mUrl);
+        webView.loadUrl(mUrl);
     }
 
     private void setupWebView() {
-        WebSettings s = mWebView.getSettings();
+        WebSettings s = webView.getSettings();
 
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
@@ -98,7 +86,7 @@ public class BaseWebViewFragment extends BaseFragment {
         s.setAllowContentAccess(false);
         s.setUserAgentString(s.getUserAgentString());
 
-        mWebView.setWebViewClient(new WebViewClient() {
+        webView.setWebViewClient(new WebViewClient() {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -144,7 +132,7 @@ public class BaseWebViewFragment extends BaseFragment {
             }
         });
 
-        mWebView.setWebChromeClient(new WebChromeClient() {
+        webView.setWebChromeClient(new WebChromeClient() {
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -157,7 +145,7 @@ public class BaseWebViewFragment extends BaseFragment {
             }
         });
 
-        mWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+        webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
             try {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 startActivity(intent);
@@ -167,18 +155,18 @@ public class BaseWebViewFragment extends BaseFragment {
     }
 
     private void destroyWebView() {
-        if (mWebView == null) return;
+        if (webView == null) return;
 
-        mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-        mWebView.clearHistory();
-        mWebView.stopLoading();
+        webView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+        webView.clearHistory();
+        webView.stopLoading();
 
-        ViewParent parent = mWebView.getParent();
+        ViewParent parent = webView.getParent();
         if (parent instanceof ViewGroup) {
-            ((ViewGroup) parent).removeView(mWebView);
+            ((ViewGroup) parent).removeView(webView);
         }
 
-        mWebView.destroy();
-        mWebView = null;
+        webView.destroy();
+        webView = null;
     }
 }
