@@ -72,10 +72,10 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
         ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
             statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
             navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            displayInCutoutMode(onDisplayInCutoutMode());
             return insets;
         });
         setupSystemBars();
-        displayInCutoutMode(onDisplayInCutoutMode());
     }
 
     // 所有彩色变成黑白色
