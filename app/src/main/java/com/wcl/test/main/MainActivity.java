@@ -76,7 +76,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void showTab(int selectedIndex) {
         if (selectedIndex < 0 || selectedIndex >= FRAGMENTS.length) return;
 
-        mFragHelper.showTabFragment(R.id.fragment_base_id, selectedIndex);
+        mFragHelper.showFragment(R.id.fragment_base_id, selectedIndex);
 
         for (int i = 0; i < TAB_BOTTOM_ID_ARRAY.length; i++) {
             View tabView = mViewBinding.bottomTab.findViewById(TAB_BOTTOM_ID_ARRAY[i]);

@@ -17,7 +17,7 @@ public class ShowFragmentHelper {
     private final BaseFragment[] mFragArray;
     private final FragmentManager mFragmentManager;
     private final Class<? extends BaseFragment>[] mFragmentClasses;
-    private int mSelectedTab = -1;
+    private int mSelectedIndex = -1;
 
     /**
      * 构造函数
@@ -44,11 +44,11 @@ public class ShowFragmentHelper {
         }
     }
 
-    public BaseFragment showTabFragment(@IdRes int viewId, int index) {
-        return showTabFragment(viewId, null, index);
+    public BaseFragment showFragment(@IdRes int viewId, int index) {
+        return showFragment(viewId, null, index);
     }
 
-    public BaseFragment showTabFragment(@IdRes int viewId, Bundle args, int index) {
+    public BaseFragment showFragment(@IdRes int viewId, Bundle args, int index) {
         validateIndex(index);
 
         FragmentTransaction ft = mFragmentManager.beginTransaction();
@@ -63,7 +63,7 @@ public class ShowFragmentHelper {
         showOnlyFragment(ft, index);
         ft.commitAllowingStateLoss();
 
-        mSelectedTab = index;
+        mSelectedIndex = index;
         return fragment;
     }
 
@@ -104,7 +104,7 @@ public class ShowFragmentHelper {
         }
     }
 
-    public int getSelectedTab() {
-        return mSelectedTab;
+    public int getShowingIndex() {
+        return mSelectedIndex;
     }
 }
