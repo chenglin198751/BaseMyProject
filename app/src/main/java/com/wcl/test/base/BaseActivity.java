@@ -224,7 +224,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 显示嵌入式进度条
      */
     @Override
-    public final void showProgress(String text) {
+    public final void showLoading(String text) {
         mBaseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
         attachHelperView();
     }
@@ -233,7 +233,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 清除嵌入式进度条
      */
     @Override
-    public final void hideProgress() {
+    public final void showLoading() {
         detachHelperView();
     }
 
@@ -269,7 +269,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ImplBase
      * 设置空页面或者无网页面要附加的Parent Layout，不设置是整个父布局。
      */
     @Override
-    public void setNestedParentLayout(ViewGroup parent) {
+    public void setNestedParentView(ViewGroup parent) {
         mNestedParentLayout = parent;
     }
 

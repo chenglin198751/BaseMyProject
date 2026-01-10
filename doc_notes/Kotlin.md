@@ -72,3 +72,27 @@
         fun getUser(){
         }
     }
+
+**9、关键词** ：
+
+    1、apply：它允许你在对象上执行一系列初始化操作，并且返回这个对象本身
+        val textView = TextView(context).apply {
+            text = "Hello, Kotlin!"
+            setTextColor(Color.BLACK)
+            textSize = 16f
+        }
+
+    2、takeIf：用于根据给定的条件判断是否 “获取” 调用它的对象。如果条件满足，它返回调用对象本身；如果条件不满足，则返回 null。
+        val number = 10
+        val result = number.takeIf { it > 5 }
+        println(result) // 输出: 10
+
+        // 结合空合并操作符 ?: 使用
+        val str: String? = null
+        val displayStr = str.takeIf { it.isNotEmpty() }?: "default"
+        println(displayStr) // 输出:default
+
+**10、声明静态方法** ：
+
+    @JvmStatic
+    fun startLocalPicSelectAty()

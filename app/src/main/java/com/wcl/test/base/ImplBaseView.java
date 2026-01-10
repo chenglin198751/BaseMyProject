@@ -14,13 +14,13 @@ public interface ImplBaseView {
 
     void hideEmptyView();
 
-    void showProgress(String text);
+    void showLoading(String text);
 
-    void hideProgress();
+    void showLoading();
 
     WaitDialog showWaitDialog();
 
     void dismissWaitDialog();
 
-    void setNestedParentLayout(ViewGroup parent);
+    void setNestedParentView(ViewGroup parent);
 }

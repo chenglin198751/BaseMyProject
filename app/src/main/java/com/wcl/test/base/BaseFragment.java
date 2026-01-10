@@ -26,7 +26,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnE
 
     private BaseViewHelper baseViewHelper;
     private RelativeLayout rootLayout;
-    private ViewGroup nestedParentLayout;
+    private ViewGroup nestedParentView;
 
     @NonNull
     public BaseActivity getContext() {
@@ -107,7 +107,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnE
     }
 
     @Override
-    public final void showProgress(String text) {
+    public final void showLoading(String text) {
         clearLoadingView();
         baseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
         attachHelperView();
@@ -118,7 +118,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnE
     }
 
     @Override
-    public final void hideProgress() {
+    public final void showLoading() {
         clearLoadingView();
     }
 
@@ -147,8 +147,8 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnE
     }
 
     @Override
-    public void setNestedParentLayout(ViewGroup parent) {
-        nestedParentLayout = parent;
+    public void setNestedParentView(ViewGroup parent) {
+        nestedParentView = parent;
     }
 
     private void attachHelperView() {
@@ -159,8 +159,8 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnE
             ((ViewGroup) helperView.getParent()).removeView(helperView);
         helperView.setClickable(true);
 
-        if (nestedParentLayout != null) {
-            nestedParentLayout.addView(helperView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (nestedParentView != null) {
+            nestedParentView.addView(helperView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else {
             rootLayout.addView(helperView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
