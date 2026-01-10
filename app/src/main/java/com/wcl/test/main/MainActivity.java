@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public int getSelectedTab() {
-        return mFragHelper.getSelectedTab();
+        return mFragHelper.getShowingIndex();
     }
 
     private void setupBackPressHandler() {
