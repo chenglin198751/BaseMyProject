@@ -114,7 +114,7 @@ public abstract class BaseFragment extends Fragment implements ImplBaseView, OnE
     }
 
     public void setLoadingShowPosition(int position) {
-        baseViewHelper.setLoadingShowPosition(position);
+        baseViewHelper.setStateViewGravity(position);
     }
 
     @Override

@@ -11,10 +11,6 @@ import com.wcl.test.R;
 import com.wcl.test.utils.AppBaseUtils;
 
 public class BaseViewHelper {
-
-    public static final int TOP_STYLE = 1;
-    public static final int CENTER_STYLE = 2;
-
     private final Context mContext;
     private View mRootView;
 
@@ -22,7 +18,7 @@ public class BaseViewHelper {
     private View mEmptyView;
     private View mNoNetView;
 
-    private int mShowPosition = CENTER_STYLE;
+    private int mShowGravity = Gravity.CENTER;
 
     private View.OnClickListener mTempClickListener;
 
@@ -46,8 +42,13 @@ public class BaseViewHelper {
         return mRootView;
     }
 
-    public void setLoadingShowPosition(int position) {
-        mShowPosition = position;
+    /**
+     * 设置状态页（Loading / Empty / NoNet 等覆盖层）的显示位置。
+     * 该位置会同时作用于所有状态视图，而不是只影响 Loading。
+     * 例如可以控制状态页是居中显示，还是贴近顶部显示。
+     */
+    public void setStateViewGravity(int position) {
+        mShowGravity = position;
         applyPosition(mLoadingView);
         applyPosition(mEmptyView);
         applyPosition(mNoNetView);
@@ -133,7 +134,7 @@ public class BaseViewHelper {
         int gravity;
         int topPadding;
 
-        if (mShowPosition == TOP_STYLE) {
+        if (mShowGravity == Gravity.TOP) {
             gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
             topPadding = AppBaseUtils.dip2px(30f);
         } else {
