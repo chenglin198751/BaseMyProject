@@ -3,7 +3,7 @@ package com.wcl.test.base;
 /**
  * Created by chenglin on 2017-12-29.
  */
-public class BaseResult {
+public class BaseModel {
     private int code = -1;
     private String desc = "";
 

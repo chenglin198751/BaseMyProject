@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 
 import com.wcl.test.widget.WaitDialog;
 
-public interface ImplBaseView {
+public interface IBaseView {
     void showNoNetView(View.OnClickListener listener);
 
     void hideNoNetView();

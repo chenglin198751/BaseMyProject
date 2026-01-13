@@ -34,7 +34,7 @@ import java.util.List;
  *
  * @author weiChengLin 2013-06-20
  */
-public abstract class BaseActivity extends AppCompatActivity implements ImplBaseView, OnEventBusListener {
+public abstract class BaseActivity extends AppCompatActivity implements IBaseView, OnEventBusListener {
     public static final String CLASS_NAME = "MainActivity";
     protected static final Gson gson = AppConstants.gson;
 
