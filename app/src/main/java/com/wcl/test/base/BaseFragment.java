@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.wcl.test.R;
 import com.wcl.test.utils.AppConstants;
-import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
 
 /**

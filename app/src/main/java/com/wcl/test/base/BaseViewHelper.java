@@ -1,4 +1,4 @@
-package com.wcl.test.widget;
+package com.wcl.test.base;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.wcl.test.R;
 import com.wcl.test.utils.AppBaseUtils;
 
-public class BaseViewHelper {
+class BaseViewHelper {
     private final Context mContext;
     private View mRootView;
 

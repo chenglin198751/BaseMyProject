@@ -25,7 +25,6 @@ import com.wcl.test.R;
 import com.wcl.test.helper.MainTitleHelper;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
-import com.wcl.test.widget.BaseViewHelper;
 import com.wcl.test.widget.WaitDialog;
 
 import java.util.List;
