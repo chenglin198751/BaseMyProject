@@ -1,4 +1,4 @@
-package com.wcl.test.widget;
+package com.wcl.test.base;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.wcl.test.R;
-import com.wcl.test.base.BaseActivity;
 
 public class BaseWebViewActivity extends BaseActivity {
 

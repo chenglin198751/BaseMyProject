@@ -1,4 +1,4 @@
-package com.wcl.test.widget;
+package com.wcl.test.base;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
-import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -18,11 +17,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
 import com.wcl.test.R;
-import com.wcl.test.base.BaseFragment;
 
 
 public class BaseWebViewFragment extends BaseFragment {

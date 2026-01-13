@@ -12,7 +12,8 @@ import com.wcl.test.utils.AppLogUtils;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 高性能、轻量的 App 内跨进程事件 Provider（加强版）。
+ * ----目前不用 2026-01-13----
+ * 高性能、轻量的 App 内跨进程事件 Provider。
  * 注意：
  * - AndroidManifest 中必须注册（exported="false"）。
  * - Provider 内不得做耗时操作。

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.wcl.test.widget.BaseWebViewActivity;
+import com.wcl.test.base.BaseWebViewActivity;
 
 /**
  * Created by chenglin on 2017-8-23.

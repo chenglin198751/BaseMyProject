@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * ----目前不用 2026-01-13----
  * 使用ContentProvider实现的轻量级，限定在app内跨进程通信方案
  */
 public class EventBus2 {

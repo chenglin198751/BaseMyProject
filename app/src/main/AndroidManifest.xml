@@ -44,7 +44,7 @@
         </activity>
 
         <activity
-            android:name="com.wcl.test.widget.BaseWebViewActivity"
+            android:name="com.wcl.test.base.BaseWebViewActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <activity android:name="com.wcl.test.test.TestRecyclerViewRefreshActivity" />
