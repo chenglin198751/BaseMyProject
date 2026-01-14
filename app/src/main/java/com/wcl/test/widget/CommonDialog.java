@@ -15,26 +15,34 @@ import androidx.annotation.StringRes;
 import com.wcl.test.R;
 import com.wcl.test.utils.AppBaseUtils;
 
-
 public class CommonDialog extends Dialog {
-    private View mDialogView = null;
-    private boolean isLeftVisible = false;
-    private boolean isRightVisible = false;
-    private TextView mLeftBtn, mRightBtn;
-    private TextView mMessage;
 
+    // ================== View ==================
+    private View mRootView;
+    private TextView mTitleView;
+    private TextView mMessageView;
+    private LinearLayout mCustomContainer;
+    private View mButtonPanel;
+    private TextView mLeftBtn;
+    private TextView mRightBtn;
+
+    // ================== State ==================
+    private String mTitleText;
+    private String mMessageText;
+    private View mCustomView;
+
+    private boolean mLeftVisible = false;
+    private boolean mRightVisible = false;
+    private String mLeftText;
+    private String mRightText;
+    private View.OnClickListener mLeftListener;
+    private View.OnClickListener mRightListener;
 
     public CommonDialog(Context context) {
         this(context, R.style.dialog);
-        mDialogView = View.inflate(context, R.layout.common_alert_dialog, null);
-        mDialogView.findViewById(R.id.title_template).setVisibility(View.GONE);
-        mLeftBtn = mDialogView.findViewById(R.id.button_ok);
-        mRightBtn = mDialogView.findViewById(R.id.button_cancel);
-        mMessage = mDialogView.findViewById(R.id.message);
-        mMessage.setMovementMethod(ScrollingMovementMethod.getInstance());
     }
 
-    protected CommonDialog(Context context, int theme) {
+    public CommonDialog(Context context, int theme) {
         super(context, theme);
     }
 
@@ -42,106 +50,125 @@ public class CommonDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.setContentView(mDialogView);
+        mRootView = View.inflate(getContext(), R.layout.common_alert_dialog, null);
+        setContentView(mRootView);
 
-        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getWindow().getDecorView().setPadding(AppBaseUtils.dip2px(45f), 0, AppBaseUtils.dip2px(45f), 0);
-        getWindow().setAttributes(layoutParams);
+        AppBaseUtils.setViewRounded(mRootView, 8);
+        AppBaseUtils.setDialogEdgeToEdge(this);
+
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        getWindow().getDecorView().setPadding(
+                AppBaseUtils.dp2px(45f), 0,
+                AppBaseUtils.dp2px(45f), 0);
+        getWindow().setAttributes(lp);
+
+        bindViews();
+        applyStateToViews();
     }
 
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
+    private void bindViews() {
+        mTitleView = mRootView.findViewById(R.id.alertTitle);
+        mMessageView = mRootView.findViewById(R.id.message);
+        mCustomContainer = mRootView.findViewById(R.id.custom_container);
+        mButtonPanel = mRootView.findViewById(R.id.buttonPanel);
+        mLeftBtn = mRootView.findViewById(R.id.button_ok);
+        mRightBtn = mRootView.findViewById(R.id.button_cancel);
+
+        mMessageView.setMovementMethod(ScrollingMovementMethod.getInstance());
     }
 
-    @Override
-    public void show() {
-        super.show();
-
-        if (isLeftVisible) {
-            mLeftBtn.setVisibility(View.VISIBLE);
-        } else {
-            mLeftBtn.setVisibility(View.GONE);
-        }
-        if (isRightVisible) {
-            mRightBtn.setVisibility(View.VISIBLE);
-        } else {
-            mRightBtn.setVisibility(View.GONE);
-        }
-
-        if (!isLeftVisible && !isRightVisible) {
-            mDialogView.findViewById(R.id.buttonPanel).setVisibility(View.GONE);
-            mDialogView.findViewById(R.id.bottom_line).setVisibility(View.INVISIBLE);
-        } else {
-            mDialogView.findViewById(R.id.buttonPanel).setVisibility(View.VISIBLE);
-            mDialogView.findViewById(R.id.bottom_line).setVisibility(View.VISIBLE);
-        }
-
-    }
-
-
-    /**
-     * 设置自定义View
-     */
-    public void setCustomView(View view) {
-        if (view == null) {
-            return;
-        }
-        mDialogView.findViewById(R.id.message).setVisibility(View.GONE);
-
-        LinearLayout customLinear = mDialogView.findViewById(R.id.my_custom);
-        customLinear.addView(view);
-    }
-
-    /**
-     * 为左边的按钮设置点击事件，并设置文字
-     */
-    public void setLeftButton(String text, View.OnClickListener listener) {
-        if (text != null) {
-            mLeftBtn.setText(text);
-        }
-        mLeftBtn.setOnClickListener(listener);
-        isLeftVisible = true;
-    }
-
-    /**
-     * 为右边的按钮设置点击事件，并设置文字
-     */
-    public void setRightButton(String text, View.OnClickListener listener) {
-        if (text != null) {
-            mRightBtn.setText(text);
-        }
-        mRightBtn.setOnClickListener(listener);
-        isRightVisible = true;
-    }
-
-    /**
-     * 为对话框设置一个短消息显示
-     */
-    public void setMessage(String msg) {
-        mMessage.setText(msg);
-    }
-
-    /**
-     * 为对话框设置一个短消息显示
-     */
-    public void setMessage(@StringRes int msg) {
-        setMessage(getContext().getString(msg));
-    }
+    // ================== Public API ==================
 
     public void setTitle(String title) {
-        mDialogView.findViewById(R.id.title_template).setVisibility(View.VISIBLE);
-        if (!TextUtils.isEmpty(title)) {
-            TextView view = mDialogView.findViewById(R.id.alertTitle);
-            view.setText(title);
-        }
+        mTitleText = title;
+        applyTitle();
     }
 
     public void setTitle(@StringRes int title) {
         setTitle(getContext().getString(title));
     }
 
+    public void setMessage(String msg) {
+        mMessageText = msg;
+        mCustomView = null;
+        applyContent();
+    }
 
+    public void setMessage(@StringRes int msg) {
+        setMessage(getContext().getString(msg));
+    }
+
+    public void setCustomView(View view) {
+        mCustomView = view;
+        mMessageText = null;
+        applyContent();
+    }
+
+    public void setLeftButton(String text, View.OnClickListener listener) {
+        mLeftVisible = true;
+        mLeftText = text;
+        mLeftListener = listener;
+        applyButtons();
+    }
+
+    public void setRightButton(String text, View.OnClickListener listener) {
+        mRightVisible = true;
+        mRightText = text;
+        mRightListener = listener;
+        applyButtons();
+    }
+
+    // ================== Apply ==================
+
+    private void applyStateToViews() {
+        applyTitle();
+        applyContent();
+        applyButtons();
+    }
+
+    private void applyTitle() {
+        if (mTitleView == null) return;
+
+        if (TextUtils.isEmpty(mTitleText)) {
+            mTitleView.setVisibility(View.GONE);
+        } else {
+            mTitleView.setText(mTitleText);
+            mTitleView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void applyContent() {
+        if (mMessageView == null || mCustomContainer == null) return;
+
+        if (mCustomView != null) {
+            mMessageView.setVisibility(View.GONE);
+            mCustomContainer.removeAllViews();
+            mCustomContainer.addView(mCustomView);
+        } else {
+            mMessageView.setVisibility(View.VISIBLE);
+            mMessageView.setText(mMessageText);
+        }
+    }
+
+    private void applyButtons() {
+        if (mLeftBtn == null || mRightBtn == null) return;
+
+        mLeftBtn.setVisibility(mLeftVisible ? View.VISIBLE : View.GONE);
+        mRightBtn.setVisibility(mRightVisible ? View.VISIBLE : View.GONE);
+
+        if (mLeftVisible) {
+            mLeftBtn.setText(mLeftText);
+            mLeftBtn.setOnClickListener(mLeftListener);
+        }
+        if (mRightVisible) {
+            mRightBtn.setText(mRightText);
+            mRightBtn.setOnClickListener(mRightListener);
+        }
+
+        mButtonPanel.setVisibility(
+                (mLeftVisible || mRightVisible) ? View.VISIBLE : View.GONE
+        );
+    }
 }

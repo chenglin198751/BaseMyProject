@@ -1,53 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.wcl.test.view.CornerLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_view"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/title_template"
-        android:layout_width="fill_parent"
-        android:layout_height="45dp">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
+    <TextView
+        android:id="@+id/alertTitle"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="提示"
+        android:textColor="@color/text_gray_2"
+        android:textSize="15dp" />
 
-            <TextView
-                android:id="@+id/alertTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="left"
-                android:singleLine="true"
-                android:text="提示"
-                android:textColor="@color/text_gray_2"
-                android:textSize="15dp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1px"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/line" />
-    </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/my_custom"
-        android:layout_width="fill_parent"
+        android:id="@+id/custom_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/message"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fadeScrollbars="false"
             android:gravity="center"
@@ -64,22 +45,16 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/bottom_line"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/line" />
-
     <LinearLayout
         android:id="@+id/buttonPanel"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="45dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/button_ok"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/dialog_btn_bg"
             android:gravity="center"
@@ -89,13 +64,12 @@
 
         <View
             android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:background="@color/line" />
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/button_cancel"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/dialog_btn_bg"
             android:gravity="center"
@@ -103,4 +77,4 @@
             android:textColor="@color/fc_1"
             android:textSize="15dp" />
     </LinearLayout>
-</com.wcl.test.view.CornerLinearLayout>
+</LinearLayout>

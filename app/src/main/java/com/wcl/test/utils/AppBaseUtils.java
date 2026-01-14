@@ -2,6 +2,7 @@ package com.wcl.test.utils;
 
 import android.app.Activity;
 import android.app.AppOpsManager;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Outline;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -23,6 +26,9 @@ import android.util.Base64;
 import android.util.TypedValue;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.view.ViewOutlineProvider;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -86,7 +92,7 @@ public class AppBaseUtils {
     /**
      * 将dip转化为px *
      */
-    public static int dip2px(float dipValue) {
+    public static int dp2px(float dipValue) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, BaseApp.getApp().getResources().getDisplayMetrics());
     }
 
@@ -639,4 +645,60 @@ public class AppBaseUtils {
         );
     }
 
+    // 设置View纯圆形
+    public static void setViewCircle(View view) {
+        view.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                int size = Math.min(view.getWidth(), view.getHeight());
+                outline.setOval(0, 0, size, size);
+            }
+        });
+        view.setClipToOutline(true);
+    }
+
+    // 设置View圆角，单位dp
+    public static void setViewRounded(View view, int radiusDp) {
+        view.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                int cornerRadius = dp2px(radiusDp);
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius);
+            }
+        });
+        view.setClipToOutline(true);
+    }
+
+    // 设置Dialog边到边效果
+    public static void setDialogEdgeToEdge(Dialog dialog) {
+        try {
+            Window window = dialog.getWindow();
+            if (window == null) {
+                return;
+            }
+
+            // 1. 配置布局延伸至系统栏（状态栏+导航栏）
+            window.getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            );
+
+            // 2. 允许窗口绘制系统栏背景，设置状态栏和导航栏透明
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.setStatusBarColor(Color.TRANSPARENT);
+            window.setNavigationBarColor(Color.TRANSPARENT);
+
+            // 3. 允许内容进入刘海（缺口）区域
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                WindowManager.LayoutParams lp = window.getAttributes();
+                lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                window.setAttributes(lp);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
 }

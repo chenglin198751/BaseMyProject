@@ -18,8 +18,8 @@ public class CustomViewPagerIndicator extends LinearLayout {
     private int mDotCount;
     private ViewPager mViewPager;
     private int mDotSelector = R.drawable.viewpage_dot_selector;
-    private int mSize = AppBaseUtils.dip2px(8f);
-    private int mMargin = AppBaseUtils.dip2px(5f);
+    private int mSize = AppBaseUtils.dp2px(8f);
+    private int mMargin = AppBaseUtils.dp2px(5f);
 
     public CustomViewPagerIndicator(Context context) {
         super(context);

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
+import com.wcl.test.widget.CommonDialog;
 
 
 /**
@@ -14,7 +15,6 @@ import com.wcl.test.databinding.MainFirstFragLayoutBinding;
  */
 public class MainFirstFragment extends BaseFragment {
     private MainFirstFragLayoutBinding mViewBinding;
-    private boolean isDisplay = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,8 +26,22 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
         mViewBinding.viewLeft.setOnClickListener(v -> {
-            isDisplay = !isDisplay;
-            getContext().displayInCutoutMode(isDisplay);
+            CommonDialog dialog = new CommonDialog(getContext());
+            dialog.setTitle("警告");
+            dialog.setMessage("要过年了吗");
+            dialog.setLeftButton("取消", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            dialog.setRightButton("确定", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            dialog.show();
         });
     }
 

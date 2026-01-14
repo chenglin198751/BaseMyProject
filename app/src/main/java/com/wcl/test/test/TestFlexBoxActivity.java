@@ -32,10 +32,10 @@ public class TestFlexBoxActivity extends BaseActivity {
 
         for (int i = 0; i < strArrs.length; i++) {
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(-2, -2);
-            params.leftMargin = AppBaseUtils.dip2px(1f);
-            params.rightMargin = AppBaseUtils.dip2px(1f);
-            params.topMargin = AppBaseUtils.dip2px(1f);
-            params.bottomMargin = AppBaseUtils.dip2px(1f);
+            params.leftMargin = AppBaseUtils.dp2px(1f);
+            params.rightMargin = AppBaseUtils.dp2px(1f);
+            params.topMargin = AppBaseUtils.dp2px(1f);
+            params.bottomMargin = AppBaseUtils.dp2px(1f);
             mFlexboxLayout.addView(buildTextView(strArrs[i]), params);
         }
 

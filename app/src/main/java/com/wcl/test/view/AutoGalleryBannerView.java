@@ -68,14 +68,14 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
 
         setClipChildren(false);
         mViewPager = new ViewPager(getContext());
-        mViewPager.setPageMargin(-AppBaseUtils.dip2px(24f));
+        mViewPager.setPageMargin(-AppBaseUtils.dp2px(24f));
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.setPageTransformer(false, new ScaleTransformer());
         mViewPager.setClipChildren(false);
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -2);
-        params.leftMargin = AppBaseUtils.dip2px(20f);
-        params.rightMargin = AppBaseUtils.dip2px(20f);
+        params.leftMargin = AppBaseUtils.dp2px(20f);
+        params.rightMargin = AppBaseUtils.dp2px(20f);
         addView(mViewPager, params);
 
         mAdapter = new BannerAdapter(getContext());

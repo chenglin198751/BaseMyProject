@@ -49,7 +49,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
         @Override
         public void onBind(int position) {
-            SmartImageLoader.load(imageView, url, AppBaseUtils.dip2px(50f), AppBaseUtils.dip2px(50f), 15);
+            SmartImageLoader.load(imageView, url, AppBaseUtils.dp2px(50f), AppBaseUtils.dp2px(50f), 15);
             title.setText("标题 " + getData().get(position));
         }
 

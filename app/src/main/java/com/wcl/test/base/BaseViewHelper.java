@@ -136,7 +136,7 @@ class BaseViewHelper {
 
         if (mShowGravity == Gravity.TOP) {
             gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-            topPadding = AppBaseUtils.dip2px(30f);
+            topPadding = AppBaseUtils.dp2px(30f);
         } else {
             gravity = Gravity.CENTER;
             topPadding = 0;

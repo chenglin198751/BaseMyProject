@@ -170,7 +170,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             public void onBind(@NonNull DataItem item, int position) {
                 title.setText("标题 - " + position);
                 SmartImageLoader.load(webImageView, item.imgUrl,
-                        AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(100f), AppBaseUtils.dip2px(8f));
+                        AppBaseUtils.dp2px(100f), AppBaseUtils.dp2px(100f), AppBaseUtils.dp2px(8f));
 
                 List<DataItem> list2 = new ArrayList<>();
                 int num = (int) (Math.random() * 6);
