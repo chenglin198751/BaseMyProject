@@ -25,9 +25,16 @@
     </declare-styleable>
 
     <declare-styleable name="RoundedImageView">
+        <!-- 圆角半径（单位 dp） -->
         <attr name="riv_corner_radius" format="dimension" />
+        <!-- 是否圆形 -->
         <attr name="riv_oval" format="boolean" />
+        <!-- 宽高比（宽 / 高） -->
         <attr name="riv_aspect_ratio" format="float" />
+        <!-- 边框宽度（单位 dp） -->
+        <attr name="riv_border_width" format="dimension" />
+        <!-- 边框颜色 -->
+        <attr name="riv_border_color" format="color" />
     </declare-styleable>
 
     <declare-styleable name="HollowTextView">

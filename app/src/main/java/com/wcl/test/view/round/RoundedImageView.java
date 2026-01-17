@@ -2,58 +2,81 @@ package com.wcl.test.view.round;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Outline;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.wcl.test.R;
 
-public class RoundedImageView extends androidx.appcompat.widget.AppCompatImageView {
+public class RoundedImageView extends AppCompatImageView {
 
-    private float mCornerRadius; // px
-    private boolean mOval;
-    private float mAspectRatio;
+    private float cornerRadius = 0f;
+    private boolean isOval = false;
+    private float aspectRatio = 0f;
+    private float borderWidth = 0f;
+    private int borderColor = Color.BLACK;
+    private Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public RoundedImageView(Context context) {
         super(context);
-        init(null);
+        init(context, null);
     }
 
-    public RoundedImageView(Context context, @Nullable AttributeSet attrs) {
+    public RoundedImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(attrs);
+        init(context, attrs);
     }
 
-    public RoundedImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RoundedImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(attrs);
+        init(context, attrs);
     }
 
-    private void init(@Nullable AttributeSet attrs) {
+    private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RoundedImageView);
-            mCornerRadius = a.getDimension(R.styleable.RoundedImageView_riv_corner_radius, 0f);
-            mOval = a.getBoolean(R.styleable.RoundedImageView_riv_oval, false);
-            mAspectRatio = a.getFloat(R.styleable.RoundedImageView_riv_aspect_ratio, 0f);
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RoundedImageView);
+            cornerRadius = a.getDimension(R.styleable.RoundedImageView_riv_corner_radius, 0f);
+            isOval = a.getBoolean(R.styleable.RoundedImageView_riv_oval, false);
+            aspectRatio = a.getFloat(R.styleable.RoundedImageView_riv_aspect_ratio, 0f);
+            borderWidth = a.getDimension(R.styleable.RoundedImageView_riv_border_width, 0f);
+            borderColor = a.getColor(R.styleable.RoundedImageView_riv_border_color, Color.BLACK);
             a.recycle();
         }
 
-        // 默认 CENTER_CROP 保证图片填充 View
-        setScaleType(ScaleType.CENTER_CROP);
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setColor(borderColor);
+        borderPaint.setStrokeWidth(borderWidth);
 
-        // 设置圆角/圆形裁剪（API 21+）
+        setupOutlineProvider();
         setClipToOutline(true);
+    }
+
+    private void setupOutlineProvider() {
         setOutlineProvider(new ViewOutlineProvider() {
             @Override
             public void getOutline(View view, Outline outline) {
-                if (mOval) {
-                    int size = Math.min(view.getWidth(), view.getHeight());
-                    outline.setOval(0, 0, size, size);
+                float half = borderWidth / 2f;
+                if (isOval) {
+                    outline.setOval(
+                            (int) half,
+                            (int) half,
+                            (int) (getWidth() - half),
+                            (int) (getHeight() - half)
+                    );
                 } else {
-                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), mCornerRadius);
+                    outline.setRoundRect(
+                            (int) half,
+                            (int) half,
+                            (int) (getWidth() - half),
+                            (int) (getHeight() - half),
+                            cornerRadius
+                    );
                 }
             }
         });
@@ -61,43 +84,71 @@ public class RoundedImageView extends androidx.appcompat.widget.AppCompatImageVi
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mAspectRatio > 0) {
+        if (aspectRatio > 0) {
             int width = MeasureSpec.getSize(widthMeasureSpec);
-            int height = (int) (width / mAspectRatio);
+            int height = (int) (width / aspectRatio);
             setMeasuredDimension(width, height);
         } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
 
-    // ====== 公共 API ======
-
-    /**
-     * 设置圆角半径，单位 dp
-     */
-    public void setCornerRadius(float dp) {
-        float density = getResources().getDisplayMetrics().density;
-        mCornerRadius = dp * density;
-        updateOutline();
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (borderWidth > 0) {
+            float half = borderWidth / 2f;
+            if (isOval) {
+                canvas.drawOval(
+                        half,
+                        half,
+                        getWidth() - half,
+                        getHeight() - half,
+                        borderPaint
+                );
+            } else {
+                canvas.drawRoundRect(
+                        half,
+                        half,
+                        getWidth() - half,
+                        getHeight() - half,
+                        cornerRadius,
+                        cornerRadius,
+                        borderPaint
+                );
+            }
+        }
     }
 
-    /**
-     * 设置是否圆形
-     */
+    // ---------------- Public API ----------------
+
+    public void setCornerRadius(float radius) {
+        cornerRadius = radius;
+        setupOutlineProvider();
+        invalidate();
+    }
+
     public void setOval(boolean oval) {
-        mOval = oval;
-        updateOutline();
+        isOval = oval;
+        setupOutlineProvider();
+        invalidate();
     }
 
-    /**
-     * 设置宽高比（width/height）
-     */
     public void setAspectRatio(float ratio) {
-        mAspectRatio = ratio;
+        aspectRatio = ratio;
         requestLayout();
     }
 
-    private void updateOutline() {
-        invalidateOutline();
+    public void setBorderWidth(float width) {
+        borderWidth = width;
+        borderPaint.setStrokeWidth(width);
+        setupOutlineProvider();
+        invalidate();
+    }
+
+    public void setBorderColor(int color) {
+        borderColor = color;
+        borderPaint.setColor(color);
+        invalidate();
     }
 }
