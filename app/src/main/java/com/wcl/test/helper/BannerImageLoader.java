@@ -26,7 +26,7 @@ public class BannerImageLoader extends BannerAdapter<String, BannerImageLoader.B
     @Override
     public BannerViewHolder onCreateHolder(ViewGroup parent, int viewType) {
         RoundedImageView imageView = new RoundedImageView(parent.getContext());
-        imageView.setCornerRadius( AppBaseUtils.dp2px(8));
+        imageView.setCornerRadius(8);
         //注意，必须设置为match_parent，这个是viewpager2强制要求的
         imageView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
