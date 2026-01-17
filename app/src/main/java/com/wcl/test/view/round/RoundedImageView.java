@@ -275,8 +275,4 @@ public class RoundedImageView extends AppCompatImageView {
         }
     }
 
-    // ===================== public API 保持原样（省略未改部分） =====================
-    // setCornerRadius / setBorderWidth / setOval / setTileModeX/Y / mutateBackground 等
-    // → 内部仅改为 mConfig + applyConfig()
-
 }
