@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("UnusedDeclaration")
 public class RoundedDrawable extends Drawable {
 
     public static final String TAG = "RoundedDrawable";
