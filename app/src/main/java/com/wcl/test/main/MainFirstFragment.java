@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
+import com.wcl.test.utils.SmartImageLoader;
 import com.wcl.test.widget.CommonDialog;
 
 
@@ -43,6 +44,9 @@ public class MainFirstFragment extends BaseFragment {
             });
             dialog.show();
         });
+
+        String url = "http://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png";
+        SmartImageLoader.load(mViewBinding.image2,url,-1,-1,0);
     }
 
     @Override
