@@ -63,6 +63,10 @@ public class ShowFragmentHelper {
         showOnlyFragment(ft, index);
         ft.commitAllowingStateLoss();
 
+        if (mSelectedIndex != index) {
+            fragment.onSelected();
+        }
+
         mSelectedIndex = index;
         return fragment;
     }
