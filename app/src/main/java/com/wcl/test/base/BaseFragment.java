@@ -150,7 +150,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         nestedParentView = parent;
     }
 
-    public void onSelected(){
+    public void onSelected(int index){
 
     }
 

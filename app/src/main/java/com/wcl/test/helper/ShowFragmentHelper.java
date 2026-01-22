@@ -64,7 +64,7 @@ public class ShowFragmentHelper {
         ft.commitAllowingStateLoss();
 
         if (mSelectedIndex != index) {
-            fragment.onSelected();
+            fragment.onSelected(index);
         }
 
         mSelectedIndex = index;
