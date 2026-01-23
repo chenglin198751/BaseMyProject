@@ -70,6 +70,7 @@ public class BaseApp extends Application {
             public void onActivityPaused(@NonNull Activity activity) {
                 if (sTopActivityRef != null && sTopActivityRef.get() == activity) {
                     sTopActivityRef.clear();
+                    sTopActivityRef = null;
                 }
             }
 
@@ -77,6 +78,7 @@ public class BaseApp extends Application {
             public void onActivityDestroyed(@NonNull Activity activity) {
                 if (sTopActivityRef != null && sTopActivityRef.get() == activity) {
                     sTopActivityRef.clear();
+                    sTopActivityRef = null;
                 }
             }
         });
