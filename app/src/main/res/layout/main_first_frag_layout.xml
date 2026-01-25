@@ -14,15 +14,14 @@
         android:layout_marginTop="10dp"
         android:background="@color/colorAccent" />
 
-    <com.wcl.test.view.image.RoundedImageView
+    <com.wcl.test.view.image.GlideImageView
         android:id="@+id/image2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="140dp"
-        android:scaleType="centerCrop"
         app:riv_aspect_ratio="1.5"
         app:riv_border_color="@color/test_color_4"
-        app:riv_border_width="3dp"
+        app:riv_border_width="1dp"
         app:riv_corner_radius="10dp"
         app:riv_oval="false"
         app:riv_solid_color="@color/pink_color"

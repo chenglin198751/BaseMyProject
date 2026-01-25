@@ -30,7 +30,7 @@ import java.util.TimerTask;
 
 import com.wcl.test.R;
 import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.utils.SmartImageLoader;
+import com.wcl.test.view.image.GlideImageView;
 
 public class AutoGalleryBannerView extends RelativeLayout implements DefaultLifecycleObserver {
     private static final long AUTO_PLAY_INTERVAL = 5000L;
@@ -176,11 +176,11 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
             int index = position % mDataList.size();
             BannerDataItem item = mDataList.get(index);
 
-            ImageView img = view.findViewById(R.id.image);
+            GlideImageView img = view.findViewById(R.id.image);
             ImageView childImg = view.findViewById(R.id.child_img);
 
-            SmartImageLoader.load(img, item.url, -1, -1, 0);
-            setImageBitmap(childImg, item.childUrl);
+            img.loadImage(item.url);
+//            setImageBitmap(childImg, item.childUrl);
 
             container.addView(view);
             return view;
@@ -193,22 +193,6 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
             Glide.with(view).clear(childImg); // 清理 Glide 加载任务
             container.removeView(view);
         }
-    }
-
-    private void setImageBitmap(final ImageView img, String url) {
-        if (img == null || url == null || url.isEmpty()) return;
-
-        Glide.with(getContext())
-                .asBitmap()
-                .load(url)
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NotNull Bitmap resource, Transition<? super Bitmap> transition) {
-                        if (img != null) {
-                            img.setImageBitmap(resource);
-                        }
-                    }
-                });
     }
 
     public static final class BannerDataItem {

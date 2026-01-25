@@ -31,9 +31,20 @@
 
     Http请求类，是基于OKHttp3封装的，包含文件下载，让使用起来变的很简单，一眼就知道怎么用。
 
-**7、SmartImageLoader 类：**
+**7、GlideImageView 类：**
 
-    图片加载类。使用的Glide ，并做了简单的封装，轻松实现圆角，封装的目的是以后可以方便的换其他的图片加载工具。
+    <!-- 圆角半径（单位 dp） -->
+    <attr name="riv_corner_radius" format="dimension" />
+    <!-- 是否圆形 -->
+    <attr name="riv_oval" format="boolean" />
+    <!-- 宽高比（宽 / 高） -->
+    <attr name="riv_aspect_ratio" format="float" />
+    <!-- 边框宽度（单位 dp） -->
+    <attr name="riv_border_width" format="dimension" />
+    <!-- 边框颜色 -->
+    <attr name="riv_border_color" format="color" />
+    <!-- 背景色 -->
+    <attr name="riv_solid_color" format="color" />    
 
 **8、PullToRefreshView 类：**
     
@@ -141,11 +152,6 @@
 **36、LongImageView 类：**
 
     自定义的用于显示长图的控件。基于WebView改造而来，性能卓越。
-
-**37、CenterDrawable 类：**
-
-    自定义的可以居中显示一个小图片的类。比如可以用于设置一个图片的未显示图片之前的默认图。
-    用法：imageView.setImageDrawable(new CenterDrawable(R.drawable.image_loadding_icon))
 
 **38、PolygonImageView 类：**
 

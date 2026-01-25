@@ -16,7 +16,7 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseListViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.utils.SmartImageLoader;
+import com.wcl.test.view.image.GlideImageView;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
 import com.youth.banner.Banner;
 
@@ -149,7 +149,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         // 普通Item
         static class ListHolder extends BaseListViewHolder<DataItem> {
             TextView title;
-            ImageView webImageView;
+            GlideImageView webImageView;
             ListView childListView;
             ChildAdapter childAdapter;
 
@@ -169,8 +169,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
             @Override
             public void onBind(@NonNull DataItem item, int position) {
                 title.setText("标题 - " + position);
-                SmartImageLoader.load(webImageView, item.imgUrl,
-                        AppBaseUtils.dp2px(100f), AppBaseUtils.dp2px(100f), AppBaseUtils.dp2px(8f));
+                webImageView.loadImage(item.imgUrl);
 
                 List<DataItem> list2 = new ArrayList<>();
                 int num = (int) (Math.random() * 6);

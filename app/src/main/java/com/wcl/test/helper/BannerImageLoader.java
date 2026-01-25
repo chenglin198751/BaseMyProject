@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.utils.AppConstants;
-import com.wcl.test.utils.SmartImageLoader;
+import com.wcl.test.view.image.GlideImageView;
 import com.wcl.test.view.image.RoundedImageView;
 import com.youth.banner.adapter.BannerAdapter;
 
@@ -24,25 +24,25 @@ public class BannerImageLoader extends BannerAdapter<String, BannerImageLoader.B
 
     @Override
     public BannerViewHolder onCreateHolder(ViewGroup parent, int viewType) {
-        RoundedImageView imageView = new RoundedImageView(parent.getContext());
+        GlideImageView imageView = new GlideImageView(parent.getContext());
         imageView.setCornerRadius(8);
         //注意，必须设置为match_parent，这个是viewpager2强制要求的
         imageView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setAspectRatio(2);
         return new BannerViewHolder(imageView);
     }
 
     @Override
     public void onBindView(BannerViewHolder holder, String url, int position, int size) {
-        SmartImageLoader.load(holder.imageView, url, AppConstants.screenWidth, AppConstants.screenWidth / 2,0);
+        holder.imageView.loadImage(url);
     }
 
     public static class BannerViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+        GlideImageView imageView;
 
-        public BannerViewHolder(@NonNull ImageView view) {
+        public BannerViewHolder(@NonNull GlideImageView view) {
             super(view);
             this.imageView = view;
         }

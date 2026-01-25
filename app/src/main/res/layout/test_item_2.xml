@@ -9,7 +9,7 @@
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
 
-    <ImageView
+    <com.wcl.test.view.image.GlideImageView
         android:id="@+id/image_view"
         android:layout_width="50dp"
         android:layout_height="50dp"

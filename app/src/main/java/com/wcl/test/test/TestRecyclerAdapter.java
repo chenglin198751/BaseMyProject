@@ -4,13 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
-import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.utils.SmartImageLoader;
+import com.wcl.test.view.image.GlideImageView;
 
 public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
@@ -38,7 +36,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
     private class ListHolder extends BaseRecyclerViewHolder {
         private String url = "http://5b0988e595225.cdn.sohucs.com/images/20170922/c7e95cf930a64a27b616e8c77525645b.jpeg";
-        ImageView imageView;
+        GlideImageView imageView;
         TextView title;
 
         public ListHolder(View itemView) {
@@ -49,7 +47,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
         @Override
         public void onBind(int position) {
-            SmartImageLoader.load(imageView, url, AppBaseUtils.dp2px(50f), AppBaseUtils.dp2px(50f), 15);
+            imageView.loadImage(url);
             title.setText("标题 " + getData().get(position));
         }
 

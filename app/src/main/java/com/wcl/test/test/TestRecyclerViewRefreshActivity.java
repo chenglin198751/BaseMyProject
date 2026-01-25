@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,7 +17,7 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.listener.OnSingleClickListener;
 import com.wcl.test.utils.timer.CountDownManager;
-import com.wcl.test.utils.SmartImageLoader;
+import com.wcl.test.view.image.GlideImageView;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
 
 import java.util.ArrayList;
@@ -155,7 +154,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         }
 
         class ListHolder extends BaseRecyclerViewHolder {
-            ImageView imageView;
+            GlideImageView imageView;
             Button btnDelete;
             TextView countdowner;
 
@@ -169,7 +168,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
             @Override
             public void onBind(final int position) {
                 ModelData model = getData().get(position);
-                SmartImageLoader.load(imageView, model.url, -1, -1, 0);
+                imageView.loadImage(model.url);
                 btnDelete.setText("删除");
 
                 // 倒计时展示
