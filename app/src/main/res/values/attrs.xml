@@ -35,6 +35,8 @@
         <attr name="riv_border_width" format="dimension" />
         <!-- 边框颜色 -->
         <attr name="riv_border_color" format="color" />
+        <!-- 背景色 -->
+        <attr name="riv_solid_color" format="color" />
     </declare-styleable>
 
     <declare-styleable name="HollowTextView">
