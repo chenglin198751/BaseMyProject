@@ -12,13 +12,12 @@ import com.wcl.test.R;
 
 public class RoundedImageView extends AppCompatImageView {
 
-    private float cornerRadius = 0f;
-    private boolean isOval = false;
-    private float aspectRatio = 0f;
-    private float borderWidth = 0f;
-    private int borderColor = Color.TRANSPARENT;
-    private int solidColor = Color.TRANSPARENT;
-
+    protected float cornerRadius = 0f;
+    protected boolean isOval = false;
+    protected float aspectRatio = 0f;
+    protected float borderWidth = 0f;
+    protected int borderColor = Color.TRANSPARENT;
+    protected int solidColor = Color.TRANSPARENT;
     private GradientDrawable backgroundDrawable;
 
     public RoundedImageView(Context context) {
@@ -100,6 +99,13 @@ public class RoundedImageView extends AppCompatImageView {
 
         backgroundDrawable.setColor(solidColor);
         backgroundDrawable.setStroke((int) borderWidth, borderColor);
+
+        if (borderWidth > 0) {
+            int padding = Math.max(0, (int) borderWidth);
+            setPadding(padding, padding, padding, padding);
+        } else {
+            setPadding(0, 0, 0, 0);
+        }
     }
 
     // ---------------- Public API ----------------
