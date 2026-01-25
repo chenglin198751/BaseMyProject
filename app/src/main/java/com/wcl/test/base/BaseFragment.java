@@ -150,6 +150,10 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         nestedParentView = parent;
     }
 
+    public void onSelected(int index){
+
+    }
+
     private void attachHelperView() {
         if (getView() == null) return;
 

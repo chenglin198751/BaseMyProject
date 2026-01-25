@@ -1,7 +1,6 @@
 package com.wcl.test.utils;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,6 +24,7 @@ import com.wcl.test.listener.OnCompressBitmapListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,18 +101,37 @@ public class BitmapUtils {
         if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
+
         if ("content".equalsIgnoreCase(uri.getScheme())) {
-            try (Cursor cursor = context.getContentResolver().query(uri,
-                    new String[]{MediaStore.Images.Media.DATA}, null, null, null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int idx = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                    return cursor.getString(idx);
+            return copyUriToCache(context, uri);
+        }
+
+        return null;
+    }
+
+    private static String copyUriToCache(Context context, Uri uri) {
+        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+            if (is == null) return null;
+
+            File dir = new File(context.getCacheDir(), "image_pick");
+            if (!dir.exists()) dir.mkdirs();
+
+            File file = new File(dir, System.currentTimeMillis() + ".jpg");
+
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                byte[] buffer = new byte[4096];
+                int len;
+                while ((len = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
                 }
-            } catch (Exception ignored) {
             }
+            return file.getAbsolutePath();
+        } catch (Exception e) {
+            AppLogUtils.e("UriUtils", e.toString());
         }
         return null;
     }
+
 
     /**
      * 保存Bitmap到本地（异步 + 回调）
