@@ -1,4 +1,4 @@
-package com.wcl.test.view.round;
+package com.wcl.test.view.image;
 
 import android.content.Context;
 import android.content.res.TypedArray;

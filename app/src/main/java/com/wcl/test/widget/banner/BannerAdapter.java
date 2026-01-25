@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.GlideApp;
 import com.wcl.test.R;
-import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.view.round.RoundedImageView;
 
 import java.util.List;
 

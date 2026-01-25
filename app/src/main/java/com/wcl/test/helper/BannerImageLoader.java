@@ -6,10 +6,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.SmartImageLoader;
-import com.wcl.test.view.round.RoundedImageView;
+import com.wcl.test.view.image.RoundedImageView;
 import com.youth.banner.adapter.BannerAdapter;
 
 import java.util.List;
