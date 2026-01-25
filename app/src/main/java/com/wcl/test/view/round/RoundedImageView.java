@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.AppBaseUtils;
 
 public class RoundedImageView extends AppCompatImageView {
 
@@ -20,7 +19,7 @@ public class RoundedImageView extends AppCompatImageView {
     private int borderColor = Color.TRANSPARENT;
     private int solidColor = Color.TRANSPARENT;
 
-    private GradientDrawable gradientDrawable;
+    private GradientDrawable backgroundDrawable;
 
     public RoundedImageView(Context context) {
         super(context);
@@ -47,106 +46,106 @@ public class RoundedImageView extends AppCompatImageView {
             borderColor = a.getColor(R.styleable.RoundedImageView_riv_border_color, Color.TRANSPARENT);
             solidColor = a.getColor(R.styleable.RoundedImageView_riv_solid_color, Color.TRANSPARENT);
             a.recycle();
-
-            if (gradientDrawable == null) {
-                gradientDrawable = createRoundedRectangleDrawable(cornerRadius, solidColor, borderColor, borderWidth);
-            } else {
-                gradientDrawable.setCornerRadius(cornerRadius);
-            }
-            setBackground(gradientDrawable);
         }
+
+        backgroundDrawable = new GradientDrawable();
+        backgroundDrawable.setShape(GradientDrawable.RECTANGLE);
+        applyDrawableState();
+        setBackground(backgroundDrawable);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (aspectRatio > 0) {
-            int width = MeasureSpec.getSize(widthMeasureSpec);
-            int height = MeasureSpec.getSize(heightMeasureSpec);
-            if (width == 0 && height != 0) {
-                width = (int) (height * aspectRatio);
-            } else if (height == 0 && width != 0) {
-                height = (int) (width / aspectRatio);
-            }
-            setMeasuredDimension(width, height);
-        } else {
+        if (aspectRatio <= 0) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
         }
+
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        boolean widthIsZero = widthMode == MeasureSpec.EXACTLY && widthSize == 0;
+        boolean heightIsZero = heightMode == MeasureSpec.EXACTLY && heightSize == 0;
+
+        // 只在“宽或高为0”时启用ratio
+        if (widthIsZero && !heightIsZero) {
+            int measuredHeight = resolveSize(heightSize, heightMeasureSpec);
+            int measuredWidth = (int) (measuredHeight * aspectRatio);
+            setMeasuredDimension(measuredWidth, measuredHeight);
+            return;
+        }
+
+        if (heightIsZero && !widthIsZero) {
+            int measuredWidth = resolveSize(widthSize, widthMeasureSpec);
+            int measuredHeight = (int) (measuredWidth / aspectRatio);
+            setMeasuredDimension(measuredWidth, measuredHeight);
+            return;
+        }
+
+        // 其他情况交给父类
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    /**
-     * 创建带圆角、填充色和描边的矩形 GradientDrawable
-     *
-     * @param cornerRadius 圆角半径
-     * @param solidColor     矩形填充色
-     * @param strokeColor    描边颜色
-     * @param strokeWidth  描边宽度
-     * @return GradientDrawable
-     */
-    private GradientDrawable createRoundedRectangleDrawable(
-            float cornerRadius,
-            int solidColor,
-            int strokeColor,
-            float strokeWidth) {
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setShape(GradientDrawable.RECTANGLE);
+    // ---------------- Drawable ----------------
 
-        // 设置圆角半径
-        drawable.setCornerRadius(cornerRadius);
+    private void applyDrawableState() {
+        if (isOval) {
+            backgroundDrawable.setShape(GradientDrawable.OVAL);
+        } else {
+            backgroundDrawable.setShape(GradientDrawable.RECTANGLE);
+            backgroundDrawable.setCornerRadius(cornerRadius);
+        }
 
-        // 设置填充颜色
-        drawable.setColor(solidColor);
-
-        // 设置描边颜色和宽度
-        drawable.setStroke((int) strokeWidth, strokeColor);
-
-        return drawable;
+        backgroundDrawable.setColor(solidColor);
+        backgroundDrawable.setStroke((int) borderWidth, borderColor);
     }
 
     // ---------------- Public API ----------------
 
+    /**
+     * 设置圆角半径（单位 px）
+     */
     public void setCornerRadius(float radius) {
         cornerRadius = radius;
-        if (gradientDrawable == null) {
-            gradientDrawable = createRoundedRectangleDrawable(cornerRadius, solidColor, borderColor, borderWidth);
-        } else {
-            gradientDrawable.setCornerRadius(cornerRadius);
-        }
-        setBackground(gradientDrawable);
+        isOval = false;
+        applyDrawableState();
+        invalidate();
     }
 
+    /**
+     * 设置是否为圆形背景
+     */
     public void setOval(boolean oval) {
         isOval = oval;
-
-        // 设置 1000f 用来实现让GradientDrawable是纯圆形展示
-        if (gradientDrawable == null) {
-            gradientDrawable = createRoundedRectangleDrawable(1000f, solidColor, borderColor, borderWidth);
-        } else {
-            gradientDrawable.setCornerRadius(1000f);
-        }
+        applyDrawableState();
+        invalidate();
     }
 
+    /**
+     * 设置宽高比（宽 / 高）
+     */
     public void setAspectRatio(float ratio) {
         aspectRatio = ratio;
         requestLayout();
     }
 
+    /**
+     * 设置边框宽度（单位 px）
+     */
     public void setBorderWidth(float width) {
         borderWidth = width;
-        if (gradientDrawable == null) {
-            gradientDrawable = createRoundedRectangleDrawable(cornerRadius, solidColor, borderColor, borderWidth);
-        } else {
-            gradientDrawable.setStroke((int) borderWidth, borderColor);
-        }
-        setBackground(gradientDrawable);
+        applyDrawableState();
+        invalidate();
     }
 
+    /**
+     * 设置边框颜色
+     */
     public void setBorderColor(int color) {
         borderColor = color;
-        if (gradientDrawable == null) {
-            gradientDrawable = createRoundedRectangleDrawable(cornerRadius, solidColor, borderColor, borderWidth);
-        } else {
-            gradientDrawable.setStroke((int) borderWidth, borderColor);
-        }
-        setBackground(gradientDrawable);
+        applyDrawableState();
+        invalidate();
     }
 }
