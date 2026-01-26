@@ -14,7 +14,7 @@
         android:layout_marginTop="10dp"
         android:background="@color/colorAccent" />
 
-    <com.wcl.test.view.image.GlideBgImageView
+    <com.wcl.test.view.image.GlideBorderImageView
         android:id="@+id/image2"
         android:layout_width="match_parent"
         android:layout_height="0dp"

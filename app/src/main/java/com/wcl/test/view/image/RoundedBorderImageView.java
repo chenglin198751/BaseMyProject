@@ -10,7 +10,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 import com.wcl.test.R;
 
-public class RoundedBgImageView extends AppCompatImageView {
+public class RoundedBorderImageView extends AppCompatImageView {
 
     protected float cornerRadius = 0f;
     protected boolean isOval = false;
@@ -20,17 +20,17 @@ public class RoundedBgImageView extends AppCompatImageView {
     protected int solidColor = Color.TRANSPARENT;
     private GradientDrawable backgroundDrawable;
 
-    public RoundedBgImageView(Context context) {
+    public RoundedBorderImageView(Context context) {
         super(context);
         init(context, null);
     }
 
-    public RoundedBgImageView(Context context, AttributeSet attrs) {
+    public RoundedBorderImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public RoundedBgImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RoundedBorderImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }

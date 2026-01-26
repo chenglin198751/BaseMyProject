@@ -14,7 +14,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseListViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
-import com.wcl.test.view.image.GlideBgImageView;
+import com.wcl.test.view.image.GlideBorderImageView;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
 import com.youth.banner.Banner;
 
@@ -147,7 +147,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         // 普通Item
         static class ListHolder extends BaseListViewHolder<DataItem> {
             TextView title;
-            GlideBgImageView webImageView;
+            GlideBorderImageView webImageView;
             ListView childListView;
             ChildAdapter childAdapter;
 

@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
-import com.wcl.test.view.image.GlideBgImageView;
+import com.wcl.test.view.image.GlideBorderImageView;
 
 public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
@@ -36,7 +36,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
     private class ListHolder extends BaseRecyclerViewHolder {
         private String url = "http://5b0988e595225.cdn.sohucs.com/images/20170922/c7e95cf930a64a27b616e8c77525645b.jpeg";
-        GlideBgImageView imageView;
+        GlideBorderImageView imageView;
         TextView title;
 
         public ListHolder(View itemView) {
