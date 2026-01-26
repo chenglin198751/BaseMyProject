@@ -1,7 +1,6 @@
 package com.wcl.test.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,10 +17,6 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +25,7 @@ import java.util.TimerTask;
 
 import com.wcl.test.R;
 import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.view.image.GlideImageView;
+import com.wcl.test.view.image.GlideBgImageView;
 
 public class AutoGalleryBannerView extends RelativeLayout implements DefaultLifecycleObserver {
     private static final long AUTO_PLAY_INTERVAL = 5000L;
@@ -176,7 +171,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
             int index = position % mDataList.size();
             BannerDataItem item = mDataList.get(index);
 
-            GlideImageView img = view.findViewById(R.id.image);
+            GlideBgImageView img = view.findViewById(R.id.image);
             ImageView childImg = view.findViewById(R.id.child_img);
 
             img.loadImage(item.url);

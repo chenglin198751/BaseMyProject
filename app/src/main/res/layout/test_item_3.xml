@@ -6,7 +6,7 @@
     android:background="@drawable/item_selector"
     android:orientation="vertical">
 
-    <com.wcl.test.view.image.GlideImageView
+    <com.wcl.test.view.image.GlideBgImageView
         android:id="@+id/image_view"
         android:layout_width="50dp"
         android:layout_height="50dp"

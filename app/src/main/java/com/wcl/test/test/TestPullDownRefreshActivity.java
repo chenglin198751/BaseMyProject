@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -15,8 +14,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseListViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
-import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.view.image.GlideImageView;
+import com.wcl.test.view.image.GlideBgImageView;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
 import com.youth.banner.Banner;
 
@@ -149,7 +147,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
         // 普通Item
         static class ListHolder extends BaseListViewHolder<DataItem> {
             TextView title;
-            GlideImageView webImageView;
+            GlideBgImageView webImageView;
             ListView childListView;
             ChildAdapter childAdapter;
 
