@@ -17,7 +17,7 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.listener.OnSingleClickListener;
 import com.wcl.test.utils.timer.CountDownManager;
-import com.wcl.test.view.image.GlideBorderImageView;
+import com.wcl.test.view.image.GlideBgImageView;
 import com.wcl.test.view.pullrefresh.PullToRefreshView;
 
 import java.util.ArrayList;
@@ -154,7 +154,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         }
 
         class ListHolder extends BaseRecyclerViewHolder {
-            GlideBorderImageView imageView;
+            GlideBgImageView imageView;
             Button btnDelete;
             TextView countdowner;
 

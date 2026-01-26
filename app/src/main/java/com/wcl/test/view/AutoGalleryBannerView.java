@@ -25,7 +25,7 @@ import java.util.TimerTask;
 
 import com.wcl.test.R;
 import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.view.image.GlideBorderImageView;
+import com.wcl.test.view.image.GlideBgImageView;
 
 public class AutoGalleryBannerView extends RelativeLayout implements DefaultLifecycleObserver {
     private static final long AUTO_PLAY_INTERVAL = 5000L;
@@ -171,7 +171,7 @@ public class AutoGalleryBannerView extends RelativeLayout implements DefaultLife
             int index = position % mDataList.size();
             BannerDataItem item = mDataList.get(index);
 
-            GlideBorderImageView img = view.findViewById(R.id.image);
+            GlideBgImageView img = view.findViewById(R.id.image);
             ImageView childImg = view.findViewById(R.id.child_img);
 
             img.loadImage(item.url);
