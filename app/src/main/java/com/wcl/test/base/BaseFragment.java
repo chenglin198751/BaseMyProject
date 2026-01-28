@@ -86,14 +86,6 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     protected abstract void onViewCreated(Bundle savedInstanceState, View view);
 
-    /**
-     * 响应 Activity 的 onBackPressed()
-     *
-     * @return true 可以返回，false 禁止返回
-     */
-    public boolean onBackPressed() {
-        return true;
-    }
 
     @Override
     public final WaitDialog showWaitDialog() {
@@ -145,6 +137,9 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         clearLoadingView();
     }
 
+    /**
+     * 设置空页面或者无网页面要附加的Parent Layout，若不设置则是整个父布局。
+     */
     @Override
     public void setNestedParentView(ViewGroup parent) {
         nestedParentView = parent;
