@@ -306,7 +306,7 @@ public class AppBaseUtils {
     /**
      * 扩展 View 的点击区域
      *
-     * @param view       需要扩展的元素，必须有父布局
+     * @param view   需要扩展的元素，必须有父布局
      * @param expend 需要扩展的尺寸（dp）
      */
     public static void expandTouchArea(final View view, final int expend) {
