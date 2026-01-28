@@ -314,7 +314,7 @@ public class AppBaseUtils {
 
         final View parentView = (View) view.getParent();
         if (parentView == null) return;
-        
+
         final int pxExpend = dp2px(expendSize);
 
         parentView.post(() -> {
