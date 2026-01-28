@@ -112,6 +112,26 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     }
 
     /**
+     * @see #setContentLayout(View)
+     * @deprecated 请使用 {@link #setContentLayout(View)} 代替
+     */
+    @Deprecated
+    @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+    }
+
+    /**
+     * @see #setContentLayout(int)
+     * @deprecated 请使用 {@link #setContentLayout(int)} 代替
+     */
+    @Deprecated
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+    }
+
+    /**
      * 设置Activity的内容布局，取代系统的 setContentView() 方法
      */
     public final void setContentLayout(@LayoutRes int layoutResID) {
