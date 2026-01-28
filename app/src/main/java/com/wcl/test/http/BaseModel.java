@@ -1,4 +1,4 @@
-package com.wcl.test.httpwork;
+package com.wcl.test.http;
 
 import java.io.Serializable;
 

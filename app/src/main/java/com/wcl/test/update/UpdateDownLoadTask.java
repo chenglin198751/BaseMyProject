@@ -7,7 +7,7 @@ import android.widget.RemoteViews;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;
-import com.wcl.test.httpwork.HttpUtils;
+import com.wcl.test.http.HttpUtils;
 import com.wcl.test.utils.ApkInstaller;
 import com.wcl.test.utils.AppBaseUtils;
 import com.wcl.test.widget.ToastUtils;

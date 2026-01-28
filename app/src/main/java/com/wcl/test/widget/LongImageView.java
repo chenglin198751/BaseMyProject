@@ -8,7 +8,7 @@ import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.wcl.test.httpwork.HttpUtils;
+import com.wcl.test.http.HttpUtils;
 import com.wcl.test.utils.BitmapUtils;
 
 import java.io.File;
