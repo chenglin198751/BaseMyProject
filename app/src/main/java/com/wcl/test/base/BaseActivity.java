@@ -263,7 +263,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     }
 
     /**
-     * 设置空页面或者无网页面要附加的Parent Layout，不设置是整个父布局。
+     * 设置空页面或者无网页面要附加的Parent Layout，若不设置则是整个父布局。
      */
     @Override
     public void setNestedParentView(ViewGroup parent) {
