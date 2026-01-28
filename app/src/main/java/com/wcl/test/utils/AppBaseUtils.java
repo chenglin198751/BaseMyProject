@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Rect;
@@ -37,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
@@ -293,42 +291,6 @@ public class AppBaseUtils {
     }
 
     /**
-     * 获取手机状态栏的高度
-     */
-    public static int getStatusBarHeight(Activity activity) {
-        if (mStatusBarHeight > 0) {
-            return mStatusBarHeight;
-        }
-
-        if (activity == null) {
-            return mStatusBarHeight;
-        }
-
-        Resources resources = activity.getResources();
-        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
-        mStatusBarHeight = resources.getDimensionPixelSize(resourceId);
-
-        // 避免获取不到，再用另一种方法获取一遍
-        if (mStatusBarHeight < 10) {
-            Class<?> c = null;
-            Object obj = null;
-            Field field = null;
-            int x = 0, sbar = 0;
-            try {
-                c = Class.forName("com.android.internal.R$dimen");
-                obj = c.newInstance();
-                field = c.getField("status_bar_height");
-                x = Integer.parseInt(field.get(obj).toString());
-                mStatusBarHeight = activity.getResources().getDimensionPixelSize(x);
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-        }
-
-        return mStatusBarHeight;
-    }
-
-    /**
      * 解决：Android 从 View 中获取 Activity 时遇到 TintContextWrapper cannot be cast to 的问题
      */
     public static Activity getActivityFromContext(Context context) {
@@ -367,33 +329,37 @@ public class AppBaseUtils {
         }
     }
 
-    public static String getFromAssets(Context context, String fileName) {
-        try {
-            InputStreamReader inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
-            BufferedReader bufReader = new BufferedReader(inputReader);
-            String line = "";
-            StringBuilder result = new StringBuilder();
-            while ((line = bufReader.readLine()) != null) {
-                result.append(line).append(System.lineSeparator());
+    /**
+     * 从 assets 目录读取文本文件内容（UTF-8）
+     */
+    public static String readTextFromAssets(String fileName) {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(BaseApp.getApp().getAssets().open(fileName), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
             }
-            if (result.length() > 0) {
-                result.deleteCharAt(result.length() - 1);
-            }
-            bufReader.close();
-            inputReader.close();
-
-            //有时服务端返回json带了bom头，会导致解析生效
-            String tempStr = result.toString();
-            if (!TextUtils.isEmpty(tempStr) && tempStr.startsWith("\ufeff")) {
-                tempStr = tempStr.substring(1);
-            }
-
-            return tempStr;
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
+
+        if (sb.length() == 0) {
+            return "";
+        }
+
+        // 去掉最后一个换行符
+        sb.setLength(sb.length() - 1);
+
+        // 去除 UTF-8 BOM 头（\uFEFF）
+        if (sb.length() > 0 && sb.charAt(0) == '\uFEFF') {
+            sb.deleteCharAt(0);
+        }
+
+        return sb.toString();
     }
+
 
     /**
      * 重启应用
@@ -401,8 +367,7 @@ public class AppBaseUtils {
     public static void restartApplication(Context mContext) {
         try {
             Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName());
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             mContext.startActivity(intent);
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);

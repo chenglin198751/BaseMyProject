@@ -44,8 +44,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     private RelativeLayout mBaseRootView;
     private View mContentView;
     private ViewGroup mNestedParentLayout;
-    public int statusBarHeight; //状态栏高度
-    public int navBarHeight; //虚拟导航栏高度
 
     @CallSuper
     @Override
@@ -69,8 +67,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
-            statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            AppConstants.statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            AppConstants.navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
             displayInCutoutMode(onDisplayInCutoutMode());
             return insets;
         });
@@ -105,7 +103,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (isDisplayInCutout) {
             mBaseRootView.setPadding(0, 0, 0, 0);
         } else {
-            mBaseRootView.setPadding(0, statusBarHeight, 0, navBarHeight);
+            mBaseRootView.setPadding(0, AppConstants.statusBarHeight, 0, AppConstants.navBarHeight);
         }
     }
 
