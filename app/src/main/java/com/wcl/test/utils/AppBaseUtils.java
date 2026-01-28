@@ -376,14 +376,21 @@ public class AppBaseUtils {
         }
     }
 
+    /**
+     * 判断当前应用是否采用“沉浸式全屏（Edge-to-Edge）”模式。
+     * <p>
+     * 逻辑说明：
+     * 1. Android 13 MR1（API 35）及以上系统支持 Edge-to-Edge 界面。
+     * 2. 应用的 targetSdkVersion 也需 >= 35 才会启用该特性。
+     *
+     * @return true 表示应用和系统都支持 Edge-to-Edge UI，false 表示不支持。
+     */
     public static boolean isEdgeToEdge() {
         return Build.VERSION.SDK_INT >= 35 && BaseApp.getApp().getApplicationInfo().targetSdkVersion >= 35;
     }
 
     public static boolean isXiaomiDevice() {
-        return (Build.BRAND != null && Build.BRAND.toLowerCase().contains("xiaomi") ||
-                "xiaomi".equalsIgnoreCase(Build.MANUFACTURER)
-        );
+        return (Build.BRAND != null && Build.BRAND.toLowerCase().contains("xiaomi") || "xiaomi".equalsIgnoreCase(Build.MANUFACTURER));
     }
 
     // 设置View纯圆形
