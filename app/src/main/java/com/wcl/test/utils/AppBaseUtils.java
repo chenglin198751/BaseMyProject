@@ -304,30 +304,32 @@ public class AppBaseUtils {
     }
 
     /**
-     * 扩展点击区域的范围
+     * 扩展 View 的点击区域
      *
-     * @param view       需要扩展的元素，此元素必需要有父级元素
-     * @param expendSize 需要扩展的尺寸（以sp为单位的）
+     * @param view       需要扩展的元素，必须有父布局
+     * @param expendSize 需要扩展的尺寸（dp）
      */
-    public static void expendTouchArea(final View view, final int expendSize) {
-        if (view != null) {
-            final View parentView = (View) view.getParent();
+    public static void expandTouchArea(final View view, final int expendSize) {
+        if (view == null) return;
 
-            parentView.post(new Runnable() {
-                @Override
-                public void run() {
-                    Rect rect = new Rect();
-                    //如果太早执行本函数，会获取rect失败，因为此时UI界面尚未开始绘制，无法获得正确的坐标
-                    view.getHitRect(rect);
-                    rect.left -= expendSize;
-                    rect.top -= expendSize;
-                    rect.right += expendSize;
-                    rect.bottom += expendSize;
-                    parentView.setTouchDelegate(new TouchDelegate(rect, view));
-                }
-            });
-        }
+        final View parentView = (View) view.getParent();
+        if (parentView == null) return;
+        
+        final int pxExpend = dp2px(expendSize);
+
+        parentView.post(() -> {
+            Rect rect = new Rect();
+            view.getHitRect(rect);
+
+            rect.left -= pxExpend;
+            rect.top -= pxExpend;
+            rect.right += pxExpend;
+            rect.bottom += pxExpend;
+
+            parentView.setTouchDelegate(new TouchDelegate(rect, view));
+        });
     }
+
 
     /**
      * 从 assets 目录读取文本文件内容（UTF-8）
@@ -389,11 +391,16 @@ public class AppBaseUtils {
         return Build.VERSION.SDK_INT >= 35 && BaseApp.getApp().getApplicationInfo().targetSdkVersion >= 35;
     }
 
+    /**
+     * 判断是不是小米设备
+     */
     public static boolean isXiaomiDevice() {
         return (Build.BRAND != null && Build.BRAND.toLowerCase().contains("xiaomi") || "xiaomi".equalsIgnoreCase(Build.MANUFACTURER));
     }
 
-    // 设置View纯圆形
+    /**
+     * 设置View纯圆形
+     */
     public static void setViewCircle(View view) {
         view.setOutlineProvider(new ViewOutlineProvider() {
             @Override
@@ -405,7 +412,9 @@ public class AppBaseUtils {
         view.setClipToOutline(true);
     }
 
-    // 设置View圆角，单位dp
+    /**
+     * 设置View圆角，单位dp
+     */
     public static void setViewRounded(View view, int radiusDp) {
         view.setOutlineProvider(new ViewOutlineProvider() {
             @Override
@@ -417,7 +426,9 @@ public class AppBaseUtils {
         view.setClipToOutline(true);
     }
 
-    // 设置Dialog边到边效果
+    /**
+     * 设置Dialog边到边效果
+     */
     public static void setDialogEdgeToEdge(Dialog dialog) {
         try {
             Window window = dialog.getWindow();
