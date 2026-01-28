@@ -307,25 +307,23 @@ public class AppBaseUtils {
      * 扩展 View 的点击区域
      *
      * @param view       需要扩展的元素，必须有父布局
-     * @param expendSize 需要扩展的尺寸（dp）
+     * @param expend 需要扩展的尺寸（dp）
      */
-    public static void expandTouchArea(final View view, final int expendSize) {
+    public static void expandTouchArea(final View view, final int expend) {
         if (view == null) return;
 
         final View parentView = (View) view.getParent();
         if (parentView == null) return;
 
-        final int pxExpend = dp2px(expendSize);
+        final int px = dp2px(expend);
 
         parentView.post(() -> {
             Rect rect = new Rect();
             view.getHitRect(rect);
-
-            rect.left -= pxExpend;
-            rect.top -= pxExpend;
-            rect.right += pxExpend;
-            rect.bottom += pxExpend;
-
+            rect.left -= px;
+            rect.top -= px;
+            rect.right += px;
+            rect.bottom += px;
             parentView.setTouchDelegate(new TouchDelegate(rect, view));
         });
     }
