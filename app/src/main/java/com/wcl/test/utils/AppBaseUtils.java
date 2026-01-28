@@ -1,7 +1,6 @@
 package com.wcl.test.utils;
 
 import android.app.Activity;
-import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -10,8 +9,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Rect;
@@ -22,7 +19,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.TypedValue;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -32,12 +28,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import androidx.annotation.RequiresApi;
-
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;
-import com.wcl.test.bean.UrlEntity;
 import com.wcl.test.widget.ToastUtils;
 
 import java.io.BufferedReader;
@@ -45,16 +38,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.zip.CRC32;
 
@@ -97,97 +84,25 @@ public class AppBaseUtils {
     }
 
     /**
-     * 判断某个表是否存在
-     */
-    public static boolean isTableExist(SQLiteDatabase db, String tableName) {
-        boolean exist = false;
-        String sql = "select name from sqlite_master where name = ?";
-        Cursor cursor = db.rawQuery(sql, new String[]{tableName});
-        if (cursor != null) {
-            if (cursor.getCount() > 0) {
-                exist = true;
-            }
-            cursor.close();
-        }
-        return exist;
-    }
-
-    /**
-     * 将java的13位时间长度转换成10位的PHP长度
-     */
-    public static String javaTimeToPhpTime(String time) {
-        if (time.length() == 13) {
-            return time.substring(0, time.length() - 3);
-        } else {
-            return time;
-        }
-
-    }
-
-    /**
-     * 将String日期转换为Long型日期
-     */
-    public static long dateForStringToLong(String strTime, String formatType) {
-        Date date = dateForStringToDate(strTime, formatType);
-        if (date == null) {
-            return 0;
-        } else {
-            long currentTime = date.getTime();
-            return currentTime;
-        }
-    }
-
-    /**
-     * 将Long日期转换为String型日期
-     */
-    public static String longToString(long time, String formatType) {
-        SimpleDateFormat formatter = null;
-        formatter = new SimpleDateFormat(formatType);
-        String str = formatter.format(time);
-        return str;
-    }
-
-    /**
-     * 将String日期转换为Date日期
-     */
-    public static Date dateForStringToDate(String strTime, String formatType) {
-        SimpleDateFormat formatter = new SimpleDateFormat(formatType);
-        Date date = null;
-        try {
-            date = formatter.parse(strTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
-
-    /**
      * MD5加密一个字符串
      */
-    public static String MD5(String plainText) {
-        String str;
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(plainText.getBytes());
-            byte b[] = md.digest();
-
-            int i;
-
-            StringBuffer buf = new StringBuffer("");
-            for (int offset = 0; offset < b.length; offset++) {
-                i = b[offset];
-                if (i < 0)
-                    i += 256;
-                if (i < 16)
-                    buf.append("0");
-                buf.append(Integer.toHexString(i));
-            }
-            str = buf.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+    public static String md5(String input) {
+        if (TextUtils.isEmpty(input)) {
             return "";
         }
-        return str;
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] bytes = md.digest(input.getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder sb = new StringBuilder(32);
+            for (byte b : bytes) {
+                sb.append(String.format("%02x", b & 0xFF));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     /**
@@ -251,7 +166,7 @@ public class AppBaseUtils {
         return MHandlerHolder.mHandler;
     }
 
-    //利用BigDecimal做除法
+    // 利用BigDecimal做除法
     public static double divide(double value1, double value2, int scale) {
         if (value2 == 0) {
             return 0;
@@ -259,34 +174,6 @@ public class AppBaseUtils {
         BigDecimal b1 = new BigDecimal(value1);
         BigDecimal b2 = new BigDecimal(value2);
         return b1.divide(b2, scale, BigDecimal.ROUND_HALF_DOWN).doubleValue();
-    }
-
-
-    /**
-     * 格式化1024数据，指定保留几位小数
-     */
-    public static String format1024(long size, int flag) {
-        NumberFormat df = NumberFormat.getNumberInstance();
-        df.setMaximumFractionDigits(flag);
-
-        StringBuilder builder = new StringBuilder();
-        if (size < 0) {
-            builder.append(0);
-            builder.append("B");
-        } else if (size < 1000) {
-            builder.append(size);
-            builder.append("B");
-        } else if (size < 1024000) {
-            builder.append(df.format(((double) size) / 1024));
-            builder.append("K");
-        } else if (size < 1048576000) {
-            builder.append(df.format(((double) size) / 1048576));
-            builder.append("M");
-        } else {
-            builder.append(df.format(((double) size) / 1073741824));
-            builder.append("G");
-        }
-        return builder.toString();
     }
 
     /**
@@ -305,21 +192,6 @@ public class AppBaseUtils {
         return b.setScale(scale, RoundingMode.HALF_UP).floatValue();
     }
 
-
-    /**
-     * 只能输入数字。字母和汉字
-     */
-    public static String LetterAndChinese(String text) {
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
-            char letter = text.charAt(i);
-            if (!((letter >= 'a' && letter <= 'z') || (letter >= 'A' && letter <= 'Z') || (letter >= '0' && letter <= '9') || letter > 128)) {
-                str.append(letter + "");
-            }
-        }
-        return str.toString();
-    }
-
     /**
      * 得到自身的versionCode
      */
@@ -327,7 +199,7 @@ public class AppBaseUtils {
         if (TextUtils.isEmpty(mVerCode)) {
             try {
                 mVerCode = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
-            } catch (PackageManager.NameNotFoundException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -341,7 +213,7 @@ public class AppBaseUtils {
         if (TextUtils.isEmpty(mVerName)) {
             try {
                 mVerName = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
-            } catch (PackageManager.NameNotFoundException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -361,56 +233,6 @@ public class AppBaseUtils {
      */
     public static boolean isUiThread() {
         return Looper.getMainLooper() == Looper.myLooper();
-    }
-
-    /**
-     * 将String 编码为base64
-     */
-    public static String toBase64(String text) {
-        if (!TextUtils.isEmpty(text)) {
-            return Base64.encodeToString(text.getBytes(), Base64.DEFAULT);
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * 将String 解码为base64
-     */
-    public static String fromBase64(String strBase64) {
-        if (!TextUtils.isEmpty(strBase64)) {
-            return new String(Base64.decode(strBase64.getBytes(), Base64.DEFAULT));
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * 判断用户是否开启了应用通知栏，如果开启返回true ，禁用返回false
-     */
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public static boolean isNotificationEnabled(Context context) {
-        String CHECK_OP_NO_THROW = "checkOpNoThrow";
-        String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION";
-
-        AppOpsManager mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        ApplicationInfo appInfo = context.getApplicationInfo();
-        String pkg = context.getApplicationContext().getPackageName();
-        int uid = appInfo.uid;
-
-        try {
-            Class appOpsClass = Class.forName(AppOpsManager.class.getName());
-            Method checkOpNoThrowMethod = appOpsClass.getMethod(CHECK_OP_NO_THROW, Integer.TYPE, Integer.TYPE,
-                    String.class);
-            Field opPostNotificationValue = appOpsClass.getDeclaredField(OP_POST_NOTIFICATION);
-
-            int value = (Integer) opPostNotificationValue.get(Integer.class);
-            return ((Integer) checkOpNoThrowMethod.invoke(mAppOps, value, uid, pkg) == AppOpsManager.MODE_ALLOWED);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     /**
@@ -545,39 +367,6 @@ public class AppBaseUtils {
         }
     }
 
-    /**
-     * 解析URL参数
-     */
-    public static UrlEntity parseUrlParams(String url) {
-        UrlEntity entity = new UrlEntity();
-        if (url == null) {
-            return entity;
-        }
-        url = url.trim();
-        if (url.equals("")) {
-            return entity;
-        }
-        String[] urlParts = url.split("\\?");
-        entity.baseUrl = urlParts[0];
-        //没有参数
-        if (urlParts.length == 1) {
-            return entity;
-        }
-        //有参数
-        String[] params = urlParts[1].split("&");
-        entity.params = new HashMap<>();
-        for (String param : params) {
-            String[] keyValue = param.split("=");
-            if (keyValue.length == 2) {
-                entity.params.put(keyValue[0], keyValue[1]);
-            } else if (keyValue.length == 1) {
-                entity.params.put(keyValue[0], null);
-            }
-        }
-
-        return entity;
-    }
-
     public static String getFromAssets(Context context, String fileName) {
         try {
             InputStreamReader inputReader = new InputStreamReader(context.getResources().getAssets().open(fileName));
@@ -602,19 +391,6 @@ public class AppBaseUtils {
             return tempStr;
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 根据类名获取当前类。适用于SDK获取母体类。
-     */
-    public static Object getClassInstance(String clzName) {
-        try {
-            Class localClass = Class.forName(clzName);
-            return localClass.newInstance();
-        } catch (Throwable t) {
-            t.printStackTrace();
         }
         return null;
     }

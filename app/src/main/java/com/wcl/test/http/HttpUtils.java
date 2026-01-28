@@ -387,7 +387,7 @@ public class HttpUtils {
      * 文件下载路径
      */
     public static String getDownLoadFilePath(String fileUrl) {
-        return new File(DOWNLOAD_DIR, AppBaseUtils.MD5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl)).getAbsolutePath();
+        return new File(DOWNLOAD_DIR, AppBaseUtils.md5(fileUrl).toLowerCase() + getSuffixNameByHttpUrl(fileUrl)).getAbsolutePath();
     }
 
     private static String getSuffixNameByHttpUrl(final String url) {
