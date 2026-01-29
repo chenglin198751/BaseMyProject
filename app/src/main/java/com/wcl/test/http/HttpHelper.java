@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.FormBody;
@@ -106,5 +105,13 @@ class HttpHelper {
     private static String getSuffix(String url) {
         int i = url.lastIndexOf(".");
         return i > 0 ? url.substring(i) : "";
+    }
+
+    /**
+     * 去除字符串开头的 UTF-8 BOM 字符
+     */
+    static String removeUtf8Bom(String input) {
+        if (TextUtils.isEmpty(input)) return input;
+        return input.charAt(0) == '\ufeff' ? input.substring(1) : input;
     }
 }

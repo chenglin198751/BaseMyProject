@@ -411,7 +411,7 @@ public class HttpUtils {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (AppBaseUtils.isActivityDestroyed(context)) return;
                 boolean ok = response.isSuccessful();
-                String result = ok ? response.body().string() : response.toString();
+                final String result = HttpHelper.removeUtf8Bom(ok ? response.body().string() : response.toString());
                 AppLogUtils.v(TAG, "result:" + result);
                 response.close();
                 HttpHelper.postToUi(() -> callback.onResult(ok, result));
