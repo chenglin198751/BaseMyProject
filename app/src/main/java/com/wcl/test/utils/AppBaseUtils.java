@@ -182,7 +182,7 @@ public class AppBaseUtils {
      * 四舍五入保留指定位数的小数
      */
     public static double formatDouble(double d, int scale) {
-        BigDecimal b = new BigDecimal(d);
+        BigDecimal b = new BigDecimal(Double.toString(d));
         return b.setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
@@ -190,7 +190,7 @@ public class AppBaseUtils {
      * 四舍五入保留指定位数的小数
      */
     public static float formatFloat(float f, int scale) {
-        BigDecimal b = new BigDecimal(f);
+        BigDecimal b = new BigDecimal(Float.toString(f));
         return b.setScale(scale, RoundingMode.HALF_UP).floatValue();
     }
 
