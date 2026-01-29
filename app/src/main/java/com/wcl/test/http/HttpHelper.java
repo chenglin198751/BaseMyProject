@@ -1,0 +1,110 @@
+package com.wcl.test.http;
+
+import android.os.Build;
+import android.os.Environment;
+import android.text.TextUtils;
+
+import com.wcl.test.base.BaseApp;
+import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.DeviceUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+/**
+ * HttpHelper
+ * 与 HTTP 协议无关的工具集合
+ */
+class HttpHelper {
+
+    // 如果是有效url则返回true
+    static boolean isValidUrl(String url) {
+        return !TextUtils.isEmpty(url) && (url.startsWith("http://") || url.startsWith("https://"));
+    }
+
+    static void postToUi(Runnable r) {
+        AppBaseUtils.getUiHandler().post(r);
+    }
+
+    static void addCommonParams(Map<String, Object> params) {
+        params.put("deviceId", DeviceUtils.getDeviceId());
+        params.put("product", Build.MODEL);
+        params.put("brand", Build.BRAND);
+        params.put("os_int", Build.VERSION.SDK_INT);
+        params.put("os_release", Build.VERSION.RELEASE);
+        params.put("appCode", AppBaseUtils.getVerCode());
+        params.put("appName", AppBaseUtils.getVerName());
+        params.put("channel", AppBaseUtils.getChannel());
+        params.put("pkg", AppBaseUtils.getPackageName());
+        params.put("os", "android");
+    }
+
+    static FormBody buildFormBody(Map<String, Object> params) {
+        FormBody.Builder builder = new FormBody.Builder();
+        for (Map.Entry<String, Object> e : params.entrySet()) {
+            builder.add(e.getKey(), String.valueOf(e.getValue()));
+        }
+        return builder.build();
+    }
+
+    static String buildGetUrl(String url, Map<String, Object> params) {
+        StringBuilder sb = new StringBuilder(url);
+        sb.append(url.contains("?") ? "&" : "?");
+        boolean first = true;
+        for (Map.Entry<String, Object> e : params.entrySet()) {
+            if (!first) sb.append("&");
+            sb.append(e.getKey()).append("=").append(e.getValue());
+            first = false;
+        }
+        return sb.toString();
+    }
+
+    // ======================= Download =======================
+
+    // 获取文件下载路径
+    static String getDownloadPath(String url) {
+        File dir = BaseApp.getApp()
+                .getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        return new File(dir,
+                AppBaseUtils.md5(url).toLowerCase() + getSuffix(url))
+                .getAbsolutePath();
+    }
+
+    // 从url获取文件长度
+    static long fetchContentLength(OkHttpClient client, String url) {
+        Request request = new Request.Builder().url(url).build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return response.body().contentLength();
+            }
+        } catch (IOException ignored) {
+        }
+        return 0;
+    }
+
+    static void replaceFile(File src, File dest) throws Exception {
+        try (FileInputStream in = new FileInputStream(src);
+             FileOutputStream out = new FileOutputStream(dest)) {
+            byte[] buf = new byte[4096];
+            int len;
+            while ((len = in.read(buf)) != -1) {
+                out.write(buf, 0, len);
+            }
+        }
+        src.delete();
+    }
+
+    private static String getSuffix(String url) {
+        int i = url.lastIndexOf(".");
+        return i > 0 ? url.substring(i) : "";
+    }
+}
