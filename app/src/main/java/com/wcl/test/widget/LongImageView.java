@@ -81,13 +81,13 @@ public class LongImageView extends WebView {
         load(url, showWidth, null);
     }
 
-    public void load(final String url, final int showWidth, final HttpUtils.HttpDownloadCallback callback) {
+    public void load(final String url, final int showWidth, final HttpUtils.DownloadCallback callback) {
         if (TextUtils.isEmpty(url) || !URLUtil.isNetworkUrl(url)) {
             if (callback != null) callback.onFinished(false, null, "Invalid URL");
             return;
         }
 
-        HttpUtils.downloadFile(url, new HttpUtils.HttpDownloadCallback() {
+        HttpUtils.download(url, new HttpUtils.DownloadCallback() {
 
             @Override
             public void onFinished(boolean ok, String filePath, String err) {

@@ -90,15 +90,23 @@ public class UpdateDialog extends Dialog {
                     ToastUtils.show(AppBaseUtils.getString(R.string.update_version_downloading));
                 } else if (mRightBtn.getText().equals(AppBaseUtils.getString(R.string.update_version_install))) {
                     if (mVersionModel != null) {
-                        String apk_path = HttpUtils.getDownLoadFilePath(mVersionModel.url);
-                        boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName, apk_path);
-                        if (isExist) {
-                            ApkInstaller.installApk(mActivity, apk_path);
-                        } else {
-                            ToastUtils.show("安装失败，请立即更新");
-                            mRightBtn.setText(R.string.update_version_update);
-                            mRightBtn.performLongClick();
-                        }
+                        HttpUtils.download(mVersionModel.url, new HttpUtils.DownloadCallback() {
+                            @Override
+                            public void onProgress(long total, long current, float percent) {
+                            }
+
+                            @Override
+                            public void onFinished(boolean success, String filePath, String error) {
+                                boolean isExist = UpdateDownLoadTask.apkExist(mActivity, mVersionModel.versionName, filePath);
+                                if (isExist) {
+                                    ApkInstaller.installApk(mActivity, filePath);
+                                } else {
+                                    ToastUtils.show("安装失败，请立即更新");
+                                    mRightBtn.setText(R.string.update_version_update);
+                                    mRightBtn.performLongClick();
+                                }
+                            }
+                        });
                     }
                 }
             }
@@ -123,8 +131,8 @@ public class UpdateDialog extends Dialog {
     public void checkUpdate() {
         HttpUtils.post(mActivity, HttpUrls.check_update, null, new HttpUtils.HttpCallback() {
             @Override
-            public void onResponse(boolean isSuccessful, String result) {
-                if (isSuccessful) {
+            public void onResult(boolean success, String result) {
+                if (success) {
                     HcxUpdateModel model = AppConstants.gson.fromJson(result, HcxUpdateModel.class);
                     if (model == null || model.data == null) {
                         return;
@@ -203,20 +211,29 @@ public class UpdateDialog extends Dialog {
                 setCancelable(false);
             }
 
-            String apk_path = HttpUtils.getDownLoadFilePath(mVersionModel.url);
-            boolean isExist = UpdateDownLoadTask.apkExist(mActivity, infoModel.versionName, apk_path);
-            if (isExist) {
-                mRightBtn.setText(R.string.update_version_install);
-            } else {
-                File apkFile = new File(apk_path);
-                if (apkFile.exists()) {
-                    apkFile.delete();
-                }
-            }
+            HttpUtils.download(mVersionModel.url, new HttpUtils.DownloadCallback() {
+                @Override
+                public void onProgress(long total, long current, float percent) {
 
-            if (mActivity != null && !mActivity.isFinishing()) {
-                show();
-            }
+                }
+
+                @Override
+                public void onFinished(boolean success, String filePath, String error) {
+                    boolean isExist = UpdateDownLoadTask.apkExist(mActivity, infoModel.versionName, filePath);
+                    if (isExist) {
+                        mRightBtn.setText(R.string.update_version_install);
+                    } else {
+                        File apkFile = new File(filePath);
+                        if (apkFile.exists()) {
+                            apkFile.delete();
+                        }
+                    }
+
+                    if (mActivity != null && !mActivity.isFinishing()) {
+                        show();
+                    }
+                }
+            });
         }
     }
 

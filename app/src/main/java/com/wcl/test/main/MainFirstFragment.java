@@ -1,12 +1,16 @@
 package com.wcl.test.main;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
+import com.wcl.test.http.HttpUtils;
+import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.CommonDialog;
 
 
@@ -26,27 +30,33 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
         mViewBinding.viewLeft.setOnClickListener(v -> {
-            CommonDialog dialog = new CommonDialog(getContext());
-            dialog.setTitle("警告");
-            dialog.setMessage("要过年了吗");
-            dialog.setLeftButton("取消", new View.OnClickListener() {
+            String url ="https://www.wanandroid.com/banner/json";
+            HttpUtils.post(getContext(), url, null, new HttpUtils.HttpCallback() {
                 @Override
-                public void onClick(View v) {
-
+                public void onResult(boolean success, String result) {
+                    Log.v("HttpUtils","success:"+success + ",result:"+result);
                 }
             });
-            dialog.setRightButton("确定", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+            String url2 = "http://qd.shouji.qihucdn.com/media/949541c42745397670cd5935dd89835b/674fba4e6f5e6.zip";
+            HttpUtils.download(url2, new HttpUtils.DownloadCallback() {
+                @Override
+                public void onProgress(long total, long current, float percent) {
+                    Log.v("tag_99","percent="+percent);
+                }
+
+                @Override
+                public void onFinished(boolean success, String filePath, String error) {
+                    Log.v("tag_99","success:"+success + ",filePath:"+filePath + ",error:"+error);
                 }
             });
-            dialog.show();
         });
 
         String url = "http://qd.shouji.qihucdn.com/media/d22eee36c269dcae8dbfc6a469d02ffc/6602326c507c2.png";
 //        SmartImageLoader.load(mViewBinding.image2,url,-1,-1,0);
         mViewBinding.image2.loadImage(url);
+
+
     }
 
     @Override

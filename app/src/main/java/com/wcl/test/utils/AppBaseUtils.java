@@ -43,6 +43,10 @@ import java.security.MessageDigest;
 import java.util.List;
 import java.util.zip.CRC32;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class AppBaseUtils {
     private static String mVerCode = null;
     private static String mVerName = null;
@@ -468,4 +472,5 @@ public class AppBaseUtils {
             t.printStackTrace();
         }
     }
+
 }

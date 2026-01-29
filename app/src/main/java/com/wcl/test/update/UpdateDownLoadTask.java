@@ -28,10 +28,16 @@ public class UpdateDownLoadTask {
         isDownLoading = true;
         showNotification(0);
 
-        final HttpUtils.HttpDownloadCallback downloadCallback = new HttpUtils.HttpDownloadCallback() {
+        HttpUtils.download(url, new HttpUtils.DownloadCallback() {
             @Override
-            public void onFinished(boolean isSuccess, String filePath, String error) {
-                if (isSuccess) {
+            public void onProgress(long total, long current, float percent) {
+                isDownLoading = true;
+                showNotification((int) (percent * 100));
+            }
+
+            @Override
+            public void onFinished(boolean success, String filePath, String error) {
+                if (success) {
                     mUpdateDialog.downloadSuccess();
                     cancelNotify();
                     ApkInstaller.installApk(BaseApp.getApp(), filePath);
@@ -42,15 +48,7 @@ public class UpdateDownLoadTask {
                     ToastUtils.show(R.string.net_error);
                 }
             }
-
-            @Override
-            public void onProgress(long fileTotalSize, long fileDowningSize, float percent) {
-                isDownLoading = true;
-                showNotification((int) (percent * 100));
-            }
-        };
-
-        HttpUtils.downloadFile(url, downloadCallback);
+        });
     }
 
 
@@ -67,23 +65,23 @@ public class UpdateDownLoadTask {
     public void showNotification(int progress) {
         final String text = "正在下载：" + progress + "%";
 
-        if (downNotification == null) {
-            RemoteViews remoteView = new RemoteViews(BaseApp.getApp().getPackageName(), R.layout.notification_progress_layout);
-            downNotification = new Notification();
-            downNotification.icon = R.drawable.ic_launcher;
-            downNotification.contentView = remoteView;
-            downNotification.flags = Notification.FLAG_ONGOING_EVENT;
-            downNotification.tickerText = text;
-            downNotification.contentIntent = null;
-
-            remoteView.setProgressBar(R.id.progressBar1, 100, progress, false);
-            remoteView.setTextViewText(R.id.progress, progress + "%");
-            NotificationManager.notify(DOWN_NOTIFY_ID, downNotification);
-        } else {
-            downNotification.contentView.setProgressBar(R.id.progressBar1, 100, progress, false);
-            downNotification.contentView.setTextViewText(R.id.progress, progress + "%");
-            NotificationManager.notify(DOWN_NOTIFY_ID, downNotification);
-        }
+//        if (downNotification == null) {
+//            RemoteViews remoteView = new RemoteViews(BaseApp.getApp().getPackageName(), R.layout.notification_progress_layout);
+//            downNotification = new Notification();
+//            downNotification.icon = R.drawable.ic_launcher;
+//            downNotification.contentView = remoteView;
+//            downNotification.flags = Notification.FLAG_ONGOING_EVENT;
+//            downNotification.tickerText = text;
+//            downNotification.contentIntent = null;
+//
+//            remoteView.setProgressBar(R.id.progressBar1, 100, progress, false);
+//            remoteView.setTextViewText(R.id.progress, progress + "%");
+//            NotificationManager.notify(DOWN_NOTIFY_ID, downNotification);
+//        } else {
+//            downNotification.contentView.setProgressBar(R.id.progressBar1, 100, progress, false);
+//            downNotification.contentView.setTextViewText(R.id.progress, progress + "%");
+//            NotificationManager.notify(DOWN_NOTIFY_ID, downNotification);
+//        }
     }
 
 
