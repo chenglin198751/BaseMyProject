@@ -233,21 +233,25 @@ public class HttpUtils {
             File tempDir = new File(target.getAbsolutePath() + "_tmp");
             tempDir.mkdirs();
 
-            // 获取文件总长度
             long totalLength = HttpHelper.fetchContentLength(CLIENT, url);
+            if (totalLength <= 0) {
+                HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+                return;
+            }
 
-            // 文件已下载直接回调
-            if (target.exists() && totalLength > 0 && totalLength == target.length()) {
+            // 加个判断：如果文件小于50MB，则强制使用普通下载
+            if (totalLength < 50L * 1024 * 1024) {
+                download(url, callback);
+                return;
+            }
+
+            // 检查文件是否已经完整下载，如果已经被下载成功则直接返回file path
+            if (target.exists() && totalLength == target.length()) {
                 HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
                 return;
             }
 
             try {
-                if (totalLength <= 0) {
-                    HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
-                    return;
-                }
-
                 int threadCount = 4;
                 long blockSize = totalLength / threadCount;
 
@@ -269,7 +273,7 @@ public class HttpUtils {
                                     .build();
 
                             try (Response response = CLIENT.newCall(request).execute()) {
-                                if (!response.isSuccessful() || response.body() == null) return;
+                                if (!response.isSuccessful()) return;
 
                                 try (InputStream in = response.body().byteStream()) {
                                     byte[] buffer = new byte[8192];
@@ -277,11 +281,9 @@ public class HttpUtils {
                                     while ((len = in.read(buffer)) != -1) {
                                         raf.write(buffer, 0, len);
 
-                                        // 累加已下载长度
+                                        // 每下载1%回调一次下载进度
                                         long curDownloaded = downloaded.addAndGet(len);
                                         int percent = (int) ((curDownloaded * 100) / totalLength);
-
-                                        // 仅当当前百分比 > 上一次回调百分比时才回调
                                         int last = lastPercent.get();
                                         if (percent > last) {
                                             if (lastPercent.compareAndSet(last, percent)) {
@@ -333,9 +335,14 @@ public class HttpUtils {
     private static void downloadInternal(String url, DownloadCallback callback) {
         long totalLength = HttpHelper.fetchContentLength(CLIENT, url);
 
+        if (totalLength <= 0) {
+            HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+            return;
+        }
+
         // 检查文件是否已经完整下载，如果已经被下载成功则直接返回file path
         File downFile = new File(HttpHelper.getDownloadPath(url));
-        if (downFile.exists() && totalLength > 0 && totalLength == downFile.length()) {
+        if (downFile.exists() && totalLength == downFile.length()) {
             HttpHelper.postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
             return;
         }
@@ -355,14 +362,13 @@ public class HttpUtils {
         }
 
         try (Response response = CLIENT.newCall(builder.build()).execute()) {
-            if (!response.isSuccessful() || response.body() == null) {
+            if (!response.isSuccessful()) {
                 HttpHelper.postToUi(() -> callback.onFinished(false, null, "download fail: " + response));
                 return;
             }
 
             try (InputStream in = response.body().byteStream();
                  FileOutputStream out = new FileOutputStream(temp, true)) {
-
                 byte[] buffer = new byte[4096];
                 int len;
                 long sum = downloaded;
@@ -371,14 +377,12 @@ public class HttpUtils {
                 while ((len = in.read(buffer)) != -1) {
                     out.write(buffer, 0, len);
                     sum += len;
-
-                    if (totalLength > 0) {
-                        int percent = (int) ((sum * 100) / totalLength);
-                        if (percent > lastPercent) { // 每下载1%回调一次
-                            lastPercent = percent;
-                            long curSum = sum; // lambda里用final变量
-                            HttpHelper.postToUi(() -> callback.onProgress(totalLength, curSum, percent / 100f));
-                        }
+                    // 每下载1%回调一次下载进度
+                    int percent = (int) ((sum * 100) / totalLength);
+                    if (percent > lastPercent) {
+                        lastPercent = percent;
+                        long curSum = sum;
+                        HttpHelper.postToUi(() -> callback.onProgress(totalLength, curSum, percent / 100f));
                     }
                 }
             }
