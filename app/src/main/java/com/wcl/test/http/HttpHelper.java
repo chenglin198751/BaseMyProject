@@ -28,32 +28,32 @@ import okhttp3.Response;
 class HttpHelper {
 
     /**
-     * 异步下载文件（多线程切块下载 + 断点续传 + 进度按1%回调）
+     * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按1%回调）
      *
      * @param url      文件下载地址
      * @param callback 下载回调（主线程）
      */
     public static void fastDownload(String url, HttpUtils.DownloadCallback callback) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (!isValidUrl(url)) {
             callback.onFinished(false, null, "Invalid URL");
             return;
         }
 
         // 正在下载的不再重复下载
         if (!HttpUtils.DOWNLOADING_URLS.add(url)) {
-            HttpHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
+            postToUi(() -> callback.onFinished(false, null, "file is downloading"));
             return;
         }
 
         new Thread(() -> {
             try {
-                File target = new File(HttpHelper.getDownloadPath(url));
+                File target = new File(getDownloadPath(url));
                 File tempDir = new File(target.getAbsolutePath() + "_tmp");
-                tempDir.mkdirs();
+                if (!tempDir.exists()) tempDir.mkdirs();
 
-                long totalLength = HttpHelper.fetchContentLength(url);
+                long totalLength = fetchContentLength(url);
                 if (totalLength <= 0) {
-                    HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+                    postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
                     return;
                 }
 
@@ -64,8 +64,8 @@ class HttpHelper {
                 }
 
                 // 文件已经完整下载
-                if (target.exists() && totalLength == target.length()) {
-                    HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+                if (target.exists() && target.length() == totalLength) {
+                    postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
                     return;
                 }
 
@@ -76,6 +76,14 @@ class HttpHelper {
                 AtomicLong downloaded = new AtomicLong(0);
                 AtomicInteger lastPercent = new AtomicInteger(0);
 
+                // 计算已下载长度（每个分块已有文件）
+                for (int i = 0; i < threadCount; i++) {
+                    File partFile = new File(tempDir, "part_" + i);
+                    if (partFile.exists()) {
+                        downloaded.addAndGet(partFile.length());
+                    }
+                }
+
                 for (int i = 0; i < threadCount; i++) {
                     long start = i * blockSize;
                     long end = (i == threadCount - 1) ? totalLength - 1 : (start + blockSize - 1);
@@ -83,17 +91,12 @@ class HttpHelper {
 
                     threads[i] = new Thread(() -> {
                         File partFile = new File(tempDir, "part_" + index);
-
-                        long existingLength = partFile.exists() ? partFile.length() : 0;
-                        long rangeStart = start + existingLength; // 支持断点续传
-
-                        if (rangeStart > end) {
-                            downloaded.addAndGet(end - start + 1);
-                            return;
-                        }
+                        long existing = partFile.exists() ? partFile.length() : 0;
+                        long rangeStart = start + existing;
+                        if (rangeStart > end) return; // 已下载完成
 
                         try (RandomAccessFile raf = new RandomAccessFile(partFile, "rw")) {
-                            raf.seek(existingLength);
+                            raf.seek(existing);
 
                             Request request = new Request.Builder()
                                     .url(url)
@@ -109,16 +112,11 @@ class HttpHelper {
                                     while ((len = in.read(buffer)) != -1) {
                                         raf.write(buffer, 0, len);
 
-                                        // 每下载1%回调一次下载进度
                                         long curDownloaded = downloaded.addAndGet(len);
                                         int percent = (int) ((curDownloaded * 100) / totalLength);
                                         int last = lastPercent.get();
-                                        if (percent > last) {
-                                            if (lastPercent.compareAndSet(last, percent)) {
-                                                HttpHelper.postToUi(() ->
-                                                        callback.onProgress(totalLength, curDownloaded, percent)
-                                                );
-                                            }
+                                        if (percent > last && lastPercent.compareAndSet(last, percent)) {
+                                            postToUi(() -> callback.onProgress(totalLength, curDownloaded, percent));
                                         }
                                     }
                                 }
@@ -134,11 +132,13 @@ class HttpHelper {
                 // 等待所有线程完成
                 for (Thread t : threads) t.join();
 
-                // 合并文件
+                // 合并分块文件
                 try (RandomAccessFile out = new RandomAccessFile(target, "rw")) {
                     byte[] buffer = new byte[8192];
                     for (int i = 0; i < threadCount; i++) {
                         File partFile = new File(tempDir, "part_" + i);
+                        if (!partFile.exists()) continue;
+
                         try (RandomAccessFile partRaf = new RandomAccessFile(partFile, "r")) {
                             int len;
                             while ((len = partRaf.read(buffer)) != -1) {
@@ -150,12 +150,11 @@ class HttpHelper {
                 }
                 tempDir.delete();
 
-                // 下载完成回调
-                HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+                postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
 
             } catch (Throwable t) {
                 t.printStackTrace();
-                HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
+                postToUi(() -> callback.onFinished(false, null, t.toString()));
             } finally {
                 HttpUtils.DOWNLOADING_URLS.remove(url);
             }
