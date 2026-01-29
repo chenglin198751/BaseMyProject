@@ -288,7 +288,7 @@ public class HttpUtils {
                                         if (percent > last) {
                                             if (lastPercent.compareAndSet(last, percent)) {
                                                 HttpHelper.postToUi(() ->
-                                                        callback.onProgress(totalLength, curDownloaded, percent / 100f)
+                                                        callback.onProgress(totalLength, curDownloaded, percent)
                                                 );
                                             }
                                         }
@@ -382,7 +382,7 @@ public class HttpUtils {
                     if (percent > lastPercent) {
                         lastPercent = percent;
                         long curSum = sum;
-                        HttpHelper.postToUi(() -> callback.onProgress(totalLength, curSum, percent / 100f));
+                        HttpHelper.postToUi(() -> callback.onProgress(totalLength, curSum, percent));
                     }
                 }
             }
