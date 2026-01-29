@@ -218,7 +218,7 @@ public class HttpUtils {
             callback.onFinished(false, null, "非法 URL");
             return;
         }
-        AppThreadPoolExecutor.getExecutor().execute(() -> HttpHelper.downloadInternal(url, callback));
+        AppThreadPoolExecutor.getExecutor().execute(() -> HttpDownload.downloadInternal(url, callback));
     }
 
     /**
@@ -228,7 +228,7 @@ public class HttpUtils {
      * @param callback 下载回调（主线程）
      */
     public static void fastDownload(String url, DownloadCallback callback) {
-        HttpHelper.fastDownload(url, callback);
+        HttpDownload.fastDownload(url, callback);
     }
 
     /**
