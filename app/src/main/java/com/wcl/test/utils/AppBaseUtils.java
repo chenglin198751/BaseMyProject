@@ -291,9 +291,12 @@ public class AppBaseUtils {
     }
 
     /**
+     * 从任意 Context 中获取 Activity
      * 解决：Android 从 View 中获取 Activity 时遇到 TintContextWrapper cannot be cast to 的问题
      */
     public static Activity getActivityFromContext(Context context) {
+        if (context == null) return null;
+
         while (context instanceof ContextWrapper) {
             if (context instanceof Activity) {
                 return (Activity) context;
@@ -360,6 +363,13 @@ public class AppBaseUtils {
         return sb.toString();
     }
 
+    /**
+     * 判断Activity是否finish
+     */
+    public static boolean isActivityDestroyed(Context context) {
+        Activity activity = getActivityFromContext(context);
+        return activity == null || activity.isDestroyed() || activity.isFinishing();
+    }
 
     /**
      * 重启应用
