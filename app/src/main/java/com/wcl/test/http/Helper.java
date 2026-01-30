@@ -11,11 +11,7 @@ import com.wcl.test.utils.DeviceUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -25,7 +21,7 @@ import okhttp3.Response;
  * HttpHelper
  * 与 HTTP 协议无关的工具集合
  */
-class HttpHelper {
+class Helper {
 
     // 如果是有效url则返回true
     static boolean isValidUrl(String url) {

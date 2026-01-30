@@ -10,18 +10,13 @@ import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppThreadPoolExecutor;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.net.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -103,15 +98,15 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (!Helper.isValidUrl(url)) {
             callback.onResult(false, "Invalid URL");
             return;
         }
         if (params == null) {
             params = new HashMap<>();
         }
-        HttpHelper.addCommonParams(params);
-        String finalUrl = HttpHelper.buildGetUrl(url, params);
+        Helper.addCommonParams(params);
+        String finalUrl = Helper.buildGetUrl(url, params);
         Request request = buildRequest(finalUrl, headers).get().build();
         enqueue(context, request, callback);
     }
@@ -151,15 +146,15 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (!Helper.isValidUrl(url)) {
             callback.onResult(false, "Invalid URL");
             return;
         }
         if (params == null) {
             params = new HashMap<>();
         }
-        HttpHelper.addCommonParams(params);
-        FormBody body = HttpHelper.buildFormBody(params);
+        Helper.addCommonParams(params);
+        FormBody body = Helper.buildFormBody(params);
         Request request = buildRequest(url, headers).post(body).build();
         enqueue(context, request, callback);
     }
@@ -178,13 +173,13 @@ public class HttpUtils {
             String fileKey,
             File file
     ) {
-        if (!HttpHelper.isValidUrl(url) || file == null || !file.exists()) {
+        if (!Helper.isValidUrl(url) || file == null || !file.exists()) {
             return;
         }
         if (params == null) {
             params = new HashMap<>();
         }
-        HttpHelper.addCommonParams(params);
+        Helper.addCommonParams(params);
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
         for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -214,11 +209,11 @@ public class HttpUtils {
      * @param callback 下载回调（主线程）
      */
     public static void download(String url, DownloadCallback callback) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (!Helper.isValidUrl(url)) {
             callback.onFinished(false, null, "非法 URL");
             return;
         }
-        AppThreadPoolExecutor.getExecutor().execute(() -> HttpDownload.downloadInternal(url, callback));
+        AppThreadPoolExecutor.getExecutor().execute(() -> Downloader.downloadInternal(url, callback));
     }
 
     /**
@@ -228,7 +223,7 @@ public class HttpUtils {
      * @param callback 下载回调（主线程）
      */
     public static void fastDownload(String url, DownloadCallback callback) {
-        HttpDownload.fastDownload(url, callback);
+        Downloader.fastDownload(url, callback);
     }
 
     /**
@@ -239,17 +234,17 @@ public class HttpUtils {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 if (AppBaseUtils.isActivityDestroyed(context)) return;
-                HttpHelper.postToUi(() -> callback.onResult(false, e.toString()));
+                Helper.postToUi(() -> callback.onResult(false, e.toString()));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (AppBaseUtils.isActivityDestroyed(context)) return;
                 boolean ok = response.isSuccessful();
-                final String result = HttpHelper.removeUtf8Bom(ok ? response.body().string() : response.toString());
+                final String result = Helper.removeUtf8Bom(ok ? response.body().string() : response.toString());
                 AppLogUtils.v(TAG, "result:" + result);
                 response.close();
-                HttpHelper.postToUi(() -> callback.onResult(ok, result));
+                Helper.postToUi(() -> callback.onResult(ok, result));
             }
         });
     }
