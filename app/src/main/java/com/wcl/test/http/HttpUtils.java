@@ -242,7 +242,7 @@ public class HttpUtils {
                 if (AppBaseUtils.isActivityDestroyed(context)) return;
                 boolean ok = response.isSuccessful();
                 final String result = Helper.removeUtf8Bom(ok ? response.body().string() : response.toString());
-                AppLogUtils.v(TAG, "result:" + result);
+                AppLogUtils.i(TAG, "result:" + result);
                 response.close();
                 Helper.postToUi(() -> callback.onResult(ok, result));
             }
