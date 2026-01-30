@@ -10,10 +10,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * HttpHelper
- * 与 HTTP 协议无关的工具集合
- */
 class Downloader {
 
     /**
