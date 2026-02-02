@@ -14,67 +14,82 @@ class DownloadWorker implements Runnable {
     private final DownloadCallback2 callback;
     private final OkHttpClient client;
 
-    private volatile boolean isPaused = false;
-    private volatile boolean isCanceled = false;
+    private volatile boolean paused;
+    private volatile boolean canceled;
 
-    public DownloadWorker(DownloadTask task, DownloadCallback2 callback, OkHttpClient client) {
+    DownloadWorker(DownloadTask task,
+                   DownloadCallback2 callback,
+                   OkHttpClient client) {
         this.task = task;
         this.callback = callback;
         this.client = client;
     }
 
-    public void pause() {
-        isPaused = true;
+    void pause() {
+        paused = true;
     }
 
-    public void cancel() {
-        isCanceled = true;
+    void cancel() {
+        canceled = true;
     }
 
     @Override
     public void run() {
-        task.status = DownloadTask.Status.STATUS_DOWNLOADING;
-        DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(task));
+        File target = new File(task.savePath);
 
-        File targetFile = new File(task.savePath);
-        File tempFile = new File(task.savePath + ".temp");
+        // 已经下载完成则直接返回文件路径
+        if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
+            task.downloadedBytes = task.totalBytes;
+            task.progress = 100.0;
+            task.status = DownloadTask.Status.FINISHED;
+            notifyStatus();
+            return;
+        }
 
-        long downloaded = tempFile.exists() ? tempFile.length() : 0;
+        task.status = DownloadTask.Status.DOWNLOADING;
+        notifyStatus();
+
+        File temp = new File(task.savePath + ".temp");
+        long downloaded = temp.exists() ? temp.length() : 0;
+        task.downloadedBytes = downloaded;
+        task.progress = task.totalBytes > 0 ? Math.round((downloaded * 100.0 / task.totalBytes) * 100.0) / 100.0 : 0;
+
+        long lastCallbackTime = 0;
 
         try {
-            Request.Builder builder = new Request.Builder()
-                    .url(task.url);
+            Request.Builder builder = new Request.Builder().url(task.url);
             if (downloaded > 0) {
                 builder.addHeader("Range", "bytes=" + downloaded + "-");
             }
 
             Response response = client.newCall(builder.build()).execute();
             if (!response.isSuccessful()) {
-                throw new Exception("HTTP error code: " + response.code());
+                throw new RuntimeException("HTTP " + response.code());
             }
 
-            long totalBytes = task.totalBytes > 0 ? task.totalBytes : response.body().contentLength();
-            task.totalBytes = totalBytes;
+            if (task.totalBytes <= 0) {
+                task.totalBytes = response.body().contentLength();
+            }
 
             InputStream in = response.body().byteStream();
-            FileOutputStream out = new FileOutputStream(tempFile, true);
+            FileOutputStream out = new FileOutputStream(temp, true);
+
             byte[] buffer = new byte[8192];
             int len;
             long sum = downloaded;
-            long lastCallbackTime = System.currentTimeMillis();
 
             while ((len = in.read(buffer)) != -1) {
-                if (isPaused) {
-                    task.status = DownloadTask.Status.STATUS_PAUSED;
-                    DownloadUtils.runOnUiThread(() ->
-                            callback.onStatusChanged(task));
+
+                if (paused) {
+                    task.status = DownloadTask.Status.PAUSED;
+                    notifyStatus();
                     break;
                 }
-                if (isCanceled) {
-                    task.status = DownloadTask.Status.STATUS_CANCELED;
-                    task.errorMsg = "Task canceled";
-                    DownloadUtils.runOnUiThread(() ->
-                            callback.onStatusChanged(task));
+
+                if (canceled) {
+                    task.status = DownloadTask.Status.CANCELED;
+                    task.errorMsg = "canceled";
+                    notifyStatus();
                     break;
                 }
 
@@ -82,11 +97,11 @@ class DownloadWorker implements Runnable {
                 sum += len;
 
                 long now = System.currentTimeMillis();
-                if (now - lastCallbackTime >= 1000) { // 每秒回调一次
-                    double progress = Math.round((sum * 100.0 / totalBytes) * 100.0) / 100.0;
-                    DownloadUtils.runOnUiThread(() ->
-                            callback.onProgress(task, totalBytes, progress));
+                if (now - lastCallbackTime >= 1000) { // 每秒更新一次
                     lastCallbackTime = now;
+                    task.downloadedBytes = sum;
+                    task.progress = Math.round((sum * 100.0 / task.totalBytes) * 100.0) / 100.0;
+                    notifyProgress();
                 }
             }
 
@@ -95,20 +110,29 @@ class DownloadWorker implements Runnable {
             in.close();
             response.close();
 
-            if (!isPaused && !isCanceled) {
-                DownloadUtils.replaceFile(tempFile, targetFile);
-                task.status = DownloadTask.Status.STATUS_FINISHED;
-                DownloadUtils.runOnUiThread(() -> {
-                    callback.onStatusChanged(task);
-                });
+            if (!paused && !canceled) {
+                // 替换文件，确保完整
+                DownloadUtils.replaceFile(temp, target);
+                task.downloadedBytes = task.totalBytes;
+                task.progress = 100.0;
+                task.status = DownloadTask.Status.FINISHED;
+                notifyStatus();
             }
 
         } catch (Throwable t) {
-            t.printStackTrace();
-            task.status = DownloadTask.Status.STATUS_ERROR;
+            task.status = DownloadTask.Status.ERROR;
             task.errorMsg = t.toString();
-            DownloadUtils.runOnUiThread(() ->
-                    callback.onStatusChanged(task));
+            notifyStatus();
         }
+    }
+
+    private void notifyProgress() {
+        DownloadUtils.runOnUiThread(() ->
+                callback.onProgress(task.taskId));
+    }
+
+    private void notifyStatus() {
+        DownloadUtils.runOnUiThread(() ->
+                callback.onStatusChanged(task.taskId));
     }
 }

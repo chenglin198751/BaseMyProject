@@ -1,5 +1,7 @@
 package com.wcl.test.download;
 
+import java.io.File;
+
 public class DownloadTask {
 
     public enum Status {
@@ -24,6 +26,8 @@ public class DownloadTask {
     public volatile long totalBytes;
     public volatile Status status;
     public volatile String errorMsg;
+    public volatile long downloadedBytes;
+    public volatile double progress;
 
     public DownloadTask(String taskId,
                         String url,

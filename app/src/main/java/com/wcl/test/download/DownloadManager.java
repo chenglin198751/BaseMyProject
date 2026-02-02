@@ -1,7 +1,6 @@
 package com.wcl.test.download;
 
-import androidx.annotation.NonNull;
-
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,155 +10,126 @@ import java.util.concurrent.Executors;
 import okhttp3.OkHttpClient;
 
 public class DownloadManager {
-    private static final int MAX_THREAD = 4;
 
-    private static volatile DownloadManager instance;
+    private static final int MAX_THREAD = 4;
+    private static volatile DownloadManager sInstance;
+
     private final ExecutorService executor;
     private final OkHttpClient client;
     private final DownloadDBHelper dbHelper;
-    private final Map<String, DownloadWorker> workerMap;
+
     private final Map<String, DownloadTask> taskMap;
+    private final Map<String, DownloadWorker> workerMap;
 
     private DownloadManager() {
-        this.executor = Executors.newFixedThreadPool(MAX_THREAD);
-        this.client = new OkHttpClient();
-        this.dbHelper = new DownloadDBHelper();
-        this.workerMap = Collections.synchronizedMap(new HashMap<>());
-        this.taskMap = Collections.synchronizedMap(new HashMap<>());
+        executor = Executors.newFixedThreadPool(MAX_THREAD);
+        client = new OkHttpClient();
+        dbHelper = new DownloadDBHelper();
 
-        loadTasksFromDB();
+        taskMap = Collections.synchronizedMap(new HashMap<>());
+        workerMap = Collections.synchronizedMap(new HashMap<>());
+
+        for (DownloadTask t : dbHelper.loadAllTasks()) {
+            taskMap.put(t.taskId, t);
+        }
     }
 
     public static DownloadManager ins() {
-        if (instance == null) {
+        if (sInstance == null) {
             synchronized (DownloadManager.class) {
-                if (instance == null) {
-                    instance = new DownloadManager();
+                if (sInstance == null) {
+                    sInstance = new DownloadManager();
                 }
             }
         }
-        return instance;
+        return sInstance;
     }
 
-    // 加载 DB 中已有任务
-    private void loadTasksFromDB() {
-        for (DownloadTask task : dbHelper.loadAllTasks()) {
-            taskMap.put(task.taskId, task);
-        }
-    }
-
-    /**
-     * 添加下载任务
-     *
-     * @param url        下载地址
-     * @param totalBytes 文件总大小（0 可在下载中获取）
-     * @param callback   回调
-     */
     public void enqueue(String url, long totalBytes, DownloadCallback2 callback) {
-        if (!DownloadUtils.isValidUrl(url)) {
-            if (callback != null) {
-                DownloadTask dt = new DownloadTask(url, totalBytes);
-                dt.errorMsg = "Invalid URL";
-                dt.status = DownloadTask.Status.STATUS_ERROR;
-                callback.onStatusChanged(dt);
-            }
-            return;
-        }
+
+        if (!DownloadUtils.isValidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
+
         if (task == null) {
-            task = new DownloadTask(url, totalBytes);
-            taskMap.put(task.taskId, task);
+            task = new DownloadTask(
+                    taskId,
+                    url,
+                    DownloadUtils.getDownloadPath(url),
+                    totalBytes
+            );
+            taskMap.put(taskId, task);
             dbHelper.saveTask(task);
         }
 
-        // 避免重复下载
-        if (workerMap.containsKey(task.taskId)) {
-            if (callback != null)
-                callback.onStatusChanged(task);
+        // ====== 已完成，直接回调 ======
+        File target = new File(task.savePath);
+        if (target.exists() && task.totalBytes > 0
+                && target.length() == task.totalBytes) {
+
+            task.status = DownloadTask.Status.FINISHED;
+            DownloadUtils.runOnUiThread(() ->
+                    callback.onStatusChanged(taskId));
             return;
         }
 
-        DownloadWorker worker = getDownloadWorker(callback, task);
-        workerMap.put(task.taskId, worker);
-        executor.submit(worker);
+        // 正在下载，直接返回
+        if (workerMap.containsKey(taskId)) {
+            return;
+        }
+
+        DownloadWorker worker = new DownloadWorker(
+                task,
+                wrapCallback(callback),
+                client
+        );
+
+        workerMap.put(taskId, worker);
+        executor.execute(worker);
     }
 
-    @NonNull
-    private DownloadWorker getDownloadWorker(DownloadCallback2 callback, DownloadTask task) {
-        return new DownloadWorker(task, new DownloadCallback2() {
+    private DownloadCallback2 wrapCallback(DownloadCallback2 cb) {
+        return new DownloadCallback2() {
+
             @Override
-            public void onProgress(DownloadTask dt, long totalBytes, double progress) {
-                if (callback != null)
-                    callback.onProgress(dt, totalBytes, progress);
+            public void onProgress(String taskId) {
+                if (cb != null) cb.onProgress(taskId);
             }
 
             @Override
-            public void onStatusChanged(DownloadTask task) {
-                dbHelper.saveTask(task);
-                if (callback != null) callback.onStatusChanged(task);
-
-                if (task.status == DownloadTask.Status.STATUS_FINISHED ||
-                        task.status == DownloadTask.Status.STATUS_ERROR ||
-                        task.status == DownloadTask.Status.STATUS_CANCELED ||
-                        task.status == DownloadTask.Status.STATUS_PAUSED) {
-                    workerMap.remove(task.taskId);
+            public void onStatusChanged(String taskId) {
+                DownloadTask task = taskMap.get(taskId);
+                if (task != null) {
+                    dbHelper.saveTask(task);
+                    if (task.status != DownloadTask.Status.DOWNLOADING) {
+                        workerMap.remove(taskId);
+                    }
                 }
+                if (cb != null) cb.onStatusChanged(taskId);
             }
-        }, client);
+        };
     }
 
-    /**
-     * 暂停任务
-     */
     public void pause(String url) {
-        String taskId = DownloadUtils.getTaskId(url);
-        DownloadWorker worker = workerMap.get(taskId);
-        if (worker != null) {
-            worker.pause();
-        } else {
-            DownloadTask task = taskMap.get(taskId);
-            if (task != null && task.status == DownloadTask.Status.STATUS_DOWNLOADING) {
-                task.status = DownloadTask.Status.STATUS_PAUSED;
-                dbHelper.saveTask(task);
-            }
-        }
+        DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
+        if (w != null) w.pause();
     }
 
-    /**
-     * 恢复任务
-     */
-    public void resume(String url, DownloadCallback2 callback) {
-        String taskId = DownloadUtils.getTaskId(url);
-        DownloadTask task = taskMap.get(taskId);
-        if (task != null && (task.status == DownloadTask.Status.STATUS_PAUSED ||
-                task.status == DownloadTask.Status.STATUS_ERROR)) {
-            enqueue(task.url, task.totalBytes, callback);
-        }
+    public void resume(String url, DownloadCallback2 cb) {
+        enqueue(url, 0, cb);
     }
 
-    /**
-     * 取消任务
-     */
     public void cancel(String url) {
-        String taskId = DownloadUtils.getTaskId(url);
-        DownloadWorker worker = workerMap.get(taskId);
-        if (worker != null) {
-            worker.cancel();
-        } else {
-            DownloadTask task = taskMap.get(taskId);
-            if (task != null) {
-                task.status = DownloadTask.Status.STATUS_CANCELED;
-                dbHelper.saveTask(task);
-            }
-        }
+        DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
+        if (w != null) w.cancel();
     }
 
-    /**
-     * 获取任务信息
-     */
+    public String getTaskId(String url) {
+        return DownloadUtils.getTaskId(url);
+    }
+
     public DownloadTask getTask(String url) {
-        return taskMap.get(DownloadUtils.getTaskId(url));
+        return taskMap.get(getTaskId(url));
     }
 }
