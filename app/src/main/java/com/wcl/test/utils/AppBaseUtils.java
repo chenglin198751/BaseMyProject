@@ -231,9 +231,9 @@ public class AppBaseUtils {
     /**
      * versionCode
      */
-    public static String getVerCode() {
+    public static long getVerCode() {
         ensureInitVersionInfo();
-        return String.valueOf(sVersionCode);
+        return sVersionCode;
     }
 
     /**
