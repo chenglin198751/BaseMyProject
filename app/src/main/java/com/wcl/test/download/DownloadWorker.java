@@ -83,9 +83,8 @@ class DownloadWorker implements Runnable {
                 long now = System.currentTimeMillis();
                 if (now - lastCallbackTime >= 1000) { // 每秒回调一次
                     double progress = Math.round((sum * 100.0 / totalBytes) * 100.0) / 100.0;
-                    long finalSum = sum;
                     DownloadUtils.runOnUiThread(() ->
-                            callback.onProgress(task.taskId, finalSum, totalBytes, progress));
+                            callback.onProgress(task.taskId, totalBytes, progress));
                     lastCallbackTime = now;
                 }
             }

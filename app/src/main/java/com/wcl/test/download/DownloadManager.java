@@ -86,9 +86,9 @@ public class DownloadManager {
     private DownloadWorker getDownloadWorker(DownloadCallback callback, DownloadTask task) {
         return new DownloadWorker(task, new DownloadCallback() {
             @Override
-            public void onProgress(String tId, long downloadedBytes, long totalBytes, double progress) {
+            public void onProgress(String tId, long totalBytes, double progress) {
                 if (callback != null)
-                    callback.onProgress(tId, downloadedBytes, totalBytes, progress);
+                    callback.onProgress(tId, totalBytes, progress);
             }
 
             @Override

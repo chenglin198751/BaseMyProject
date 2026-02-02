@@ -1,7 +1,5 @@
 package com.wcl.test.download;
 
-import com.wcl.test.utils.AppFileUtils;
-
 import java.io.File;
 
 public class DownloadTask {
