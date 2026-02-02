@@ -1,21 +1,17 @@
 package com.wcl.test.utils;
 
-import android.os.Build;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.wcl.test.base.BaseApp;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,176 +20,248 @@ public class FileUtils {
     private static final String TAG = "FileUtils";
 
     /**
-     * 不需要存储权限
-     * <p>
-     * 现在的Android应用将文件放到SD卡上时总是随便创建一个目录，那这样有个问题就是卸载应用时，
-     * 这些垃圾还留在用户的SD卡上导致占用存储空间（猎豹清理大师这样的工具由此应用而生）。
-     * 其实Android系统已经帮我们提供了相关的API可以将文件缓存到data/data目录下，
-     * 当APP卸载时，这些垃圾文件也跟着自动卸载清除了。
-     * <p>
-     * 2021-05-21 修正补充：
-     * 由于安卓11对文件存储有很大限制，导致data/data无法正常使用。故此方法弃用.
-     * 所以存储统一改为使用 getExternalFilesDir() 方法
-     * 获取外部存储卡路径：比如：/storage/emulated/0/Android/data/包名/files
+     * 获取应用私有的可写文件目录路径（不需要存储权限）
+     * 1、优先使用外部存储的 App 私有目录：
+     * /storage/emulated/0/Android/data/{packageName}/files
+     * 2、当外部存储不可用时，回退到内部存储：
+     * /data/data/{packageName}/files
      */
-    public static String getExternalPath() {
-        File file = BaseApp.getApp().getExternalFilesDir("");
-        if (file == null) {
-            file = BaseApp.getApp().getFilesDir();
+    public static String getAppFilesPath() {
+        Context context = BaseApp.getApp();
+        File dir = context.getExternalFilesDir(null);
+        if (dir == null) {
+            dir = context.getFilesDir();
         }
-        return file.getAbsolutePath();
+        return dir.getAbsolutePath();
     }
 
+    /**
+     * 递归计算文件或文件夹的总大小
+     *
+     * @param folder 文件或目录
+     * @return 字节数，异常时返回 0
+     */
     public static long getFolderSize(File folder) {
+        if (folder == null || !folder.exists()) {
+            return 0;
+        }
+
+        if (folder.isFile()) {
+            return folder.length();
+        }
+
         long size = 0;
-        if (folder.isDirectory()) {
-            File[] files = folder.listFiles();
-            if (files == null) {
-                return size;
-            }
-            for (File file : files) {
-                if (file.isFile()) {
-                    size += file.length();
-                } else {
-                    size += getFolderSize(file);
-                }
-            }
-        } else {
-            size += folder.length();
+        File[] files = folder.listFiles();
+        if (files == null) {
+            return 0;
+        }
+
+        for (File file : files) {
+            size += getFolderSize(file);
         }
         return size;
     }
 
-    public static void delete(String file2) {
-        File file = new File(file2);
-        if (!file.exists()) return;
+    /**
+     * 删除文件或目录（递归）
+     * - 如果是文件，直接删除
+     * - 如果是目录，先删除子文件再删除目录本身
+     *
+     * @param path 文件或目录路径
+     */
+    public static void delete(String path) {
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
+        deleteInternal(new File(path));
+    }
+
+    private static void deleteInternal(File file) {
+        if (!file.exists()) {
+            return;
+        }
 
         if (file.isFile()) {
-            boolean deleted = file.delete();
-            if (!deleted) {
-                Log.e(TAG, "Failed to delete file: " + file2);
+            if (!file.delete()) {
+                Log.e(TAG, "Failed to delete file: " + file.getAbsolutePath());
             }
             return;
         }
 
         File[] files = file.listFiles();
         if (files != null) {
-            for (File subFile : files) {
-                delete(subFile.getAbsolutePath());
+            for (File sub : files) {
+                deleteInternal(sub);
             }
         }
 
-        boolean deleted = file.delete();
-        if (!deleted) {
-            Log.e(TAG, "Failed to delete directory: " + file2);
+        if (!file.delete()) {
+            Log.e(TAG, "Failed to delete directory: " + file.getAbsolutePath());
         }
     }
 
-    public static void writeFile(String file_path, String text) {
-        if (TextUtils.isEmpty(file_path)) return;
-
-        File file = new File(file_path);
-        if (!file.exists()) {
-            try {
-                if (!file.getParentFile().exists()) {
-                    file.getParentFile().mkdirs();
-                }
-                file.createNewFile();
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to create file: " + file_path, e);
-                return;
-            }
+    /**
+     * 追加写入文本到文件（UTF-8）
+     * - 文件不存在会自动创建
+     * - 父目录不存在会自动创建
+     * - 以追加方式写入
+     *
+     * @param filePath 文件路径
+     * @param text     要写入的内容
+     */
+    public static void writeFile(String filePath, String text) {
+        if (TextUtils.isEmpty(filePath) || text == null) {
+            return;
         }
 
-        try (FileWriter fileWriter = new FileWriter(file_path, true)) {
-            fileWriter.write(text);
+        File file = new File(filePath);
+        ensureParentDir(file);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            writer.write(text);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to write file: " + file_path, e);
+            Log.e(TAG, "Failed to write file: " + filePath, e);
         }
     }
 
-    private static String readFileString(String file_path) {
-        if (TextUtils.isEmpty(file_path)) return null;
+    /**
+     * 以 UTF-8 编码读取整个文件内容为字符串
+     *
+     * @param filePath 文件路径
+     * @return 文件内容，失败返回 null
+     */
+    private static String readFileString(String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
+            return null;
+        }
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            return null;
+        }
 
         try {
-            Path path = Paths.get(file_path);
-            return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            return new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to read file as string: " + file_path, e);
+            Log.e(TAG, "Failed to read file: " + filePath, e);
         }
         return null;
     }
 
+    /**
+     * 按行读取文件（UTF-8）
+     *
+     * @param filePath 文件路径
+     * @return 行列表，失败返回空列表
+     */
     public static List<String> readFileLines(String filePath) {
         List<String> lines = new ArrayList<>();
-        if (TextUtils.isEmpty(filePath)) return lines;
+        if (TextUtils.isEmpty(filePath)) {
+            return lines;
+        }
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            return lines;
+        }
 
         try {
-            Path path = Paths.get(filePath);
-            lines.addAll(Files.readAllLines(path, StandardCharsets.UTF_8));
+            lines.addAll(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             Log.e(TAG, "Failed to read file lines: " + filePath, e);
         }
         return lines;
     }
 
+    /**
+     * 覆盖写入多行文本到文件（UTF-8）
+     *
+     * <p>
+     * - 原文件内容会被清空
+     * - 每行自动追加系统换行符
+     *
+     * @param filePath 文件路径
+     * @param lines    文本行集合
+     */
     public static void writeFileLines(String filePath, Iterable<String> lines) {
-        if (TextUtils.isEmpty(filePath)) return;
+        if (TextUtils.isEmpty(filePath) || lines == null) {
+            return;
+        }
 
         File file = new File(filePath);
-        try {
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-            try (FileWriter fileWriter = new FileWriter(file, false)) {
-                for (String line : lines) {
-                    fileWriter.write(line);
-                    fileWriter.write(System.lineSeparator());
-                }
+        ensureParentDir(file);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
             }
         } catch (IOException e) {
             Log.e(TAG, "Failed to write file lines: " + filePath, e);
         }
     }
 
+    /**
+     * 递归复制目录
+     *
+     * @param fromDir 源目录
+     * @param toDir   目标目录
+     */
     public static void copyDirectory(File fromDir, File toDir) {
-        if (!fromDir.isDirectory()) return;
+        if (fromDir == null || toDir == null || !fromDir.isDirectory()) {
+            return;
+        }
 
         if (!toDir.exists() && !toDir.mkdirs()) {
-            Log.e(TAG, "Failed to create target directory: " + toDir.getAbsolutePath());
+            Log.e(TAG, "Failed to create directory: " + toDir.getAbsolutePath());
             return;
         }
 
         File[] files = fromDir.listFiles();
-        if (files == null) return;
+        if (files == null) {
+            return;
+        }
 
         for (File file : files) {
-            File targetFile = new File(toDir, file.getName());
+            File target = new File(toDir, file.getName());
             if (file.isDirectory()) {
-                copyDirectory(file, targetFile);
+                copyDirectory(file, target);
             } else {
-                copyFile(file, targetFile);
+                copyFile(file, target);
             }
         }
     }
 
+    /**
+     * 复制单个文件
+     *
+     * @param source 源文件
+     * @param dest   目标文件
+     */
     public static void copyFile(File source, File dest) {
-        if (source == null || dest == null) return;
+        if (source == null || dest == null || !source.exists()) {
+            return;
+        }
+
+        ensureParentDir(dest);
 
         try {
-            if (dest.exists() && !dest.delete()) {
-                Log.e(TAG, "Failed to delete existing file: " + dest.getAbsolutePath());
-                return;
-            }
-
-            if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
-                Log.e(TAG, "Failed to create parent directories for: " + dest.getAbsolutePath());
-                return;
-            }
-
             Files.copy(source.toPath(), dest.toPath());
         } catch (IOException e) {
-            Log.e(TAG, "Failed to copy file from " + source.getAbsolutePath() + " to " + dest.getAbsolutePath(), e);
+            Log.e(TAG, "Failed to copy file from " + source + " to " + dest, e);
+        }
+    }
+
+    // ---------------- Internal ----------------
+
+    /**
+     * 确保父目录存在
+     */
+    private static void ensureParentDir(File file) {
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
         }
     }
 }
