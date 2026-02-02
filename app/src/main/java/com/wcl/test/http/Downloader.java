@@ -1,5 +1,7 @@
 package com.wcl.test.http;
 
+import com.wcl.test.utils.AppBaseUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -98,10 +100,14 @@ class Downloader {
                                         raf.write(buffer, 0, len);
 
                                         long curDownloaded = downloaded.addAndGet(len);
-                                        int percent = (int) ((curDownloaded * 100) / totalLength);
+                                        float floatPercent = (curDownloaded * 100f) / totalLength;
+                                        int percent = (int) floatPercent;
                                         int last = lastPercent.get();
                                         if (percent > last && lastPercent.compareAndSet(last, percent)) {
-                                            Helper.postToUi(() -> callback.onProgress(totalLength, curDownloaded, percent));
+                                            Helper.postToUi(() -> {
+                                                float f = AppBaseUtils.formatFloat(floatPercent, 2);
+                                                callback.onProgress(totalLength, curDownloaded, f);
+                                            });
                                         }
                                     }
                                 }
@@ -191,12 +197,17 @@ class Downloader {
                 while ((len = in.read(buffer)) != -1) {
                     out.write(buffer, 0, len);
                     sum += len;
+
                     // 每下载1%回调一次下载进度
-                    int percent = (int) ((sum * 100) / totalLength);
+                    float floatPercent = (sum * 100f) / totalLength;
+                    int percent = (int) floatPercent;
                     if (percent > lastPercent) {
                         lastPercent = percent;
                         long curSum = sum;
-                        Helper.postToUi(() -> callback.onProgress(totalLength, curSum, percent));
+                        Helper.postToUi(() -> {
+                            float f = AppBaseUtils.formatFloat(floatPercent, 2);
+                            callback.onProgress(totalLength, curSum, f);
+                        });
                     }
                 }
             }

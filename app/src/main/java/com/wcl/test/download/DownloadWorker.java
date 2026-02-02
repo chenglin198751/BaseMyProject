@@ -1,0 +1,109 @@
+package com.wcl.test.download;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+public class DownloadWorker implements Runnable {
+
+    private final DownloadTask task;
+    private final DownloadCallback callback;
+    private final OkHttpClient client;
+
+    private volatile boolean isPaused = false;
+    private volatile boolean isCanceled = false;
+
+    public DownloadWorker(DownloadTask task, DownloadCallback callback, OkHttpClient client) {
+        this.task = task;
+        this.callback = callback;
+        this.client = client;
+    }
+
+    public void pause() { isPaused = true; }
+    public void cancel() { isCanceled = true; }
+
+    @Override
+    public void run() {
+        task.status = DownloadTask.STATUS_DOWNLOADING;
+        DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(task.taskId, task.status, null));
+
+        File targetFile = new File(task.savePath);
+        File tempFile = new File(task.savePath + ".temp");
+
+        long downloaded = tempFile.exists() ? tempFile.length() : 0;
+
+        try {
+            Request.Builder builder = new Request.Builder()
+                    .url(task.url);
+            if (downloaded > 0) {
+                builder.addHeader("Range", "bytes=" + downloaded + "-");
+            }
+
+            Response response = client.newCall(builder.build()).execute();
+            if (!response.isSuccessful()) {
+                throw new Exception("HTTP error code: " + response.code());
+            }
+
+            long totalBytes = task.totalBytes > 0 ? task.totalBytes : response.body().contentLength();
+            task.totalBytes = totalBytes;
+
+            InputStream in = response.body().byteStream();
+            FileOutputStream out = new FileOutputStream(tempFile, true);
+            byte[] buffer = new byte[8192];
+            int len;
+            long sum = downloaded;
+            long lastCallbackTime = System.currentTimeMillis();
+
+            while ((len = in.read(buffer)) != -1) {
+                if (isPaused) {
+                    task.status = DownloadTask.STATUS_PAUSED;
+                    DownloadUtils.runOnUiThread(() ->
+                            callback.onStatusChanged(task.taskId, task.status, null));
+                    break;
+                }
+                if (isCanceled) {
+                    task.status = DownloadTask.STATUS_CANCELED;
+                    DownloadUtils.runOnUiThread(() ->
+                            callback.onStatusChanged(task.taskId, task.status, "Canceled"));
+                    break;
+                }
+
+                out.write(buffer, 0, len);
+                sum += len;
+
+                long now = System.currentTimeMillis();
+                if (now - lastCallbackTime >= 1000) { // 每秒回调一次
+                    double progress = Math.round((sum * 100.0 / totalBytes) * 100.0) / 100.0;
+                    long finalSum = sum;
+                    DownloadUtils.runOnUiThread(() ->
+                            callback.onProgress(task.taskId, finalSum, totalBytes, progress));
+                    lastCallbackTime = now;
+                }
+            }
+
+            out.flush();
+            out.close();
+            in.close();
+            response.close();
+
+            if (!isPaused && !isCanceled) {
+                DownloadUtils.replaceFile(tempFile, targetFile);
+                task.status = DownloadTask.STATUS_FINISHED;
+                DownloadUtils.runOnUiThread(() -> {
+                    callback.onStatusChanged(task.taskId, task.status, null);
+                    callback.onFinished(task.taskId, task.savePath);
+                });
+            }
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+            task.status = DownloadTask.STATUS_ERROR;
+            DownloadUtils.runOnUiThread(() ->
+                    callback.onStatusChanged(task.taskId, task.status, t.toString()));
+        }
+    }
+}
