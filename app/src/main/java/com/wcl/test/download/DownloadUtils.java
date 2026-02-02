@@ -11,6 +11,7 @@ import com.wcl.test.utils.AppFileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 class DownloadUtils {
@@ -19,7 +20,7 @@ class DownloadUtils {
     public static String md5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] bytes = md.digest(input.getBytes("UTF-8"));
+            byte[] bytes = md.digest(input.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
             for (byte b : bytes) {
                 sb.append(String.format("%02x", b & 0xff));
@@ -38,7 +39,7 @@ class DownloadUtils {
 
     // UI 线程执行
     public static void runOnUiThread(Runnable r) {
-        new Handler(Looper.getMainLooper()).post(r);
+        AppBaseUtils.getUiHandler().post(r);
     }
 
     // 替换文件（下载完成后覆盖）
