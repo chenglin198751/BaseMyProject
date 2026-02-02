@@ -18,6 +18,7 @@ public class DownloadTask {
     public String savePath;
     public long totalBytes;
     public Status status;
+    public String errorMsg;
 
     public DownloadTask(String url, long totalBytes) {
         this.url = url;

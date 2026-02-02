@@ -8,10 +8,9 @@ import android.view.ViewGroup;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
-import com.wcl.test.http.HttpUtils;
-import com.wcl.test.utils.AppBaseUtils;
-import com.wcl.test.utils.AppConstants;
-import com.wcl.test.widget.CommonDialog;
+import com.wcl.test.download.DownloadCallback2;
+import com.wcl.test.download.DownloadManager;
+import com.wcl.test.download.DownloadTask;
 
 
 /**

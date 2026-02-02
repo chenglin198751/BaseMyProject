@@ -11,13 +11,13 @@ import okhttp3.Response;
 class DownloadWorker implements Runnable {
 
     private final DownloadTask task;
-    private final DownloadCallback callback;
+    private final DownloadCallback2 callback;
     private final OkHttpClient client;
 
     private volatile boolean isPaused = false;
     private volatile boolean isCanceled = false;
 
-    public DownloadWorker(DownloadTask task, DownloadCallback callback, OkHttpClient client) {
+    public DownloadWorker(DownloadTask task, DownloadCallback2 callback, OkHttpClient client) {
         this.task = task;
         this.callback = callback;
         this.client = client;
@@ -34,7 +34,7 @@ class DownloadWorker implements Runnable {
     @Override
     public void run() {
         task.status = DownloadTask.Status.STATUS_DOWNLOADING;
-        DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(task.taskId, task.status, null));
+        DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(task));
 
         File targetFile = new File(task.savePath);
         File tempFile = new File(task.savePath + ".temp");
@@ -67,13 +67,14 @@ class DownloadWorker implements Runnable {
                 if (isPaused) {
                     task.status = DownloadTask.Status.STATUS_PAUSED;
                     DownloadUtils.runOnUiThread(() ->
-                            callback.onStatusChanged(task.taskId, task.status, null));
+                            callback.onStatusChanged(task));
                     break;
                 }
                 if (isCanceled) {
                     task.status = DownloadTask.Status.STATUS_CANCELED;
+                    task.errorMsg = "Task canceled";
                     DownloadUtils.runOnUiThread(() ->
-                            callback.onStatusChanged(task.taskId, task.status, "Canceled"));
+                            callback.onStatusChanged(task));
                     break;
                 }
 
@@ -84,7 +85,7 @@ class DownloadWorker implements Runnable {
                 if (now - lastCallbackTime >= 1000) { // 每秒回调一次
                     double progress = Math.round((sum * 100.0 / totalBytes) * 100.0) / 100.0;
                     DownloadUtils.runOnUiThread(() ->
-                            callback.onProgress(task.taskId, totalBytes, progress));
+                            callback.onProgress(task, totalBytes, progress));
                     lastCallbackTime = now;
                 }
             }
@@ -98,16 +99,16 @@ class DownloadWorker implements Runnable {
                 DownloadUtils.replaceFile(tempFile, targetFile);
                 task.status = DownloadTask.Status.STATUS_FINISHED;
                 DownloadUtils.runOnUiThread(() -> {
-                    callback.onStatusChanged(task.taskId, task.status, null);
-                    callback.onFinished(task.taskId, task.savePath);
+                    callback.onStatusChanged(task);
                 });
             }
 
         } catch (Throwable t) {
             t.printStackTrace();
             task.status = DownloadTask.Status.STATUS_ERROR;
+            task.errorMsg = t.toString();
             DownloadUtils.runOnUiThread(() ->
-                    callback.onStatusChanged(task.taskId, task.status, t.toString()));
+                    callback.onStatusChanged(task));
         }
     }
 }

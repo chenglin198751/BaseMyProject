@@ -55,10 +55,14 @@ public class DownloadManager {
      * @param totalBytes 文件总大小（0 可在下载中获取）
      * @param callback   回调
      */
-    public void enqueue(String url, long totalBytes, DownloadCallback callback) {
+    public void enqueue(String url, long totalBytes, DownloadCallback2 callback) {
         if (!DownloadUtils.isValidUrl(url)) {
-            if (callback != null)
-                callback.onStatusChanged(url, DownloadTask.Status.STATUS_ERROR, "Invalid URL");
+            if (callback != null) {
+                DownloadTask dt = new DownloadTask(url, totalBytes);
+                dt.errorMsg = "Invalid URL";
+                dt.status = DownloadTask.Status.STATUS_ERROR;
+                callback.onStatusChanged(dt);
+            }
             return;
         }
 
@@ -73,7 +77,7 @@ public class DownloadManager {
         // 避免重复下载
         if (workerMap.containsKey(task.taskId)) {
             if (callback != null)
-                callback.onStatusChanged(task.taskId, DownloadTask.Status.STATUS_DOWNLOADING, "Already downloading");
+                callback.onStatusChanged(task);
             return;
         }
 
@@ -83,31 +87,25 @@ public class DownloadManager {
     }
 
     @NonNull
-    private DownloadWorker getDownloadWorker(DownloadCallback callback, DownloadTask task) {
-        return new DownloadWorker(task, new DownloadCallback() {
+    private DownloadWorker getDownloadWorker(DownloadCallback2 callback, DownloadTask task) {
+        return new DownloadWorker(task, new DownloadCallback2() {
             @Override
-            public void onProgress(String tId, long totalBytes, double progress) {
+            public void onProgress(DownloadTask dt, long totalBytes, double progress) {
                 if (callback != null)
-                    callback.onProgress(tId, totalBytes, progress);
+                    callback.onProgress(dt, totalBytes, progress);
             }
 
             @Override
-            public void onStatusChanged(String tId, DownloadTask.Status status, String errorMsg) {
-                task.status = status;
+            public void onStatusChanged(DownloadTask task) {
                 dbHelper.saveTask(task);
-                if (callback != null) callback.onStatusChanged(tId, status, errorMsg);
+                if (callback != null) callback.onStatusChanged(task);
 
-                if (status == DownloadTask.Status.STATUS_FINISHED ||
-                        status == DownloadTask.Status.STATUS_ERROR ||
-                        status == DownloadTask.Status.STATUS_CANCELED ||
-                        status == DownloadTask.Status.STATUS_PAUSED) {
-                    workerMap.remove(tId);
+                if (task.status == DownloadTask.Status.STATUS_FINISHED ||
+                        task.status == DownloadTask.Status.STATUS_ERROR ||
+                        task.status == DownloadTask.Status.STATUS_CANCELED ||
+                        task.status == DownloadTask.Status.STATUS_PAUSED) {
+                    workerMap.remove(task.taskId);
                 }
-            }
-
-            @Override
-            public void onFinished(String tId, String filePath) {
-                if (callback != null) callback.onFinished(tId, filePath);
             }
         }, client);
     }
@@ -132,7 +130,7 @@ public class DownloadManager {
     /**
      * 恢复任务
      */
-    public void resume(String url, DownloadCallback callback) {
+    public void resume(String url, DownloadCallback2 callback) {
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
         if (task != null && (task.status == DownloadTask.Status.STATUS_PAUSED ||
