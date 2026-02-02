@@ -119,7 +119,7 @@ class DownloadWorker implements Runnable {
 
             if (canceled) {
                 task.status = DownloadTask.Status.DELETED;
-                task.errorMsg = "Task canceled";
+                task.errorMsg = "Task deleted";
                 notifyStatus();
             } else if (paused) {
                 task.status = DownloadTask.Status.PAUSED;
