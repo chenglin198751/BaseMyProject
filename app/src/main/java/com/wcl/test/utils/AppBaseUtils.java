@@ -43,14 +43,10 @@ import java.security.MessageDigest;
 import java.util.List;
 import java.util.zip.CRC32;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class AppBaseUtils {
-    private static String mVerCode = null;
-    private static String mVerName = null;
-    private static int mStatusBarHeight = 0;
+    private static volatile boolean sInited = false;
+    private static String sVersionName = "";
+    private static long sVersionCode = 0;
 
     /**
      * 判断手机是否联网
@@ -168,14 +164,30 @@ public class AppBaseUtils {
         return MHandlerHolder.mHandler;
     }
 
-    // 利用BigDecimal做除法
+    /**
+     * 精确除法，使用 BigDecimal，结果四舍五入（HALF_DOWN）
+     *
+     * @param value1 被除数
+     * @param value2 除数
+     * @param scale  保留小数位数（>= 0）
+     * @return 计算结果，异常或非法参数返回 0
+     */
     public static double divide(double value1, double value2, int scale) {
-        if (value2 == 0) {
-            return 0;
+        if (scale < 0) {
+            scale = 0;
         }
-        BigDecimal b1 = new BigDecimal(value1);
-        BigDecimal b2 = new BigDecimal(value2);
-        return b1.divide(b2, scale, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+
+        if (Math.abs(value2) < 1e-12) {
+            return 0d;
+        }
+
+        try {
+            BigDecimal b1 = BigDecimal.valueOf(value1);
+            BigDecimal b2 = BigDecimal.valueOf(value2);
+            return b1.divide(b2, scale, RoundingMode.HALF_DOWN).doubleValue();
+        } catch (Throwable t) {
+            return 0d;
+        }
     }
 
     /**
@@ -194,33 +206,44 @@ public class AppBaseUtils {
         return b.setScale(scale, RoundingMode.HALF_UP).floatValue();
     }
 
-    /**
-     * 得到自身的versionCode
-     */
-    public static String getVerCode() {
-        if (TextUtils.isEmpty(mVerCode)) {
+    private static void ensureInitVersionInfo() {
+        if (sInited) return;
+
+        synchronized (AppBaseUtils.class) {
+            if (sInited) return;
             try {
-                mVerCode = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + "";
-            } catch (Exception e) {
-                e.printStackTrace();
+                PackageInfo pi = BaseApp.getApp().getPackageManager()
+                        .getPackageInfo(BaseApp.getApp().getPackageName(), 0);
+                sVersionName = pi.versionName != null ? pi.versionName : "";
+                if (android.os.Build.VERSION.SDK_INT >= 28) {
+                    sVersionCode = pi.getLongVersionCode();
+                } else {
+                    sVersionCode = pi.versionCode;
+                }
+            } catch (Throwable t) {
+                sVersionName = "";
+                sVersionCode = 0;
             }
+            sInited = true;
         }
-        return mVerCode;
     }
 
     /**
-     * 得到自身的versionName
+     * versionCode
+     */
+    public static String getVerCode() {
+        ensureInitVersionInfo();
+        return String.valueOf(sVersionCode);
+    }
+
+    /**
+     * versionName
      */
     public static String getVerName() {
-        if (TextUtils.isEmpty(mVerName)) {
-            try {
-                mVerName = BaseApp.getApp().getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "";
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return mVerName;
+        ensureInitVersionInfo();
+        return sVersionName;
     }
+
 
     public static String getChannel() {
         return "";
