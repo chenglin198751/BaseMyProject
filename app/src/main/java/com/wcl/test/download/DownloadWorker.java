@@ -28,9 +28,7 @@ class DownloadWorker implements Runnable {
     }
 
     void addCallback(DownloadCallback2 cb) {
-        if (cb != null && !callbacks.contains(cb)) {
-            callbacks.add(cb);
-        }
+        if (cb != null && !callbacks.contains(cb)) callbacks.add(cb);
     }
 
     void clearCallbacks() {
@@ -43,6 +41,18 @@ class DownloadWorker implements Runnable {
 
     void cancel() {
         canceled = true;
+    }
+
+    void notifyProgress() {
+        DownloadUtils.runOnUiThread(() -> {
+            for (DownloadCallback2 cb : callbacks) cb.onProgress(task.taskId);
+        });
+    }
+
+    void notifyStatus() {
+        DownloadUtils.runOnUiThread(() -> {
+            for (DownloadCallback2 cb : callbacks) cb.onStatusChanged(task.taskId);
+        });
     }
 
     @Override
@@ -132,21 +142,5 @@ class DownloadWorker implements Runnable {
         } finally {
             if (finishCallback != null) finishCallback.run();
         }
-    }
-
-    private void notifyProgress() {
-        DownloadUtils.runOnUiThread(() -> {
-            for (DownloadCallback2 cb : callbacks) {
-                cb.onProgress(task.taskId);
-            }
-        });
-    }
-
-    private void notifyStatus() {
-        DownloadUtils.runOnUiThread(() -> {
-            for (DownloadCallback2 cb : callbacks) {
-                cb.onStatusChanged(task.taskId);
-            }
-        });
     }
 }

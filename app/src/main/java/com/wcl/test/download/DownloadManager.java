@@ -1,7 +1,9 @@
 package com.wcl.test.download;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -44,44 +46,44 @@ public class DownloadManager {
     }
 
     public void enqueue(String url, DownloadCallback2 callback) {
-
         if (!DownloadUtils.isValidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
 
         if (task == null) {
-            task = new DownloadTask(
-                    taskId,
-                    url,
-                    DownloadUtils.getDownloadPath(url)
-            );
+            task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
             taskMap.put(taskId, task);
             dbHelper.saveTask(task);
         }
 
-        // ===== 已完成，直接回调 =====
+        // ===== 已完成，直接回调所有回调 =====
         File target = new File(task.savePath);
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
             task.status = DownloadTask.Status.FINISHED;
             task.downloadedBytes = task.totalBytes;
             task.progress = 100.0;
-            if (callback != null) {
+
+            DownloadWorker existingWorker = workerMap.get(taskId);
+            if (existingWorker != null) {
+                existingWorker.addCallback(callback);
+                existingWorker.notifyStatus(); // 通知所有已有回调
+            } else if (callback != null) {
                 DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(taskId));
             }
             return;
         }
 
-        // 如果已有 Worker，直接添加回调
+        // ===== 已有 Worker，直接添加回调 =====
         DownloadWorker worker = workerMap.get(taskId);
         if (worker != null) {
             worker.addCallback(callback);
             return;
         }
 
-        // 新建 Worker
+        // ===== 新建 Worker =====
         worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
-        worker.addCallback(callback);
+        if (callback != null) worker.addCallback(callback);
         workerMap.put(taskId, worker);
         executor.execute(worker);
     }
@@ -89,14 +91,10 @@ public class DownloadManager {
     // Worker 结束回调，清理状态
     private void workerFinished(String taskId) {
         DownloadWorker worker = workerMap.remove(taskId);
-        if (worker != null) {
-            worker.clearCallbacks();
-        }
+        if (worker != null) worker.clearCallbacks();
 
         DownloadTask task = taskMap.get(taskId);
-        if (task != null) {
-            dbHelper.saveTask(task);
-        }
+        if (task != null) dbHelper.saveTask(task);
     }
 
     public void pause(String url) {
