@@ -143,7 +143,7 @@ public class BitmapUtils {
         }
 
         new Thread(() -> {
-            File dir = new File(FileUtils.getAppFilesPath());
+            File dir = new File(AppFileUtils.getAppFilesPath());
             if (!dir.exists() && !dir.mkdirs()) {
                 postToUi(() -> callback.onFailed("Create directory failed"));
                 return;
