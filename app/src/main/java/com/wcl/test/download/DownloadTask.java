@@ -1,7 +1,5 @@
 package com.wcl.test.download;
 
-import java.io.File;
-
 public class DownloadTask {
 
     public enum Status {
