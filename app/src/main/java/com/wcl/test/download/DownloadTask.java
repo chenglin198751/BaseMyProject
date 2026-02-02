@@ -6,26 +6,27 @@ import java.io.File;
 
 public class DownloadTask {
 
-    // 下载状态
-    public static final int STATUS_WAITING = 0;
-    public static final int STATUS_DOWNLOADING = 1;
-    public static final int STATUS_PAUSED = 2;
-    public static final int STATUS_FINISHED = 3;
-    public static final int STATUS_ERROR = 4;
-    public static final int STATUS_CANCELED = 5;
+    public enum Status {
+        STATUS_WAITING,
+        STATUS_DOWNLOADING,
+        STATUS_PAUSED,
+        STATUS_FINISHED,
+        STATUS_ERROR,
+        STATUS_CANCELED
+    }
 
     public String taskId;
     public String url;
     public String savePath;
     public long totalBytes;
-    public int status;
+    public Status status;
 
     public DownloadTask(String url, long totalBytes) {
         this.url = url;
         this.savePath = DownloadUtils.getDownloadPath(url);
         this.totalBytes = totalBytes;
         this.taskId = DownloadUtils.getTaskId(url);
-        this.status = STATUS_WAITING;
+        this.status = Status.STATUS_WAITING;
     }
 
     // 获取已下载字节数（不存数据库）

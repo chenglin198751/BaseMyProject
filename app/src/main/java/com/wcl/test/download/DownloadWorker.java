@@ -33,7 +33,7 @@ class DownloadWorker implements Runnable {
 
     @Override
     public void run() {
-        task.status = DownloadTask.STATUS_DOWNLOADING;
+        task.status = DownloadTask.Status.STATUS_DOWNLOADING;
         DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(task.taskId, task.status, null));
 
         File targetFile = new File(task.savePath);
@@ -65,13 +65,13 @@ class DownloadWorker implements Runnable {
 
             while ((len = in.read(buffer)) != -1) {
                 if (isPaused) {
-                    task.status = DownloadTask.STATUS_PAUSED;
+                    task.status = DownloadTask.Status.STATUS_PAUSED;
                     DownloadUtils.runOnUiThread(() ->
                             callback.onStatusChanged(task.taskId, task.status, null));
                     break;
                 }
                 if (isCanceled) {
-                    task.status = DownloadTask.STATUS_CANCELED;
+                    task.status = DownloadTask.Status.STATUS_CANCELED;
                     DownloadUtils.runOnUiThread(() ->
                             callback.onStatusChanged(task.taskId, task.status, "Canceled"));
                     break;
@@ -97,7 +97,7 @@ class DownloadWorker implements Runnable {
 
             if (!isPaused && !isCanceled) {
                 DownloadUtils.replaceFile(tempFile, targetFile);
-                task.status = DownloadTask.STATUS_FINISHED;
+                task.status = DownloadTask.Status.STATUS_FINISHED;
                 DownloadUtils.runOnUiThread(() -> {
                     callback.onStatusChanged(task.taskId, task.status, null);
                     callback.onFinished(task.taskId, task.savePath);
@@ -106,7 +106,7 @@ class DownloadWorker implements Runnable {
 
         } catch (Throwable t) {
             t.printStackTrace();
-            task.status = DownloadTask.STATUS_ERROR;
+            task.status = DownloadTask.Status.STATUS_ERROR;
             DownloadUtils.runOnUiThread(() ->
                     callback.onStatusChanged(task.taskId, task.status, t.toString()));
         }

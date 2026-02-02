@@ -58,7 +58,7 @@ public class DownloadManager {
     public void enqueue(String url, long totalBytes, DownloadCallback callback) {
         if (!DownloadUtils.isValidUrl(url)) {
             if (callback != null)
-                callback.onStatusChanged(url, DownloadTask.STATUS_ERROR, "Invalid URL");
+                callback.onStatusChanged(url, DownloadTask.Status.STATUS_ERROR, "Invalid URL");
             return;
         }
 
@@ -73,13 +73,11 @@ public class DownloadManager {
         // 避免重复下载
         if (workerMap.containsKey(task.taskId)) {
             if (callback != null)
-                callback.onStatusChanged(task.taskId, DownloadTask.STATUS_DOWNLOADING, "Already downloading");
+                callback.onStatusChanged(task.taskId, DownloadTask.Status.STATUS_DOWNLOADING, "Already downloading");
             return;
         }
 
-        // 创建 Worker 并提交
         DownloadWorker worker = getDownloadWorker(callback, task);
-
         workerMap.put(task.taskId, worker);
         executor.submit(worker);
     }
@@ -94,15 +92,15 @@ public class DownloadManager {
             }
 
             @Override
-            public void onStatusChanged(String tId, int status, String errorMsg) {
+            public void onStatusChanged(String tId, DownloadTask.Status status, String errorMsg) {
                 task.status = status;
                 dbHelper.saveTask(task);
                 if (callback != null) callback.onStatusChanged(tId, status, errorMsg);
 
-                if (status == DownloadTask.STATUS_FINISHED ||
-                        status == DownloadTask.STATUS_ERROR ||
-                        status == DownloadTask.STATUS_CANCELED ||
-                        status == DownloadTask.STATUS_PAUSED) {
+                if (status == DownloadTask.Status.STATUS_FINISHED ||
+                        status == DownloadTask.Status.STATUS_ERROR ||
+                        status == DownloadTask.Status.STATUS_CANCELED ||
+                        status == DownloadTask.Status.STATUS_PAUSED) {
                     workerMap.remove(tId);
                 }
             }
@@ -124,8 +122,8 @@ public class DownloadManager {
             worker.pause();
         } else {
             DownloadTask task = taskMap.get(taskId);
-            if (task != null && task.status == DownloadTask.STATUS_DOWNLOADING) {
-                task.status = DownloadTask.STATUS_PAUSED;
+            if (task != null && task.status == DownloadTask.Status.STATUS_DOWNLOADING) {
+                task.status = DownloadTask.Status.STATUS_PAUSED;
                 dbHelper.saveTask(task);
             }
         }
@@ -137,7 +135,8 @@ public class DownloadManager {
     public void resume(String url, DownloadCallback callback) {
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
-        if (task != null && (task.status == DownloadTask.STATUS_PAUSED || task.status == DownloadTask.STATUS_ERROR)) {
+        if (task != null && (task.status == DownloadTask.Status.STATUS_PAUSED ||
+                task.status == DownloadTask.Status.STATUS_ERROR)) {
             enqueue(task.url, task.totalBytes, callback);
         }
     }
@@ -153,7 +152,7 @@ public class DownloadManager {
         } else {
             DownloadTask task = taskMap.get(taskId);
             if (task != null) {
-                task.status = DownloadTask.STATUS_CANCELED;
+                task.status = DownloadTask.Status.STATUS_CANCELED;
                 dbHelper.saveTask(task);
             }
         }
