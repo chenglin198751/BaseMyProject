@@ -1,6 +1,9 @@
 package com.wcl.test.download;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,10 +49,7 @@ public class DownloadManager {
         return sInstance;
     }
 
-    /**
-     * 开始下载/恢复下载
-     */
-    public void start(String url, DownloadCallback2 callback) {
+    public void start(String url, LifecycleOwner owner, DownloadCallback2 callback) {
         if (!DownloadUtils.isValidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);
@@ -61,7 +61,7 @@ public class DownloadManager {
             dbHelper.saveTask(task);
         }
 
-        // 已完成直接回调所有回调
+        // 已完成直接回调
         File target = new File(task.savePath);
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
             task.status = DownloadTask.Status.FINISHED;
@@ -70,7 +70,7 @@ public class DownloadManager {
 
             DownloadWorker existingWorker = workerMap.get(taskId);
             if (existingWorker != null) {
-                existingWorker.addCallback(callback);
+                existingWorker.addCallback(owner, callback);
                 existingWorker.notifyStatus();
             } else if (callback != null) {
                 DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(taskId));
@@ -81,38 +81,29 @@ public class DownloadManager {
         // 已有 Worker，直接添加回调
         DownloadWorker worker = workerMap.get(taskId);
         if (worker != null) {
-            worker.addCallback(callback);
+            worker.addCallback(owner, callback);
             return;
         }
 
         // 新建 Worker
         worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
-        if (callback != null) worker.addCallback(callback);
+        worker.addCallback(owner, callback);
         workerMap.put(taskId, worker);
         executor.execute(worker);
     }
 
-    /**
-     * 暂停任务
-     */
     public void pause(String url) {
         DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
         if (w != null) w.pause();
     }
 
-    /**
-     * 删除任务：停止下载 + 回调 DELETED + 删除文件 + 数据库
-     */
-    public void delete(String url) {
+    public String delete(String url) {
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
 
         DownloadWorker worker = workerMap.remove(taskId);
         if (worker != null) {
-            if (task != null) {
-                task.status = DownloadTask.Status.DELETED;
-            }
-            worker.notifyStatus();
+            if (task != null) task.status = DownloadTask.Status.DELETED;
             worker.delete();
             worker.clearCallbacks();
         }
@@ -127,6 +118,7 @@ public class DownloadManager {
         }
 
         taskMap.remove(taskId);
+        return taskId;
     }
 
     private void workerFinished(String taskId) {
@@ -142,6 +134,6 @@ public class DownloadManager {
     }
 
     public List<DownloadTask> getTasks() {
-        return (List<DownloadTask>) taskMap.values();
+        return new ArrayList<>(taskMap.values());
     }
 }

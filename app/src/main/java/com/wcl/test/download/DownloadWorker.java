@@ -1,5 +1,11 @@
 package com.wcl.test.download;
 
+import android.os.Looper;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -27,8 +33,21 @@ class DownloadWorker implements Runnable {
         this.finishCallback = finishCallback;
     }
 
-    void addCallback(DownloadCallback2 cb) {
-        if (cb != null && !callbacks.contains(cb)) callbacks.add(cb);
+    void addCallback(LifecycleOwner owner, DownloadCallback2 cb) {
+        if (cb == null || callbacks.contains(cb)) return;
+
+        callbacks.add(cb);
+
+        // 自动解绑回调
+        owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                removeCallback(cb);
+            }
+        });
+    }
+
+    void removeCallback(DownloadCallback2 cb) {
+        callbacks.remove(cb);
     }
 
     void clearCallbacks() {
@@ -44,29 +63,37 @@ class DownloadWorker implements Runnable {
     }
 
     void notifyProgress() {
-        DownloadUtils.runOnUiThread(() -> {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             for (DownloadCallback2 cb : callbacks) cb.onProgress(task.taskId);
-        });
+        } else {
+            DownloadUtils.runOnUiThread(() -> {
+                for (DownloadCallback2 cb : callbacks) cb.onProgress(task.taskId);
+            });
+        }
     }
 
     void notifyStatus() {
-        DownloadUtils.runOnUiThread(() -> {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             for (DownloadCallback2 cb : callbacks) cb.onStatusChanged(task.taskId);
-        });
+        } else {
+            DownloadUtils.runOnUiThread(() -> {
+                for (DownloadCallback2 cb : callbacks) cb.onStatusChanged(task.taskId);
+            });
+        }
     }
 
     @Override
     public void run() {
         File target = new File(task.savePath);
 
-        // 已经下载完成则直接返回文件路径
+        // 已经完成直接返回
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
             task.downloadedBytes = task.totalBytes;
             task.progress = 100.0;
             task.status = DownloadTask.Status.FINISHED;
             notifyProgress();
             notifyStatus();
-            if (finishCallback != null) finishCallback.run();
+            runFinishCallback();
             return;
         }
 
@@ -97,7 +124,6 @@ class DownloadWorker implements Runnable {
             long sum = downloaded;
 
             while ((len = in.read(buffer)) != -1) {
-
                 if (paused || deleted) break;
 
                 out.write(buffer, 0, len);
@@ -138,9 +164,13 @@ class DownloadWorker implements Runnable {
             task.errorMsg = t.toString();
             notifyStatus();
         } finally {
-            DownloadUtils.runOnUiThread(() -> {
-                if (finishCallback != null) finishCallback.run();
-            });
+            runFinishCallback();
         }
+    }
+
+    private void runFinishCallback() {
+        DownloadUtils.runOnUiThread(() -> {
+            if (finishCallback != null) finishCallback.run();
+        });
     }
 }
