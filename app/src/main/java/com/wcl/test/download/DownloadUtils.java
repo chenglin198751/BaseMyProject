@@ -16,22 +16,6 @@ import java.security.MessageDigest;
 
 class DownloadUtils {
 
-    // 生成 MD5，用于 taskId
-    public static String md5(String input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] bytes = md.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            for (byte b : bytes) {
-                sb.append(String.format("%02x", b & 0xff));
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return String.valueOf(input.hashCode());
-        }
-    }
-
     // 简单 URL 校验
     public static boolean isValidUrl(String url) {
         return url != null && (url.startsWith("http://") || url.startsWith("https://"));
@@ -57,7 +41,7 @@ class DownloadUtils {
     }
 
     public static String getTaskId(String url) {
-        return DownloadUtils.md5(url);
+        return AppBaseUtils.md5(url);
     }
 
     // 根据url获取文件下载路径
