@@ -1,25 +1,25 @@
 package com.wcl.test.download;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.google.gson.Gson;
+import com.wcl.test.base.BaseApp;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DownloadDBHelper extends SQLiteOpenHelper {
+class DownloadDBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "okhttp3_download.db";
     private static final int VERSION = 1;
     private static final String TABLE_NAME = "download_task";
     private static final Gson gson = new Gson();
 
-    public DownloadDBHelper(Context context) {
-        super(context, DB_NAME, null, VERSION);
+    public DownloadDBHelper() {
+        super(BaseApp.getApp(), DB_NAME, null, VERSION);
     }
 
     @Override

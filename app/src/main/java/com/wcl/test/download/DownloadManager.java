@@ -1,7 +1,5 @@
 package com.wcl.test.download;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.util.Collections;
@@ -22,21 +20,21 @@ public class DownloadManager {
     private final Map<String, DownloadWorker> workerMap;
     private final Map<String, DownloadTask> taskMap;
 
-    private DownloadManager(Context context) {
+    private DownloadManager() {
         this.executor = Executors.newFixedThreadPool(MAX_THREAD);
         this.client = new OkHttpClient();
-        this.dbHelper = new DownloadDBHelper(context.getApplicationContext());
+        this.dbHelper = new DownloadDBHelper();
         this.workerMap = Collections.synchronizedMap(new HashMap<>());
         this.taskMap = Collections.synchronizedMap(new HashMap<>());
 
         loadTasksFromDB();
     }
 
-    public static DownloadManager getInstance(Context context) {
+    public static DownloadManager ins() {
         if (instance == null) {
             synchronized (DownloadManager.class) {
                 if (instance == null) {
-                    instance = new DownloadManager(context);
+                    instance = new DownloadManager();
                 }
             }
         }
@@ -54,21 +52,20 @@ public class DownloadManager {
      * 添加下载任务
      *
      * @param url        下载地址
-     * @param savePath   文件保存路径
      * @param totalBytes 文件总大小（0 可在下载中获取）
      * @param callback   回调
      */
-    public void enqueue(String url, String savePath, long totalBytes, DownloadCallback callback) {
+    public void enqueue(String url, long totalBytes, DownloadCallback callback) {
         if (!DownloadUtils.isValidUrl(url)) {
             if (callback != null)
                 callback.onStatusChanged(url, DownloadTask.STATUS_ERROR, "Invalid URL");
             return;
         }
 
-        String taskId = DownloadUtils.md5(url + savePath);
+        String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
         if (task == null) {
-            task = new DownloadTask(url, savePath, totalBytes);
+            task = new DownloadTask(url, totalBytes);
             taskMap.put(task.taskId, task);
             dbHelper.saveTask(task);
         }
@@ -89,7 +86,7 @@ public class DownloadManager {
 
     @NonNull
     private DownloadWorker getDownloadWorker(DownloadCallback callback, DownloadTask task) {
-        DownloadWorker worker = new DownloadWorker(task, new DownloadCallback() {
+        return new DownloadWorker(task, new DownloadCallback() {
             @Override
             public void onProgress(String tId, long downloadedBytes, long totalBytes, double progress) {
                 if (callback != null)
@@ -99,7 +96,7 @@ public class DownloadManager {
             @Override
             public void onStatusChanged(String tId, int status, String errorMsg) {
                 task.status = status;
-                dbHelper.saveTask(task); // 状态变更持久化
+                dbHelper.saveTask(task);
                 if (callback != null) callback.onStatusChanged(tId, status, errorMsg);
 
                 if (status == DownloadTask.STATUS_FINISHED ||
@@ -115,13 +112,13 @@ public class DownloadManager {
                 if (callback != null) callback.onFinished(tId, filePath);
             }
         }, client);
-        return worker;
     }
 
     /**
      * 暂停任务
      */
-    public void pause(String taskId) {
+    public void pause(String url) {
+        String taskId = DownloadUtils.getTaskId(url);
         DownloadWorker worker = workerMap.get(taskId);
         if (worker != null) {
             worker.pause();
@@ -137,17 +134,19 @@ public class DownloadManager {
     /**
      * 恢复任务
      */
-    public void resume(String taskId, DownloadCallback callback) {
+    public void resume(String url, DownloadCallback callback) {
+        String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
         if (task != null && (task.status == DownloadTask.STATUS_PAUSED || task.status == DownloadTask.STATUS_ERROR)) {
-            enqueue(task.url, task.savePath, task.totalBytes, callback);
+            enqueue(task.url, task.totalBytes, callback);
         }
     }
 
     /**
      * 取消任务
      */
-    public void cancel(String taskId) {
+    public void cancel(String url) {
+        String taskId = DownloadUtils.getTaskId(url);
         DownloadWorker worker = workerMap.get(taskId);
         if (worker != null) {
             worker.cancel();
@@ -163,7 +162,7 @@ public class DownloadManager {
     /**
      * 获取任务信息
      */
-    public DownloadTask getTask(String taskId) {
-        return taskMap.get(taskId);
+    public DownloadTask getTask(String url) {
+        return taskMap.get(DownloadUtils.getTaskId(url));
     }
 }

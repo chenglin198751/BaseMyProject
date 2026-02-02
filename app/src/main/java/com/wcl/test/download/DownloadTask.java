@@ -1,5 +1,7 @@
 package com.wcl.test.download;
 
+import com.wcl.test.utils.AppFileUtils;
+
 import java.io.File;
 
 public class DownloadTask {
@@ -21,11 +23,11 @@ public class DownloadTask {
     public String lastModified;
 
     // 构造函数
-    public DownloadTask(String url, String savePath, long totalBytes) {
+    public DownloadTask(String url, long totalBytes) {
         this.url = url;
-        this.savePath = savePath;
+        this.savePath = DownloadUtils.getDownloadPath(url);
         this.totalBytes = totalBytes;
-        this.taskId = DownloadUtils.md5(url + savePath);
+        this.taskId = DownloadUtils.getTaskId(url);
         this.status = STATUS_WAITING;
     }
 

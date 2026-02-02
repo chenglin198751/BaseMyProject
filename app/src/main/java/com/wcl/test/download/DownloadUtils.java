@@ -1,16 +1,19 @@
 package com.wcl.test.download;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.wcl.test.utils.FileUtils;
+import com.wcl.test.base.BaseApp;
+import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppFileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.MessageDigest;
 
-public class DownloadUtils {
+class DownloadUtils {
 
     // 生成 MD5，用于 taskId
     public static String md5(String input) {
@@ -26,13 +29,6 @@ public class DownloadUtils {
             e.printStackTrace();
             return String.valueOf(input.hashCode());
         }
-    }
-
-    // 获取下载文件路径（可自定义路径规则）
-    public static String getDownloadPath(String url, String fileName) {
-        File dir = new File(FileUtils.getAppFilesPath());
-        if (!dir.exists()) dir.mkdirs();
-        return new File(dir, fileName).getAbsolutePath();
     }
 
     // 简单 URL 校验
@@ -57,5 +53,23 @@ public class DownloadUtils {
             }
         }
         src.delete();
+    }
+
+    public static String getTaskId(String url) {
+        return DownloadUtils.md5(url);
+    }
+
+    // 根据url获取文件下载路径
+    public static String getDownloadPath(String url) {
+        File dir = BaseApp.getApp().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        if (dir == null) {
+            dir = new File(AppFileUtils.getAppFilesPath());
+        }
+        return new File(dir, AppBaseUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
+    }
+
+    private static String getSuffix(String url) {
+        int i = url.lastIndexOf(".");
+        return i > 0 ? url.substring(i) : "";
     }
 }

@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class DownloadWorker implements Runnable {
+class DownloadWorker implements Runnable {
 
     private final DownloadTask task;
     private final DownloadCallback callback;
@@ -23,8 +23,13 @@ public class DownloadWorker implements Runnable {
         this.client = client;
     }
 
-    public void pause() { isPaused = true; }
-    public void cancel() { isCanceled = true; }
+    public void pause() {
+        isPaused = true;
+    }
+
+    public void cancel() {
+        isCanceled = true;
+    }
 
     @Override
     public void run() {
