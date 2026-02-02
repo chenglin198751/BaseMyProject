@@ -45,7 +45,10 @@ public class DownloadManager {
         return sInstance;
     }
 
-    public void enqueue(String url, DownloadCallback2 callback) {
+    /**
+     * 开始下载/恢复下载
+     */
+    public void start(String url, DownloadCallback2 callback) {
         if (!DownloadUtils.isValidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);
@@ -57,7 +60,7 @@ public class DownloadManager {
             dbHelper.saveTask(task);
         }
 
-        // ===== 已完成，直接回调所有回调 =====
+        // 已完成直接回调所有回调
         File target = new File(task.savePath);
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
             task.status = DownloadTask.Status.FINISHED;
@@ -67,48 +70,68 @@ public class DownloadManager {
             DownloadWorker existingWorker = workerMap.get(taskId);
             if (existingWorker != null) {
                 existingWorker.addCallback(callback);
-                existingWorker.notifyStatus(); // 通知所有已有回调
+                existingWorker.notifyStatus();
             } else if (callback != null) {
                 DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(taskId));
             }
             return;
         }
 
-        // ===== 已有 Worker，直接添加回调 =====
+        // 已有 Worker，直接添加回调
         DownloadWorker worker = workerMap.get(taskId);
         if (worker != null) {
             worker.addCallback(callback);
             return;
         }
 
-        // ===== 新建 Worker =====
+        // 新建 Worker
         worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
         if (callback != null) worker.addCallback(callback);
         workerMap.put(taskId, worker);
         executor.execute(worker);
     }
 
-    // Worker 结束回调，清理状态
+    /**
+     * 暂停任务
+     */
+    public void pause(String url) {
+        DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
+        if (w != null) w.pause();
+    }
+
+    /**
+     * 删除任务：停止下载 + 回调 DELETED + 删除文件 + 数据库
+     */
+    public void delete(String url) {
+        String taskId = DownloadUtils.getTaskId(url);
+        DownloadTask task = taskMap.get(taskId);
+
+        DownloadWorker worker = workerMap.remove(taskId);
+        if (worker != null) {
+            if (task != null) task.status = DownloadTask.Status.DELETED;
+            worker.notifyStatus();
+            worker.cancel();
+            worker.clearCallbacks();
+        }
+
+        if (task != null) {
+            File target = new File(task.savePath);
+            if (target.exists()) target.delete();
+            File temp = new File(task.savePath + ".temp");
+            if (temp.exists()) temp.delete();
+
+            dbHelper.deleteTask(taskId);
+        }
+
+        taskMap.remove(taskId);
+    }
+
     private void workerFinished(String taskId) {
         DownloadWorker worker = workerMap.remove(taskId);
         if (worker != null) worker.clearCallbacks();
 
         DownloadTask task = taskMap.get(taskId);
         if (task != null) dbHelper.saveTask(task);
-    }
-
-    public void pause(String url) {
-        DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
-        if (w != null) w.pause();
-    }
-
-    public void resume(String url, DownloadCallback2 cb) {
-        enqueue(url, cb);
-    }
-
-    public void cancel(String url) {
-        DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
-        if (w != null) w.cancel();
     }
 
     public DownloadTask getTask(String url) {

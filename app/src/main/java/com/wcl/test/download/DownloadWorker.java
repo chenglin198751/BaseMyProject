@@ -64,6 +64,7 @@ class DownloadWorker implements Runnable {
             task.downloadedBytes = task.totalBytes;
             task.progress = 100.0;
             task.status = DownloadTask.Status.FINISHED;
+            notifyProgress();
             notifyStatus();
             if (finishCallback != null) finishCallback.run();
             return;
@@ -97,18 +98,7 @@ class DownloadWorker implements Runnable {
 
             while ((len = in.read(buffer)) != -1) {
 
-                if (paused) {
-                    task.status = DownloadTask.Status.PAUSED;
-                    notifyStatus();
-                    break;
-                }
-
-                if (canceled) {
-                    task.status = DownloadTask.Status.CANCELED;
-                    task.errorMsg = "canceled";
-                    notifyStatus();
-                    break;
-                }
+                if (paused || canceled) break;
 
                 out.write(buffer, 0, len);
                 sum += len;
@@ -127,10 +117,18 @@ class DownloadWorker implements Runnable {
             in.close();
             response.close();
 
-            if (!paused && !canceled) {
+            if (canceled) {
+                task.status = DownloadTask.Status.DELETED;
+                task.errorMsg = "Task canceled";
+                notifyStatus();
+            } else if (paused) {
+                task.status = DownloadTask.Status.PAUSED;
+                notifyStatus();
+            } else {
                 DownloadUtils.replaceFile(temp, target);
                 task.downloadedBytes = task.totalBytes;
                 task.progress = 100.0;
+                notifyProgress();
                 task.status = DownloadTask.Status.FINISHED;
                 notifyStatus();
             }
