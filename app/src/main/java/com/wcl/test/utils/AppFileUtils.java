@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileUtils {
+public class AppFileUtils {
 
     private static final String TAG = "FileUtils";
 

@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppFileUtils;
 import com.wcl.test.utils.DeviceUtils;
 
 import java.io.File;
@@ -70,6 +71,9 @@ class Helper {
     // 获取文件下载路径
     static String getDownloadPath(String url) {
         File dir = BaseApp.getApp().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        if (dir == null) {
+            dir = new File(AppFileUtils.getAppFilesPath());
+        }
         return new File(dir, AppBaseUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
     }
 
