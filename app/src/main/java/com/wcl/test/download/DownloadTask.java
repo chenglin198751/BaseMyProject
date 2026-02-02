@@ -29,12 +29,10 @@ public class DownloadTask {
 
     public DownloadTask(String taskId,
                         String url,
-                        String savePath,
-                        long totalBytes) {
+                        String savePath) {
         this.taskId = taskId;
         this.url = url;
         this.savePath = savePath;
-        this.totalBytes = totalBytes;
         this.status = Status.WAITING;
     }
 }

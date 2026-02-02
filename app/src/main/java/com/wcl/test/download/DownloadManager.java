@@ -43,7 +43,7 @@ public class DownloadManager {
         return sInstance;
     }
 
-    public void enqueue(String url, long totalBytes, DownloadCallback2 callback) {
+    public void enqueue(String url, DownloadCallback2 callback) {
 
         if (!DownloadUtils.isValidUrl(url)) return;
 
@@ -54,8 +54,7 @@ public class DownloadManager {
             task = new DownloadTask(
                     taskId,
                     url,
-                    DownloadUtils.getDownloadPath(url),
-                    totalBytes
+                    DownloadUtils.getDownloadPath(url)
             );
             taskMap.put(taskId, task);
             dbHelper.saveTask(task);
@@ -106,7 +105,7 @@ public class DownloadManager {
     }
 
     public void resume(String url, DownloadCallback2 cb) {
-        enqueue(url, 0, cb);
+        enqueue(url, cb);
     }
 
     public void cancel(String url) {
