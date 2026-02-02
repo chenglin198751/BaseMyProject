@@ -18,11 +18,8 @@ public class DownloadTask {
     public String url;
     public String savePath;
     public long totalBytes;
-    public int status; // int 状态
-    public String etag;
-    public String lastModified;
+    public int status;
 
-    // 构造函数
     public DownloadTask(String url, long totalBytes) {
         this.url = url;
         this.savePath = DownloadUtils.getDownloadPath(url);
