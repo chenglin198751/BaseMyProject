@@ -3,6 +3,9 @@ package com.wcl.test.download;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -11,18 +14,27 @@ import okhttp3.Response;
 class DownloadWorker implements Runnable {
 
     private final DownloadTask task;
-    private final DownloadCallback2 callback;
     private final OkHttpClient client;
+    private final Runnable finishCallback;
 
+    private final List<DownloadCallback2> callbacks = Collections.synchronizedList(new ArrayList<>());
     private volatile boolean paused;
     private volatile boolean canceled;
 
-    DownloadWorker(DownloadTask task,
-                   DownloadCallback2 callback,
-                   OkHttpClient client) {
+    DownloadWorker(DownloadTask task, OkHttpClient client, Runnable finishCallback) {
         this.task = task;
-        this.callback = callback;
         this.client = client;
+        this.finishCallback = finishCallback;
+    }
+
+    void addCallback(DownloadCallback2 cb) {
+        if (cb != null && !callbacks.contains(cb)) {
+            callbacks.add(cb);
+        }
+    }
+
+    void clearCallbacks() {
+        callbacks.clear();
     }
 
     void pause() {
@@ -43,6 +55,7 @@ class DownloadWorker implements Runnable {
             task.progress = 100.0;
             task.status = DownloadTask.Status.FINISHED;
             notifyStatus();
+            if (finishCallback != null) finishCallback.run();
             return;
         }
 
@@ -58,18 +71,12 @@ class DownloadWorker implements Runnable {
 
         try {
             Request.Builder builder = new Request.Builder().url(task.url);
-            if (downloaded > 0) {
-                builder.addHeader("Range", "bytes=" + downloaded + "-");
-            }
+            if (downloaded > 0) builder.addHeader("Range", "bytes=" + downloaded + "-");
 
             Response response = client.newCall(builder.build()).execute();
-            if (!response.isSuccessful()) {
-                throw new RuntimeException("HTTP " + response.code());
-            }
+            if (!response.isSuccessful()) throw new RuntimeException("HTTP " + response.code());
 
-            if (task.totalBytes <= 0) {
-                task.totalBytes = response.body().contentLength();
-            }
+            if (task.totalBytes <= 0) task.totalBytes = response.body().contentLength();
 
             InputStream in = response.body().byteStream();
             FileOutputStream out = new FileOutputStream(temp, true);
@@ -97,7 +104,7 @@ class DownloadWorker implements Runnable {
                 sum += len;
 
                 long now = System.currentTimeMillis();
-                if (now - lastCallbackTime >= 1000) { // 每秒更新一次
+                if (now - lastCallbackTime >= 1000) {
                     lastCallbackTime = now;
                     task.downloadedBytes = sum;
                     task.progress = Math.round((sum * 100.0 / task.totalBytes) * 100.0) / 100.0;
@@ -111,7 +118,6 @@ class DownloadWorker implements Runnable {
             response.close();
 
             if (!paused && !canceled) {
-                // 替换文件，确保完整
                 DownloadUtils.replaceFile(temp, target);
                 task.downloadedBytes = task.totalBytes;
                 task.progress = 100.0;
@@ -123,16 +129,24 @@ class DownloadWorker implements Runnable {
             task.status = DownloadTask.Status.ERROR;
             task.errorMsg = t.toString();
             notifyStatus();
+        } finally {
+            if (finishCallback != null) finishCallback.run();
         }
     }
 
     private void notifyProgress() {
-        DownloadUtils.runOnUiThread(() ->
-                callback.onProgress(task.taskId));
+        DownloadUtils.runOnUiThread(() -> {
+            for (DownloadCallback2 cb : callbacks) {
+                cb.onProgress(task.taskId);
+            }
+        });
     }
 
     private void notifyStatus() {
-        DownloadUtils.runOnUiThread(() ->
-                callback.onStatusChanged(task.taskId));
+        DownloadUtils.runOnUiThread(() -> {
+            for (DownloadCallback2 cb : callbacks) {
+                cb.onStatusChanged(task.taskId);
+            }
+        });
     }
 }
