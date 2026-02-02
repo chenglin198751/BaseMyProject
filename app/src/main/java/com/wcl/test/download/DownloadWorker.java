@@ -19,7 +19,7 @@ class DownloadWorker implements Runnable {
 
     private final List<DownloadCallback2> callbacks = Collections.synchronizedList(new ArrayList<>());
     private volatile boolean paused;
-    private volatile boolean canceled;
+    private volatile boolean deleted;
 
     DownloadWorker(DownloadTask task, OkHttpClient client, Runnable finishCallback) {
         this.task = task;
@@ -39,8 +39,8 @@ class DownloadWorker implements Runnable {
         paused = true;
     }
 
-    void cancel() {
-        canceled = true;
+    void delete() {
+        deleted = true;
     }
 
     void notifyProgress() {
@@ -98,7 +98,7 @@ class DownloadWorker implements Runnable {
 
             while ((len = in.read(buffer)) != -1) {
 
-                if (paused || canceled) break;
+                if (paused || deleted) break;
 
                 out.write(buffer, 0, len);
                 sum += len;
@@ -117,7 +117,7 @@ class DownloadWorker implements Runnable {
             in.close();
             response.close();
 
-            if (canceled) {
+            if (deleted) {
                 task.status = DownloadTask.Status.DELETED;
                 task.errorMsg = "Task deleted";
                 notifyStatus();
@@ -138,7 +138,9 @@ class DownloadWorker implements Runnable {
             task.errorMsg = t.toString();
             notifyStatus();
         } finally {
-            if (finishCallback != null) finishCallback.run();
+            DownloadUtils.runOnUiThread(() -> {
+                if (finishCallback != null) finishCallback.run();
+            });
         }
     }
 }

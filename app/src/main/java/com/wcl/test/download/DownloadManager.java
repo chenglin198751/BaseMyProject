@@ -3,6 +3,7 @@ package com.wcl.test.download;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -108,9 +109,11 @@ public class DownloadManager {
 
         DownloadWorker worker = workerMap.remove(taskId);
         if (worker != null) {
-            if (task != null) task.status = DownloadTask.Status.DELETED;
+            if (task != null) {
+                task.status = DownloadTask.Status.DELETED;
+            }
             worker.notifyStatus();
-            worker.cancel();
+            worker.delete();
             worker.clearCallbacks();
         }
 
@@ -136,5 +139,9 @@ public class DownloadManager {
 
     public DownloadTask getTask(String url) {
         return taskMap.get(DownloadUtils.getTaskId(url));
+    }
+
+    public List<DownloadTask> getTasks() {
+        return (List<DownloadTask>) taskMap.values();
     }
 }
