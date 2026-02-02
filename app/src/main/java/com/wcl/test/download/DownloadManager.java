@@ -13,17 +13,17 @@ import java.util.concurrent.Executors;
 import okhttp3.OkHttpClient;
 
 public class DownloadManager {
+    private static final int MAX_THREAD = 4;
 
-    private static DownloadManager instance;
-
+    private static volatile DownloadManager instance;
     private final ExecutorService executor;
     private final OkHttpClient client;
     private final DownloadDBHelper dbHelper;
-    private final Map<String, DownloadWorker> workerMap; // 正在下载的 Worker
-    private final Map<String, DownloadTask> taskMap;     // 所有任务缓存
+    private final Map<String, DownloadWorker> workerMap;
+    private final Map<String, DownloadTask> taskMap;
 
-    private DownloadManager(Context context, int maxThread) {
-        this.executor = Executors.newFixedThreadPool(maxThread);
+    private DownloadManager(Context context) {
+        this.executor = Executors.newFixedThreadPool(MAX_THREAD);
         this.client = new OkHttpClient();
         this.dbHelper = new DownloadDBHelper(context.getApplicationContext());
         this.workerMap = Collections.synchronizedMap(new HashMap<>());
@@ -32,11 +32,11 @@ public class DownloadManager {
         loadTasksFromDB();
     }
 
-    public static DownloadManager getInstance(Context context, int maxThread) {
+    public static DownloadManager getInstance(Context context) {
         if (instance == null) {
             synchronized (DownloadManager.class) {
                 if (instance == null) {
-                    instance = new DownloadManager(context, maxThread);
+                    instance = new DownloadManager(context);
                 }
             }
         }
