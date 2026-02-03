@@ -112,7 +112,12 @@ class DownloadWorker implements Runnable {
             if (downloaded > 0) builder.addHeader("Range", "bytes=" + downloaded + "-");
 
             Response response = client.newCall(builder.build()).execute();
-            if (!response.isSuccessful()) throw new RuntimeException("HTTP " + response.code());
+            if (!response.isSuccessful()) {
+                task.status = DownloadTask.Status.ERROR;
+                task.errorMsg = response.toString();
+                notifyStatus();
+                return;
+            }
 
             if (task.totalBytes <= 0) task.totalBytes = response.body().contentLength();
 
@@ -158,7 +163,6 @@ class DownloadWorker implements Runnable {
                 task.status = DownloadTask.Status.FINISHED;
                 notifyStatus();
             }
-
         } catch (Throwable t) {
             task.status = DownloadTask.Status.ERROR;
             task.errorMsg = t.toString();
