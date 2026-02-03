@@ -1,8 +1,5 @@
 package com.wcl.test.download;
 
-import androidx.annotation.Keep;
-
-@Keep
 public class DownloadTask {
 
     public enum Status {
