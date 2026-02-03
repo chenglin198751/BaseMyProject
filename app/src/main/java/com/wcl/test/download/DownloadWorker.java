@@ -23,7 +23,7 @@ class DownloadWorker implements Runnable {
     private final OkHttpClient client;
     private final Runnable finishCallback;
 
-    private final List<DownloadCallback2> callbacks = Collections.synchronizedList(new ArrayList<>());
+    private final List<DownloadListener> callbacks = Collections.synchronizedList(new ArrayList<>());
     private volatile boolean paused;
     private volatile boolean deleted;
 
@@ -33,7 +33,7 @@ class DownloadWorker implements Runnable {
         this.finishCallback = finishCallback;
     }
 
-    void addCallback(LifecycleOwner owner, DownloadCallback2 cb) {
+    void addCallback(LifecycleOwner owner, DownloadListener cb) {
         if (cb == null || callbacks.contains(cb)) return;
 
         callbacks.add(cb);
@@ -46,7 +46,7 @@ class DownloadWorker implements Runnable {
         });
     }
 
-    void removeCallback(DownloadCallback2 cb) {
+    void removeCallback(DownloadListener cb) {
         callbacks.remove(cb);
     }
 
@@ -64,20 +64,20 @@ class DownloadWorker implements Runnable {
 
     void notifyProgress() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            for (DownloadCallback2 cb : callbacks) cb.onProgress(task.taskId);
+            for (DownloadListener cb : callbacks) cb.onProgress(task.taskId);
         } else {
             DownloadUtils.runOnUiThread(() -> {
-                for (DownloadCallback2 cb : callbacks) cb.onProgress(task.taskId);
+                for (DownloadListener cb : callbacks) cb.onProgress(task.taskId);
             });
         }
     }
 
     void notifyStatus() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            for (DownloadCallback2 cb : callbacks) cb.onStatusChanged(task.taskId);
+            for (DownloadListener cb : callbacks) cb.onStatusChanged(task.taskId);
         } else {
             DownloadUtils.runOnUiThread(() -> {
-                for (DownloadCallback2 cb : callbacks) cb.onStatusChanged(task.taskId);
+                for (DownloadListener cb : callbacks) cb.onStatusChanged(task.taskId);
             });
         }
     }

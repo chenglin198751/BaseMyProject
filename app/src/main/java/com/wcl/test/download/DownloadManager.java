@@ -49,7 +49,7 @@ public class DownloadManager {
         return sInstance;
     }
 
-    public void start(String url, LifecycleOwner owner, DownloadCallback2 callback) {
+    public void start(String url, LifecycleOwner owner, DownloadListener callback) {
         if (!DownloadUtils.isValidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);

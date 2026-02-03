@@ -1,6 +1,6 @@
 package com.wcl.test.download;
 
-public interface DownloadCallback2 {
+public interface DownloadListener {
 
     /**
      * 1s刷新一次下载进度
