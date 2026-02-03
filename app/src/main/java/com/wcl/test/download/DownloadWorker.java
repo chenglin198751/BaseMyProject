@@ -17,6 +17,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * DownloadWorker 负责单个任务的下载
+ */
 class DownloadWorker implements Runnable {
 
     private final DownloadTask task;
@@ -32,6 +35,9 @@ class DownloadWorker implements Runnable {
         this.finishCallback = finishCallback;
     }
 
+    /**
+     * 添加回调，自动绑定生命周期，Activity/Fragment 销毁时移除回调
+     */
     void addCallback(LifecycleOwner owner, DownloadListener cb) {
         if (cb == null || callbacks.contains(cb)) return;
 
@@ -40,13 +46,9 @@ class DownloadWorker implements Runnable {
         // 自动解绑回调
         owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
             if (event == Lifecycle.Event.ON_DESTROY) {
-                removeCallback(cb);
+                callbacks.remove(cb);
             }
         });
-    }
-
-    void removeCallback(DownloadListener cb) {
-        callbacks.remove(cb);
     }
 
     void clearCallbacks() {
@@ -57,31 +59,23 @@ class DownloadWorker implements Runnable {
         paused = true;
     }
 
-    void notifyProgress() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+    private void notifyProgress() {
+        runOnUiThread(() -> {
             for (DownloadListener cb : callbacks) cb.onProgress(task);
-        } else {
-            DownloadUtils.runOnUiThread(() -> {
-                for (DownloadListener cb : callbacks) cb.onProgress(task);
-            });
-        }
+        });
     }
 
-    void notifyStatus() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+    private void notifyStatus() {
+        runOnUiThread(() -> {
             for (DownloadListener cb : callbacks) cb.onStatusChanged(task);
-        } else {
-            DownloadUtils.runOnUiThread(() -> {
-                for (DownloadListener cb : callbacks) cb.onStatusChanged(task);
-            });
-        }
+        });
     }
 
     @Override
     public void run() {
         File target = new File(task.savePath);
 
-        // 已经完成直接返回下载地址
+        // 已完成直接回调
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
             task.downloadedBytes = task.totalBytes;
             task.progress = 100.0;
@@ -97,7 +91,7 @@ class DownloadWorker implements Runnable {
         File temp = new File(task.savePath + ".temp");
         long downloaded = temp.exists() ? temp.length() : 0;
         task.downloadedBytes = downloaded;
-        task.progress = task.totalBytes > 0 ? Math.round((downloaded * 100.0 / task.totalBytes) * 100.0) / 100.0 : 0;
+        task.progress = task.totalBytes > 0 ? roundProgress(downloaded, task.totalBytes) : 0;
 
         long lastCallbackTime = 0;
 
@@ -132,7 +126,7 @@ class DownloadWorker implements Runnable {
                 if (now - lastCallbackTime >= 1000) {
                     lastCallbackTime = now;
                     task.downloadedBytes = sum;
-                    task.progress = Math.round((sum * 100.0 / task.totalBytes) * 100.0) / 100.0;
+                    task.progress = roundProgress(sum, task.totalBytes);
                     notifyProgress();
                 }
             }
@@ -162,9 +156,21 @@ class DownloadWorker implements Runnable {
         }
     }
 
+    private double roundProgress(long downloaded, long total) {
+        return Math.round(downloaded * 10000.0 / total) / 100.0;
+    }
+
     private void runFinishCallback() {
-        DownloadUtils.runOnUiThread(() -> {
+        runOnUiThread(() -> {
             if (finishCallback != null) finishCallback.run();
         });
+    }
+
+    private void runOnUiThread(Runnable r) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            r.run();
+        } else {
+            DownloadUtils.runOnUiThread(r);
+        }
     }
 }

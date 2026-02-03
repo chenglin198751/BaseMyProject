@@ -13,6 +13,9 @@ import java.util.concurrent.Executors;
 
 import okhttp3.OkHttpClient;
 
+/**
+ * DownloadManager 负责管理所有下载任务
+ */
 public class DownloadManager {
 
     private static final int MAX_THREAD = 4;
@@ -33,6 +36,7 @@ public class DownloadManager {
         taskMap = Collections.synchronizedMap(new HashMap<>());
         workerMap = Collections.synchronizedMap(new HashMap<>());
 
+        // 加载数据库已有任务
         for (DownloadTask t : dbHelper.loadAllTasks()) {
             taskMap.put(t.taskId, t);
         }
@@ -49,9 +53,8 @@ public class DownloadManager {
         return sInstance;
     }
 
-
     /**
-     * 开始或恢复一个下载任务，必须传入 owner 生命周期
+     * 开始或恢复下载任务，绑定生命周期
      */
     public void start(String url, LifecycleOwner owner, DownloadListener callback) {
         if (!DownloadUtils.isValidUrl(url)) return;
@@ -80,7 +83,7 @@ public class DownloadManager {
     }
 
     /**
-     * 暂停 url 对应的下载任务
+     * 暂停 url 对应任务
      */
     public void pause(String url) {
         DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
@@ -88,7 +91,7 @@ public class DownloadManager {
     }
 
     /**
-     * 删除 url 对应的下载任务
+     * 删除 url 对应任务
      */
     public String deleteByUrl(String url) {
         String taskId = DownloadUtils.getTaskId(url);
@@ -96,7 +99,7 @@ public class DownloadManager {
     }
 
     /**
-     * 删除 taskId 对应的下载任务
+     * 删除 taskId 对应任务
      */
     public String deleteById(String taskId) {
         DownloadTask task = taskMap.get(taskId);
@@ -121,14 +124,14 @@ public class DownloadManager {
     }
 
     /**
-     * 获取 url 对应的下载任务
+     * 获取 url 对应任务
      */
     public DownloadTask getTask(String url) {
         return taskMap.get(DownloadUtils.getTaskId(url));
     }
 
     /**
-     * 获取下载任务列表
+     * 获取所有任务列表
      */
     public List<DownloadTask> getTasks() {
         return new ArrayList<>(taskMap.values());
