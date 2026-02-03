@@ -49,6 +49,10 @@ public class DownloadManager {
         return sInstance;
     }
 
+
+    /**
+     * 开始或恢复一个下载任务，必须传入 owner 生命周期
+     */
     public void start(String url, LifecycleOwner owner, DownloadListener callback) {
         if (!DownloadUtils.isValidUrl(url)) return;
 
@@ -92,16 +96,25 @@ public class DownloadManager {
         executor.execute(worker);
     }
 
+    /**
+     * 暂停 url 对应的下载任务
+     */
     public void pause(String url) {
         DownloadWorker w = workerMap.get(DownloadUtils.getTaskId(url));
         if (w != null) w.pause();
     }
 
+    /**
+     * 删除 url 对应的下载任务
+     */
     public String deleteByUrl(String url) {
         String taskId = DownloadUtils.getTaskId(url);
         return deleteById(taskId);
     }
 
+    /**
+     * 删除 taskId 对应的下载任务
+     */
     public String deleteById(String taskId) {
         DownloadTask task = taskMap.get(taskId);
 
@@ -124,10 +137,16 @@ public class DownloadManager {
         return taskId;
     }
 
+    /**
+     * 获取 url 对应的下载任务
+     */
     public DownloadTask getTask(String url) {
         return taskMap.get(DownloadUtils.getTaskId(url));
     }
 
+    /**
+     * 获取下载任务列表
+     */
     public List<DownloadTask> getTasks() {
         return new ArrayList<>(taskMap.values());
     }
