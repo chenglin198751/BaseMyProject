@@ -65,23 +65,6 @@ public class DownloadManager {
             dbHelper.saveTask(task);
         }
 
-        // 已完成直接回调
-        File target = new File(task.savePath);
-        if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
-            task.status = DownloadTask.Status.FINISHED;
-            task.downloadedBytes = task.totalBytes;
-            task.progress = 100.0;
-
-            DownloadWorker existingWorker = workerMap.get(taskId);
-            if (existingWorker != null) {
-                existingWorker.addCallback(owner, callback);
-                existingWorker.notifyStatus();
-            } else if (callback != null) {
-                DownloadUtils.runOnUiThread(() -> callback.onStatusChanged(taskId));
-            }
-            return;
-        }
-
         // 已有 Worker，直接添加回调
         DownloadWorker worker = workerMap.get(taskId);
         if (worker != null) {

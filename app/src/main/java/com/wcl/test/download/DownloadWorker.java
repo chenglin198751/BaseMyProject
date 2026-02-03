@@ -59,20 +59,20 @@ class DownloadWorker implements Runnable {
 
     void notifyProgress() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            for (DownloadListener cb : callbacks) cb.onProgress(task.taskId);
+            for (DownloadListener cb : callbacks) cb.onProgress(task);
         } else {
             DownloadUtils.runOnUiThread(() -> {
-                for (DownloadListener cb : callbacks) cb.onProgress(task.taskId);
+                for (DownloadListener cb : callbacks) cb.onProgress(task);
             });
         }
     }
 
     void notifyStatus() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            for (DownloadListener cb : callbacks) cb.onStatusChanged(task.taskId);
+            for (DownloadListener cb : callbacks) cb.onStatusChanged(task);
         } else {
             DownloadUtils.runOnUiThread(() -> {
-                for (DownloadListener cb : callbacks) cb.onStatusChanged(task.taskId);
+                for (DownloadListener cb : callbacks) cb.onStatusChanged(task);
             });
         }
     }
@@ -81,12 +81,11 @@ class DownloadWorker implements Runnable {
     public void run() {
         File target = new File(task.savePath);
 
-        // 已经完成直接返回
+        // 已经完成直接返回下载地址
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
             task.downloadedBytes = task.totalBytes;
             task.progress = 100.0;
             task.status = DownloadTask.Status.FINISHED;
-            notifyProgress();
             notifyStatus();
             runFinishCallback();
             return;

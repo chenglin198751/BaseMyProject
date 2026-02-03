@@ -5,10 +5,10 @@ public interface DownloadListener {
     /**
      * 1s刷新一次下载进度
      */
-    void onProgress(String taskId);
+    void onProgress(DownloadTask task);
 
     /**
      * 下载状态变化
      */
-    void onStatusChanged(String taskId);
+    void onStatusChanged(DownloadTask task);
 }
