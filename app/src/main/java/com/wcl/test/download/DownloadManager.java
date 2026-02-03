@@ -97,8 +97,12 @@ public class DownloadManager {
         if (w != null) w.pause();
     }
 
-    public String delete(String url) {
+    public String deleteByUrl(String url) {
         String taskId = DownloadUtils.getTaskId(url);
+        return deleteById(taskId);
+    }
+
+    public String deleteById(String taskId) {
         DownloadTask task = taskMap.get(taskId);
 
         DownloadWorker worker = workerMap.remove(taskId);
@@ -120,19 +124,21 @@ public class DownloadManager {
         return taskId;
     }
 
-    private void workerFinished(String taskId) {
-        DownloadWorker worker = workerMap.remove(taskId);
-        if (worker != null) worker.clearCallbacks();
-
-        DownloadTask task = taskMap.get(taskId);
-        if (task != null) dbHelper.saveTask(task);
-    }
-
     public DownloadTask getTask(String url) {
         return taskMap.get(DownloadUtils.getTaskId(url));
     }
 
     public List<DownloadTask> getTasks() {
         return new ArrayList<>(taskMap.values());
+    }
+
+    //-----------内部使用-----------
+
+    private void workerFinished(String taskId) {
+        DownloadWorker worker = workerMap.remove(taskId);
+        if (worker != null) worker.clearCallbacks();
+
+        DownloadTask task = taskMap.get(taskId);
+        if (task != null) dbHelper.saveTask(task);
     }
 }
