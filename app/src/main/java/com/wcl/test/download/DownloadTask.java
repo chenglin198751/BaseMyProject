@@ -7,8 +7,7 @@ public class DownloadTask {
         DOWNLOADING,
         PAUSED,
         FINISHED,
-        ERROR,
-        DELETED
+        ERROR
     }
 
     /**

@@ -103,8 +103,7 @@ public class DownloadManager {
 
         DownloadWorker worker = workerMap.remove(taskId);
         if (worker != null) {
-            if (task != null) task.status = DownloadTask.Status.DELETED;
-            worker.delete();
+            worker.pause();
             worker.clearCallbacks();
         }
 
