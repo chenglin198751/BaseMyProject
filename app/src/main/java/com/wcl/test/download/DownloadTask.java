@@ -1,5 +1,8 @@
 package com.wcl.test.download;
 
+import androidx.annotation.Keep;
+
+@Keep
 public class DownloadTask {
 
     public enum Status {
@@ -10,16 +13,15 @@ public class DownloadTask {
         ERROR
     }
 
-    /**
-     * 不可变身份
-     */
+    // 以下是 UI 层使用，不参与序列化
+    public transient boolean isSelected;
+
+    // 以下是不可被修改变量
     public final String taskId;
     public final String url;
     public final String savePath;
 
-    /**
-     * 可变状态（只允许 DownloadWorker 改）
-     */
+    // 以下是可变状态（只允许 DownloadWorker 改）
     public volatile long totalBytes;
     public volatile Status status;
     public volatile String errorMsg;
