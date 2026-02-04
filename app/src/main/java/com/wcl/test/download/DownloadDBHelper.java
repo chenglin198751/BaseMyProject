@@ -44,25 +44,23 @@ class DownloadDBHelper extends SQLiteOpenHelper {
 
     public DownloadTask loadTask(String taskId) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.query(TABLE_NAME, new String[]{"value"}, "key=?", new String[]{taskId}, null, null, null);
-        if (c != null && c.moveToFirst()) {
-            String json = c.getString(0);
-            c.close();
-            return gson.fromJson(json, DownloadTask.class);
+        try (Cursor c = db.query(TABLE_NAME, new String[]{"value"}, "key=?", new String[]{taskId}, null, null, null)) {
+            if (c.moveToFirst()) {
+                String json = c.getString(0);
+                return gson.fromJson(json, DownloadTask.class);
+            }
+            return null;
         }
-        return null;
     }
 
     public List<DownloadTask> loadAllTasks() {
         List<DownloadTask> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.query(TABLE_NAME, new String[]{"value"}, null, null, null, null, null);
-        if (c != null) {
+        try (Cursor c = db.query(TABLE_NAME, new String[]{"value"}, null, null, null, null, null)) {
             while (c.moveToNext()) {
                 String json = c.getString(0);
                 list.add(gson.fromJson(json, DownloadTask.class));
             }
-            c.close();
         }
         return list;
     }
