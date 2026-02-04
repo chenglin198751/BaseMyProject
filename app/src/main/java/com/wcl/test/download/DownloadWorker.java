@@ -89,6 +89,13 @@ class DownloadWorker implements Runnable {
         task.downloadedBytes = downloaded;
         task.progress = task.totalBytes > 0 ? roundProgress(downloaded, task.totalBytes) : 0;
 
+        // 断点续传异常则直接删除下载任务
+        if (downloaded > 0 && task.totalBytes > 0 && downloaded > task.totalBytes) {
+            pause();
+            DownloadManager.ins().delete(task.url);
+            return;
+        }
+
         long lastCallbackTime = 0;
 
         try {
