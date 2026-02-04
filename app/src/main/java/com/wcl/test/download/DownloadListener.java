@@ -11,4 +11,9 @@ public interface DownloadListener {
      * 下载状态变化
      */
     void onStatusChanged(DownloadTask task);
+
+    /**
+     * 下载任务被删除
+     */
+    void onDeleted(String url);
 }
