@@ -105,17 +105,10 @@ public class DownloadManager {
 
     /**
      * 删除 url 对应任务
-     */
-    public String deleteByUrl(String url) {
-        String taskId = DownloadUtils.getTaskId(url);
-        return deleteById(taskId);
-    }
-
-    /**
-     * 删除 taskId 对应任务
      * 删除任务时保留 listener，同时回调 onDeleted(url)
      */
-    public String deleteById(String taskId) {
+    public String delete(String url) {
+        String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
 
         DownloadWorker worker = workerMap.remove(taskId);
