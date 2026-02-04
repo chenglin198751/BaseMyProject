@@ -25,8 +25,12 @@ public class DownloadManager {
     private final OkHttpClient client;
     private final DownloadDBHelper dbHelper;
 
+    // 已有任务映射
     private final Map<String, DownloadTask> taskMap;
+    // 正在下载的 Worker 映射
     private final Map<String, DownloadWorker> workerMap;
+    // 已注册但任务可能尚不存在的监听器映射
+    private final Map<String, List<ListenerHolder>> listenerMap;
 
     private DownloadManager() {
         executor = Executors.newFixedThreadPool(MAX_THREAD);
@@ -35,6 +39,7 @@ public class DownloadManager {
 
         taskMap = Collections.synchronizedMap(new HashMap<>());
         workerMap = Collections.synchronizedMap(new HashMap<>());
+        listenerMap = Collections.synchronizedMap(new HashMap<>());
 
         // 加载数据库已有任务
         for (DownloadTask t : dbHelper.loadAllTasks()) {
@@ -53,10 +58,13 @@ public class DownloadManager {
         return sInstance;
     }
 
+    //==================== 下载行为 ====================
+
     /**
-     * 开始或恢复下载任务，绑定生命周期
+     * 开始或恢复下载任务
+     * 如果任务不存在 → 创建任务并立即启动
      */
-    public void start(String url, LifecycleOwner owner, DownloadListener callback) {
+    public void start(String url) {
         if (!DownloadUtils.isValidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);
@@ -68,16 +76,21 @@ public class DownloadManager {
             dbHelper.saveTask(task);
         }
 
-        // 已有 Worker，直接添加回调
+        // 已有 Worker，直接返回（监听已通过 setDownloadListener 注册）
         DownloadWorker worker = workerMap.get(taskId);
-        if (worker != null) {
-            worker.addCallback(owner, callback);
-            return;
+        if (worker != null) return;
+
+        // 创建 Worker 并启动
+        worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
+
+        // 添加已注册的 listener
+        List<ListenerHolder> holders = listenerMap.get(taskId);
+        if (holders != null) {
+            for (ListenerHolder holder : holders) {
+                worker.addCallback(holder.owner, holder.listener);
+            }
         }
 
-        // 新建 Worker
-        worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
-        worker.addCallback(owner, callback);
         workerMap.put(taskId, worker);
         executor.execute(worker);
     }
@@ -111,16 +124,51 @@ public class DownloadManager {
         }
 
         if (task != null) {
-            File target = new File(task.savePath);
-            if (target.exists()) target.delete();
-            File temp = new File(task.savePath + ".temp");
-            if (temp.exists()) temp.delete();
-
+            new File(task.savePath).delete();
+            new File(task.savePath + ".temp").delete();
             dbHelper.deleteTask(taskId);
         }
 
         taskMap.remove(taskId);
+        listenerMap.remove(taskId);
         return taskId;
+    }
+
+    //==================== 监听行为 ====================
+
+    /**
+     * 设置下载监听器
+     * 订阅行为：
+     * 1.如果任务不存在 → 创建任务但不启动
+     * 2.注册 listener 到任务或待启动任务
+     */
+    public void setDownloadListener(String url, LifecycleOwner owner, DownloadListener listener) {
+        if (!DownloadUtils.isValidUrl(url) || listener == null || owner == null) return;
+
+        String taskId = DownloadUtils.getTaskId(url);
+        DownloadTask task = taskMap.get(taskId);
+
+        // 任务不存在 → 创建但不启动
+        if (task == null) {
+            task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
+            taskMap.put(taskId, task);
+            dbHelper.saveTask(task);
+        }
+
+        // 如果已有 Worker，直接添加
+        DownloadWorker worker = workerMap.get(taskId);
+        if (worker != null) {
+            worker.addCallback(owner, listener);
+            return;
+        }
+
+        // 暂存 listener
+        List<ListenerHolder> holders = listenerMap.get(taskId);
+        if (holders == null) {
+            holders = Collections.synchronizedList(new ArrayList<>());
+            listenerMap.put(taskId, holders);
+        }
+        holders.add(new ListenerHolder(owner, listener));
     }
 
     /**
@@ -145,5 +193,11 @@ public class DownloadManager {
 
         DownloadTask task = taskMap.get(taskId);
         if (task != null) dbHelper.saveTask(task);
+    }
+
+    /**
+     * 包装 LifecycleOwner + DownloadListener
+     */
+    private record ListenerHolder(LifecycleOwner owner, DownloadListener listener) {
     }
 }

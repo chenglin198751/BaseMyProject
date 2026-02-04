@@ -3,11 +3,12 @@ package com.wcl.test.download;
 public class DownloadTask {
 
     public enum Status {
-        WAITING,
-        DOWNLOADING,
-        PAUSED,
-        FINISHED,
-        ERROR
+        IDLE,        // 未操作
+        WAITING,     // 等待调度
+        DOWNLOADING, // 下载中
+        PAUSED,      // 已暂停
+        FINISHED,    // 已完成
+        ERROR        // 出错
     }
 
     // 以下是 UI 层使用，不参与序列化
@@ -31,6 +32,6 @@ public class DownloadTask {
         this.taskId = taskId;
         this.url = url;
         this.savePath = savePath;
-        this.status = Status.WAITING;
+        this.status = Status.IDLE;
     }
 }
