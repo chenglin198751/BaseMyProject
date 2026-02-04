@@ -91,8 +91,7 @@ class DownloadWorker implements Runnable {
 
         // 断点续传异常则直接删除下载任务
         if (downloaded > 0 && task.totalBytes > 0 && downloaded > task.totalBytes) {
-            pause();
-            DownloadManager.ins().delete(task.url);
+            runOnUiThread(() -> DownloadManager.ins().delete(task.url));
             return;
         }
 
