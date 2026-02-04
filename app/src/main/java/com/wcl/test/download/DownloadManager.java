@@ -129,6 +129,9 @@ public class DownloadManager {
             dbHelper.deleteTask(taskId);
         }
 
+        taskMap.remove(taskId);
+        waitingQueue.remove(taskId);
+
         // 任务被删除，回调 listener
         List<ListenerHolder> holders = listenerMap.get(taskId);
         if (holders != null) {
@@ -136,9 +139,6 @@ public class DownloadManager {
                 holder.listener.onDeleted(task != null ? task.url : null);
             }
         }
-
-        taskMap.remove(taskId);
-        waitingQueue.remove(taskId);
 
         return taskId;
     }
