@@ -31,6 +31,8 @@ public class DownloadManager {
     private final Map<String, DownloadWorker> workerMap;
     // 已注册但任务可能尚不存在的监听器映射
     private final Map<String, List<ListenerHolder>> listenerMap;
+    // 等待下载队列
+    private final List<String> waitingQueue;
 
     private DownloadManager() {
         executor = Executors.newFixedThreadPool(MAX_THREAD);
@@ -40,6 +42,7 @@ public class DownloadManager {
         taskMap = Collections.synchronizedMap(new HashMap<>());
         workerMap = Collections.synchronizedMap(new HashMap<>());
         listenerMap = Collections.synchronizedMap(new HashMap<>());
+        waitingQueue = Collections.synchronizedList(new ArrayList<>());
 
         // 加载数据库已有任务
         for (DownloadTask t : dbHelper.loadAllTasks()) {
@@ -63,6 +66,7 @@ public class DownloadManager {
     /**
      * 开始或恢复下载任务
      * 如果任务不存在 → 创建任务并立即启动
+     * 如果线程池满 → 状态 WAITING，排队等待
      */
     public void start(String url) {
         if (!DownloadUtils.isValidUrl(url)) return;
@@ -76,23 +80,19 @@ public class DownloadManager {
             dbHelper.saveTask(task);
         }
 
-        // 已有 Worker，直接返回（监听已通过 setDownloadListener 注册）
-        DownloadWorker worker = workerMap.get(taskId);
-        if (worker != null) return;
+        // 已有 Worker，直接返回
+        if (workerMap.containsKey(taskId)) return;
 
-        // 创建 Worker 并启动
-        worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
-
-        // 添加已注册的 listener
-        List<ListenerHolder> holders = listenerMap.get(taskId);
-        if (holders != null) {
-            for (ListenerHolder holder : holders) {
-                worker.addCallback(holder.owner, holder.listener);
-            }
+        // 判断线程池是否已满
+        if (workerMap.size() >= MAX_THREAD) {
+            task.status = DownloadTask.Status.WAITING;
+            notifyStatus(task);
+            if (!waitingQueue.contains(taskId)) waitingQueue.add(taskId);
+            return;
         }
 
-        workerMap.put(taskId, worker);
-        executor.execute(worker);
+        // 创建 Worker 并启动
+        createAndStartWorker(taskId, task);
     }
 
     /**
@@ -113,6 +113,7 @@ public class DownloadManager {
 
     /**
      * 删除 taskId 对应任务
+     * 删除任务时保留 listener，同时回调 onDeleted(url)
      */
     public String deleteById(String taskId) {
         DownloadTask task = taskMap.get(taskId);
@@ -129,8 +130,17 @@ public class DownloadManager {
             dbHelper.deleteTask(taskId);
         }
 
+        // 任务被删除，回调 listener
+        List<ListenerHolder> holders = listenerMap.get(taskId);
+        if (holders != null) {
+            for (ListenerHolder holder : holders) {
+                holder.listener.onDeleted(task != null ? task.url : null);
+            }
+        }
+
         taskMap.remove(taskId);
-        listenerMap.remove(taskId);
+        waitingQueue.remove(taskId);
+
         return taskId;
     }
 
@@ -187,12 +197,49 @@ public class DownloadManager {
 
     //-----------内部使用-----------
 
+    /**
+     * 创建 Worker 并启动
+     */
+    private void createAndStartWorker(String taskId, DownloadTask task) {
+        task.status = DownloadTask.Status.DOWNLOADING;
+
+        DownloadWorker worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
+
+        // 添加 listener
+        List<ListenerHolder> holders = listenerMap.get(taskId);
+        if (holders != null) {
+            for (ListenerHolder holder : holders) {
+                worker.addCallback(holder.owner, holder.listener);
+            }
+        }
+
+        workerMap.put(taskId, worker);
+        executor.execute(worker);
+    }
+
     private void workerFinished(String taskId) {
-        DownloadWorker worker = workerMap.remove(taskId);
-        if (worker != null) worker.clearCallbacks();
+        workerMap.remove(taskId);
 
         DownloadTask task = taskMap.get(taskId);
         if (task != null) dbHelper.saveTask(task);
+
+        // 线程池空出来了，启动等待队列中的任务
+        if (!waitingQueue.isEmpty()) {
+            String nextTaskId = waitingQueue.remove(0);
+            DownloadTask nextTask = taskMap.get(nextTaskId);
+            if (nextTask != null) {
+                createAndStartWorker(nextTaskId, nextTask);
+            }
+        }
+    }
+
+    private void notifyStatus(DownloadTask task) {
+        List<ListenerHolder> holders = listenerMap.get(task.taskId);
+        if (holders != null) {
+            for (ListenerHolder holder : holders) {
+                holder.listener.onStatusChanged(task);
+            }
+        }
     }
 
     /**
