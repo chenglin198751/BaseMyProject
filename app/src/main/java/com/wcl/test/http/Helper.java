@@ -39,8 +39,8 @@ class Helper {
         params.put("brand", Build.BRAND);
         params.put("os_int", Build.VERSION.SDK_INT);
         params.put("os_release", Build.VERSION.RELEASE);
-        params.put("appCode", AppBaseUtils.getVerCode());
-        params.put("appName", AppBaseUtils.getVerName());
+        params.put("appCode", AppBaseUtils.getVersionCode());
+        params.put("appName", AppBaseUtils.getVersionName());
         params.put("channel", AppBaseUtils.getChannel());
         params.put("pkg", AppBaseUtils.getPackageName());
         params.put("os", "android");

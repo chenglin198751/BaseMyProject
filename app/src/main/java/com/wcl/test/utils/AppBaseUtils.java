@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.wcl.test.BuildConfig;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.bean.ApkItem;
@@ -44,9 +45,6 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 public class AppBaseUtils {
-    private static volatile boolean sInited = false;
-    private static String sVersionName = "";
-    private static long sVersionCode = 0;
 
     /**
      * 判断手机是否联网
@@ -68,7 +66,6 @@ public class AppBaseUtils {
         }
         return true;
     }
-
 
     public static String getString(int id) {
         return BaseApp.getApp().getResources().getString(id);
@@ -123,35 +120,61 @@ public class AppBaseUtils {
     }
 
     /**
-     * 得到APK包的信息
+     * 从 apk 文件路径中解析 APK 基本信息
+     *
+     * @param context 上下文（必须是 Application Context）
+     * @param path    apk 文件绝对路径
+     * @return ApkItem，解析失败返回 null
      */
     public static ApkItem getApkInfo(Context context, String path) {
-        File file = new File(path);
-        if (TextUtils.isEmpty(path) || !file.exists()) {
+        if (context == null || TextUtils.isEmpty(path)) {
             return null;
         }
 
-        PackageManager mPackageManager = context.getPackageManager();
-        ApkItem apkItem = new ApkItem();
-        PackageInfo ApkInfo = mPackageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
-
-        if (ApkInfo == null) {
+        File apkFile = new File(path);
+        if (!apkFile.exists() || !apkFile.isFile()) {
             return null;
         }
 
-        apkItem.appSize = file.length();
-        apkItem.appVersion = ApkInfo.versionName;
-        apkItem.versionCode = ApkInfo.versionCode;
+        PackageManager pm = context.getPackageManager();
+        PackageInfo packageInfo;
 
-        ApplicationInfo appInfo = ApkInfo.applicationInfo;
+        try {
+            packageInfo = pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
+        } catch (Throwable t) {
+            return null;
+        }
+
+        if (packageInfo == null || packageInfo.applicationInfo == null) {
+            return null;
+        }
+
+        ApkItem item = new ApkItem();
+        item.appSize = apkFile.length();
+        item.appVersion = packageInfo.versionName;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            item.versionCode = packageInfo.getLongVersionCode();
+        } else {
+            item.versionCode = packageInfo.versionCode;
+        }
+
+        ApplicationInfo appInfo = packageInfo.applicationInfo;
         appInfo.sourceDir = path;
         appInfo.publicSourceDir = path;
 
-        apkItem.appName = appInfo.loadLabel(mPackageManager).toString().trim();
-        apkItem.image = appInfo.loadIcon(mPackageManager);
-        apkItem.packageName = ApkInfo.applicationInfo.packageName;
-        return apkItem;
+        try {
+            item.appName = appInfo.loadLabel(pm).toString().trim();
+            item.image = appInfo.loadIcon(pm);
+        } catch (Throwable t) {
+            item.appName = "";
+            item.image = null;
+        }
+
+        item.packageName = packageInfo.packageName;
+        return item;
     }
+
 
     private static final class MHandlerHolder {
         private static final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -206,42 +229,18 @@ public class AppBaseUtils {
         return b.setScale(scale, RoundingMode.HALF_UP).floatValue();
     }
 
-    private static void ensureInitVersionInfo() {
-        if (sInited) return;
-
-        synchronized (AppBaseUtils.class) {
-            if (sInited) return;
-            try {
-                PackageInfo pi = BaseApp.getApp().getPackageManager()
-                        .getPackageInfo(BaseApp.getApp().getPackageName(), 0);
-                sVersionName = pi.versionName != null ? pi.versionName : "";
-                if (android.os.Build.VERSION.SDK_INT >= 28) {
-                    sVersionCode = pi.getLongVersionCode();
-                } else {
-                    sVersionCode = pi.versionCode;
-                }
-            } catch (Throwable t) {
-                sVersionName = "";
-                sVersionCode = 0;
-            }
-            sInited = true;
-        }
-    }
-
     /**
      * versionCode
      */
-    public static long getVerCode() {
-        ensureInitVersionInfo();
-        return sVersionCode;
+    public static long getVersionCode() {
+        return BuildConfig.VERSION_CODE;
     }
 
     /**
      * versionName
      */
-    public static String getVerName() {
-        ensureInitVersionInfo();
-        return sVersionName;
+    public static String getVersionName() {
+        return BuildConfig.VERSION_NAME;
     }
 
 
@@ -250,7 +249,7 @@ public class AppBaseUtils {
     }
 
     public static String getPackageName() {
-        return BaseApp.getApp().getPackageName();
+        return BuildConfig.APPLICATION_ID;
     }
 
     /**
