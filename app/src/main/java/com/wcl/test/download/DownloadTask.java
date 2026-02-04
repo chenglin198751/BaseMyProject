@@ -8,7 +8,8 @@ public class DownloadTask {
         DOWNLOADING, // 下载中
         PAUSED,      // 已暂停
         FINISHED,    // 已完成
-        ERROR        // 出错
+        ERROR,       // 出错
+        DELETED      // 已删除
     }
 
     // 以下是 UI 层使用，不参与序列化
