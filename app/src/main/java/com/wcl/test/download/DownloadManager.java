@@ -1,5 +1,7 @@
 package com.wcl.test.download;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.io.File;
@@ -170,7 +172,20 @@ public class DownloadManager {
             holders = Collections.synchronizedList(new ArrayList<>());
             listenerMap.put(taskId, holders);
         }
-        holders.add(new ListenerHolder(owner, listener));
+
+        // 添加 holder
+        ListenerHolder holder = new ListenerHolder(owner, listener);
+        holders.add(holder);
+
+        // 自动解绑：当 owner 销毁时，从 listenerMap 中移除此 listener
+        owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                List<ListenerHolder> hs = listenerMap.get(taskId);
+                if (hs != null) {
+                    hs.removeIf(h -> h.listener == listener);
+                }
+            }
+        });
     }
 
     /**
