@@ -98,15 +98,15 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!Helper.isValidUrl(url)) {
+        if (!HttpHelper.isValidUrl(url)) {
             callback.onResult(false, "Invalid URL");
             return;
         }
         if (params == null) {
             params = new HashMap<>();
         }
-        Helper.addCommonParams(params);
-        String finalUrl = Helper.buildGetUrl(url, params);
+        HttpHelper.addCommonParams(params);
+        String finalUrl = HttpHelper.buildGetUrl(url, params);
         Request request = buildRequest(finalUrl, headers).get().build();
         enqueue(context, request, callback);
     }
@@ -146,15 +146,15 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!Helper.isValidUrl(url)) {
+        if (!HttpHelper.isValidUrl(url)) {
             callback.onResult(false, "Invalid URL");
             return;
         }
         if (params == null) {
             params = new HashMap<>();
         }
-        Helper.addCommonParams(params);
-        FormBody body = Helper.buildFormBody(params);
+        HttpHelper.addCommonParams(params);
+        FormBody body = HttpHelper.buildFormBody(params);
         Request request = buildRequest(url, headers).post(body).build();
         enqueue(context, request, callback);
     }
@@ -173,13 +173,13 @@ public class HttpUtils {
             String fileKey,
             File file
     ) {
-        if (!Helper.isValidUrl(url) || file == null || !file.exists()) {
+        if (!HttpHelper.isValidUrl(url) || file == null || !file.exists()) {
             return;
         }
         if (params == null) {
             params = new HashMap<>();
         }
-        Helper.addCommonParams(params);
+        HttpHelper.addCommonParams(params);
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
         for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -209,7 +209,7 @@ public class HttpUtils {
      * @param callback 下载回调（主线程）
      */
     public static void download(String url, DownloadCallback callback) {
-        if (!Helper.isValidUrl(url)) {
+        if (!HttpHelper.isValidUrl(url)) {
             callback.onFinished(false, null, "非法 URL");
             return;
         }
@@ -234,17 +234,17 @@ public class HttpUtils {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 if (AppBaseUtils.isActivityDestroyed(context)) return;
-                Helper.postToUi(() -> callback.onResult(false, e.toString()));
+                HttpHelper.postToUi(() -> callback.onResult(false, e.toString()));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (AppBaseUtils.isActivityDestroyed(context)) return;
                 boolean ok = response.isSuccessful();
-                final String result = Helper.removeUtf8Bom(ok ? response.body().string() : response.toString());
+                final String result = HttpHelper.removeUtf8Bom(ok ? response.body().string() : response.toString());
                 AppLogUtils.i(TAG, "result:" + result);
                 response.close();
-                Helper.postToUi(() -> callback.onResult(ok, result));
+                HttpHelper.postToUi(() -> callback.onResult(ok, result));
             }
         });
     }

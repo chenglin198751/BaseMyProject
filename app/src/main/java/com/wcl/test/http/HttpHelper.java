@@ -18,11 +18,7 @@ import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * HttpHelper
- * 与 HTTP 协议无关的工具集合
- */
-class Helper {
+class HttpHelper {
 
     // 如果是有效url则返回true
     static boolean isValidUrl(String url) {

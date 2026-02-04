@@ -21,26 +21,26 @@ class Downloader {
      * @param callback 下载回调（主线程）
      */
     public static void fastDownload(String url, HttpUtils.DownloadCallback callback) {
-        if (!Helper.isValidUrl(url)) {
+        if (!HttpHelper.isValidUrl(url)) {
             callback.onFinished(false, null, "Invalid URL");
             return;
         }
 
         // 正在下载的不再重复下载
         if (!HttpUtils.DOWNLOADING_URLS.add(url)) {
-            Helper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
+            HttpHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
             return;
         }
 
         new Thread(() -> {
             try {
-                File target = new File(Helper.getDownloadPath(url));
+                File target = new File(HttpHelper.getDownloadPath(url));
                 File tempDir = new File(target.getAbsolutePath() + "_tmp");
                 if (!tempDir.exists()) tempDir.mkdirs();
 
-                long totalLength = Helper.fetchContentLength(url);
+                long totalLength = HttpHelper.fetchContentLength(url);
                 if (totalLength <= 0) {
-                    Helper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+                    HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
                     return;
                 }
 
@@ -52,7 +52,7 @@ class Downloader {
 
                 // 文件已经完整下载
                 if (target.exists() && target.length() == totalLength) {
-                    Helper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+                    HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
                     return;
                 }
 
@@ -104,7 +104,7 @@ class Downloader {
                                         int percent = (int) floatPercent;
                                         int last = lastPercent.get();
                                         if (percent > last && lastPercent.compareAndSet(last, percent)) {
-                                            Helper.postToUi(() -> {
+                                            HttpHelper.postToUi(() -> {
                                                 float f = AppBaseUtils.formatFloat(floatPercent, 2);
                                                 callback.onProgress(totalLength, curDownloaded, f);
                                             });
@@ -141,11 +141,11 @@ class Downloader {
                 }
                 tempDir.delete();
 
-                Helper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+                HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
 
             } catch (Throwable t) {
                 t.printStackTrace();
-                Helper.postToUi(() -> callback.onFinished(false, null, t.toString()));
+                HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
             } finally {
                 HttpUtils.DOWNLOADING_URLS.remove(url);
             }
@@ -153,26 +153,26 @@ class Downloader {
     }
 
     static void downloadInternal(String url, HttpUtils.DownloadCallback callback) {
-        long totalLength = Helper.fetchContentLength(url);
+        long totalLength = HttpHelper.fetchContentLength(url);
 
         if (totalLength <= 0) {
-            Helper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+            HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
             return;
         }
 
         // 检查文件是否已经完整下载，如果已经被下载成功则直接返回file path
-        File downFile = new File(Helper.getDownloadPath(url));
+        File downFile = new File(HttpHelper.getDownloadPath(url));
         if (downFile.exists() && totalLength == downFile.length()) {
-            Helper.postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
+            HttpHelper.postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
             return;
         }
 
         if (!HttpUtils.DOWNLOADING_URLS.add(url)) {
-            Helper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
+            HttpHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
             return;
         }
 
-        File target = new File(Helper.getDownloadPath(url));
+        File target = new File(HttpHelper.getDownloadPath(url));
         File temp = new File(target.getAbsolutePath() + ".temp");
         long downloaded = temp.exists() ? temp.length() : 0;
 
@@ -183,7 +183,7 @@ class Downloader {
 
         try (Response response = HttpUtils.CLIENT.newCall(builder.build()).execute()) {
             if (!response.isSuccessful()) {
-                Helper.postToUi(() -> callback.onFinished(false, null, "download fail: " + response));
+                HttpHelper.postToUi(() -> callback.onFinished(false, null, "download fail: " + response));
                 return;
             }
 
@@ -204,7 +204,7 @@ class Downloader {
                     if (percent > lastPercent) {
                         lastPercent = percent;
                         long curSum = sum;
-                        Helper.postToUi(() -> {
+                        HttpHelper.postToUi(() -> {
                             float f = AppBaseUtils.formatFloat(floatPercent, 2);
                             callback.onProgress(totalLength, curSum, f);
                         });
@@ -212,10 +212,10 @@ class Downloader {
                 }
             }
 
-            Helper.replaceFile(temp, target);
-            Helper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+            HttpHelper.replaceFile(temp, target);
+            HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
         } catch (Throwable t) {
-            Helper.postToUi(() -> callback.onFinished(false, null, t.toString()));
+            HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
         } finally {
             HttpUtils.DOWNLOADING_URLS.remove(url);
         }
