@@ -51,10 +51,6 @@ class DownloadWorker implements Runnable {
         });
     }
 
-    void clearCallbacks() {
-        callbacks.clear();
-    }
-
     void pause() {
         paused = true;
     }

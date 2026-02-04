@@ -121,7 +121,6 @@ public class DownloadManager {
         DownloadWorker worker = workerMap.remove(taskId);
         if (worker != null) {
             worker.pause();
-            worker.clearCallbacks();
         }
 
         if (task != null) {
