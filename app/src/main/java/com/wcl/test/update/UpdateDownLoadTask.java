@@ -111,10 +111,6 @@ public class UpdateDownLoadTask {
             return false;
         }
 
-        if (versionName.equals(apkItem.appVersion)) {
-            return true;
-        } else {
-            return false;
-        }
+        return versionName.equals(apkItem.appVersion);
     }
 }
