@@ -1,8 +1,6 @@
 package com.wcl.test.download;
 
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppBaseUtils;
@@ -11,8 +9,6 @@ import com.wcl.test.utils.AppFileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 
 class DownloadUtils {
 
