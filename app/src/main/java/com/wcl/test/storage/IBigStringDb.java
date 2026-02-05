@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BigStringDb implements BigStringBase {
+public class IBigStringDb implements IBigString {
 
     private static final class InstanceHolder {
-        private static final BigStringDb INSTANCE = new BigStringDb();
+        private static final IBigStringDb INSTANCE = new IBigStringDb();
     }
 
-    public static BigStringDb getInstance() {
+    public static IBigStringDb getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
@@ -26,7 +26,7 @@ public class BigStringDb implements BigStringBase {
         private static final BigDbSQLite INSTANCE = new BigDbSQLite();
     }
 
-    private BigStringDb() {
+    private IBigStringDb() {
     }
 
     @Override
