@@ -12,6 +12,13 @@ import androidx.lifecycle.EmptyActivityLifecycleCallbacks;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonToken;
+import com.hjq.gson.factory.GsonFactory;
+import com.hjq.gson.factory.ParseExceptionCallback;
+import com.tencent.mmkv.MMKV;
+import com.wcl.test.utils.AppLogUtils;
+
 import java.lang.ref.WeakReference;
 
 public class BaseApp extends Application {
@@ -35,8 +42,11 @@ public class BaseApp extends Application {
     public void onCreate() {
         super.onCreate();
         sApp = this;
+
+        MMKV.initialize(this);
         initAppForegroundObserver();
         initActivityLifecycleObserver();
+        initGsonFactory();
     }
 
     // app前后台监听
@@ -104,5 +114,25 @@ public class BaseApp extends Application {
      */
     public static boolean isAppInForeground() {
         return sIsForeground;
+    }
+
+    // 设置 Json 解析容错监听
+    private void initGsonFactory() {
+        GsonFactory.setParseExceptionCallback(new ParseExceptionCallback() {
+            @Override
+            public void onParseObjectException(TypeToken<?> typeToken, String fieldName, JsonToken jsonToken) {
+                AppLogUtils.e("GsonFactory", "onParseObjectException:类型解析异常：" + typeToken + "#" + fieldName + "，后台返回的类型为：" + jsonToken);
+            }
+
+            @Override
+            public void onParseListItemException(TypeToken<?> typeToken, String fieldName, JsonToken jsonToken) {
+                AppLogUtils.e("GsonFactory", "onParseListItemException:类型解析异常：" + typeToken + "#" + fieldName + "，后台返回的类型为：" + jsonToken);
+            }
+
+            @Override
+            public void onParseMapItemException(TypeToken<?> typeToken, String fieldName, String mapItemKey, JsonToken jsonToken) {
+                AppLogUtils.e("GsonFactory", "onParseMapItemException:类型解析异常：" + typeToken + "#" + fieldName + "，后台返回的类型为：" + jsonToken);
+            }
+        });
     }
 }

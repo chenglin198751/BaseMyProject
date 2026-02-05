@@ -21,23 +21,5 @@ public class MainApp extends BaseApp {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // 设置 Json 解析容错监听
-        GsonFactory.setParseExceptionCallback(new ParseExceptionCallback() {
-            @Override
-            public void onParseObjectException(TypeToken<?> typeToken, String fieldName, JsonToken jsonToken) {
-                AppLogUtils.e("GsonFactory", "onParseObjectException:类型解析异常：" + typeToken + "#" + fieldName + "，后台返回的类型为：" + jsonToken);
-            }
-
-            @Override
-            public void onParseListItemException(TypeToken<?> typeToken, String fieldName, JsonToken jsonToken) {
-                AppLogUtils.e("GsonFactory", "onParseListItemException:类型解析异常：" + typeToken + "#" + fieldName + "，后台返回的类型为：" + jsonToken);
-            }
-
-            @Override
-            public void onParseMapItemException(TypeToken<?> typeToken, String fieldName, String mapItemKey, JsonToken jsonToken) {
-                AppLogUtils.e("GsonFactory", "onParseMapItemException:类型解析异常：" + typeToken + "#" + fieldName + "，后台返回的类型为：" + jsonToken);
-            }
-        });
     }
 }
