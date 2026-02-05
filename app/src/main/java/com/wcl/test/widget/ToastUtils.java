@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.R;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 
 
 /**
@@ -28,10 +28,10 @@ public class ToastUtils {
             return;
         }
 
-        if (AppBaseUtils.isUiThread()) {
+        if (AppUtils.isUiThread()) {
             showToast(text);
         } else {
-            AppBaseUtils.getUiHandler().post(new Runnable() {
+            AppUtils.getUiHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     showToast(text);

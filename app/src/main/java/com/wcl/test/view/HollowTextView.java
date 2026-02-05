@@ -16,7 +16,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 
 
 public class HollowTextView extends AppCompatTextView {
@@ -48,7 +48,7 @@ public class HollowTextView extends AppCompatTextView {
         }
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.HollowTextView, defStyleAttr, 0);
         mBackgroundColor = a.getResourceId(R.styleable.HollowTextView_background_color, Color.TRANSPARENT);
-        mCornerRadius = AppBaseUtils.dp2px(a.getInt(R.styleable.HollowTextView_corner_radius, 0));
+        mCornerRadius = AppUtils.dp2px(a.getInt(R.styleable.HollowTextView_corner_radius, 0));
         a.recycle();
     }
 

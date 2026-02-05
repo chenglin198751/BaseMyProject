@@ -5,7 +5,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.wcl.test.base.BaseApp;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppFileUtils;
 import com.wcl.test.utils.DeviceUtils;
 
@@ -26,7 +26,7 @@ class HttpHelper {
     }
 
     static void postToUi(Runnable r) {
-        AppBaseUtils.getUiHandler().post(r);
+        AppUtils.getUiHandler().post(r);
     }
 
     static void addCommonParams(Map<String, Object> params) {
@@ -35,10 +35,10 @@ class HttpHelper {
         params.put("brand", Build.BRAND);
         params.put("os_int", Build.VERSION.SDK_INT);
         params.put("os_release", Build.VERSION.RELEASE);
-        params.put("appCode", AppBaseUtils.getVersionCode());
-        params.put("appName", AppBaseUtils.getVersionName());
-        params.put("channel", AppBaseUtils.getChannel());
-        params.put("pkg", AppBaseUtils.getPackageName());
+        params.put("appCode", AppUtils.getVersionCode());
+        params.put("appName", AppUtils.getVersionName());
+        params.put("channel", AppUtils.getChannel());
+        params.put("pkg", AppUtils.getPackageName());
         params.put("os", "android");
     }
 
@@ -70,7 +70,7 @@ class HttpHelper {
         if (dir == null) {
             dir = new File(AppFileUtils.getAppFilesPath());
         }
-        return new File(dir, AppBaseUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
+        return new File(dir, AppUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
     }
 
     // 从url获取文件长度

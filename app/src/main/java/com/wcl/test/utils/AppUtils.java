@@ -44,7 +44,7 @@ import java.security.MessageDigest;
 import java.util.List;
 import java.util.zip.CRC32;
 
-public class AppBaseUtils {
+public class AppUtils {
 
     /**
      * 判断手机是否联网

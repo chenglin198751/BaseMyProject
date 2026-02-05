@@ -12,7 +12,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class AutoGalleryBannerView2 implements DefaultLifecycleObserver {
     private List<String> imageList = new ArrayList<>();
     //    private final ViewPager2SlowScrollHelper slowScrollHelper;
     private boolean isAutoScrolling = true;
-    private int itemSpacing = -AppBaseUtils.dp2px(5);
+    private int itemSpacing = -AppUtils.dp2px(5);
     private static final int AUTO_SCROLL_DELAY = 3000; // 自动滚动延迟时间，单位毫秒
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable autoScrollRunnable = new Runnable() {
@@ -57,7 +57,7 @@ public class AutoGalleryBannerView2 implements DefaultLifecycleObserver {
     public AutoGalleryBannerView2(ViewPager2 viewPager2) {
         bannerViewPager = viewPager2;
 
-        FragmentActivity activity = (FragmentActivity) AppBaseUtils.getActivityFromContext(bannerViewPager.getContext());
+        FragmentActivity activity = (FragmentActivity) AppUtils.getActivityFromContext(bannerViewPager.getContext());
         if (activity != null) {
             activity.getLifecycle().addObserver(this);
         }
@@ -163,7 +163,7 @@ public class AutoGalleryBannerView2 implements DefaultLifecycleObserver {
     private RecyclerView.ItemDecoration currentItemDecoration;
 
     public void setItemMargin(int spacing) {
-        this.itemSpacing = AppBaseUtils.dp2px(spacing);
+        this.itemSpacing = AppUtils.dp2px(spacing);
 
         RecyclerView recyclerView = (RecyclerView) bannerViewPager.getChildAt(0);
 

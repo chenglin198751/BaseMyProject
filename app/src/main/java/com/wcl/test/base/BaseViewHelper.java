@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wcl.test.R;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 
 class BaseViewHelper {
     private final Context mContext;
@@ -136,7 +136,7 @@ class BaseViewHelper {
 
         if (mShowGravity == Gravity.TOP) {
             gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-            topPadding = AppBaseUtils.dp2px(30f);
+            topPadding = AppUtils.dp2px(30f);
         } else {
             gravity = Gravity.CENTER;
             topPadding = 0;

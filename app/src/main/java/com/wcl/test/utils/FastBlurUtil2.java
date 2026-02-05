@@ -26,7 +26,7 @@ public class FastBlurUtil2 {
         final Bitmap sentBitmap = BitmapUtils.createBitmapFromView(view);
         new Thread(() -> {
             Bitmap bitmap = doBlur(sentBitmap, scale, radius);
-            AppBaseUtils.getUiHandler().post(() -> {
+            AppUtils.getUiHandler().post(() -> {
                 if (listener != null) {
                     listener.onFinished(true, bitmap);
                 }

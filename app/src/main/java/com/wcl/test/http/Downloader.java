@@ -1,6 +1,6 @@
 package com.wcl.test.http;
 
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -105,7 +105,7 @@ class Downloader {
                                         int last = lastPercent.get();
                                         if (percent > last && lastPercent.compareAndSet(last, percent)) {
                                             HttpHelper.postToUi(() -> {
-                                                float f = AppBaseUtils.formatFloat(floatPercent, 2);
+                                                float f = AppUtils.formatFloat(floatPercent, 2);
                                                 callback.onProgress(totalLength, curDownloaded, f);
                                             });
                                         }
@@ -205,7 +205,7 @@ class Downloader {
                         lastPercent = percent;
                         long curSum = sum;
                         HttpHelper.postToUi(() -> {
-                            float f = AppBaseUtils.formatFloat(floatPercent, 2);
+                            float f = AppUtils.formatFloat(floatPercent, 2);
                             callback.onProgress(totalLength, curSum, f);
                         });
                     }

@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.wcl.test.EnvToggle;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppThreadPoolExecutor;
 
@@ -233,13 +233,13 @@ public class HttpUtils {
         CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (AppBaseUtils.isActivityDestroyed(context)) return;
+                if (AppUtils.isActivityDestroyed(context)) return;
                 HttpHelper.postToUi(() -> callback.onResult(false, e.toString()));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (AppBaseUtils.isActivityDestroyed(context)) return;
+                if (AppUtils.isActivityDestroyed(context)) return;
                 boolean ok = response.isSuccessful();
                 final String result = HttpHelper.removeUtf8Bom(ok ? response.body().string() : response.toString());
                 AppLogUtils.i(TAG, "result:" + result);

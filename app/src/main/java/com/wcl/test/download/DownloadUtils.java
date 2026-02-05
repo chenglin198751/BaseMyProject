@@ -3,7 +3,7 @@ package com.wcl.test.download;
 import android.os.Environment;
 
 import com.wcl.test.base.BaseApp;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppFileUtils;
 
 import java.io.File;
@@ -19,7 +19,7 @@ class DownloadUtils {
 
     // UI 线程执行
     public static void runOnUiThread(Runnable r) {
-        AppBaseUtils.getUiHandler().post(r);
+        AppUtils.getUiHandler().post(r);
     }
 
     // 替换文件（下载完成后覆盖）
@@ -37,7 +37,7 @@ class DownloadUtils {
     }
 
     public static String getTaskId(String url) {
-        return AppBaseUtils.md5(url);
+        return AppUtils.md5(url);
     }
 
     // 根据url获取文件下载路径
@@ -46,7 +46,7 @@ class DownloadUtils {
         if (dir == null) {
             dir = new File(AppFileUtils.getAppFilesPath());
         }
-        return new File(dir, AppBaseUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
+        return new File(dir, AppUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
     }
 
     private static String getSuffix(String url) {

@@ -23,7 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.wcl.test.R;
 import com.wcl.test.helper.MainTitleHelper;
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.widget.WaitDialog;
 
@@ -89,7 +89,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     private void setupSystemBars() {
         // 边到边（edge-to-edge），false沉浸式，true不沉浸
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        if (!AppBaseUtils.isEdgeToEdge()) {
+        if (!AppUtils.isEdgeToEdge()) {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 

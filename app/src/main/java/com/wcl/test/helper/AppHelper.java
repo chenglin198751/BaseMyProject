@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.wcl.test.utils.AppBaseUtils;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppLogUtils;
 
 import java.lang.reflect.Method;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 public class AppHelper {
-    private final static String PROCESS_NAME = AppBaseUtils.getPackageName();
+    private final static String PROCESS_NAME = AppUtils.getPackageName();
 
     /**
      * 判断是不是app主进程，因为有些东西只能在app主进程初始化

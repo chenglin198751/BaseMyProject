@@ -161,7 +161,7 @@ public class BitmapUtils {
     }
 
     private static void postToUi(Runnable r) {
-        AppBaseUtils.getUiHandler().post(r);
+        AppUtils.getUiHandler().post(r);
     }
 
     /**

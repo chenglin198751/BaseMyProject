@@ -2,7 +2,6 @@ package com.wcl.test;
 
 
 import com.wcl.test.storage.ToggleSettings;
-import com.wcl.test.utils.AppBaseUtils;
 
 public class EnvToggle {
     private static final boolean isDebug = BuildConfig.DEBUG || ToggleSettings.getDebugEnable();
