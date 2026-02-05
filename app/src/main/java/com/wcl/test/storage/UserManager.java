@@ -1,32 +1,26 @@
 package com.wcl.test.storage;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import com.wcl.test.base.BaseApp;
+import com.tencent.mmkv.MMKV;
 
 public class UserManager {
 
-	private static SharedPreferences getPreferences(final Context context) {
-		return context.getSharedPreferences("user_manager", Context.MODE_PRIVATE);
-	}
+    private static final MMKV kv;
+    private static final String uid = "uid";
 
-	public static void clear(){
-		getPreferences(BaseApp.getApp()).edit().clear().apply();
-	}
+    static {
+        kv = MMKV.mmkvWithID("app_user_manager");
+    }
 
-	/** 登录ID */
-	private static final String uid = "uid";
+    public static void clear() {
+        kv.clearAll();
+    }
 
-	public static void setUid(String lastLogin) {
-		SharedPreferences prefs = getPreferences(BaseApp.getApp());
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(uid, lastLogin);
-		editor.commit();
-	}
+    public static void setUid(String lastLogin) {
+        kv.encode(uid, lastLogin);
+    }
 
-	public static String getUid() {
-		return getPreferences(BaseApp.getApp()).getString(uid, "");
-	}
+    public static String getUid() {
+        return kv.decodeString(uid, "");
+    }
 
 }

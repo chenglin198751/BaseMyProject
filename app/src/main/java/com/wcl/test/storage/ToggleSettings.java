@@ -1,41 +1,34 @@
 package com.wcl.test.storage;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import com.wcl.test.base.BaseApp;
+import com.tencent.mmkv.MMKV;
 
 public class ToggleSettings {
+
+    private static final MMKV kv;
     private static final String KEY_LOG_TOGGLE = "KEY_LOG_TOGGLE";
     private static final String KEY_DEBUG_TOGGLE = "KEY_DEBUG_TOGGLE";
 
-    private static SharedPreferences getPreferences(final Context context) {
-        return context.getSharedPreferences("app_toggle_settings", Context.MODE_PRIVATE);
+    static {
+        kv = MMKV.mmkvWithID("app_toggle_settings");
     }
 
     public static void clear() {
-        getPreferences(BaseApp.getApp()).edit().clear().apply();
+        kv.clearAll();
     }
 
     public static void setLogEnable(boolean value) {
-        SharedPreferences prefs = getPreferences(BaseApp.getApp());
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(KEY_LOG_TOGGLE, value);
-        editor.apply();
+        kv.encode(KEY_LOG_TOGGLE, value);
     }
 
     public static boolean getLogEnable() {
-        return getPreferences(BaseApp.getApp()).getBoolean(KEY_LOG_TOGGLE, false);
+        return kv.decodeBool(KEY_LOG_TOGGLE, false);
     }
 
     public static void setDebugEnable(boolean value) {
-        SharedPreferences prefs = getPreferences(BaseApp.getApp());
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(KEY_DEBUG_TOGGLE, value);
-        editor.apply();
+        kv.encode(KEY_DEBUG_TOGGLE, value);
     }
 
     public static boolean getDebugEnable() {
-        return getPreferences(BaseApp.getApp()).getBoolean(KEY_DEBUG_TOGGLE, false);
+        return kv.decodeBool(KEY_DEBUG_TOGGLE, false);
     }
 }
