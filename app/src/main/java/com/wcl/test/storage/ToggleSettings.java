@@ -4,17 +4,9 @@ import com.tencent.mmkv.MMKV;
 
 public class ToggleSettings {
 
-    private static final MMKV kv;
+    private static final MMKV kv = MMKV.defaultMMKV();
     private static final String KEY_LOG_TOGGLE = "KEY_LOG_TOGGLE";
     private static final String KEY_DEBUG_TOGGLE = "KEY_DEBUG_TOGGLE";
-
-    static {
-        kv = MMKV.mmkvWithID("app_toggle_settings");
-    }
-
-    public static void clear() {
-        kv.clearAll();
-    }
 
     public static void setLogEnable(boolean value) {
         kv.encode(KEY_LOG_TOGGLE, value);
