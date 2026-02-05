@@ -176,16 +176,6 @@ public class DownloadManager {
         // 添加 holder
         ListenerHolder holder = new ListenerHolder(owner, listener);
         holders.add(holder);
-
-        // 自动解绑：当 owner 销毁时，从 listenerMap 中移除此 listener
-        owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                List<ListenerHolder> hs = listenerMap.get(taskId);
-                if (hs != null) {
-                    hs.removeIf(h -> h.listener == listener);
-                }
-            }
-        });
     }
 
     /**
