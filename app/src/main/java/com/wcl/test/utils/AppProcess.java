@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import java.lang.reflect.Method;
 import java.util.List;
 
- final class AppProcess {
+class AppProcess {
 
     private static volatile String sCurrentProcessName;
 
