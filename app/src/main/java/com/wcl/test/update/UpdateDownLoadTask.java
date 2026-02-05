@@ -105,7 +105,7 @@ public class UpdateDownLoadTask {
     }
 
     public static boolean apkExist(Context context, String versionName, String apk_path) {
-        ApkItem apkItem = AppUtils.getApkInfo(context, apk_path);
+        ApkItem apkItem = ApkInstaller.getApkInfo(context, apk_path);
 
         if (apkItem == null) {
             return false;

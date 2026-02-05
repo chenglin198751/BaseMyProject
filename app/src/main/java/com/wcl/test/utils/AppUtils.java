@@ -5,9 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Rect;
@@ -27,22 +24,18 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
+
 import com.wcl.test.BuildConfig;
-import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseApp;
-import com.wcl.test.bean.ApkItem;
-import com.wcl.test.widget.ToastUtils;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.List;
-import java.util.zip.CRC32;
 
 public class AppUtils {
 
@@ -119,63 +112,6 @@ public class AppUtils {
         imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
     }
 
-    /**
-     * 从 apk 文件路径中解析 APK 基本信息
-     *
-     * @param context 上下文（必须是 Application Context）
-     * @param path    apk 文件绝对路径
-     * @return ApkItem，解析失败返回 null
-     */
-    public static ApkItem getApkInfo(Context context, String path) {
-        if (context == null || TextUtils.isEmpty(path)) {
-            return null;
-        }
-
-        File apkFile = new File(path);
-        if (!apkFile.exists() || !apkFile.isFile()) {
-            return null;
-        }
-
-        PackageManager pm = context.getPackageManager();
-        PackageInfo packageInfo;
-
-        try {
-            packageInfo = pm.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
-        } catch (Throwable t) {
-            return null;
-        }
-
-        if (packageInfo == null || packageInfo.applicationInfo == null) {
-            return null;
-        }
-
-        ApkItem item = new ApkItem();
-        item.appSize = apkFile.length();
-        item.appVersion = packageInfo.versionName;
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-            item.versionCode = packageInfo.getLongVersionCode();
-        } else {
-            item.versionCode = packageInfo.versionCode;
-        }
-
-        ApplicationInfo appInfo = packageInfo.applicationInfo;
-        appInfo.sourceDir = path;
-        appInfo.publicSourceDir = path;
-
-        try {
-            item.appName = appInfo.loadLabel(pm).toString().trim();
-            item.image = appInfo.loadIcon(pm);
-        } catch (Throwable t) {
-            item.appName = "";
-            item.image = null;
-        }
-
-        item.packageName = packageInfo.packageName;
-        return item;
-    }
-
-
     private static final class MHandlerHolder {
         private static final Handler mHandler = new Handler(Looper.getMainLooper());
     }
@@ -187,30 +123,19 @@ public class AppUtils {
         return MHandlerHolder.mHandler;
     }
 
+
     /**
-     * 精确除法，使用 BigDecimal，结果四舍五入（HALF_DOWN）
-     *
-     * @param value1 被除数
-     * @param value2 除数
-     * @param scale  保留小数位数（>= 0）
-     * @return 计算结果，异常或非法参数返回 0
+     * 判断是不是 app 主进程
      */
-    public static double divide(double value1, double value2, int scale) {
-        if (scale < 0) {
-            scale = 0;
-        }
+    static boolean isAppMainProcess(Context context) {
+        return AppProcess.isAppMainProcess(context);
+    }
 
-        if (Math.abs(value2) < 1e-12) {
-            return 0d;
-        }
-
-        try {
-            BigDecimal b1 = BigDecimal.valueOf(value1);
-            BigDecimal b2 = BigDecimal.valueOf(value2);
-            return b1.divide(b2, scale, RoundingMode.HALF_DOWN).doubleValue();
-        } catch (Throwable t) {
-            return 0d;
-        }
+    /**
+     * 获取当前进程名
+     */
+    static String getCurrentProcessName(Context context) {
+        return AppProcess.getCurrentProcessName(context);
     }
 
     /**
@@ -260,60 +185,18 @@ public class AppUtils {
     }
 
     /**
-     * 根据包名打开别的应用
+     * 获取当前最顶层 Activity（可能为 null）
      */
-    public static void startApp(BaseActivity context, String packageName) {
-        try {
-            if (isInstalledApp(context, packageName)) {
-                Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-                context.startActivity(LaunchIntent);
-            } else {
-                ToastUtils.show("你手机没安装此应用");
-            }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            ToastUtils.show("你手机没安装此应用");
-        }
+    @Nullable
+    public static Activity getTopActivity() {
+        return BaseApp.getTopActivity();
     }
 
     /**
-     * 是否安装了此应用
+     * App 是否处于前台
      */
-    public static boolean isInstalledApp(Context context, String packageName) {
-        final PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> pInfo = packageManager.getInstalledPackages(0);
-        if (pInfo != null) {
-            for (int i = 0; i < pInfo.size(); i++) {
-                String pn = pInfo.get(i).packageName;
-                if (pn.equals(packageName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * java crc32 运算
-     */
-    public static long crc32(String str) {
-        if (TextUtils.isEmpty(str)) {
-            return 0;
-        }
-        CRC32 crc32 = new CRC32();
-        crc32.update(str.getBytes());
-        return crc32.getValue();
-    }
-
-    /**
-     * 执行adb shell 命令来滑动屏幕
-     */
-    public static void exec() {
-        try {
-            Runtime.getRuntime().exec("input swipe 400 1000 400 100 4000");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static boolean isAppInForeground() {
+        return BaseApp.isAppInForeground();
     }
 
     /**

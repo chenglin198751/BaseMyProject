@@ -89,10 +89,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'com.squareup.okhttp3:okhttp:5.3.2'
     implementation 'com.squareup.okio:okio:3.16.4'
-//    implementation 'org.conscrypt:conscrypt-openjdk-uber:2.2.1'
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'com.github.getActivity:GsonFactory:10.3'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'com.tencent:mmkv:2.3.0'
 
     implementation 'io.github.scwang90:refresh-layout-kernel:3.0.0-alpha'
     implementation 'io.github.scwang90:refresh-header-classics:3.0.0-alpha'
@@ -115,7 +115,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
     implementation 'androidx.lifecycle:lifecycle-process:2.10.0'
     implementation 'com.github.JavaNoober.BackgroundLibrary:libraryx:1.7.6'
-    implementation 'androidx.work:work-runtime:2.11.0'
+    implementation 'androidx.work:work-runtime:2.11.1'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'com.github.hackware1993:MagicIndicator:1.7.0'
 }
