@@ -2,7 +2,6 @@ package com.wcl.test.update;
 
 import android.app.Notification;
 import android.content.Context;
-import android.widget.RemoteViews;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseApp;
