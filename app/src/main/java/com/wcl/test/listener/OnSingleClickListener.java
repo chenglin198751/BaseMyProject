@@ -7,7 +7,7 @@ public abstract class OnSingleClickListener implements View.OnClickListener {
     private static final long DEFAULT_INTERVAL = 1000L;
 
     private long lastClickTime;
-    private long interval = DEFAULT_INTERVAL;
+    private final long interval;
 
     public OnSingleClickListener() {
         this(DEFAULT_INTERVAL);
