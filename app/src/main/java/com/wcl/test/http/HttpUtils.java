@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.wcl.test.EnvToggle;
-import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppThreadPoolExecutor;
+import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,14 +99,10 @@ public class HttpUtils {
             HttpCallback callback
     ) {
         if (!HttpHelper.isValidUrl(url)) {
-            callback.onResult(false, "Invalid URL");
+            notifyResult(callback, false, "Invalid URL");
             return;
         }
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        HttpHelper.addCommonParams(params);
-        String finalUrl = HttpHelper.buildGetUrl(url, params);
+        String finalUrl = HttpHelper.buildGetUrl(url, withCommonParams(params));
         Request request = buildRequest(finalUrl, headers).get().build();
         enqueue(context, request, callback);
     }
@@ -147,14 +143,10 @@ public class HttpUtils {
             HttpCallback callback
     ) {
         if (!HttpHelper.isValidUrl(url)) {
-            callback.onResult(false, "Invalid URL");
+            notifyResult(callback, false, "Invalid URL");
             return;
         }
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        HttpHelper.addCommonParams(params);
-        FormBody body = HttpHelper.buildFormBody(params);
+        FormBody body = HttpHelper.buildFormBody(withCommonParams(params));
         Request request = buildRequest(url, headers).post(body).build();
         enqueue(context, request, callback);
     }
@@ -176,13 +168,10 @@ public class HttpUtils {
         if (!HttpHelper.isValidUrl(url) || file == null || !file.exists()) {
             return;
         }
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        HttpHelper.addCommonParams(params);
+        Map<String, Object> finalParams = withCommonParams(params);
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
+        for (Map.Entry<String, Object> entry : finalParams.entrySet()) {
             builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
         }
 
@@ -192,7 +181,7 @@ public class HttpUtils {
         CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                call.cancel();
+                AppLogUtils.w(TAG, "uploadImage error: " + e);
             }
 
             @Override
@@ -234,19 +223,33 @@ public class HttpUtils {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 if (AppUtils.isActivityDestroyed(context)) return;
-                HttpHelper.postToUi(() -> callback.onResult(false, e.toString()));
+                HttpHelper.postToUi(() -> notifyResult(callback, false, e.toString()));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (AppUtils.isActivityDestroyed(context)) return;
-                boolean ok = response.isSuccessful();
-                final String result = HttpHelper.removeUtf8Bom(ok ? response.body().string() : response.toString());
-                AppLogUtils.i(TAG, "result:" + result);
-                response.close();
-                HttpHelper.postToUi(() -> callback.onResult(ok, result));
+                try (response) {
+                    boolean ok = response.isSuccessful();
+                    String responseContent = response.body().string();
+                    final String result = HttpHelper.removeUtf8Bom(ok ? responseContent : response.toString());
+                    AppLogUtils.i(TAG, "result:" + result);
+                    HttpHelper.postToUi(() -> notifyResult(callback, ok, result));
+                }
             }
         });
+    }
+
+    private static Map<String, Object> withCommonParams(Map<String, Object> params) {
+        Map<String, Object> finalParams = params == null ? new HashMap<>() : new HashMap<>(params);
+        HttpHelper.addCommonParams(finalParams);
+        return finalParams;
+    }
+
+    private static void notifyResult(HttpCallback callback, boolean success, String result) {
+        if (callback != null) {
+            callback.onResult(success, result);
+        }
     }
 
     /**
@@ -278,7 +281,7 @@ public class HttpUtils {
                 response = chain.proceed(request);
             }
             long end = System.currentTimeMillis();
-            AppLogUtils.v(TAG, "cost:" + (end - start) + "ms" + ",url:" + response.request().url());
+            AppLogUtils.v(TAG, "cost:" + (end - start) + "ms" + ",retry:" + retry + ",url:" + request.url());
             return response;
         }
     }
