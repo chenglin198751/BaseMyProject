@@ -1,7 +1,5 @@
 package com.wcl.test.download;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 import java.io.File;
