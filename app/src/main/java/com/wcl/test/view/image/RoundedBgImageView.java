@@ -10,7 +10,10 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 import com.wcl.test.R;
 
-class RoundedBgImageView extends AppCompatImageView {
+/**
+ * 圆角/圆形图片视图，支持背景色、边框和宽高比（View并非被圆角，是让glide加载的圆角图片）
+ */
+class RoundedBgImageView extends AppCompatImageView implements IRoundedMethod {
 
     protected float cornerRadius = 0f;
     protected boolean isOval = false;
@@ -113,7 +116,8 @@ class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置圆角半径（单位 px）
      */
-    void setCornerRadius(float radius) {
+    @Override
+    public void setCornerRadius(float radius) {
         cornerRadius = radius;
         isOval = false;
         applyDrawableState();
@@ -123,7 +127,8 @@ class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置是否为圆形背景
      */
-    void setOval(boolean oval) {
+    @Override
+    public void setOval(boolean oval) {
         isOval = oval;
         applyDrawableState();
         invalidate();
@@ -132,7 +137,8 @@ class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置宽高比（宽 / 高）
      */
-    void setAspectRatio(float ratio) {
+    @Override
+    public void setAspectRatio(float ratio) {
         aspectRatio = ratio;
         requestLayout();
     }
@@ -140,7 +146,8 @@ class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置边框宽度（单位 px）
      */
-    void setBorderWidth(float width) {
+    @Override
+    public void setBorderWidth(float width) {
         borderWidth = width;
         applyDrawableState();
         invalidate();
@@ -149,8 +156,16 @@ class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置边框颜色
      */
-    void setBorderColor(int color) {
+    @Override
+    public void setBorderColor(int color) {
         borderColor = color;
+        applyDrawableState();
+        invalidate();
+    }
+
+    @Override
+    public void setSolidColor(int color) {
+        solidColor = color;
         applyDrawableState();
         invalidate();
     }
