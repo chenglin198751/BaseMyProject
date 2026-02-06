@@ -1,6 +1,7 @@
 package com.wcl.test.view.image;
 
 interface IRoundedMethod {
+
     void setCornerRadius(float radius);
 
     void setOval(boolean oval);
