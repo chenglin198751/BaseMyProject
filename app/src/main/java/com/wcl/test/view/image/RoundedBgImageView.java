@@ -10,7 +10,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 import com.wcl.test.R;
 
-public class RoundedBgImageView extends AppCompatImageView {
+class RoundedBgImageView extends AppCompatImageView {
 
     protected float cornerRadius = 0f;
     protected boolean isOval = false;
@@ -20,17 +20,17 @@ public class RoundedBgImageView extends AppCompatImageView {
     protected int solidColor = Color.TRANSPARENT;
     private GradientDrawable backgroundDrawable;
 
-    public RoundedBgImageView(Context context) {
+    RoundedBgImageView(Context context) {
         super(context);
         init(context, null);
     }
 
-    public RoundedBgImageView(Context context, AttributeSet attrs) {
+    RoundedBgImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public RoundedBgImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    RoundedBgImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
@@ -113,7 +113,7 @@ public class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置圆角半径（单位 px）
      */
-    public void setCornerRadius(float radius) {
+    void setCornerRadius(float radius) {
         cornerRadius = radius;
         isOval = false;
         applyDrawableState();
@@ -123,7 +123,7 @@ public class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置是否为圆形背景
      */
-    public void setOval(boolean oval) {
+    void setOval(boolean oval) {
         isOval = oval;
         applyDrawableState();
         invalidate();
@@ -132,7 +132,7 @@ public class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置宽高比（宽 / 高）
      */
-    public void setAspectRatio(float ratio) {
+    void setAspectRatio(float ratio) {
         aspectRatio = ratio;
         requestLayout();
     }
@@ -140,7 +140,7 @@ public class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置边框宽度（单位 px）
      */
-    public void setBorderWidth(float width) {
+    void setBorderWidth(float width) {
         borderWidth = width;
         applyDrawableState();
         invalidate();
@@ -149,7 +149,7 @@ public class RoundedBgImageView extends AppCompatImageView {
     /**
      * 设置边框颜色
      */
-    public void setBorderColor(int color) {
+    void setBorderColor(int color) {
         borderColor = color;
         applyDrawableState();
         invalidate();
