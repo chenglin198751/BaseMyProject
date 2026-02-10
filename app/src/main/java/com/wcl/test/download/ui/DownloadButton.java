@@ -107,6 +107,7 @@ public class DownloadButton extends ProgressColorTextView {
         if (url == null) return;
         task = DownloadManager.ins().getTask(url);
         if (task == null) {
+            setProgress(0);
             setText("下载");
             return;
         }
