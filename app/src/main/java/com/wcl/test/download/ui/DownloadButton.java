@@ -1,35 +1,41 @@
-package com.wcl.test.download;
+package com.wcl.test.download.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.lifecycle.LifecycleOwner;
 
-public class DownloadButton extends AppCompatTextView {
+import com.wcl.test.download.DownloadListener;
+import com.wcl.test.download.DownloadManager;
+import com.wcl.test.download.DownloadTask;
+import com.wcl.test.listener.OnSingleClickListener;
+
+/**
+ * 下载按钮控件
+ */
+public class DownloadButton extends ProgressColorTextView {
 
     private String url;
     private LifecycleOwner owner;
-
-    /**
-     * 当前任务（弱状态，不缓存引用）
-     */
     private DownloadTask task;
 
-    /**
-     * ⚠️ 核心：callback 是成员变量，整个 View 生命周期唯一
-     */
     private final DownloadListener callback = new DownloadListener() {
         @Override
         public void onProgress(DownloadTask task) {
-            post(DownloadButton.this::syncState);
+            syncState();
         }
 
         @Override
         public void onStatusChanged(DownloadTask task) {
-            post(DownloadButton.this::syncState);
+            syncState();
+        }
+
+        @Override
+        public void onDeleted(String url) {
+            syncState();
         }
     };
 
@@ -50,49 +56,46 @@ public class DownloadButton extends AppCompatTextView {
 
     private void init() {
         setClickable(true);
-        setOnClickListener(this::handleClick);
+        setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                handleClick();
+            }
+        });
         setText("下载");
     }
 
     /**
-     * 对外唯一入口
+     * 对外唯一入口：订阅下载状态（不启动下载）
      */
     public void bind(String url, LifecycleOwner owner) {
         this.url = url;
         this.owner = owner;
-
-        DownloadTask task = DownloadManager.ins().getTask(url);
-        if (task != null) {
-            DownloadManager.ins().start(url, owner, callback);
-        }
-
+        DownloadManager.ins().setDownloadListener(url, owner, callback);
         syncState();
     }
 
-    private void handleClick(View v) {
-        if (url == null || owner == null) return;
+    // 首次点击才真正创建并启动任务
+    private void handleClick() {
+        if (url == null) return;
 
         task = DownloadManager.ins().getTask(url);
-
         if (task == null) {
-            // 从未下载过
-            DownloadManager.ins().start(url, owner, callback);
+            DownloadManager.ins().start(url);
             return;
         }
 
         switch (task.status) {
+            case IDLE:
             case WAITING:
             case PAUSED:
             case ERROR:
-                DownloadManager.ins().start(url, owner, callback);
+                DownloadManager.ins().start(url);
                 break;
-
             case DOWNLOADING:
                 DownloadManager.ins().pause(url);
                 break;
-
             case FINISHED:
-                // 已完成，通常不处理或提示
                 break;
         }
     }
@@ -102,31 +105,29 @@ public class DownloadButton extends AppCompatTextView {
      */
     private void syncState() {
         if (url == null) return;
-
         task = DownloadManager.ins().getTask(url);
-
         if (task == null) {
             setText("下载");
             return;
         }
 
+        setProgress(task.progress);
         switch (task.status) {
+            case IDLE:
+                setText("下载");
+                break;
             case WAITING:
                 setText("等待中");
                 break;
-
             case DOWNLOADING:
-                setText(String.format("下载中 %.1f%%", task.progress));
+                setText(task.progress + "%");
                 break;
-
             case PAUSED:
                 setText("继续");
                 break;
-
             case FINISHED:
                 setText("已完成");
                 break;
-
             case ERROR:
                 setText("重试");
                 break;
