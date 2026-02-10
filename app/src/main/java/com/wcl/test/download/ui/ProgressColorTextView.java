@@ -23,20 +23,20 @@ class ProgressColorTextView extends AppCompatTextView {
 
     public ProgressColorTextView(Context context) {
         super(context);
-        init(context, null);
+        init();
     }
 
     public ProgressColorTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
+        init();
     }
 
     public ProgressColorTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
+        init();
     }
 
-    private void init(Context context, AttributeSet attrs) {
+    private void init() {
         setBackgroundResource(R.drawable.download_bg_progress_layer);
 
         // 设置胶囊形状的左右圆角
@@ -83,6 +83,7 @@ class ProgressColorTextView extends AppCompatTextView {
         int width = getWidth();
         if (width <= 0) return;
 
+        setTextColor(colorLeft);
         float p = progress / 100f;
         LinearGradient shader = new LinearGradient(
                 0, 0,
