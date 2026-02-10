@@ -18,8 +18,8 @@ import com.wcl.test.R;
 class ProgressColorTextView extends AppCompatTextView {
 
     private int progress = 0; // 0 ~ 100
-    private final int colorLeft = Color.BLACK;
-    private final int colorRight = Color.parseColor("#2196F3");
+    private final int colorLeft = Color.WHITE;
+    private final int colorRight = Color.parseColor("#2979FF");
 
     public ProgressColorTextView(Context context) {
         super(context);
@@ -55,11 +55,12 @@ class ProgressColorTextView extends AppCompatTextView {
     /**
      * 设置进度（0~100）
      */
-    public void setProgress(int progress) {
-        int newProgress = Math.max(0, Math.min(progress, 100));
+    void setProgress(double p) {
+        int newProgress = Math.max(0, Math.min((int) p, 100));
         if (this.progress != newProgress) {
-            // 1.设置文字变色进度
             this.progress = newProgress;
+
+            // 1.设置文字变色进度
             updateShader();
             invalidate();
 
@@ -67,7 +68,7 @@ class ProgressColorTextView extends AppCompatTextView {
             Drawable bg = getBackground();
             if (bg instanceof LayerDrawable layer) {
                 Drawable progressDrawable = layer.getDrawable(1);
-                progressDrawable.setLevel(progress * 100);
+                progressDrawable.setLevel(newProgress * 100);
             }
         }
     }

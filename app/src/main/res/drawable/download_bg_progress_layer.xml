@@ -13,7 +13,7 @@
             android:clipOrientation="horizontal"
             android:gravity="left">
             <shape>
-                <solid android:color="#2196F3" />
+                <solid android:color="#2979FF" />
             </shape>
         </clip>
     </item>
