@@ -120,26 +120,6 @@ class RoundedBgImageView2 extends AppCompatImageView implements IRoundedMethod {
         invalidateOutline();
     }
 
-    public void setImageResource(int resId) {
-        super.setImageResource(resId);
-    }
-
-    public void setImageDrawable(@Nullable Drawable drawable) {
-        super.setImageDrawable(drawable);
-    }
-
-    public void setImageURI(@Nullable Uri uri) {
-        super.setImageURI(uri);
-    }
-
-    public void setImageBitmap(@Nullable android.graphics.Bitmap bm) {
-        super.setImageBitmap(bm);
-    }
-
-    public void setScaleType(@NonNull AppCompatImageView.ScaleType scaleType) {
-        super.setScaleType(scaleType);
-    }
-
     @Override
     public void setCornerRadius(float radius) {
         cornerRadius = radius;
