@@ -96,3 +96,4 @@ com.wcl.test/
 3. **签名配置**: debug 和 release 使用相同的签名配置（keystore_debug.jks）
 4. **Apk 输出路径**: `app/debug/base_project_v_{versionName}.apk`, `app/release/base_project_v_{versionName}.apk`
 5. **日志**: 通过 `BuildConfig.LOG_ENABLED` 控制日志开关
+6. **交流语言**: 默认使用中文
