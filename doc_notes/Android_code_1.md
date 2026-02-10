@@ -189,7 +189,21 @@
 
     final List<String> numbers = Arrays.asList("1", "2", "3");
 
-**14、复写View的 onSizeChanged() 方法可以得到宽高**
+**14、获取View宽高**
+
+    1.继承自View并 @override onSizeChanged() 方法可获取宽高
+    2.最常用：view.post(){}
+    3.继承自View：
+        @Override
+        protected void onLayout(boolean changed, int l, int t, int r, int b) {
+            int width = r - l;
+            int height = b - t;
+        }
+    4.常用：addOnLayoutChangeListener()：
+        view.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            int width = r - l;
+            int height = b - t;
+        });
 
 **15、混淆规则讲解：**
 

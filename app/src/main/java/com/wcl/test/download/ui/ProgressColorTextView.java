@@ -3,10 +3,13 @@ package com.wcl.test.download.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Outline;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewOutlineProvider;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
@@ -15,8 +18,8 @@ import com.wcl.test.R;
 class ProgressColorTextView extends AppCompatTextView {
 
     private int progress = 0; // 0 ~ 100
-    private final int colorLeft = Color.WHITE;
-    private final int colorRight = Color.parseColor("#2979FF");
+    private final int colorLeft = Color.BLACK;
+    private final int colorRight = Color.parseColor("#2196F3");
 
     public ProgressColorTextView(Context context) {
         super(context);
@@ -35,6 +38,18 @@ class ProgressColorTextView extends AppCompatTextView {
 
     private void init(Context context, AttributeSet attrs) {
         setBackgroundResource(R.drawable.download_bg_progress_layer);
+
+        // 设置胶囊形状的左右圆角
+        setClipToOutline(true);
+        setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                int width = view.getWidth();
+                int height = view.getHeight();
+                float radius = height / 2f;
+                outline.setRoundRect(0, 0, width, height, radius);
+            }
+        });
     }
 
     /**
@@ -58,8 +73,8 @@ class ProgressColorTextView extends AppCompatTextView {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int old_w, int old_h) {
-        super.onSizeChanged(w, h, old_w, old_h);
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
         updateShader();
     }
 
