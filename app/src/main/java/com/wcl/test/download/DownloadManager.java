@@ -206,6 +206,7 @@ public class DownloadManager {
             for (ListenerHolder holder : holders) {
                 worker.addCallback(holder.owner, holder.listener);
             }
+            listenerMap.remove(taskId);
         }
 
         workerMap.put(taskId, worker);
