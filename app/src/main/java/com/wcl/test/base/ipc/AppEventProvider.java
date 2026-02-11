@@ -10,22 +10,27 @@ import com.wcl.test.BuildConfig;
 import com.wcl.test.utils.AppLogUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
- * ----目前不用 2026-01-13----
- * 高性能、轻量的 App 内跨进程事件 Provider。
+ * 轻量 App 内跨进程事件 Provider（仅内存 sticky）
+ * <p>
  * 注意：
  * - AndroidManifest 中必须注册（exported="false"）。
- * - Provider 内不得做耗时操作。
+ * - 仅适用于“状态同步”，不保证事件不丢失。
  */
 public class AppEventProvider extends ContentProvider {
     private static final String TAG = "AppEventProvider";
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.eventbus";
     public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
-
     public static final String METHOD_POST = "POST";
     public static final String METHOD_GET = "GET";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_ERROR = "error";
+    private static final String KEY_HAS_DATA = "has_data";
+    private static final String KEY_DATA = "data";
 
+    private static final Pattern SAFE_EVENT_PATTERN = Pattern.compile("[0-9A-Za-z_.\\-]+");
     private static final ConcurrentHashMap<String, Bundle> stickyMap = new ConcurrentHashMap<>();
 
     @Override
@@ -40,54 +45,56 @@ public class AppEventProvider extends ContentProvider {
                 return buildError("bad_args");
             }
 
-            // 简单校验 event 名（避免注入和 path 问题）
             String event = sanitizeEventName(arg);
-            if (event == null) return buildError("invalid_event");
+            if (event == null) {
+                return buildError("invalid_event");
+            }
 
             if (METHOD_POST.equals(method)) {
-                // POST：写入内存（深拷贝 Bundle，避免外部修改）
-                Bundle payload = (extras == null) ? null : new Bundle(extras);
-                if (payload == null) payload = Bundle.EMPTY;
-
+                Bundle payload = (extras == null) ? Bundle.EMPTY : new Bundle(extras);
                 stickyMap.put(event, payload);
-
                 Bundle out = new Bundle();
-                out.putString("status", "ok");
+                out.putString(KEY_STATUS, "ok");
                 return out;
+
             } else if (METHOD_GET.equals(method)) {
-                // GET：返回深拷贝的 Bundle（或 null 表示无数据）
                 Bundle stored = stickyMap.get(event);
-                if (stored == null) return null;
-                return new Bundle(stored);
+                Bundle out = new Bundle();
+                if (stored == null) {
+                    out.putBoolean(KEY_HAS_DATA, false);
+                } else {
+                    out.putBoolean(KEY_HAS_DATA, true);
+                    out.putBundle(KEY_DATA, new Bundle(stored));
+                }
+                return out;
             } else {
                 return buildError("unsupported_method");
             }
+
         } catch (Throwable t) {
             AppLogUtils.e(TAG, "call error:" + t);
             return buildError("exception");
         }
     }
 
-    // ---------- helpers ----------
     private Bundle buildError(String code) {
         Bundle b = new Bundle();
-        b.putString("error", code);
+        b.putString(KEY_ERROR, code);
         return b;
     }
 
     /**
-     * 限定 event 名只允许 [0-9a-zA-Z_.-] 的字符，且长度限制
+     * 限定 event 名只允许 [0-9a-zA-Z_.-]，长度 <= 128
      */
-    private String sanitizeEventName(String raw) {
+    public static String sanitizeEventName(String raw) {
         if (raw == null) return null;
         String s = raw.trim();
         if (s.isEmpty() || s.length() > 128) return null;
-        // 仅允许安全字符（可根据需要放宽）
-        if (!s.matches("[0-9A-Za-z_.\\-]+")) return null;
+        if (!SAFE_EVENT_PATTERN.matcher(s).matches()) return null;
         return s;
     }
 
-    // 以下 API 不再使用，返回默认值
+    // 以下 API 不使用
     @Override
     public android.database.Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return null;
