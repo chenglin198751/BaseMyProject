@@ -58,30 +58,29 @@ class ProgressColorTextView extends AppCompatTextView {
      * 设置进度（0~100）
      */
     void setProgress(double p) {
-        int newProgress = Math.max(0, Math.min((int) Math.round(p), 100));
+        int newProgress = (int) Math.round(Math.max(0, Math.min(p, 100)));
         if (this.progress != newProgress) {
             this.progress = newProgress;
 
             // 1.设置文字变色进度
-            updateShader();
+            updateLinearGradient();
             invalidate();
 
             // 2.设置背景进度条
-            Drawable bg = getBackground();
-            if (bg instanceof LayerDrawable layer) {
-                Drawable progressDrawable = layer.getDrawable(1);
-                progressDrawable.setLevel(newProgress * 100);
-            }
+            updateBackgroundProgress();
         }
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        updateShader();
+        updateLinearGradient();
     }
 
-    private void updateShader() {
+    /**
+     * 更新文字变色
+     */
+    private void updateLinearGradient() {
         int width = getWidth();
         if (width <= 0) return;
 
@@ -95,5 +94,16 @@ class ProgressColorTextView extends AppCompatTextView {
                 Shader.TileMode.CLAMP
         );
         getPaint().setShader(shader);
+    }
+
+    /**
+     * 更新背景进度条
+     */
+    private void updateBackgroundProgress() {
+        Drawable bg = getBackground();
+        if (bg instanceof LayerDrawable layer) {
+            Drawable progressDrawable = layer.getDrawable(1);
+            progressDrawable.setLevel(progress * 100);
+        }
     }
 }
