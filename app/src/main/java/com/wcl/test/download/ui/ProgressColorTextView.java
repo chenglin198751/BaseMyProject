@@ -58,7 +58,7 @@ class ProgressColorTextView extends AppCompatTextView {
      * 设置进度（0~100）
      */
     void setProgress(double p) {
-        int newProgress = Math.max(0, Math.min((int) p, 100));
+        int newProgress = Math.max(0, Math.min((int) Math.round(p), 100));
         if (this.progress != newProgress) {
             this.progress = newProgress;
 

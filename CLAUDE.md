@@ -97,3 +97,4 @@ com.wcl.test/
 4. **Apk 输出路径**: `app/debug/base_project_v_{versionName}.apk`, `app/release/base_project_v_{versionName}.apk`
 5. **日志**: 通过 `BuildConfig.LOG_ENABLED` 控制日志开关
 6. **交流语言**: 默认使用中文
+7. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
