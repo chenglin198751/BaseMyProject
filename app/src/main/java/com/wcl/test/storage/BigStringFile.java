@@ -17,21 +17,21 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IBigStringFile implements IBigString {
+public class BigStringFile implements BigString {
     private String mCachedPath = null;
 
     private static final class InstanceHolder {
-        private static final IBigStringFile INSTANCE = new IBigStringFile("big_files");
+        private static final BigStringFile INSTANCE = new BigStringFile("big_files");
     }
 
-    public static IBigStringFile getInstance() {
-        return IBigStringFile.InstanceHolder.INSTANCE;
+    public static BigStringFile getInstance() {
+        return BigStringFile.InstanceHolder.INSTANCE;
     }
 
-    private IBigStringFile() {
+    private BigStringFile() {
     }
 
-    private IBigStringFile(String dir_name) {
+    private BigStringFile(String dir_name) {
         if (TextUtils.isEmpty(dir_name)) {
             throw new NullPointerException("BigStringFile() dir_name is null");
         }
