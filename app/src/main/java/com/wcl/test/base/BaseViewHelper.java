@@ -1,9 +1,14 @@
 package com.wcl.test.base;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,40 +17,36 @@ import com.wcl.test.utils.AppUtils;
 
 class BaseViewHelper {
     private final Context mContext;
-    private View mRootView;
+    private final ViewGroup mParentView;
 
     private View mLoadingView;
     private View mEmptyView;
     private View mNoNetView;
 
     private int mShowGravity = Gravity.CENTER;
+    private ObjectAnimator rotateAnimator;
 
-    private View.OnClickListener mTempClickListener;
-
-    private final View.OnClickListener mInternalClickListener = v -> {
-        if (mTempClickListener != null) {
-            mTempClickListener.onClick(v);
-        }
-    };
-
-    public BaseViewHelper(Context context) {
+    public BaseViewHelper(Context context, ViewGroup parentView) {
         this.mContext = context;
-        initRootView();
-    }
-
-    private void initRootView() {
-        mRootView = View.inflate(mContext, R.layout.base_loading_layout, null);
-        mRootView.setOnClickListener(mInternalClickListener);
+        this.mParentView = parentView;
     }
 
     public View getView() {
-        return mRootView;
+        if (mLoadingView != null) {
+            return mLoadingView;
+        } else if (mEmptyView != null) {
+            return mEmptyView;
+        } else if (mNoNetView != null) {
+            return mNoNetView;
+        }
+        return null;
     }
 
     /**
      * 设置状态页（Loading / Empty / NoNet 等覆盖层）的显示位置。
      * 该位置会同时作用于所有状态视图，而不是只影响 Loading。
      * 例如可以控制状态页是居中显示，还是贴近顶部显示。
+     * 传值：同Gravity.TOP等
      */
     public void setStateViewGravity(int position) {
         mShowGravity = position;
@@ -58,19 +59,26 @@ class BaseViewHelper {
         ensureLoadingView();
 
         TextView textView = mLoadingView.findViewById(R.id.text);
-        if (text != null) {
+        if (!TextUtils.isEmpty(text)) {
             textView.setVisibility(View.VISIBLE);
             textView.setText(text);
         } else {
             textView.setVisibility(View.GONE);
         }
 
+        // 旋转动画
+        ImageView image = mLoadingView.findViewById(R.id.image);
+        rotateAnimator = ObjectAnimator.ofFloat(image, View.ROTATION, 0f, 360f);
+        rotateAnimator.setDuration(800);
+        rotateAnimator.setInterpolator(new LinearInterpolator());
+        rotateAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        rotateAnimator.start();
+
         showOnly(mLoadingView);
-        mTempClickListener = null;
     }
 
     public void showEmptyText(String text, View.OnClickListener listener) {
-        ensureEmptyView();
+        ensureEmptyView(listener);
 
         TextView textView = mEmptyView.findViewById(R.id.empty_text);
         if (!TextUtils.isEmpty(text)) {
@@ -79,20 +87,27 @@ class BaseViewHelper {
             textView.setText(R.string.empty_tips);
         }
 
-        mTempClickListener = listener;
         showOnly(mEmptyView);
     }
 
     public void showNoNetView(String text, View.OnClickListener listener) {
-        ensureNoNetView();
+        ensureNoNetView(listener);
 
         TextView textView = mNoNetView.findViewById(R.id.net_text);
         if (!TextUtils.isEmpty(text)) {
             textView.setText(text);
         }
 
-        mTempClickListener = listener;
         showOnly(mNoNetView);
+    }
+
+    public void destroy() {
+        if (rotateAnimator != null) {
+            rotateAnimator.cancel();
+        }
+        mLoadingView = null;
+        mEmptyView = null;
+        mNoNetView = null;
     }
 
     // ==================== 内部实现 ====================
@@ -102,44 +117,36 @@ class BaseViewHelper {
         applyPosition(mLoadingView);
     }
 
-    private void ensureEmptyView() {
+    private void ensureEmptyView(View.OnClickListener listener) {
         if (mEmptyView != null) return;
         mEmptyView = View.inflate(mContext, R.layout.base_empty_layout, null);
+        mEmptyView.setOnClickListener(listener);
         applyPosition(mEmptyView);
     }
 
-    private void ensureNoNetView() {
+    private void ensureNoNetView(View.OnClickListener listener) {
         if (mNoNetView != null) return;
         mNoNetView = View.inflate(mContext, R.layout.base_no_net_layout, null);
+        mNoNetView.setOnClickListener(listener);
         applyPosition(mNoNetView);
     }
 
     private void showOnly(View target) {
-        LinearLayout container = getRootContainer();
-
-        container.removeAllViews();
-        container.addView(target, new LinearLayout.LayoutParams(
+        mParentView.addView(target, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
         ));
-    }
-
-    private LinearLayout getRootContainer() {
-        return (LinearLayout) mRootView;
     }
 
     private void applyPosition(View view) {
         if (view == null) return;
 
         int gravity;
-        int topPadding;
 
         if (mShowGravity == Gravity.TOP) {
             gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-            topPadding = AppUtils.dp2px(30f);
         } else {
             gravity = Gravity.CENTER;
-            topPadding = 0;
         }
 
         int rootId;
@@ -151,10 +158,8 @@ class BaseViewHelper {
             rootId = R.id.no_net_linear;
         }
         LinearLayout root = view.findViewById(rootId);
-
         if (root != null) {
             root.setGravity(gravity);
-            root.setPadding(0, topPadding, 0, 0);
         }
     }
 }

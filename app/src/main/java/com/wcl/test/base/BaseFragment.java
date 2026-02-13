@@ -23,8 +23,8 @@ import com.wcl.test.widget.WaitDialog;
 public abstract class BaseFragment extends Fragment implements IBaseView, OnEventBusListener {
     protected static final Gson gson = AppConstants.gson;
 
-    private BaseViewHelper baseViewHelper;
-    private RelativeLayout rootLayout;
+    private BaseViewHelper mBaseViewHelper;
+    private RelativeLayout mContentView;
     private ViewGroup nestedParentView;
 
     @NonNull
@@ -48,15 +48,15 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        baseViewHelper = new BaseViewHelper(getContext());
     }
 
     @CallSuper
     @Deprecated
     @Override
     public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootLayout = (RelativeLayout) inflater.inflate(R.layout.base_fragment_layout, container, false);
-        return rootLayout;
+        mContentView = (RelativeLayout) inflater.inflate(R.layout.base_fragment_layout, container, false);
+        mBaseViewHelper = new BaseViewHelper(getContext(), container);
+        return mContentView;
     }
 
     @CallSuper
@@ -66,10 +66,10 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         super.onViewCreated(view, savedInstanceState);
 
         if (getContentLayout() > 0) {
-            View content = LayoutInflater.from(getContext()).inflate(getContentLayout(), rootLayout, false);
-            rootLayout.addView(content, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            View content = LayoutInflater.from(getContext()).inflate(getContentLayout(), mContentView, false);
+            mContentView.addView(content, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else if (getContentView() != null) {
-            rootLayout.addView(getContentView(), new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            mContentView.addView(getContentView(), new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
 
         onViewCreated(savedInstanceState, view);
@@ -97,44 +97,54 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         getContext().dismissWaitDialog();
     }
 
+    /**
+     * 显示嵌入式进度条，带文案
+     */
     @Override
     public final void showLoading(String text) {
-        clearLoadingView();
-        baseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
+        detachHelperView();
+        mBaseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
         attachHelperView();
     }
 
-    public void setLoadingShowPosition(int position) {
-        baseViewHelper.setStateViewGravity(position);
-    }
-
+    /**
+     * 显示嵌入式进度条，默认文案
+     */
     @Override
     public final void showLoading() {
-        clearLoadingView();
+        showLoading("");
+    }
+
+    /**
+     * 清除嵌入式进度条
+     */
+    @Override
+    public void hideLoading() {
+        detachHelperView();
     }
 
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
         hideNoNetView();
-        baseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
+        mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
         attachHelperView();
     }
 
     @Override
     public final void hideNoNetView() {
-        clearLoadingView();
+        detachHelperView();
     }
 
     @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
         hideEmptyView();
-        baseViewHelper.showEmptyText(text, listener);
+        mBaseViewHelper.showEmptyText(text, listener);
         attachHelperView();
     }
 
     @Override
     public final void hideEmptyView() {
-        clearLoadingView();
+        detachHelperView();
     }
 
     /**
@@ -145,14 +155,25 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         nestedParentView = parent;
     }
 
-    public void onSelected(int index){
+    /**
+     * 设置状态页（Loading / Empty / NoNet 等覆盖层）的显示位置。
+     * 该位置会同时作用于所有状态视图，而不是只影响 Loading。
+     * 例如可以控制状态页是居中显示，还是贴近顶部显示。
+     * 传值：同Gravity.TOP等
+     */
+    @Override
+    public void setStateViewGravity(int position) {
+        mBaseViewHelper.setStateViewGravity(position);
+    }
+
+    public void onSelected(int index) {
 
     }
 
     private void attachHelperView() {
         if (getView() == null) return;
 
-        View helperView = baseViewHelper.getView();
+        View helperView = mBaseViewHelper.getView();
         if (helperView.getParent() != null)
             ((ViewGroup) helperView.getParent()).removeView(helperView);
         helperView.setClickable(true);
@@ -160,14 +181,17 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         if (nestedParentView != null) {
             nestedParentView.addView(helperView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else {
-            rootLayout.addView(helperView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            mContentView.addView(helperView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
     }
 
-    private void clearLoadingView() {
-        if (getView() == null || baseViewHelper.getView() == null) return;
+    private void detachHelperView() {
+        View view = mBaseViewHelper.getView();
+        if (getView() == null || view == null || view.getParent() == null) {
+            return;
+        }
 
-        ViewGroup parent = (ViewGroup) baseViewHelper.getView().getParent();
-        if (parent != null) parent.removeView(baseViewHelper.getView());
+        mBaseViewHelper.destroy();
+        ((ViewGroup) view.getParent()).removeView(view);
     }
 }

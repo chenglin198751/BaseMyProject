@@ -18,9 +18,13 @@ public interface IBaseView {
 
     void showLoading();
 
+    void hideLoading();
+
     WaitDialog showWaitDialog();
 
     void dismissWaitDialog();
+
+    void setStateViewGravity(int position);
 
     void setNestedParentView(ViewGroup parent);
 }

@@ -42,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     private BaseViewHelper mBaseViewHelper;
     private WaitDialog mWaitDialog;
     private RelativeLayout mBaseRootView;
-    private View mContentView;
+    private ViewGroup mContentView;
     private ViewGroup mNestedParentLayout;
 
     @CallSuper
@@ -60,7 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         setContentView(R.layout.base_activity_layout);
         mBaseRootView = findViewById(R.id.base_root);
         mTitleHelper = new MainTitleHelper(this);
-        mBaseViewHelper = new BaseViewHelper(this);
+        mBaseViewHelper = new BaseViewHelper(this, mBaseRootView);
 
         if (getTitle() != null) {
             mTitleHelper.setTitle(getTitle().toString());
@@ -112,8 +112,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     }
 
     /**
-     * @see #setContentLayout(View)
-     * @deprecated 请使用 {@link #setContentLayout(View)} 代替
+     * @see #setContentLayout(ViewGroup)
+     * @deprecated 请使用 {@link #setContentLayout(ViewGroup)} 代替
      */
     @Deprecated
     @Override
@@ -135,14 +135,14 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      * 设置Activity的内容布局，取代系统的 setContentView() 方法
      */
     public final void setContentLayout(@LayoutRes int layoutResID) {
-        View layoutView = View.inflate(this, layoutResID, null);
+        ViewGroup layoutView = (ViewGroup) View.inflate(this, layoutResID, null);
         setContentLayout(layoutView);
     }
 
     /**
      * 设置Activity的内容布局，取代系统的 setContentView() 方法
      */
-    public final void setContentLayout(final View layoutView) {
+    public final void setContentLayout(final ViewGroup layoutView) {
         if (mContentView != null && mContentView.getParent() != null) {
             mBaseRootView.removeView(mContentView);
         }
@@ -232,13 +232,13 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
 
     @Override
     public final void dismissWaitDialog() {
-        if (mWaitDialog != null && !isFinishing()) {
+        if (mWaitDialog != null && mWaitDialog.isShowing() && !isFinishing()) {
             mWaitDialog.dismiss();
         }
     }
 
     /**
-     * 显示嵌入式进度条
+     * 显示嵌入式进度条，带文案
      */
     @Override
     public final void showLoading(String text) {
@@ -247,10 +247,18 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     }
 
     /**
-     * 清除嵌入式进度条
+     * 显示嵌入式进度条，默认文案
      */
     @Override
     public final void showLoading() {
+        showLoading(null);
+    }
+
+    /**
+     * 清除嵌入式进度条
+     */
+    @Override
+    public void hideLoading() {
         detachHelperView();
     }
 
@@ -290,6 +298,17 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         mNestedParentLayout = parent;
     }
 
+    /**
+     * 设置状态页（Loading / Empty / NoNet 等覆盖层）的显示位置。
+     * 该位置会同时作用于所有状态视图，而不是只影响 Loading。
+     * 例如可以控制状态页是居中显示，还是贴近顶部显示。
+     * 传值：同Gravity.TOP等
+     */
+    @Override
+    public void setStateViewGravity(int position) {
+        mBaseViewHelper.setStateViewGravity(position);
+    }
+
     private void attachHelperView() {
         View view = mBaseViewHelper.getView();
         if (view.getParent() != null) ((ViewGroup) view.getParent()).removeView(view);
@@ -308,9 +327,12 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
 
     private void detachHelperView() {
         View view = mBaseViewHelper.getView();
-        if (view != null && view.getParent() instanceof ViewGroup) {
-            ((ViewGroup) view.getParent()).removeView(view);
+        if (view == null || view.getParent() == null) {
+            return;
         }
+
+        mBaseViewHelper.destroy();
+        ((ViewGroup) view.getParent()).removeView(view);
     }
 
     /**

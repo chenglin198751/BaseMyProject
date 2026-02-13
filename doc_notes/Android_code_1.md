@@ -364,3 +364,15 @@
                     System.out.println("xx");
                 }
             }
+
+**29、监听一个 View 是否“附着（attach）”或“脱离（detach）”窗口：**
+
+        view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+
+            }
+
+            @Override
+            public void onViewAttachedToWindow(View v) {}
+        });
