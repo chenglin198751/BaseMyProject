@@ -101,6 +101,7 @@ class BaseViewHelper {
     public void destroy() {
         if (rotateAnimator != null) {
             rotateAnimator.cancel();
+            rotateAnimator = null;
         }
         mLoadingView = null;
         mEmptyView = null;
@@ -135,17 +136,15 @@ class BaseViewHelper {
         ));
     }
 
-    private void applyPosition(View view) {
+    private void applyPosition(LinearLayout view) {
         if (view == null) return;
 
         int gravity;
-
         if (mShowGravity == Gravity.TOP) {
             gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
         } else {
             gravity = Gravity.CENTER;
         }
-
-        getView().setGravity(gravity);
+        view.setGravity(gravity);
     }
 }
