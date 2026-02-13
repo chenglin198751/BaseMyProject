@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 BaseMyProject 是一个 Android 应用测试项目，用于验证和调试常用功能组件。
 
+## 注意事项
+
+**注意：1.默认使用中文进行交流和代码注释，除非用户明确要求使用英文;2.禁止调用Windows PowerShell的任何命令，因为当前电脑管理员禁止了Windows PowerShell**
+
 ## 构建命令
 
 ```bash
@@ -96,5 +100,4 @@ com.wcl.test/
 3. **签名配置**: debug 和 release 使用相同的签名配置（keystore_debug.jks）
 4. **Apk 输出路径**: `app/debug/base_project_v_{versionName}.apk`, `app/release/base_project_v_{versionName}.apk`
 5. **日志**: 通过 `BuildConfig.LOG_ENABLED` 控制日志开关
-6. **交流语言**: 默认使用中文
-7. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
+6. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
