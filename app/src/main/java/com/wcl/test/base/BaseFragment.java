@@ -123,6 +123,9 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         detachHelperView();
     }
 
+    /**
+     * 显示无网页面
+     */
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
         hideNoNetView();
@@ -130,11 +133,17 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         attachHelperView();
     }
 
+    /**
+     * 清除无网页面
+     */
     @Override
     public final void hideNoNetView() {
         detachHelperView();
     }
 
+    /**
+     * 显示空数据的界面
+     */
     @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
         hideEmptyView();
@@ -142,6 +151,9 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         attachHelperView();
     }
 
+    /**
+     * 清楚空数据的界面
+     */
     @Override
     public final void hideEmptyView() {
         detachHelperView();

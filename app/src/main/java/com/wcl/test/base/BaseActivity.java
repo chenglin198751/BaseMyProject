@@ -262,6 +262,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         detachHelperView();
     }
 
+    /**
+     * 显示无网页面
+     */
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
@@ -269,7 +272,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     }
 
     /**
-     * 清除没有网络的界面
+     * 清除无网页面
      */
     @Override
     public final void hideNoNetView() {
@@ -285,6 +288,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         attachHelperView();
     }
 
+    /**
+     * 清楚空数据的界面
+     */
     @Override
     public final void hideEmptyView() {
         detachHelperView();
