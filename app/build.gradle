@@ -1,13 +1,10 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
 }
 apply from: '../common.gradle'
 
-def apk_release_path, apk_debug_path
-
 android {
-    namespace 'com.wcl.test'
+    namespace = 'com.wcl.test'
     compileSdk = project.ext.COMPILE_SDK_VERSION
 
     defaultConfig {
@@ -16,7 +13,7 @@ android {
         targetSdk project.ext.TARGET_SDK_VERSION
         versionCode 1
         versionName "1.0.0.1"
-        multiDexEnabled true
+        multiDexEnabled = true
 
         ndk {
             //noinspection ChromeOsAbiSupport
@@ -39,12 +36,12 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.release
             buildConfigField 'boolean', 'LOG_ENABLED', 'true'
             manifestPlaceholders.put("test_app_key", "debug_111111")
         }
         release {
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField 'boolean', 'LOG_ENABLED', 'false'
@@ -57,25 +54,12 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    android.applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach {
-            it.outputFileName = "base_project_v_" + defaultConfig.versionName + ".apk"
-            if (variant.name == 'release') {
-                apk_release_path = it.outputFile.getAbsolutePath()
-            } else if (variant.name == 'debug') {
-                apk_debug_path = it.outputFile.getAbsolutePath()
-            }
-        }
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17
-    }
     buildFeatures {
-        viewBinding true
+        viewBinding = true
+        buildConfig = true
     }
     lint {
-        abortOnError false
+        abortOnError = false
     }
 }
 

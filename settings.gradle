@@ -3,7 +3,7 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
+        maven { url = "https://jitpack.io" }
     }
 }
 plugins {
@@ -15,7 +15,7 @@ dependencyResolutionManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
+        maven { url = "https://jitpack.io" }
     }
 }
 rootProject.name = "BaseMyProject"
