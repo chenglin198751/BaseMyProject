@@ -39,7 +39,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ShowFragmentHelper mFragHelper;
     private ActivityMainBinding mViewBinding;
     private long mLastBackPressTime = 0;
-    private static final int BACK_EXIT_INTERVAL = 3000;
+    private static final long BACK_EXIT_INTERVAL = 3000L;
+    private View[] mTabViews;
 
     @Override
     protected boolean onDisplayInCutoutMode() {
@@ -61,9 +62,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void initBottomTabs() {
+        mTabViews = new View[TAB_BOTTOM_ID_ARRAY.length];
         for (int index = 0; index < TAB_BOTTOM_ID_ARRAY.length; index++) {
             View tabView = mViewBinding.bottomTab.findViewById(TAB_BOTTOM_ID_ARRAY[index]);
             tabView.setOnClickListener(this);
+            mTabViews[index] = tabView;
 
             ImageView icon = tabView.findViewById(R.id.image_view);
             TextView label = tabView.findViewById(R.id.text_view);
@@ -74,13 +77,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void showTab(int selectedIndex) {
-        if (selectedIndex < 0 || selectedIndex >= FRAGMENTS.length) return;
+        if (selectedIndex < 0 || selectedIndex >= FRAGMENTS.length) {
+            return;
+        }
 
         mFragHelper.showFragment(R.id.fragment_base_id, selectedIndex);
 
-        for (int i = 0; i < TAB_BOTTOM_ID_ARRAY.length; i++) {
-            View tabView = mViewBinding.bottomTab.findViewById(TAB_BOTTOM_ID_ARRAY[i]);
-            tabView.setSelected(i == selectedIndex);
+        for (int i = 0; i < mTabViews.length; i++) {
+            mTabViews[i].setSelected(i == selectedIndex);
         }
     }
 
