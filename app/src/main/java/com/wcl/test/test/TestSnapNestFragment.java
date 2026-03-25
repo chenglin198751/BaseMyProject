@@ -83,6 +83,10 @@ public class TestSnapNestFragment extends BaseFragment {
                 }, 500);
             }
         });
+
+        if (positon == 0) {
+            onSelected(0);
+        }
     }
 
     @Override
