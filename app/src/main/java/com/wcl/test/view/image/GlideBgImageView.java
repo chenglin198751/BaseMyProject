@@ -1,7 +1,6 @@
 package com.wcl.test.view.image;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 
@@ -53,8 +52,7 @@ public class GlideBgImageView extends RoundedBgImageView {
 
 
     public void loadImage(Object uri, RequestOptions options) {
-//        ColorDrawable d = new ColorDrawable(0x99e8e8e8);
-        ColorDrawable d = new ColorDrawable(Color.BLUE);
+        ColorDrawable d = new ColorDrawable(0x99e8e8e8);
         GlideApp.with(this)
                 .load(uri)
                 .apply(options)
