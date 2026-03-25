@@ -1,5 +1,6 @@
 package com.wcl.test.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,6 +9,10 @@ import android.view.ViewGroup;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
+import com.wcl.test.test.TestRecyclerViewRefreshActivity;
+import com.wcl.test.utils.timer.HandlerTimer;
+import com.wcl.test.utils.timer.ISimpleTimer;
+import com.wcl.test.utils.timer.onTickListener;
 
 
 /**
@@ -26,13 +31,14 @@ public class MainFirstFragment extends BaseFragment {
         mViewBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
 
         mViewBinding.viewLeft.setOnClickListener(v -> {
+
+//
         });
 
         String url = "http://qd.shouji.qihucdn.com/media/d22eee36c269dcae8dbfc6a469d02ffc/6602326c507c2.png";
-//        SmartImageLoader.load(mViewBinding.image2,url,-1,-1,0);
         mViewBinding.image2.loadImage(url);
 
-
+        startActivity(new Intent(getContext(), TestRecyclerViewRefreshActivity.class));
     }
 
     @Override

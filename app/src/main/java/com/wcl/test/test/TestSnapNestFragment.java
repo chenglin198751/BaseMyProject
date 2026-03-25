@@ -7,16 +7,20 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
+import com.wcl.test.R;
+import com.wcl.test.base.BaseFragment;
+import com.wcl.test.utils.AppUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wcl.test.R;
-import com.wcl.test.base.BaseFragment;
-import com.wcl.test.view.pullrefresh.PullToRefreshView;
-
 public class TestSnapNestFragment extends BaseFragment {
 
-    private PullToRefreshView mPullToRefreshView;
+    private SmartRefreshLayout refreshLayout;
     private TestRecyclerAdapter mAdapter2;
     private RecyclerView mRecyclerView;
 
@@ -45,30 +49,30 @@ public class TestSnapNestFragment extends BaseFragment {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(view.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter2);
+        refreshLayout = view.findViewById(R.id.swipe_refresh);
 
-
-        mPullToRefreshView = view.findViewById(R.id.swipe_refresh);
-
-        mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
-            public void onRefresh() {
-                mPullToRefreshView.postDelayed(new Runnable() {
+            public void onRefresh(RefreshLayout refreshlayout) {
+
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter2.clear();
                         setData(10, true);
-                        mPullToRefreshView.finishRefresh();
+                        refreshlayout.finishRefresh();
                     }
                 }, 500);
             }
+        });
 
+        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onLoadMore() {
-                mPullToRefreshView.postDelayed(new Runnable() {
+            public void onLoadMore(RefreshLayout refreshlayout) {
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         setData(10, false);
-                        mPullToRefreshView.finishLoadMore();
+                        refreshlayout.finishLoadMore();
                     }
                 }, 500);
             }

@@ -33,25 +33,14 @@ import java.util.List;
  * 支持每个Item独立倒计时的RecyclerView刷新示例。
  */
 public class TestRecyclerViewRefreshActivity extends BaseActivity {
+    private static final String PAYLOAD_TICK = "tick";
+    private static final String TEXT_DELETE = "删除";
+    private static final String TEXT_EXPIRED = "已结束";
+    private static final String TIME_FORMAT = "%02d:%02d";
+
     private SmartRefreshLayout refreshLayout;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
-
-    public static final String[] PIC_ARRAY = {
-            "http://img.zcool.cn/community/01d4a0573bd4ba32f8757cb9f98a3f.gif",
-            "https://b-ssl.duitang.com/uploads/item/201410/19/20141019095805_KaAju.thumb.700_0.gif",
-            "https://b-ssl.duitang.com/uploads/blog/201501/02/20150102162511_8sA4h.thumb.700_0.gif",
-            "http://img.zcool.cn/community/01bd32573bd4c432f8757cb9341633.gif",
-            "http://img.zcool.cn/community/01c59d573bd4bc32f8757cb93c30b0.gif",
-            "https://b-ssl.duitang.com/uploads/item/201510/06/20151006200129_HGuYP.thumb.700_0.gif",
-            "http://img.zcool.cn/community/01d32c573bd4c36ac7253f9ac79aca.gif",
-            "https://b-ssl.duitang.com/uploads/blog/201411/10/20141110185817_QUHed.thumb.700_0.gif",
-            "http://img.zcool.cn/community/01eced573bd4b932f8757cb9ed9061.gif",
-            "https://b-ssl.duitang.com/uploads/item/201411/24/20141124111818_tHQSz.thumb.700_0.gif",
-            "http://img.zcool.cn/community/014da7573bd4bd6ac7253f9aea065b.gif",
-            "http://5b0988e595225.cdn.sohucs.com/images/20170922/c7e95cf930a64a27b616e8c77525645b.jpeg",
-            "http://www.95dm.com/a/pic/20151025/1-1505161500444V.gif"
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,30 +51,9 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         mRecyclerView = findViewById(R.id.recycler_view);
         refreshLayout = findViewById(R.id.swipe_refresh);
 
-        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(@NonNull RefreshLayout refreshlayout) {
-                AppUtils.getUiHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setData(PIC_ARRAY.length, true);
-                        refreshlayout.finishRefresh(500);
-                    }
-                }, 500);
-            }
-        });
-        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore(@NonNull RefreshLayout refreshlayout) {
-                AppUtils.getUiHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setData(PIC_ARRAY.length, false);
-                        refreshlayout.finishLoadMore(500);
-                    }
-                }, 500);
-            }
-        });
+        // 配置刷新和加载监听
+        refreshLayout.setOnRefreshListener(createRefreshListener());
+        refreshLayout.setOnLoadMoreListener(createLoadMoreListener());
 
         mAdapter = new MyAdapter(this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -93,7 +61,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        setData(13, true);
+        setData(10, true);
     }
 
     @Override
@@ -101,12 +69,62 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         return true;
     }
 
+    /**
+     * 创建下拉刷新监听器
+     */
+    private OnRefreshListener createRefreshListener() {
+        return new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout layout) {
+                performRefresh(true, layout);
+            }
+        };
+    }
+
+    /**
+     * 创建上拉加载监听器
+     */
+    private OnLoadMoreListener createLoadMoreListener() {
+        return new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout layout) {
+                performRefresh(false, layout);
+            }
+        };
+    }
+
+    /**
+     * 执行刷新（下拉刷新或上拉加载）
+     *
+     * @param isRefresh true 为下拉刷新（重置数据），false 为上拉加载（追加数据）
+     * @param layout    刷新布局控件
+     */
+    private void performRefresh(final boolean isRefresh, final RefreshLayout layout) {
+        AppUtils.getUiHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setData(10, isRefresh);
+                if (isRefresh) {
+                    layout.finishRefresh();
+                } else {
+                    layout.finishLoadMore();
+                }
+            }
+        }, 500);
+    }
+
+    /**
+     * 设置数据列表
+     *
+     * @param count     要生成的数据条数
+     * @param isRefresh true 为刷新（替换数据），false 为加载更多（追加数据）
+     */
     private void setData(int count, boolean isRefresh) {
         List<ModelData> list = new ArrayList<>();
         long now = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
             ModelData modelData = new ModelData();
-            modelData.url = PIC_ARRAY[i % PIC_ARRAY.length];
+            modelData.url = TestUrls.ImgUrls.get(i);
             // 模拟每个Item有不同倒计时：第i个比第一个多30秒
             modelData.endTime = now + (i + 1) * 30_000L;
             list.add(modelData);
@@ -160,14 +178,14 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
         @Override
         public void onTick() {
-            // 仅刷新当前列表中的倒计时显示
-            notifyItemRangeChanged(0, getItemCount(), "tick");
+            // 仅刷新当前列表中所有Item的倒计时显示
+            notifyItemRangeChanged(0, getItemCount(), PAYLOAD_TICK);
         }
 
         class ListHolder extends BaseRecyclerViewHolder {
-            GlideBgImageView imageView;
-            Button btnDelete;
-            TextView countdowner;
+            private GlideBgImageView imageView;
+            private Button btnDelete;
+            private TextView countdowner;
 
             public ListHolder(View itemView) {
                 super(itemView);
@@ -180,11 +198,21 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
             public void onBind(final int position) {
                 ModelData model = getData().get(position);
                 imageView.loadImage(model.url);
-                btnDelete.setText("删除");
+                btnDelete.setText(TEXT_DELETE);
 
                 // 倒计时展示
                 updateCountdown(model);
 
+                setupDeleteButton(position);
+                setupImageClickListener();
+            }
+
+            /**
+             * 设置删除按钮点击事件
+             *
+             * @param position 当前绑定位置
+             */
+            private void setupDeleteButton(final int position) {
                 btnDelete.setOnClickListener(new OnSingleClickListener() {
                     @Override
                     public void onSingleClick(View v) {
@@ -195,25 +223,36 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                         }
                     }
                 });
+            }
 
+            /**
+             * 设置图片点击事件（跳转到当前Activity）
+             */
+            private void setupImageClickListener() {
                 imageView.setOnClickListener(new OnSingleClickListener() {
                     @Override
                     public void onSingleClick(View v) {
-                        Intent intent = new Intent(v.getContext(), TestRecyclerViewRefreshActivity.class);
-                        v.getContext().startActivity(intent);
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, TestRecyclerViewRefreshActivity.class);
+                        context.startActivity(intent);
                     }
                 });
             }
 
+            /**
+             * 更新倒计时显示
+             *
+             * @param model 数据模型
+             */
             private void updateCountdown(ModelData model) {
                 long remain = model.endTime - System.currentTimeMillis();
                 if (remain <= 0) {
-                    countdowner.setText("已结束");
+                    countdowner.setText(TEXT_EXPIRED);
                 } else {
                     long sec = remain / 1000;
                     long min = sec / 60;
                     long s = sec % 60;
-                    countdowner.setText(String.format("%02d:%02d", min, s));
+                    countdowner.setText(String.format(TIME_FORMAT, min, s));
                 }
             }
         }
@@ -225,6 +264,6 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
     public static final class ModelData {
         public String url;
         public long endTime; // 未来时间戳（单位：毫秒）
-        public int radius;
+        // radius 字段已移除，因未使用
     }
 }
