@@ -36,9 +36,6 @@ public class TestSnapNestFragment extends BaseFragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         adapter = new TestRecyclerAdapter(view.getContext());
 
-        // 初始化时加载第一页数据
-        getData(true);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -74,6 +71,8 @@ public class TestSnapNestFragment extends BaseFragment {
                 }, 500);
             }
         });
+
+        refreshLayout.autoRefresh();
     }
 
     private void getData(boolean isRefresh) {
