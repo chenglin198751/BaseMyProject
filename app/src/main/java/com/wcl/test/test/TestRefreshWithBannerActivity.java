@@ -32,7 +32,6 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
     private static final int VIEW_TYPE_BANNER = 0;
     private static final int VIEW_TYPE_LIST = 1;
     private static final int PAGE_SIZE = 10;
-    private static final int MAX_DATA_COUNT = 100;
     private static final int BANNER_GALLERY_EFFECT_RADIUS = 30;
     private static final int BANNER_GALLERY_EFFECT_SPACE = 10;
 
@@ -131,7 +130,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             mAdapter.appendDataList(createListDataItems(count));
         }
         // 当总数小于最大值时，表示还有更多数据可加载
-        return mAdapter.getCount() < MAX_DATA_COUNT;
+        return mAdapter.getCount() < TestUrls.ImgUrls.size();
     }
 
     /**
