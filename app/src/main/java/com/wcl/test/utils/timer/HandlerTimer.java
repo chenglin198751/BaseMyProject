@@ -31,6 +31,7 @@ public class HandlerTimer implements ISimpleTimer {
             // 检查是否达到重复次数限制
             if (repeatCount > 0 && currentCount >= repeatCount) {
                 stop();
+                callback.onFinish();
                 return;
             }
 
@@ -60,6 +61,9 @@ public class HandlerTimer implements ISimpleTimer {
         return this;
     }
 
+    /**
+     * 设置执行次数上限
+     */
     @Override
     public ISimpleTimer setRepeatCount(int count) {
         this.repeatCount = count;
@@ -78,7 +82,6 @@ public class HandlerTimer implements ISimpleTimer {
     public void stop() {
         isRunning = false;
         handler.removeCallbacks(runnable);
-        callback.onFinish();
     }
 
     public boolean isRunning() {

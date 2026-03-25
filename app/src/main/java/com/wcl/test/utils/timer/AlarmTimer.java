@@ -64,9 +64,7 @@ public class AlarmTimer implements ISimpleTimer {
         stop();
         isRunning = true;
         currentCount = 0;
-
         nextTriggerTime = System.currentTimeMillis() + delayMs;
-
         registerReceiver();
         scheduleAlarm(nextTriggerTime);
     }
@@ -76,7 +74,6 @@ public class AlarmTimer implements ISimpleTimer {
         isRunning = false;
         cancelAlarm();
         unregisterReceiver();
-        callback.onFinish();
     }
 
     // ---------- Alarm 调度 ---------- //
@@ -126,6 +123,7 @@ public class AlarmTimer implements ISimpleTimer {
             // 检查是否达到重复次数限制
             if (repeatCount > 0 && currentCount >= repeatCount) {
                 stop();
+                callback.onFinish();
                 return;
             }
 
@@ -147,6 +145,9 @@ public class AlarmTimer implements ISimpleTimer {
         }
     }
 
+    /**
+     * 设置执行次数上限
+     */
     @Override
     public ISimpleTimer setRepeatCount(int count) {
         this.repeatCount = count;
