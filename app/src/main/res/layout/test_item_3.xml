@@ -42,9 +42,8 @@
         android:textColor="@color/text_gray_2"
         android:textSize="14dp" />
 
-    <com.wcl.test.view.NoScrollListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/child_list_view"
-        style="@style/ListViewCommonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/image_view"

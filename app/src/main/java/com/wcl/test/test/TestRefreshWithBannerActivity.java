@@ -5,10 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
@@ -16,7 +17,7 @@ import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
-import com.wcl.test.base.BaseListViewAdapter;
+import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.view.image.GlideBgImageView;
@@ -36,7 +37,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
     private static final int BANNER_GALLERY_EFFECT_SPACE = 10;
 
     private SmartRefreshLayout refreshLayout;
-    private ListView mListView;
+    private RecyclerView mRecyclerView;
     private ParentAdapter mAdapter;
 
     @Override
@@ -45,11 +46,14 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         setContentLayout(R.layout.test_refresh_with_banner_layout);
         getTitleHelper().setTitle("测试");
 
-        mListView = findViewById(R.id.list_view);
+        mRecyclerView = findViewById(R.id.recycler_view);
         refreshLayout = findViewById(R.id.swipe_refresh);
 
         mAdapter = new ParentAdapter(this);
-        mListView.setAdapter(mAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mAdapter);
 
         refreshLayout.autoRefresh();
 
@@ -130,7 +134,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             mAdapter.appendDataList(createListDataItems(count));
         }
         // 当总数小于最大值时，表示还有更多数据可加载
-        return mAdapter.getCount() < TestUrls.ImgUrls.size();
+        return mAdapter.getItemCount() < TestUrls.ImgUrls.size();
     }
 
     /**
@@ -153,7 +157,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         for (int i = 0; i < count; i++) {
             DataItem item = new DataItem();
             item.viewType = VIEW_TYPE_LIST;
-            item.imgUrl = TestUrls.ImgUrls.get(i);
+            item.imgUrl = TestUrls.ImgUrls.get(i % TestUrls.ImgUrls.size()); // 防止越界
             list.add(item);
         }
         return list;
@@ -162,11 +166,10 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
     // ------------------------------------------------------------------------
     // Adapter 部分
     // ------------------------------------------------------------------------
-    private static class ParentAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder<DataItem>> {
+    private static class ParentAdapter extends BaseRecyclerViewAdapter<DataItem> {
         private final Context mContext;
 
         public ParentAdapter(Context context) {
-            super(context);
             this.mContext = context;
         }
 
@@ -175,14 +178,9 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             return getData().get(position).viewType;
         }
 
-        @Override
-        public int getViewTypeCount() {
-            return 2;
-        }
-
         @NonNull
         @Override
-        protected BaseListViewHolder<DataItem> createViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public BaseRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             if (viewType == VIEW_TYPE_BANNER) {
                 View view = LayoutInflater.from(mContext).inflate(R.layout.banner_layout, parent, false);
                 return new BannerHolder2(view);
@@ -193,15 +191,19 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         }
 
         @Override
-        protected void bindViewHolder(@NonNull BaseListViewHolder<DataItem> holder, @NonNull DataItem item, int position) {
-            holder.onBind(item, position);
+        public void onBindViewHolder(@NonNull BaseRecyclerViewHolder holder, int position) {
+            if (holder instanceof BannerHolder2) {
+                ((BannerHolder2) holder).onBind(position);
+            } else if (holder instanceof ListHolder) {
+                ((ListHolder) holder).onBind(position);
+            }
         }
 
         /**
          * 停止所有 Banner 的轮播
          */
         void stopAllBanners() {
-            for (int i = 0; i < getCount(); i++) {
+            for (int i = 0; i < getItemCount(); i++) {
                 DataItem item = getData().get(i);
                 if (item != null && item.viewType == VIEW_TYPE_BANNER && item.bannerHolder != null) {
                     item.bannerHolder.stopBanner();
@@ -210,47 +212,44 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         }
 
         // 普通列表 Item Holder
-        static class ListHolder extends BaseListViewHolder<DataItem> {
+        class ListHolder extends BaseRecyclerViewHolder {
             private final TextView title;
             private final GlideBgImageView webImageView;
-            private final ListView childListView;
+            private final RecyclerView childRecyclerView;
             private final ChildAdapter childAdapter;
 
             public ListHolder(@NonNull View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.title);
                 webImageView = itemView.findViewById(R.id.image_view);
-                childListView = itemView.findViewById(R.id.child_list_view);
+                childRecyclerView = itemView.findViewById(R.id.child_list_view);
                 childAdapter = new ChildAdapter(itemView.getContext());
-                childListView.setAdapter(childAdapter);
+
+                LinearLayoutManager layoutManager = new LinearLayoutManager(itemView.getContext());
+                layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                childRecyclerView.setLayoutManager(layoutManager);
+                childRecyclerView.setAdapter(childAdapter);
             }
 
             @Override
-            protected void bindViews(@NonNull View itemView) {
-
-            }
-
-            @Override
-            public void onBind(@NonNull DataItem item, int position) {
+            public void onBind(int position) {
+                DataItem item = getData().get(position);
                 title.setText("标题 - " + position);
                 webImageView.loadImage(item.imgUrl);
 
                 // 为每个父列表项生成随机数量的子项
-                List<DataItem> childItems = createChildDataItems(position);
+                List<DataItem> childItems = createChildDataItems(item);
                 childAdapter.setDataList(childItems);
             }
 
             /**
              * 创建子列表数据
              */
-            private List<DataItem> createChildDataItems(int parentPosition) {
+            private List<DataItem> createChildDataItems(DataItem item) {
                 List<DataItem> list = new ArrayList<>();
-                // 均匀分布 0-5 个子项
-                int num = (int) (Math.random() * 6);
-                for (int i = 0; i < num; i++) {
+                for (int i = 0; i < item.childNum; i++) {
                     DataItem childItem = new DataItem();
                     childItem.viewType = VIEW_TYPE_LIST;
-                    childItem.imgUrl = "https://qd.shouji.qihucdn.com/media/fa4c53b380a75882404d303a2d4326b9/6602aa7e16e34.png";
                     list.add(childItem);
                 }
                 return list;
@@ -258,79 +257,72 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         }
 
 
-    }
+        // Banner Item Holder
+        class BannerHolder2 extends BaseRecyclerViewAdapter.BaseRecyclerViewHolder {
+            private Banner banner;
 
-    // Banner Item Holder
-    private static class BannerHolder2 extends BaseListViewAdapter.BaseListViewHolder<DataItem> {
-        private Banner banner;
-
-        public BannerHolder2(@NonNull View itemView) {
-            super(itemView);
-        }
-
-        @Override
-        protected void bindViews(@NonNull View itemView) {
-            // banner 布局本身就是 Banner 控件
-            banner = (Banner) itemView;
-        }
-
-        @Override
-        public void onBind(@NonNull DataItem item, int position) {
-            // 保存引用以便生命周期管理
-            item.bannerHolder = BannerHolder2.this;
-
-            if (item.bannerImgUrl != null) {
-                banner.setAdapter(new BannerImageLoader(item.bannerImgUrl));
-                banner.setBannerGalleryEffect(BANNER_GALLERY_EFFECT_RADIUS, BANNER_GALLERY_EFFECT_SPACE);
-                banner.start();
+            public BannerHolder2(@NonNull View itemView) {
+                super(itemView);
+                // banner 布局本身就是 Banner 控件
+                banner = (Banner) itemView;
             }
-        }
 
-        /**
-         * 停止 Banner 轮播
-         */
-        void stopBanner() {
-            if (banner != null) {
-                banner.stop();
+            @Override
+            public void onBind(int position) {
+                DataItem item = getData().get(position);
+                item.bannerHolder = BannerHolder2.this;
+
+                if (item.bannerImgUrl != null) {
+                    banner.setAdapter(new BannerImageLoader(item.bannerImgUrl));
+                    banner.setBannerGalleryEffect(BANNER_GALLERY_EFFECT_RADIUS, BANNER_GALLERY_EFFECT_SPACE);
+                    banner.start();
+                }
+            }
+
+            /**
+             * 停止 Banner 轮播
+             */
+            void stopBanner() {
+                if (banner != null) {
+                    banner.stop();
+                }
             }
         }
     }
 
-    private static class ChildAdapter extends BaseListViewAdapter<DataItem, BaseListViewAdapter.BaseListViewHolder<DataItem>> {
+
+    private static class ChildAdapter extends BaseRecyclerViewAdapter<DataItem> {
         private final Context mContext;
 
         public ChildAdapter(Context context) {
-            super(context);
             this.mContext = context;
         }
 
         @NonNull
         @Override
-        protected BaseListViewHolder<DataItem> createViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public BaseRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_3_child, parent, false);
             return new ListHolder(view);
         }
 
         @Override
-        protected void bindViewHolder(@NonNull BaseListViewHolder<DataItem> holder, @NonNull DataItem item, int position) {
-            holder.onBind(item, position);
+        public void onBindViewHolder(@NonNull BaseRecyclerViewHolder holder, int position) {
+            if (holder instanceof ListHolder) {
+                ((ListHolder) holder).onBind(position);
+            }
         }
 
         // 普通Item
-        static class ListHolder extends BaseListViewHolder<DataItem> {
+        static class ListHolder extends BaseRecyclerViewHolder {
             private TextView childTitle;
 
             public ListHolder(@NonNull View itemView) {
                 super(itemView);
-            }
-
-            @Override
-            protected void bindViews(@NonNull View itemView) {
                 childTitle = itemView.findViewById(R.id.child_title);
             }
 
             @Override
-            public void onBind(@NonNull DataItem item, int position) {
+            public void onBind(int position) {
                 // 子列表项暂不需要显示内容，预留扩展
             }
         }
@@ -346,6 +338,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         public String imgUrl;
         public List<String> bannerImgUrl;
         // 保存 BannerHolder 引用，用于生命周期管理
-        public BannerHolder2 bannerHolder;
+        public ParentAdapter.BannerHolder2 bannerHolder;
+        public int childNum = (int) (Math.random() * 6);
     }
 }
