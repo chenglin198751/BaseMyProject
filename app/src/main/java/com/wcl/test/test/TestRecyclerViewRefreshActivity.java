@@ -9,16 +9,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.listener.OnSingleClickListener;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.timer.CountDownManager;
 import com.wcl.test.view.image.GlideBgImageView;
-import com.wcl.test.view.pullrefresh.PullToRefreshView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +33,7 @@ import java.util.List;
  * 支持每个Item独立倒计时的RecyclerView刷新示例。
  */
 public class TestRecyclerViewRefreshActivity extends BaseActivity {
-    private PullToRefreshView mPullToRefreshView;
+    private SmartRefreshLayout refreshLayout;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
 
@@ -55,23 +60,29 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
         getTitleHelper().hideTitleBar();
         mRecyclerView = findViewById(R.id.recycler_view);
-        mPullToRefreshView = findViewById(R.id.swipe_refresh);
+        refreshLayout = findViewById(R.id.swipe_refresh);
 
-        mPullToRefreshView.setListener(new PullToRefreshView.onListener() {
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
-            public void onRefresh() {
-                mPullToRefreshView.postDelayed(() -> {
-                    mAdapter.clear();
-                    setData(PIC_ARRAY.length, true);
-                    mPullToRefreshView.finishRefresh();
+            public void onRefresh(@NonNull RefreshLayout refreshlayout) {
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setData(PIC_ARRAY.length, true);
+                        refreshlayout.finishRefresh(500);
+                    }
                 }, 500);
             }
-
+        });
+        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onLoadMore() {
-                mPullToRefreshView.postDelayed(() -> {
-                    setData(PIC_ARRAY.length, false);
-                    mPullToRefreshView.finishLoadMore();
+            public void onLoadMore(@NonNull RefreshLayout refreshlayout) {
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setData(PIC_ARRAY.length, false);
+                        refreshlayout.finishLoadMore(500);
+                    }
                 }, 500);
             }
         });

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.wcl.test.view.pullrefresh.PullToRefreshView
+    <com.scwang.smart.refresh.layout.SmartRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -15,5 +15,5 @@
             android:layout_height="match_parent"
             android:background="#ffffff" />
 
-    </com.wcl.test.view.pullrefresh.PullToRefreshView>
+    </com.scwang.smart.refresh.layout.SmartRefreshLayout>
 </LinearLayout>
