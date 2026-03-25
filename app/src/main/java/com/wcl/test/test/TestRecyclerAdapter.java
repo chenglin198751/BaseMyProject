@@ -35,7 +35,6 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
     }
 
     private class ListHolder extends BaseRecyclerViewHolder {
-        private String url = "http://5b0988e595225.cdn.sohucs.com/images/20170922/c7e95cf930a64a27b616e8c77525645b.jpeg";
         GlideBgImageView imageView;
         TextView title;
 
@@ -47,7 +46,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
         @Override
         public void onBind(int position) {
-            imageView.loadImage(url);
+            imageView.loadImage(TestUrls.ImgUrls.get(position));
             title.setText("标题 " + getData().get(position));
         }
 
