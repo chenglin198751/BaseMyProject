@@ -596,13 +596,17 @@
     HandlerTimer：适合短间隔（1~10 秒）
     AlarmTimer：长间隔（10秒或1分钟及以上），尤其需要唤醒 CPU 或后台执行
 
-    SimpleTimer timer = new HandlerTimer()
+    ISimpleTimer timer = new HandlerTimer()
             .setDelay(1000)
             .setInterval(5000)
             .onTick(new onTickListener() {
                 @Override
                 public void onTick() {
                     Log.d("tag_99", "tick: ");
+                }
+
+                @Override
+                public void onFinish() {
                 }
             });
     timer.start();
