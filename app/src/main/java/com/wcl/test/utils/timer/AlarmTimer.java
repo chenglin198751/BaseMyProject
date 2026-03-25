@@ -10,6 +10,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 /**
  * 长间隔任务，推荐间隔 ≥ 1 分钟
  * 需要系统唤醒 CPU 或后台执行的任务（即使设备锁屏或 Doze 模式下）
@@ -52,14 +54,14 @@ public class AlarmTimer implements ISimpleTimer {
     }
 
     @Override
-    public ISimpleTimer onTick(onTickListener callback) {
+    public ISimpleTimer onTick(@NonNull onTickListener callback) {
         this.callback = callback;
         return this;
     }
 
     @Override
     public void start() {
-        stop(); // 先停止已有任务
+        stop();
         isRunning = true;
         currentCount = 0;
 

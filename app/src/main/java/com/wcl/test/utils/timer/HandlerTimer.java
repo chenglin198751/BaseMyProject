@@ -3,6 +3,8 @@ package com.wcl.test.utils.timer;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 /**
  * 短间隔循环任务，推荐 1~10 秒执行一次
  */
@@ -53,7 +55,7 @@ public class HandlerTimer implements ISimpleTimer {
     }
 
     @Override
-    public ISimpleTimer onTick(onTickListener callback) {
+    public ISimpleTimer onTick(@NonNull onTickListener callback) {
         this.callback = callback;
         return this;
     }
