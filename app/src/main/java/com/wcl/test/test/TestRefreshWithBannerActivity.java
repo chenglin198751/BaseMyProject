@@ -95,9 +95,9 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
                 AppUtils.getUiHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getData(false);
                         boolean hasData = mAdapter.getItemCount() < TestUrls.ImgUrls.size();
                         if (hasData) {
-                            getData(false);
                             layout.finishLoadMore();
                         } else {
                             layout.finishLoadMoreWithNoMoreData();

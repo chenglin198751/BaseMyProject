@@ -60,9 +60,9 @@ public class TestSnapNestFragment extends BaseFragment {
                 AppUtils.getUiHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getData(false);
                         boolean hasData = adapter.getItemCount() < TestUrls.ImgUrls.size();
                         if (hasData) {
-                            getData(false);
                             layout.finishLoadMore();
                         } else {
                             layout.finishLoadMoreWithNoMoreData();

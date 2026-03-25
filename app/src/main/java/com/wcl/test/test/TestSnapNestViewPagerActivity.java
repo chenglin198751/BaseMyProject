@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class TestSnapNestViewPagerActivity extends BaseActivity {
     private ViewPager mViewPager;
     private CommonFragmentViewPagerAdapter mAdapter;
-    private final static ArrayList<String> mTitleDataList = new ArrayList<>();
+    private final ArrayList<String> mTitleDataList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
