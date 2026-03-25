@@ -41,6 +41,5 @@ public class TestUrls {
         ImgUrls.add("http://img.zcool.cn/community/014da7573bd4bd6ac7253f9aea065b.gif");
         ImgUrls.add("http://5b0988e595225.cdn.sohucs.com/images/20170922/c7e95cf930a64a27b616e8c77525645b.jpeg");
         ImgUrls.add("http://www.95dm.com/a/pic/20151025/1-1505161500444V.gif");
-
     }
 }

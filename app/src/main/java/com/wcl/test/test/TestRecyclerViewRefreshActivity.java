@@ -36,10 +36,12 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
     private static final String TEXT_DELETE = "删除";
     private static final String TEXT_EXPIRED = "已结束";
     private static final String TIME_FORMAT = "%02d:%02d";
+    private static final int PAGE_SIZE = 10;
 
     private SmartRefreshLayout refreshLayout;
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
+    private int loadedPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        setData(10, true);
+        refreshLayout.autoRefresh();
     }
 
     @Override
@@ -75,7 +77,13 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         return new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout layout) {
-                performRefresh(true, layout);
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getData(true);
+                        layout.finishRefresh();
+                    }
+                }, 500);
             }
         };
     }
@@ -87,53 +95,52 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         return new OnLoadMoreListener() {
             @Override
             public void onLoadMore(@NonNull RefreshLayout layout) {
-                performRefresh(false, layout);
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean hasData = mAdapter.getItemCount() < TestUrls.ImgUrls.size();
+                        if (hasData) {
+                            getData(false);
+                            layout.finishLoadMore();
+                        } else {
+                            layout.finishLoadMoreWithNoMoreData();
+                        }
+                    }
+                }, 500);
             }
         };
     }
 
-    /**
-     * 执行刷新（下拉刷新或上拉加载）
-     *
-     * @param isRefresh true 为下拉刷新（重置数据），false 为上拉加载（追加数据）
-     * @param layout    刷新布局控件
-     */
-    private void performRefresh(final boolean isRefresh, final RefreshLayout layout) {
-        AppUtils.getUiHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setData(10, isRefresh);
-                if (isRefresh) {
-                    layout.finishRefresh();
-                } else {
-                    layout.finishLoadMore();
-                }
-            }
-        }, 500);
-    }
 
     /**
      * 设置数据列表
      *
-     * @param count     要生成的数据条数
      * @param isRefresh true 为刷新（替换数据），false 为加载更多（追加数据）
      */
-    private void setData(int count, boolean isRefresh) {
+    private void getData(boolean isRefresh) {
         List<ModelData> list = new ArrayList<>();
         long now = System.currentTimeMillis();
+
+        int startIndex = isRefresh ? 0 : loadedPosition;
+        int remaining = TestUrls.ImgUrls.size() - startIndex;
+        int count = Math.min(PAGE_SIZE, remaining);
+
+        // 模拟每个Item有不同倒计时
         for (int i = 0; i < count; i++) {
             ModelData modelData = new ModelData();
-            modelData.url = TestUrls.ImgUrls.get(i);
-            // 模拟每个Item有不同倒计时：第i个比第一个多30秒
-            modelData.endTime = now + (i + 1) * 30_000L;
+            modelData.url = TestUrls.ImgUrls.get(startIndex + i);
+            modelData.endTime = now + (startIndex + i + 1) * 30_000L;
             list.add(modelData);
         }
 
         if (isRefresh) {
+            loadedPosition = 0;
             mAdapter.setDataList(list);
         } else {
             mAdapter.appendDataList(list);
         }
+
+        loadedPosition += list.size();
     }
 
     @Override
