@@ -33,6 +33,7 @@ public class BaseApp extends Application {
         AppHelper.initAppForegroundObserver();
         AppHelper.initActivityLifecycleObserver(this);
         AppHelper.initGsonFactory();
+        AppHelper.initSmartRefreshLayoutCustomHeaderFooter();
     }
 
 
