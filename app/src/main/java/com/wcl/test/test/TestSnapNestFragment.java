@@ -3,6 +3,7 @@ package com.wcl.test.test;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,17 @@ public class TestSnapNestFragment extends BaseFragment {
     private TestRecyclerAdapter adapter;
     private RecyclerView recyclerView;
     private int loadedPosition = 0;
+    private int positon = 0;
+    private boolean isFirst = true;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            positon = getArguments().getInt("position");
+        }
+    }
 
     @Override
     protected int getContentLayout() {
@@ -71,8 +83,16 @@ public class TestSnapNestFragment extends BaseFragment {
                 }, 500);
             }
         });
+    }
 
-        refreshLayout.autoRefresh();
+    @Override
+    public void onSelected(int index) {
+        super.onSelected(index);
+
+        if (isFirst && index == positon) {
+            isFirst = false;
+            refreshLayout.autoRefresh();
+        }
     }
 
     private void getData(boolean isRefresh) {

@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import com.wcl.test.base.BaseFragment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +21,9 @@ import java.util.List;
  * - 支持动态刷新数据与标题
  */
 public class CommonFragmentViewPagerAdapter extends FragmentStatePagerAdapter {
-    private final List<Fragment> mFragments = new ArrayList<>();
+    private final List<BaseFragment> mFragments = new ArrayList<>();
 
-    public CommonFragmentViewPagerAdapter(@NonNull FragmentManager fm, @NonNull List<Fragment> dataList) {
+    public CommonFragmentViewPagerAdapter(@NonNull FragmentManager fm, @NonNull List<BaseFragment> dataList) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.mFragments.addAll(dataList);
     }
@@ -51,7 +53,7 @@ public class CommonFragmentViewPagerAdapter extends FragmentStatePagerAdapter {
     /**
      * 设置数据并刷新
      */
-    public void setData(List<Fragment> list) {
+    public void setData(List<BaseFragment> list) {
         mFragments.clear();
         if (list != null) {
             mFragments.addAll(list);
