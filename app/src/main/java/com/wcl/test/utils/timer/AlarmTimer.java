@@ -21,7 +21,6 @@ public class AlarmTimer implements ISimpleTimer {
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private onTickListener callback;
-
     private PendingIntent pendingIntent;
     private boolean isRunning = false;
 
@@ -30,6 +29,8 @@ public class AlarmTimer implements ISimpleTimer {
     private long intervalMs = 0;
 
     private long nextTriggerTime;
+    private int repeatCount = -1;
+    private int currentCount = 0;
 
     public AlarmTimer(Context context) {
         this.context = context.getApplicationContext();
@@ -60,6 +61,7 @@ public class AlarmTimer implements ISimpleTimer {
     public void start() {
         stop(); // 先停止已有任务
         isRunning = true;
+        currentCount = 0;
 
         nextTriggerTime = System.currentTimeMillis() + delayMs;
 
@@ -72,6 +74,7 @@ public class AlarmTimer implements ISimpleTimer {
         isRunning = false;
         cancelAlarm();
         unregisterReceiver();
+        callback.onFinish();
     }
 
     // ---------- Alarm 调度 ---------- //
@@ -113,8 +116,16 @@ public class AlarmTimer implements ISimpleTimer {
             if (!isRunning) return;
 
             mainHandler.post(() -> {
-                if (callback != null) callback.onTick();
+                callback.onTick();
             });
+
+            currentCount++;
+
+            // 检查是否达到重复次数限制
+            if (repeatCount > 0 && currentCount >= repeatCount) {
+                stop();
+                return;
+            }
 
             // 循环执行下一次
             nextTriggerTime += intervalMs;
@@ -134,7 +145,12 @@ public class AlarmTimer implements ISimpleTimer {
         }
     }
 
-    // 可选：判断是否运行
+    @Override
+    public ISimpleTimer setRepeatCount(int count) {
+        this.repeatCount = count;
+        return this;
+    }
+
     public boolean isRunning() {
         return isRunning;
     }

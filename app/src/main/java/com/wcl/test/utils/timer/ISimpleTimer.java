@@ -13,9 +13,14 @@ public interface ISimpleTimer {
     ISimpleTimer setInterval(long interval);
 
     /**
-     * 设置每次触发回调
+     * 每次触发回调
      */
     ISimpleTimer onTick(onTickListener callback);
+
+    /**
+     * 设置执行次数上限
+     */
+    ISimpleTimer setRepeatCount(int count);
 
     /**
      * 启动定时器
