@@ -29,8 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 资料：https://github.com/scwang90/SmartRefreshLayout
- * 支持每个Item独立倒计时的RecyclerView刷新示例。
+ * 普通的RecyclerView下拉刷新，上拉加载更多，支持每个Item独立倒计时
  */
 public class TestRecyclerViewRefreshActivity extends BaseActivity {
     private static final String PAYLOAD_TICK = "tick";
@@ -165,7 +164,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
 
         @Override
         public ListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.test_item, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_1, parent, false);
             return new ListHolder(view);
         }
 

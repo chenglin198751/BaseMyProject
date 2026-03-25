@@ -55,7 +55,7 @@
 
         <activity android:name="com.wcl.test.test.TestViewPager2Activity" />
 
-        <activity android:name="com.wcl.test.test.TestPullDownRefreshActivity" />
+        <activity android:name="com.wcl.test.test.TestRefreshWithBannerActivity" />
 
         <activity android:name="com.wcl.test.test.TestConsecutiveNestScrollActivity" />
 

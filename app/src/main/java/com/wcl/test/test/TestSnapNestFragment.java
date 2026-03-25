@@ -26,7 +26,7 @@ public class TestSnapNestFragment extends BaseFragment {
 
     @Override
     protected int getContentLayout() {
-        return R.layout.test_recyclerview_refresh_layout;
+        return R.layout.test_snap_nest_fragment_layout;
     }
 
     @Override

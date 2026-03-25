@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * 下拉刷新与上拉加载示例（包含多类型 Item：Banner + 列表 + 嵌套子列表）
  */
-public class TestPullDownRefreshActivity extends BaseActivity {
+public class TestRefreshWithBannerActivity extends BaseActivity {
     private static final int VIEW_TYPE_BANNER = 0;
     private static final int VIEW_TYPE_LIST = 1;
     private static final int PAGE_SIZE = 10;
@@ -43,7 +43,7 @@ public class TestPullDownRefreshActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.test_pull_down_refresh_layout);
+        setContentLayout(R.layout.test_refresh_with_banner_layout);
         getTitleHelper().setTitle("测试");
 
         mListView = findViewById(R.id.list_view);
