@@ -31,8 +31,6 @@ import java.util.List;
 public class TestPullDownRefreshActivity extends BaseActivity {
     private static final int VIEW_TYPE_BANNER = 0;
     private static final int VIEW_TYPE_LIST = 1;
-
-    private static final long REFRESH_DELAY_MS = 500L;
     private static final int PAGE_SIZE = 10;
     private static final int MAX_DATA_COUNT = 100;
     private static final int BANNER_GALLERY_EFFECT_RADIUS = 30;

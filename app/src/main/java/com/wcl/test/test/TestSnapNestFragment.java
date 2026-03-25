@@ -21,14 +21,8 @@ import java.util.List;
 public class TestSnapNestFragment extends BaseFragment {
 
     private SmartRefreshLayout refreshLayout;
-    private TestRecyclerAdapter mAdapter2;
-    private RecyclerView mRecyclerView;
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    private TestRecyclerAdapter adapter;
+    private RecyclerView recyclerView;
 
     @Override
     protected int getContentLayout() {
@@ -37,58 +31,72 @@ public class TestSnapNestFragment extends BaseFragment {
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-        mRecyclerView = view.findViewById(R.id.recycler_view);
-        mAdapter2 = new TestRecyclerAdapter(view.getContext());
+        recyclerView = view.findViewById(R.id.recycler_view);
+        adapter = new TestRecyclerAdapter(view.getContext());
 
         List<String> list = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            list.add("" + (mAdapter2.getItemCount() + i));
+            list.add("" + (adapter.getItemCount() + i));
         }
-        mAdapter2.setDataList(list);
+        adapter.setDataList(list);
 
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(view.getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter2);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
         refreshLayout = view.findViewById(R.id.swipe_refresh);
 
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-
-                AppUtils.getUiHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setData(10, true);
-                        refreshlayout.finishRefresh();
-                    }
-                }, 500);
+                loadData(10, true, refreshlayout);
             }
         });
 
         refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore(RefreshLayout refreshlayout) {
-                AppUtils.getUiHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setData(10, false);
-                        refreshlayout.finishLoadMore();
-                    }
-                }, 500);
+                loadData(10, false, refreshlayout);
             }
         });
     }
 
+    /**
+     * 加载数据
+     *
+     * @param count         数据数量
+     * @param isRefresh     是否为刷新操作
+     * @param refreshLayout 刷新布局
+     */
+    private void loadData(int count, boolean isRefresh, RefreshLayout refreshLayout) {
+        AppUtils.getUiHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setData(count, isRefresh);
+                if (isRefresh) {
+                    refreshLayout.finishRefresh();
+                } else {
+                    refreshLayout.finishLoadMore();
+                }
+            }
+        }, 500);
+    }
+
+    /**
+     * 设置数据
+     *
+     * @param count     数据数量
+     * @param isRefresh 是否为刷新操作
+     */
     private void setData(int count, boolean isRefresh) {
         List<String> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            list.add("" + (mAdapter2.getItemCount() + i));
+            list.add("" + (adapter.getItemCount() + i));
         }
 
         if (isRefresh) {
-            mAdapter2.setDataList(list);
+            adapter.setDataList(list);
         } else {
-            mAdapter2.appendDataList(list);
+            adapter.appendDataList(list);
         }
     }
 }
