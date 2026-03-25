@@ -39,6 +39,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
     private SmartRefreshLayout refreshLayout;
     private RecyclerView mRecyclerView;
     private ParentAdapter mAdapter;
+    private int loadedPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +57,6 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         refreshLayout.autoRefresh();
-
-        // 配置刷新和加载监听
         refreshLayout.setOnRefreshListener(createRefreshListener());
         refreshLayout.setOnLoadMoreListener(createLoadMoreListener());
     }
@@ -65,7 +64,6 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        // 停止所有 Banner 的自动轮播，防止内存泄漏
         mAdapter.stopAllBanners();
     }
 
@@ -76,7 +74,13 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         return new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout layout) {
-                performRefresh(true, layout);
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getData(true);
+                        layout.finishRefresh();
+                    }
+                }, 500);
             }
         };
     }
@@ -88,53 +92,51 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         return new OnLoadMoreListener() {
             @Override
             public void onLoadMore(RefreshLayout layout) {
-                performRefresh(false, layout);
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean hasData = mAdapter.getItemCount() < TestUrls.ImgUrls.size();
+                        if (hasData) {
+                            getData(false);
+                            layout.finishLoadMore();
+                        } else {
+                            layout.finishLoadMoreWithNoMoreData();
+                        }
+                    }
+                }, 500);
             }
         };
     }
 
-    /**
-     * 执行刷新或加载操作
-     *
-     * @param isRefresh true 为下拉刷新，false 为上拉加载
-     * @param layout    刷新布局控件
-     */
-    private void performRefresh(final boolean isRefresh, final RefreshLayout layout) {
-        AppUtils.getUiHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                boolean hasMoreData = setData(PAGE_SIZE, isRefresh);
-                if (isRefresh) {
-                    layout.finishRefresh();
-                } else {
-                    if (hasMoreData) {
-                        layout.finishLoadMore();
-                    } else {
-                        layout.finishLoadMoreWithNoMoreData();
-                    }
-                }
-            }
-        }, 500);
-    }
 
-    /**
-     * 设置数据列表
-     *
-     * @param count     每页数据条数
-     * @param isRefresh true 为刷新（替换数据），false 为加载更多（追加数据）
-     * @return 是否还有更多数据（用于判断是否显示"没有更多数据"）
-     */
-    private boolean setData(int count, boolean isRefresh) {
+    private boolean getData(boolean isRefresh) {
+        List<DataItem> list = new ArrayList<>();
+
         if (isRefresh) {
-            List<DataItem> list = new ArrayList<>();
+            loadedPosition = 0;
             list.add(createBannerDataItem());
-            list.addAll(createListDataItems(count));
+        }
+
+        int startIndex = isRefresh ? 0 : loadedPosition;
+        int remaining = TestUrls.ImgUrls.size() - startIndex;
+        int loadCount = Math.min(PAGE_SIZE, remaining);
+
+        if (loadCount > 0) {
+            List<DataItem> items = createListDataItems(startIndex, loadCount);
+            list.addAll(items);
+        }
+
+        if (isRefresh) {
             mAdapter.setDataList(list);
         } else {
-            mAdapter.appendDataList(createListDataItems(count));
+            mAdapter.appendDataList(list);
         }
-        // 当总数小于最大值时，表示还有更多数据可加载
-        return mAdapter.getItemCount() < TestUrls.ImgUrls.size();
+
+        if (loadCount > 0) {
+            loadedPosition += loadCount;
+        }
+
+        return loadedPosition >= TestUrls.ImgUrls.size();
     }
 
     /**
@@ -151,13 +153,17 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
 
     /**
      * 创建普通列表类型的 DataItem 集合
+     *
+     * @param startIndex 起始索引
+     * @param count      数量
      */
-    private List<DataItem> createListDataItems(int count) {
+    private List<DataItem> createListDataItems(int startIndex, int count) {
         List<DataItem> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             DataItem item = new DataItem();
             item.viewType = VIEW_TYPE_LIST;
-            item.imgUrl = TestUrls.ImgUrls.get(i % TestUrls.ImgUrls.size()); // 防止越界
+            item.imgUrl = TestUrls.ImgUrls.get(startIndex + i);
+            item.childNum = (int) (Math.random() * 6); // 0-5个子项
             list.add(item);
         }
         return list;

@@ -3,7 +3,6 @@ package com.wcl.test.test;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,9 +19,12 @@ import java.util.List;
 
 public class TestSnapNestFragment extends BaseFragment {
 
+    private static final int PAGE_SIZE = 10;
+
     private SmartRefreshLayout refreshLayout;
     private TestRecyclerAdapter adapter;
     private RecyclerView recyclerView;
+    private int loadedPosition = 0;
 
     @Override
     protected int getContentLayout() {
@@ -34,11 +36,8 @@ public class TestSnapNestFragment extends BaseFragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         adapter = new TestRecyclerAdapter(view.getContext());
 
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            list.add("" + (adapter.getItemCount() + i));
-        }
-        adapter.setDataList(list);
+        // 初始化时加载第一页数据
+        getData(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -47,50 +46,49 @@ public class TestSnapNestFragment extends BaseFragment {
 
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
-            public void onRefresh(RefreshLayout refreshlayout) {
-                loadData(10, true, refreshlayout);
+            public void onRefresh(RefreshLayout layout) {
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getData(true);
+                        layout.finishRefresh();
+                    }
+                }, 500);
             }
         });
 
         refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onLoadMore(RefreshLayout refreshlayout) {
-                loadData(10, false, refreshlayout);
+            public void onLoadMore(RefreshLayout layout) {
+                AppUtils.getUiHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean hasData = adapter.getItemCount() < TestUrls.ImgUrls.size();
+                        if (hasData) {
+                            getData(false);
+                            layout.finishLoadMore();
+                        } else {
+                            layout.finishLoadMoreWithNoMoreData();
+                        }
+                    }
+                }, 500);
             }
         });
     }
 
-    /**
-     * 加载数据
-     *
-     * @param count         数据数量
-     * @param isRefresh     是否为刷新操作
-     * @param refreshLayout 刷新布局
-     */
-    private void loadData(int count, boolean isRefresh, RefreshLayout refreshLayout) {
-        AppUtils.getUiHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setData(count, isRefresh);
-                if (isRefresh) {
-                    refreshLayout.finishRefresh();
-                } else {
-                    refreshLayout.finishLoadMore();
-                }
-            }
-        }, 500);
-    }
-
-    /**
-     * 设置数据
-     *
-     * @param count     数据数量
-     * @param isRefresh 是否为刷新操作
-     */
-    private void setData(int count, boolean isRefresh) {
+    private void getData(boolean isRefresh) {
         List<String> list = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            list.add("" + (adapter.getItemCount() + i));
+
+        if (isRefresh) {
+            loadedPosition = 0;
+        }
+
+        int startIndex = isRefresh ? 0 : loadedPosition;
+        int remaining = TestUrls.ImgUrls.size() - startIndex;
+        int loadCount = Math.min(PAGE_SIZE, remaining);
+
+        for (int i = 0; i < loadCount; i++) {
+            list.add("" + (startIndex + i));
         }
 
         if (isRefresh) {
@@ -98,5 +96,7 @@ public class TestSnapNestFragment extends BaseFragment {
         } else {
             adapter.appendDataList(list);
         }
+
+        loadedPosition += loadCount;
     }
 }

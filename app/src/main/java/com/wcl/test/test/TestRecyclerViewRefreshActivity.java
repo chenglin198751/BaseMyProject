@@ -112,11 +112,6 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
     }
 
 
-    /**
-     * 设置数据列表
-     *
-     * @param isRefresh true 为刷新（替换数据），false 为加载更多（追加数据）
-     */
     private void getData(boolean isRefresh) {
         List<ModelData> list = new ArrayList<>();
         long now = System.currentTimeMillis();
