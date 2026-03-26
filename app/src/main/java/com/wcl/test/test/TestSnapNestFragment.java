@@ -1,6 +1,7 @@
 package com.wcl.test.test;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -27,7 +28,6 @@ public class TestSnapNestFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private int loadedPosition = 0;
     private int positon = 0;
-    private boolean isFirst = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +36,18 @@ public class TestSnapNestFragment extends BaseFragment {
         if (getArguments() != null) {
             positon = getArguments().getInt("position");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onFirstLoad() {
+        super.onFirstLoad();
+        Log.v("tag_99","onFirstLoad:true");
+        refreshLayout.autoRefresh();
     }
 
     @Override
@@ -83,20 +95,6 @@ public class TestSnapNestFragment extends BaseFragment {
                 }, 500);
             }
         });
-
-        if (positon == 0) {
-            onSelected(0);
-        }
-    }
-
-    @Override
-    public void onSelected(int index) {
-        super.onSelected(index);
-
-        if (isFirst && index == positon) {
-            isFirst = false;
-            refreshLayout.autoRefresh();
-        }
     }
 
     private void getData(boolean isRefresh) {
