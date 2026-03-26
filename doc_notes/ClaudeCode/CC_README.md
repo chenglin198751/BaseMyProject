@@ -7,3 +7,4 @@
 6. /config：全局配置，比如Language是切换默认语言为中文
 7. /clear：清空context上下文
 8. /export：导出当前对话
+9. /simplify：代码审查和优化技能
