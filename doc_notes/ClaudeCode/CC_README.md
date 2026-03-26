@@ -1,0 +1,9 @@
+# 1、常用命令
+1. /init：初始化整个工程，生成工程级CLAUDE.MD
+2. /resume：恢复之前的对话
+3. /review：审查未提交的代码
+4. /refactor：自定义用来重构代码的skills
+5. /model：切换模型
+6. /config：全局配置，比如Language是切换默认语言为中文
+7. /clear：清空context上下文
+8. /export：导出当前对话
