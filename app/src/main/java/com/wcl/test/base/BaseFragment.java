@@ -26,6 +26,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     private BaseViewHelper mBaseViewHelper;
     private RelativeLayout mContentView;
     private ViewGroup nestedParentView;
+    private boolean isFirstLoad = false;
 
     @NonNull
     public BaseActivity getContext() {
@@ -73,6 +74,16 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         }
 
         onViewCreated(savedInstanceState, view);
+    }
+
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isFirstLoad) {
+            isFirstLoad = true;
+            onFirstLoad();
+        }
     }
 
     protected abstract int getContentLayout();
@@ -182,6 +193,14 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      * 当使用ShowFragmentHelper使用BaseFragment时，显示时触发此事件
      */
     public void onSelected(int index) {
+
+    }
+
+    /**
+     * 当 Fragment 首次真正可见时调用，用于执行懒加载操作。
+     * 注意事项：1. 只会在 Fragment 第一次可见时触发一次。
+     */
+    public void onFirstLoad() {
 
     }
 
