@@ -60,7 +60,7 @@ public class AppUtils {
          * 2、当外部存储不可用时，回退到内部存储：
          * /data/data/{packageName}/files
          */
-        public static String getAppFilesPath() {
+        public static String getAppStoragePath() {
             Context context = BaseApp.getApp();
             File dir = context.getExternalFilesDir(null);
             if (dir == null) {
@@ -98,20 +98,17 @@ public class AppUtils {
 
         /**
          * 删除文件或目录（递归）
-         * - 如果是文件，直接删除
-         * - 如果是目录，先删除子文件再删除目录本身
-         *
-         * @param path 文件或目录路径
          */
         public static void delete(String path) {
-            if (TextUtils.isEmpty(path)) {
-                return;
-            }
-            deleteInternal(new File(path));
+            if (TextUtils.isEmpty(path)) return;
+            delete(new File(path));
         }
 
-        private static void deleteInternal(File file) {
-            if (!file.exists()) {
+        /**
+         * 删除文件或目录（递归）
+         */
+        public static void delete(File file) {
+            if (file == null || !file.exists()) {
                 return;
             }
 
@@ -125,7 +122,7 @@ public class AppUtils {
             File[] files = file.listFiles();
             if (files != null) {
                 for (File sub : files) {
-                    deleteInternal(sub);
+                    delete(sub); // 直接传 File
                 }
             }
 
@@ -286,8 +283,6 @@ public class AppUtils {
                 Log.e(TAG, "Failed to copy file from " + source + " to " + dest, e);
             }
         }
-
-        // ---------------- Internal ----------------
 
         /**
          * 确保父目录存在

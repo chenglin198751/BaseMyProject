@@ -67,7 +67,7 @@ class HttpHelper {
     static String getDownloadPath(String url) {
         File dir = BaseApp.getApp().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         if (dir == null) {
-            dir = new File(AppUtils.FileUtils.getAppFilesPath());
+            dir = new File(AppUtils.FileUtils.getAppStoragePath());
         }
         return new File(dir, AppUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
     }
