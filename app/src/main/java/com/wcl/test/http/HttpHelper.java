@@ -6,7 +6,6 @@ import android.text.TextUtils;
 
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppUtils;
-import com.wcl.test.utils.DeviceUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +28,7 @@ class HttpHelper {
     }
 
     static void addCommonParams(Map<String, Object> params) {
-        params.put("deviceId", DeviceUtils.getDeviceId());
+        params.put("deviceId", AppUtils.getAndroidId());
         params.put("product", Build.MODEL);
         params.put("brand", Build.BRAND);
         params.put("os_int", Build.VERSION.SDK_INT);

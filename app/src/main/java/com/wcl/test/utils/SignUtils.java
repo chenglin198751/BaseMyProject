@@ -59,7 +59,7 @@ public class SignUtils {
         String orderStr = authInfo.toString();
         Log.i("signStr", "orderStr: " + orderStr);
         try {
-            return MD5Util.md5(orderStr).toUpperCase();
+            return AppUtils.md5(orderStr).toUpperCase();
         } catch (Exception e) {
             e.printStackTrace();
         }

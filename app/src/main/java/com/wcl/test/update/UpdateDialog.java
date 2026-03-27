@@ -174,7 +174,7 @@ public class UpdateDialog extends Dialog {
 
             //非强制更新的对话框24H只弹一次
             if (VersionUpdateModel.UPDATE_NORMAL == infoModel.getUpdateType()) {
-                long lastTimes = PreferAppSettings.getUpdateDialogTimes();
+                long lastTimes = PreferAppSettings.getUpdateTime();
                 if (lastTimes > 0 && currentTimeMillis - lastTimes <= TIMES) {
                     return;
                 }
@@ -203,7 +203,7 @@ public class UpdateDialog extends Dialog {
                 bottom_line.setVisibility(View.VISIBLE);
                 setCancelable(true);
                 setOnDismissListener(null);
-                PreferAppSettings.setUpdateDialogTimes(currentTimeMillis);
+                PreferAppSettings.setUpdateTime(currentTimeMillis);
             } else if (VersionUpdateModel.UPDATE_FORCE == infoModel.getUpdateType()) {
                 mLeftBtn.setVisibility(View.GONE);
                 mRightBtn.setVisibility(View.VISIBLE);

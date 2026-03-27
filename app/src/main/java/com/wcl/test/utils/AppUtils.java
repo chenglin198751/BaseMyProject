@@ -16,6 +16,7 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -31,6 +32,7 @@ import androidx.annotation.Nullable;
 
 import com.wcl.test.BuildConfig;
 import com.wcl.test.base.BaseApp;
+import com.wcl.test.storage.PreferAppSettings;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -46,11 +48,11 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AppUtils {
 
     public static class FileUtils {
-
         private static final String TAG = "FileUtils";
 
         /**
@@ -571,6 +573,21 @@ public class AppUtils {
 
     public static String getPackageName() {
         return BuildConfig.APPLICATION_ID;
+    }
+
+    public static String getAndroidId() {
+        String androidId = PreferAppSettings.getAndroidId();
+        if (!TextUtils.isEmpty(androidId)) {
+            return androidId;
+        }
+
+        androidId = Settings.Secure.getString(BaseApp.getApp().getContentResolver(), Settings.Secure.ANDROID_ID);
+        if (TextUtils.isEmpty(androidId)) {
+            androidId = md5(UUID.randomUUID().toString());
+        }
+        PreferAppSettings.setAndroidId(androidId);
+
+        return androidId;
     }
 
     /**
