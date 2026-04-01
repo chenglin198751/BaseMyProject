@@ -74,6 +74,7 @@ public class TestSnapNestViewPagerActivity extends BaseActivity {
 
             @Override
             public IPagerTitleView getTitleView(Context context, final int index) {
+                // 可以自定义指示器View
                 ColorTransitionPagerTitleView colorTransitionPagerTitleView = new ColorTransitionPagerTitleView(context);
                 colorTransitionPagerTitleView.setNormalColor(Color.GRAY);
                 colorTransitionPagerTitleView.setSelectedColor(Color.BLACK);
