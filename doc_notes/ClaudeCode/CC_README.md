@@ -8,3 +8,4 @@
 7. /clear：清空context上下文
 8. /export：导出当前对话
 9. /simplify：代码审查和优化技能
+10. /review git diff：基于本地改动（git未commit）做代码审查
