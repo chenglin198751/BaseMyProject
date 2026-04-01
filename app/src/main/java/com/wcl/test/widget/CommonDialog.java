@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -56,14 +57,11 @@ public class CommonDialog extends Dialog {
         AppUtils.setViewRounded(mRootView, 8);
         AppUtils.setDialogEdgeToEdge(this);
 
-        WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getWindow().getDecorView().setPadding(
-                AppUtils.dp2px(45f), 0,
-                AppUtils.dp2px(45f), 0);
-        getWindow().setAttributes(lp);
-
+        Window window = getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            window.getDecorView().setPadding(AppUtils.dp2px(40f), 0, AppUtils.dp2px(40f), 0);
+        }
         bindViews();
         applyStateToViews();
     }
