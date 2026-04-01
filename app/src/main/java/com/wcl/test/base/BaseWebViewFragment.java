@@ -179,7 +179,7 @@ public class BaseWebViewFragment extends BaseFragment {
     public static void setCookies(Context context, String urlStr) {
         // 支持的域名白名单
         final List<String> domains = Arrays.asList(
-                "app.api.sj.360.cn"
+                "app.api.sj.xx.cn"
         );
 
         String host;
