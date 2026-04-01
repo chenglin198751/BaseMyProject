@@ -12,7 +12,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.common.CommonFragmentViewPager2Adapter;
-import com.wcl.test.common.ViewPager2Helper;
+import com.wcl.test.common.MagicIndicatorViewPager2Binder;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
@@ -95,6 +95,6 @@ public class TestSnapNestViewPagerActivity extends BaseActivity {
             }
         });
         magicIndicator.setNavigator(commonNavigator);
-        ViewPager2Helper.bind(magicIndicator, mViewPager2);
+        MagicIndicatorViewPager2Binder.bind(magicIndicator, mViewPager2);
     }
 }
