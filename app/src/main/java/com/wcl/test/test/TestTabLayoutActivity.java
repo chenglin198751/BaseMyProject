@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
+import com.wcl.test.base.BaseFragment;
 import com.wcl.test.common.CommonFragmentViewPager2Adapter;
 import com.wcl.test.widget.MyTabLayout;
 
@@ -24,7 +24,7 @@ import java.util.List;
 public class TestTabLayoutActivity extends BaseActivity {
     private ViewPager2 mViewPager;
     private CommonFragmentViewPager2Adapter mFragmentAdapter;
-    private List<Fragment> mFragList = new ArrayList<>();
+    private List<BaseFragment> mFragList = new ArrayList<>();
     private MyTabLayout mTabLayout;
     private TabLayoutMediator mediator;
 

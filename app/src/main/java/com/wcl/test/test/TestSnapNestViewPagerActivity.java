@@ -5,16 +5,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseFragment;
-import com.wcl.test.common.CommonFragmentViewPagerAdapter;
+import com.wcl.test.common.CommonFragmentViewPager2Adapter;
+import com.wcl.test.common.ViewPager2Helper;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
-import net.lucode.hackware.magicindicator.ViewPagerHelper;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
@@ -24,11 +24,12 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorT
 
 import java.util.ArrayList;
 
+
 public class TestSnapNestViewPagerActivity extends BaseActivity {
-    private ViewPager mViewPager;
-    private CommonFragmentViewPagerAdapter mAdapter;
+    private ViewPager2 mViewPager2;
+    private CommonFragmentViewPager2Adapter mAdapter;
     private final ArrayList<String> mTitleDataList = new ArrayList<>();
-    private ArrayList<BaseFragment> fragments = new ArrayList<>();
+    private final ArrayList<BaseFragment> fragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,23 +50,15 @@ public class TestSnapNestViewPagerActivity extends BaseActivity {
             fragments.add(fragment);
         }
 
-        mViewPager = findViewById(R.id.view_pager);
-        mViewPager.setOffscreenPageLimit(mTitleDataList.size());
-        mAdapter = new CommonFragmentViewPagerAdapter(getSupportFragmentManager(), fragments);
-        mViewPager.setAdapter(mAdapter);
+        mViewPager2 = findViewById(R.id.view_pager2);
+        mViewPager2.setOffscreenPageLimit(mTitleDataList.size());
+        mAdapter = new CommonFragmentViewPager2Adapter(this, fragments);
+        mViewPager2.setAdapter(mAdapter);
 
         initMagicIndicator();
         AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener((appBarLayout1, offset) -> {
             //offset 滑动位移
-        });
-
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                fragments.get(position).onSelected(position);
-            }
         });
     }
 
@@ -88,7 +81,7 @@ public class TestSnapNestViewPagerActivity extends BaseActivity {
                 colorTransitionPagerTitleView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mViewPager.setCurrentItem(index);
+                        mViewPager2.setCurrentItem(index);
                     }
                 });
                 return colorTransitionPagerTitleView;
@@ -102,6 +95,6 @@ public class TestSnapNestViewPagerActivity extends BaseActivity {
             }
         });
         magicIndicator.setNavigator(commonNavigator);
-        ViewPagerHelper.bind(magicIndicator, mViewPager);
+        ViewPager2Helper.bind(magicIndicator, mViewPager2);
     }
 }
