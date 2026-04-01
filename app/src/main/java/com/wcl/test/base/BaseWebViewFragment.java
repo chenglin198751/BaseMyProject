@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -20,6 +22,13 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 
 import com.wcl.test.R;
+import com.wcl.test.utils.AppLogUtils;
+
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class BaseWebViewFragment extends BaseFragment {
@@ -165,5 +174,55 @@ public class BaseWebViewFragment extends BaseFragment {
 
         webView.destroy();
         webView = null;
+    }
+
+    public static void setCookies(Context context, String urlStr) {
+        // 支持的域名白名单
+        final List<String> domains = Arrays.asList(
+                "app.api.sj.360.cn"
+        );
+
+        String host;
+        try {
+            host = new URL(urlStr).getHost();
+        } catch (Exception e) {
+            return;
+        }
+
+        if (!domains.contains(host)) {
+            return;
+        }
+
+        // 要植入的cookies
+        Map<String, String> keyValues = new HashMap<>();
+        String token = "";
+        keyValues.put("token", token);
+
+        // 覆盖整个域名路径（对该 domain 下所有接口和页面生效）
+        final String path = "/";
+
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+
+        // 拼 key=value
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : keyValues.entrySet()) {
+            if (sb.length() > 0) sb.append("; ");
+            sb.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        String cookieStr = sb + "; domain=" + host + "; path=" + path + "; Secure";
+        AppLogUtils.d("cookieStr", cookieStr);
+
+        // 写入 Cookie
+        String targetUrl = "https://" + host;
+        cookieManager.setCookie(targetUrl, cookieStr);
+
+        // 同步 Cookie
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            CookieSyncManager.createInstance(context);
+            CookieSyncManager.getInstance().sync();
+        } else {
+            cookieManager.flush();
+        }
     }
 }
