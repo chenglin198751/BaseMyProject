@@ -12,6 +12,9 @@ import java.util.List;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 
+/**
+ * 使用NestedScrollView嵌套RecyclerView联合滚动
+ */
 public class TestGridViewWithHeaderActivity extends BaseActivity {
     private NestedScrollView nestedScrollView;
 
@@ -30,7 +33,7 @@ public class TestGridViewWithHeaderActivity extends BaseActivity {
         GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        setData(20, true);
+        setData(30, true);
     }
 
     private boolean setData(int count, boolean isRefresh) {
@@ -43,10 +46,6 @@ public class TestGridViewWithHeaderActivity extends BaseActivity {
             mAdapter.setDataList(list);
         } else {
             mAdapter.appendDataList(list);
-        }
-
-        if (mAdapter.getItemCount() > 20) {
-            return false;
         }
 
         return true;

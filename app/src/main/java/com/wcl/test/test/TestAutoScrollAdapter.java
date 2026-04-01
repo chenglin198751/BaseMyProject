@@ -13,6 +13,7 @@ import java.util.List;
 import com.wcl.test.R;
 
 /**
+ * 可无限的自动滚动的RecyclerView
  * Created by weichenglin  on 2018/6/22
  */
 public class TestAutoScrollAdapter extends RecyclerView.Adapter<TestAutoScrollAdapter.BaseViewHolder> {

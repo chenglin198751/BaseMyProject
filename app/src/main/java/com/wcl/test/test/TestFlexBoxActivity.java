@@ -12,6 +12,9 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.R;
 import com.wcl.test.utils.AppUtils;
 
+/**
+ * 集成测试谷歌官方的流式布局Flex容器：com.google.android.flexbox.FlexboxLayout
+ */
 public class TestFlexBoxActivity extends BaseActivity {
     //例子：https://mp.weixin.qq.com/s/D0sCoIt7Gsms5JK9ZIhuhw
     private FlexboxLayout mFlexboxLayout;

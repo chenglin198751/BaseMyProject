@@ -11,6 +11,10 @@ import java.util.List;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 
+/**
+ * 集成了开源库com.donkingliang.consecutivescroller.ConsecutiveScrollerLayout
+ * 可实现各种ListView,RecyclerView,ScrollView嵌套滚动
+ */
 public class TestConsecutiveNestScrollActivity extends BaseActivity {
     private RecyclerView mRecyclerView1;
     private RecyclerView mRecyclerView3;
