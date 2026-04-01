@@ -25,7 +25,10 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorT
 import java.util.ArrayList;
 
 
-public class TestSnapNestViewPagerActivity extends BaseActivity {
+/**
+ * 嵌套Fragment，可上下滑动，带标题指示器，滑动时顶部可收缩的Activity
+ */
+public class TestSnapNestViewPager2Activity extends BaseActivity {
     private ViewPager2 mViewPager2;
     private CommonFragmentViewPager2Adapter mAdapter;
     private final ArrayList<String> mTitleDataList = new ArrayList<>();

@@ -61,7 +61,7 @@
 
         <activity android:name="com.wcl.test.test.TestGridViewWithHeaderActivity" />
 
-        <activity android:name="com.wcl.test.test.TestSnapNestViewPagerActivity" />
+        <activity android:name="com.wcl.test.test.TestSnapNestViewPager2Activity" />
 
         <provider
             android:name="com.wcl.test.CustomInitProvider"
