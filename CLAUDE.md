@@ -81,3 +81,66 @@ gradlew.bat test
 4. **Apk 输出路径**: `app/debug/base_project_v_{versionName}.apk`, `app/release/base_project_v_{versionName}.apk`
 5. **日志**: 通过 `BuildConfig.LOG_ENABLED` 控制日志开关
 6. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
+7. **打印日志**: 打印日志时，必须使用 `AppLogUtils`（`com.wcl.test.utils.AppLogUtils`）
+
+## AppUtils 工具类说明
+
+路径：`com.wcl.test.utils.AppUtils`
+
+### FileUtils（内部静态类）
+
+| 方法 | 说明 |
+|------|------|
+| `getAppStoragePath()` | 获取应用私有可写目录（优先外部存储，不可用则内部存储） |
+| `getFolderSize(File)` | 递归计算文件或文件夹总大小（字节） |
+| `delete(String/File)` | 递归删除文件或目录 |
+| `writeFile(String, String)` | 追加写入文本到文件（自动创建文件/父目录，UTF-8） |
+| `readFileLines(String)` | 按行读取文件内容，返回字符串列表（UTF-8） |
+| `writeFileLines(String, Iterable<String>)` | 覆盖写入多行文本到文件（UTF-8） |
+| `copyDirectory(File, File)` | 递归复制整个目录 |
+| `copyFile(File, File)` | 复制单个文件 |
+
+### 网络
+
+| 方法 | 说明 |
+|------|------|
+| `isNetAvailable()` | 判断当前是否联网（支持 WiFi / 移动网络 / 以太网） |
+
+### UI / View
+
+| 方法 | 说明 |
+|------|------|
+| `dp2px(float)` | dp 转 px |
+| `showKeyboard(Context, EditText)` | 显示软键盘 |
+| `hideKeyboard(Context, EditText)` | 隐藏软键盘 |
+| `expandTouchArea(View, int)` | 扩大 View 的点击区域（单位 dp） |
+| `setViewCircle(View)` | 将 View 裁剪为纯圆形 |
+| `setViewRounded(View, int)` | 将 View 裁剪为圆角矩形（单位 dp） |
+| `setDialogEdgeToEdge(Dialog)` | 设置 Dialog 沉浸式全屏（Edge-to-Edge） |
+
+### Activity / Context
+
+| 方法 | 说明 |
+|------|------|
+| `getTopActivity()` | 获取当前栈顶 Activity（可能为 null） |
+| `isAppInForeground()` | 判断 App 是否处于前台 |
+| `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity（解决 TintContextWrapper 转换问题） |
+| `isActivityDestroyed(Context)` | 判断 Activity 是否已销毁或正在 finish |
+| `restartApp(Context)` | 重启应用 |
+
+### 工具方法
+
+| 方法 | 说明 |
+|------|------|
+| `getString(int)` | 通过资源 ID 获取字符串 |
+| `md5(String)` | 对字符串进行 MD5 加密，返回 32 位小写十六进制 |
+| `getUiHandler()` | 获取全局主线程 Handler |
+| `formatDouble(double, int)` | 对 double 四舍五入保留指定小数位 |
+| `formatFloat(float, int)` | 对 float 四舍五入保留指定小数位 |
+| `getVersionCode()` | 获取应用 versionCode |
+| `getVersionName()` | 获取应用 versionName |
+| `getPackageName()` | 获取应用包名 |
+| `getAndroidId()` | 获取设备 Android ID（不可用时用 UUID 的 MD5 替代，并持久化） |
+| `isUiThread()` | 判断当前线程是否为主线程 |
+| `isEdgeToEdge()` | 判断应用是否启用了 Edge-to-Edge 模式（系统 + targetSdk 均 ≥ 35） |
+| `readTextFromAssets(String)` | 读取 assets 目录下的文本文件内容（UTF-8，自动去除 BOM） |
