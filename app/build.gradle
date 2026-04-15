@@ -111,7 +111,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
     implementation 'androidx.lifecycle:lifecycle-process:2.10.0'
     implementation 'com.github.JavaNoober.BackgroundLibrary:libraryx:1.7.6'
-    implementation 'androidx.work:work-runtime:2.11.1'
+    implementation 'androidx.work:work-runtime:2.11.2'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'com.github.hackware1993:MagicIndicator:1.7.0'
 }

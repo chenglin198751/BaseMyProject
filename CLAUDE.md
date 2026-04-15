@@ -29,7 +29,6 @@ gradlew.bat test
 - **BaseApp**: Application 基类，使用单例模式（volatile + double-check）。初始化 MMKV、AppHelper（前后台监听、Activity 栈）、GsonFactory
 - **BaseActivity**: Activity 基类，实现 edge-to-edge、系统栏管理、灰色模式、EventBus 集成、标题栏/加载/空状态的统一管理
 - **BaseFragment**: Fragment 基类
-- **AppHelper**: 辅助类，维护 topActivity（WeakReference）和前台状态，监听 ProcessLifecycle 和 Activity lifecycle
 
 ### 事件总线
 
@@ -61,25 +60,6 @@ gradlew.bat test
 - **update 包**: 版本更新相关
 - **view/widget 包**: 自定义 View
 - **MainFirstFragment**: 首页 Fragment，用于测试各类组件
-
-## 包结构说明
-
-```
-com.wcl.test/
-├── base/          # 基类和核心基础设施
-├── main/          # 主页面入口（MainActivity + Fragment）
-├── download/      # 下载管理模块
-├── http/          # 网络请求模块
-├── storage/       # 数据存储
-├── update/        # 版本更新
-├── utils/         # 工具类
-├── helper/        # 辅助类
-├── view/          # 视图相关
-├── widget/        # 自定义控件
-├── test/          # 测试页面
-├── bean/          # 数据模型
-└── common/        # 通用功能
-```
 
 ## 技术栈
 
