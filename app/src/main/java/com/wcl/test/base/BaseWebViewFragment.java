@@ -132,10 +132,11 @@ public class BaseWebViewFragment extends BaseFragment {
             }
 
             @Override
-            public void onPageFinished(WebView view, String url) {
+            public void onPageCommitVisible(WebView view, String url) {
                 mPageLoadingProgressBar.setVisibility(View.GONE);
                 CookieManager.getInstance().flush();
             }
+
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
