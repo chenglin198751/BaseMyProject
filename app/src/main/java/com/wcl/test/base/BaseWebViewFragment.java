@@ -2,7 +2,6 @@ package com.wcl.test.base;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,13 +10,10 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
@@ -34,7 +30,7 @@ import java.util.Map;
 public class BaseWebViewFragment extends BaseFragment {
 
     public WebView webView;
-    private String mUrl;
+    private String url;
 
     public static BaseWebViewFragment newInstance(String url) {
         BaseWebViewFragment f = new BaseWebViewFragment();
@@ -51,7 +47,7 @@ public class BaseWebViewFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(Bundle savedInstanceState, View view) {
-        mUrl = getArguments() != null ? getArguments().getString("url") : null;
+        url = getArguments() != null ? getArguments().getString("url") : null;
         init(view);
     }
 
@@ -70,7 +66,8 @@ public class BaseWebViewFragment extends BaseFragment {
         showLoading();
         webView = root.findViewById(R.id.web_view);
         setupWebView();
-        webView.loadUrl(mUrl);
+        setCookies(url);
+        webView.loadUrl(url);
     }
 
     private void setupWebView() {
@@ -158,7 +155,7 @@ public class BaseWebViewFragment extends BaseFragment {
         webView = null;
     }
 
-    public static void setCookies(Context context, String urlStr) {
+    private void setCookies(String urlStr) {
         // 支持的域名白名单
         final List<String> domains = Arrays.asList(
                 "app.api.sj.xx.cn"
@@ -201,7 +198,7 @@ public class BaseWebViewFragment extends BaseFragment {
 
         // 同步 Cookie
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            CookieSyncManager.createInstance(context);
+            CookieSyncManager.createInstance(getContext());
             CookieSyncManager.getInstance().sync();
         } else {
             cookieManager.flush();

@@ -13,20 +13,19 @@ import com.wcl.test.R;
 
 public class BaseWebViewActivity extends BaseActivity {
 
-    private static final String EXTRA_URL = "url";
-    private static final String EXTRA_TITLE = "title";
+    private static final String KEY_URL = "url";
+    private static final String KEY_TITLE = "title";
 
-    private BaseWebViewFragment mWebViewFragment;
-    private String mUrl;
-    private String mTitle;
+    private String url;
+    private String title;
 
     public static void start(Context context, String url, String title) {
         if (TextUtils.isEmpty(url)) {
             return;
         }
         Intent intent = new Intent(context, BaseWebViewActivity.class);
-        intent.putExtra(EXTRA_URL, url);
-        intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra(KEY_URL, url);
+        intent.putExtra(KEY_TITLE, title);
 
         if (!(context instanceof android.app.Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -41,31 +40,31 @@ public class BaseWebViewActivity extends BaseActivity {
         parseParams();
 
         FragmentManager fm = getSupportFragmentManager();
-        mWebViewFragment = (BaseWebViewFragment) fm.findFragmentById(R.id.fragment_base_id);
+        BaseWebViewFragment mWebViewFragment = (BaseWebViewFragment) fm.findFragmentById(R.id.fragment_base_id);
         if (mWebViewFragment == null) {
-            mWebViewFragment = BaseWebViewFragment.newInstance(mUrl);
+            mWebViewFragment = BaseWebViewFragment.newInstance(url);
             fm.beginTransaction().replace(R.id.fragment_base_id, mWebViewFragment).commit();
         }
     }
 
     private void parseParams() {
         Intent intent = getIntent();
-        mUrl = intent.getStringExtra(EXTRA_URL);
-        mTitle = intent.getStringExtra(EXTRA_TITLE);
+        url = intent.getStringExtra(KEY_URL);
+        title = intent.getStringExtra(KEY_TITLE);
 
-        if (!TextUtils.isEmpty(mUrl)) {
+        if (!TextUtils.isEmpty(url)) {
             try {
-                Uri uri = Uri.parse(mUrl);
+                Uri uri = Uri.parse(url);
                 String titleFromUrl = uri.getQueryParameter("title");
                 if (!TextUtils.isEmpty(titleFromUrl)) {
-                    mTitle = titleFromUrl;
+                    title = titleFromUrl;
                 }
             } catch (Exception ignored) {
             }
         }
 
-        if (!TextUtils.isEmpty(mTitle)) {
-            getTitleHelper().setTitle(mTitle);
+        if (!TextUtils.isEmpty(title)) {
+            getTitleHelper().setTitle(title);
         }
     }
 }
