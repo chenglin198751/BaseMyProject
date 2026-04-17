@@ -34,7 +34,6 @@ import java.util.Map;
 public class BaseWebViewFragment extends BaseFragment {
 
     public WebView webView;
-    private ProgressBar mPageLoadingProgressBar;
     private String mUrl;
 
     public static BaseWebViewFragment newInstance(String url) {
@@ -68,10 +67,8 @@ public class BaseWebViewFragment extends BaseFragment {
     }
 
     private void init(View root) {
+        showLoading();
         webView = root.findViewById(R.id.web_view);
-        mPageLoadingProgressBar = root.findViewById(R.id.progressBar1);
-        mPageLoadingProgressBar.setMax(100);
-
         setupWebView();
         webView.loadUrl(mUrl);
     }
@@ -126,30 +123,10 @@ public class BaseWebViewFragment extends BaseFragment {
             }
 
             @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                mPageLoadingProgressBar.setVisibility(View.VISIBLE);
-                mPageLoadingProgressBar.setProgress(0);
-            }
-
-            @Override
             public void onPageCommitVisible(WebView view, String url) {
-                mPageLoadingProgressBar.setVisibility(View.GONE);
-                CookieManager.getInstance().flush();
+                onWebViewVisible();
             }
 
-        });
-
-        webView.setWebChromeClient(new WebChromeClient() {
-
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                mPageLoadingProgressBar.setProgress(newProgress);
-            }
-
-            @Override
-            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                return super.onJsAlert(view, url, message, result);
-            }
         });
 
         webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
@@ -159,6 +136,10 @@ public class BaseWebViewFragment extends BaseFragment {
             } catch (Exception ignored) {
             }
         });
+    }
+
+    private void onWebViewVisible(){
+        hideLoading();
     }
 
     private void destroyWebView() {
