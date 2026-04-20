@@ -25,11 +25,14 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
 
     private BaseViewHelper mBaseViewHelper;
     private RelativeLayout mContentView;
-    private ViewGroup nestedParentView;
+    private ViewGroup mNestedParentView;
     private boolean isFirstLoad = false;
 
     @NonNull
     public BaseActivity getContext() {
+        if (getActivity() == null) {
+            throw new IllegalStateException("Fragment is not attached to an Activity");
+        }
         if (!(getActivity() instanceof BaseActivity)) {
             throw new IllegalStateException("Activity must be a BaseActivity");
         }
@@ -39,16 +42,18 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     @CallSuper
     @Override
     public void onEvent(String eventKey, Object data) {
+        dispatchEventToFragments(eventKey, data);
+    }
+
+    /**
+     * 将事件分发给当前 Fragment 中所有已附加的子 BaseFragment
+     */
+    private void dispatchEventToFragments(String eventKey, Object data) {
         for (Fragment childFragment : getChildFragmentManager().getFragments()) {
             if (childFragment instanceof BaseFragment && childFragment.isAdded()) {
                 ((BaseFragment) childFragment).onEvent(eventKey, data);
             }
         }
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @CallSuper
@@ -123,7 +128,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void showLoading() {
-        showLoading("");
+        showLoading(null);
     }
 
     /**
@@ -175,7 +180,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public void setNestedParentView(ViewGroup parent) {
-        nestedParentView = parent;
+        mNestedParentView = parent;
     }
 
     /**
@@ -208,12 +213,13 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         if (getView() == null) return;
 
         View helperView = mBaseViewHelper.getView();
+        if (helperView == null) return;
         if (helperView.getParent() != null)
             ((ViewGroup) helperView.getParent()).removeView(helperView);
         helperView.setClickable(true);
 
-        if (nestedParentView != null) {
-            nestedParentView.addView(helperView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (mNestedParentView != null) {
+            mNestedParentView.addView(helperView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else {
             mContentView.addView(helperView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
