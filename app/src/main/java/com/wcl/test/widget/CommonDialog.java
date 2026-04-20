@@ -19,7 +19,6 @@ import com.wcl.test.utils.AppUtils;
 public class CommonDialog extends Dialog {
 
     // ================== View ==================
-    private View mRootView;
     private TextView mTitleView;
     private TextView mMessageView;
     private LinearLayout mCustomContainer;
@@ -51,10 +50,9 @@ public class CommonDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mRootView = View.inflate(getContext(), R.layout.common_alert_dialog, null);
-        setContentView(mRootView);
+        setContentView(R.layout.common_alert_dialog);
 
-        AppUtils.setViewRounded(mRootView, 8);
+        AppUtils.setViewRounded(findViewById(R.id.dialog_view), 8);
         AppUtils.setDialogEdgeToEdge(this);
 
         Window window = getWindow();
@@ -67,12 +65,12 @@ public class CommonDialog extends Dialog {
     }
 
     private void bindViews() {
-        mTitleView = mRootView.findViewById(R.id.alertTitle);
-        mMessageView = mRootView.findViewById(R.id.message);
-        mCustomContainer = mRootView.findViewById(R.id.custom_container);
-        mButtonPanel = mRootView.findViewById(R.id.buttonPanel);
-        mLeftBtn = mRootView.findViewById(R.id.button_ok);
-        mRightBtn = mRootView.findViewById(R.id.button_cancel);
+        mTitleView = findViewById(R.id.alertTitle);
+        mMessageView = findViewById(R.id.message);
+        mCustomContainer = findViewById(R.id.custom_container);
+        mButtonPanel = findViewById(R.id.buttonPanel);
+        mLeftBtn = findViewById(R.id.button_ok);
+        mRightBtn = findViewById(R.id.button_cancel);
 
         mMessageView.setMovementMethod(ScrollingMovementMethod.getInstance());
     }
