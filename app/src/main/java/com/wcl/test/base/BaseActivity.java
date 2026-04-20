@@ -195,11 +195,18 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             }
         } else {
             //通知Activity里面所有的fragment接收广播
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-            for (Fragment fragment : fragments) {
-                if (fragment instanceof BaseFragment && fragment.isAdded()) {
-                    ((BaseFragment) fragment).onEvent(eventKey, data);
-                }
+            dispatchEventToFragments(eventKey, data);
+        }
+    }
+
+    /**
+     * 将事件分发给当前 Activity 中所有已附加的 BaseFragment
+     */
+    private void dispatchEventToFragments(String eventKey, Object data) {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof BaseFragment && fragment.isAdded()) {
+                ((BaseFragment) fragment).onEvent(eventKey, data);
             }
         }
     }
@@ -224,7 +231,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (mWaitDialog == null) {
             mWaitDialog = new WaitDialog(this);
         }
-        if (!mWaitDialog.isShowing() && !isFinishing()) {
+        if (!mWaitDialog.isShowing() && !isFinishing() && !isDestroyed()) {
             mWaitDialog.show();
         }
         return mWaitDialog;
@@ -232,7 +239,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
 
     @Override
     public final void dismissWaitDialog() {
-        if (mWaitDialog != null && mWaitDialog.isShowing() && !isFinishing()) {
+        if (mWaitDialog != null && mWaitDialog.isShowing() && !isFinishing() && !isDestroyed()) {
             mWaitDialog.dismiss();
         }
     }
@@ -317,6 +324,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
 
     private void attachHelperView() {
         View view = mBaseViewHelper.getView();
+        if (view == null) return;
         if (view.getParent() != null) ((ViewGroup) view.getParent()).removeView(view);
         view.setClickable(true);
 
