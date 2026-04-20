@@ -144,8 +144,6 @@ public class CommonDialog extends Dialog {
             mCustomContainer.addView(mCustomView);
             mCustomContainer.setVisibility(View.VISIBLE);
         } else {
-            mCustomContainer.removeAllViews();
-            mCustomContainer.setVisibility(View.GONE);
             mMessageView.setVisibility(View.VISIBLE);
             mMessageView.setText(mMessageText);
         }
