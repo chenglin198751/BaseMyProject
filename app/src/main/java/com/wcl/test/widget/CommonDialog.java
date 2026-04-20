@@ -32,8 +32,8 @@ public class CommonDialog extends Dialog {
     private String mMessageText;
     private View mCustomView;
 
-    private boolean mLeftVisible = false;
-    private boolean mRightVisible = false;
+    private boolean mLeftVisible;
+    private boolean mRightVisible;
     private String mLeftText;
     private String mRightText;
     private View.OnClickListener mLeftListener;
@@ -144,14 +144,17 @@ public class CommonDialog extends Dialog {
             mMessageView.setVisibility(View.GONE);
             mCustomContainer.removeAllViews();
             mCustomContainer.addView(mCustomView);
+            mCustomContainer.setVisibility(View.VISIBLE);
         } else {
+            mCustomContainer.removeAllViews();
+            mCustomContainer.setVisibility(View.GONE);
             mMessageView.setVisibility(View.VISIBLE);
             mMessageView.setText(mMessageText);
         }
     }
 
     private void applyButtons() {
-        if (mLeftBtn == null || mRightBtn == null) return;
+        if (mLeftBtn == null || mRightBtn == null || mButtonPanel == null) return;
 
         mLeftBtn.setVisibility(mLeftVisible ? View.VISIBLE : View.GONE);
         mRightBtn.setVisibility(mRightVisible ? View.VISIBLE : View.GONE);
