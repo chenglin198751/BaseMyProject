@@ -8,12 +8,13 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wcl.test.R;
+import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.AppUtils;
 
 public class CommonDialog extends Dialog {
@@ -21,7 +22,7 @@ public class CommonDialog extends Dialog {
     // ================== View ==================
     private TextView mTitleView;
     private TextView mMessageView;
-    private LinearLayout mCustomContainer;
+    private ConstraintLayout mCustomContainer;
     private View mButtonPanel;
     private TextView mLeftBtn;
     private TextView mRightBtn;
@@ -73,6 +74,9 @@ public class CommonDialog extends Dialog {
         mRightBtn = findViewById(R.id.button_cancel);
 
         mMessageView.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        int maxHeight = AppConstants.screenHeight - AppUtils.dp2px(200f);
+        mCustomContainer.setMaxHeight(maxHeight);
     }
 
     // ================== Public API ==================
@@ -142,7 +146,6 @@ public class CommonDialog extends Dialog {
             mMessageView.setVisibility(View.GONE);
             mCustomContainer.removeAllViews();
             mCustomContainer.addView(mCustomView);
-            mCustomContainer.setVisibility(View.VISIBLE);
         } else {
             mMessageView.setVisibility(View.VISIBLE);
             mMessageView.setText(mMessageText);
