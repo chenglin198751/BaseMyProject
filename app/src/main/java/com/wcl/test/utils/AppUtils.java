@@ -18,7 +18,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -116,7 +115,7 @@ public class AppUtils {
 
             if (file.isFile()) {
                 if (!file.delete()) {
-                    Log.e(TAG, "Failed to delete file: " + file.getAbsolutePath());
+                    AppLogUtils.e(TAG, "Failed to delete file: " + file.getAbsolutePath());
                 }
                 return;
             }
@@ -129,7 +128,7 @@ public class AppUtils {
             }
 
             if (!file.delete()) {
-                Log.e(TAG, "Failed to delete directory: " + file.getAbsolutePath());
+                AppLogUtils.e(TAG, "Failed to delete directory: " + file.getAbsolutePath());
             }
         }
 
@@ -153,7 +152,7 @@ public class AppUtils {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                 writer.write(text);
             } catch (IOException e) {
-                Log.e(TAG, "Failed to write file: " + filePath, e);
+                AppLogUtils.e(TAG, "Failed to write file: " + filePath + ", " + e.getMessage());
             }
         }
 
@@ -177,7 +176,7 @@ public class AppUtils {
                 byte[] bytes = Files.readAllBytes(file.toPath());
                 return new String(bytes, StandardCharsets.UTF_8);
             } catch (IOException e) {
-                Log.e(TAG, "Failed to read file: " + filePath, e);
+                AppLogUtils.e(TAG, "Failed to read file: " + filePath + ", " + e.getMessage());
             }
             return null;
         }
@@ -202,7 +201,7 @@ public class AppUtils {
             try {
                 lines.addAll(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
             } catch (IOException e) {
-                Log.e(TAG, "Failed to read file lines: " + filePath, e);
+                AppLogUtils.e(TAG, "Failed to read file lines: " + filePath + ", " + e.getMessage());
             }
             return lines;
         }
@@ -231,7 +230,7 @@ public class AppUtils {
                     writer.newLine();
                 }
             } catch (IOException e) {
-                Log.e(TAG, "Failed to write file lines: " + filePath, e);
+                AppLogUtils.e(TAG, "Failed to write file lines: " + filePath + ", " + e.getMessage());
             }
         }
 
@@ -247,7 +246,7 @@ public class AppUtils {
             }
 
             if (!toDir.exists() && !toDir.mkdirs()) {
-                Log.e(TAG, "Failed to create directory: " + toDir.getAbsolutePath());
+                AppLogUtils.e(TAG, "Failed to create directory: " + toDir.getAbsolutePath());
                 return;
             }
 
@@ -282,7 +281,7 @@ public class AppUtils {
             try {
                 Files.copy(source.toPath(), dest.toPath());
             } catch (IOException e) {
-                Log.e(TAG, "Failed to copy file from " + source + " to " + dest, e);
+                AppLogUtils.e(TAG, "Failed to copy file from " + source + " to " + dest + ", " + e.getMessage());
             }
         }
 
@@ -666,7 +665,7 @@ public class AppUtils {
                 sb.append(line).append('\n');
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            AppLogUtils.e("AppUtils", "readTextFromAssets error: " + e.getMessage());
             return null;
         }
 
@@ -704,7 +703,7 @@ public class AppUtils {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogUtils.e("AppUtils", "restartApp error: " + e.getMessage());
         }
     }
 
@@ -787,7 +786,7 @@ public class AppUtils {
                 window.setAttributes(lp);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            AppLogUtils.e("AppUtils", "setDialogEdgeToEdge error: " + t.getMessage());
         }
     }
 }
