@@ -81,7 +81,7 @@ public class BottomDialogFragment extends BottomSheetDialogFragment {
             // 跳过折叠状态，向下拖动直接关闭
             behavior.setSkipCollapsed(true);
 
-            bottomSheet.getLayoutParams().height = AppConstants.screenHeight / 2;
+            bottomSheet.getLayoutParams().height = AppUtils.screenHeight / 2;
             bottomSheet.requestLayout();
         }
     }

@@ -75,7 +75,7 @@ public class CommonDialog extends Dialog {
 
         mMessageView.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-        int maxHeight = AppConstants.screenHeight - AppUtils.dp2px(200f);
+        int maxHeight = AppUtils.screenHeight - AppUtils.dp2px(200f);
         mCustomContainer.setMaxHeight(maxHeight);
     }
 

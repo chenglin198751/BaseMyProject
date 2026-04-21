@@ -67,8 +67,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(mBaseRootView, (v, insets) -> {
-            AppConstants.statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            AppConstants.navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            AppUtils.statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            AppUtils.navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
             displayInCutoutMode(onDisplayInCutoutMode());
             return insets;
         });
@@ -103,7 +103,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (isDisplayInCutout) {
             mBaseRootView.setPadding(0, 0, 0, 0);
         } else {
-            mBaseRootView.setPadding(0, AppConstants.statusBarHeight, 0, AppConstants.navBarHeight);
+            mBaseRootView.setPadding(0, AppUtils.statusBarHeight, 0, AppUtils.navBarHeight);
         }
     }
 

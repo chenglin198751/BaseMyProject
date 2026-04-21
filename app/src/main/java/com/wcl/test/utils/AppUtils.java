@@ -1,8 +1,6 @@
 package com.wcl.test.utils;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -34,22 +32,20 @@ import com.wcl.test.base.BaseApp;
 import com.wcl.test.storage.PreferAppSettings;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class AppUtils {
+    public final static int screenWidth = InnerAppUtils.getScreenSize()[0]; //屏幕宽度
+    public final static int screenHeight = InnerAppUtils.getScreenSize()[1];  //屏幕高度
+    public static int statusBarHeight = 0; //顶部状态栏高度
+    public static int navBarHeight = 0; //底部虚拟导航栏高度
 
     public static class FileUtils {
         private static final String TAG = "FileUtils";
@@ -68,33 +64,6 @@ public class AppUtils {
                 dir = context.getFilesDir();
             }
             return dir.getAbsolutePath();
-        }
-
-        /**
-         * 递归计算文件或文件夹的总大小
-         *
-         * @param folder 文件或目录
-         * @return 字节数，异常时返回 0
-         */
-        public static long getFolderSize(File folder) {
-            if (folder == null || !folder.exists()) {
-                return 0;
-            }
-
-            if (folder.isFile()) {
-                return folder.length();
-            }
-
-            long size = 0;
-            File[] files = folder.listFiles();
-            if (files == null) {
-                return 0;
-            }
-
-            for (File file : files) {
-                size += getFolderSize(file);
-            }
-            return size;
         }
 
         /**
@@ -130,306 +99,6 @@ public class AppUtils {
             if (!file.delete()) {
                 AppLogUtils.e(TAG, "Failed to delete directory: " + file.getAbsolutePath());
             }
-        }
-
-        /**
-         * 追加写入文本到文件（UTF-8）
-         * - 文件不存在会自动创建
-         * - 父目录不存在会自动创建
-         * - 以追加方式写入
-         *
-         * @param filePath 文件路径
-         * @param text     要写入的内容
-         */
-        public static void writeFile(String filePath, String text) {
-            if (TextUtils.isEmpty(filePath) || text == null) {
-                return;
-            }
-
-            File file = new File(filePath);
-            ensureParentDir(file);
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                writer.write(text);
-            } catch (IOException e) {
-                AppLogUtils.e(TAG, "Failed to write file: " + filePath + ", " + e.getMessage());
-            }
-        }
-
-        /**
-         * 以 UTF-8 编码读取整个文件内容为字符串
-         *
-         * @param filePath 文件路径
-         * @return 文件内容，失败返回 null
-         */
-        private static String readFileString(String filePath) {
-            if (TextUtils.isEmpty(filePath)) {
-                return null;
-            }
-
-            File file = new File(filePath);
-            if (!file.exists()) {
-                return null;
-            }
-
-            try {
-                byte[] bytes = Files.readAllBytes(file.toPath());
-                return new String(bytes, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                AppLogUtils.e(TAG, "Failed to read file: " + filePath + ", " + e.getMessage());
-            }
-            return null;
-        }
-
-        /**
-         * 按行读取文件（UTF-8）
-         *
-         * @param filePath 文件路径
-         * @return 行列表，失败返回空列表
-         */
-        public static List<String> readFileLines(String filePath) {
-            List<String> lines = new ArrayList<>();
-            if (TextUtils.isEmpty(filePath)) {
-                return lines;
-            }
-
-            File file = new File(filePath);
-            if (!file.exists()) {
-                return lines;
-            }
-
-            try {
-                lines.addAll(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                AppLogUtils.e(TAG, "Failed to read file lines: " + filePath + ", " + e.getMessage());
-            }
-            return lines;
-        }
-
-        /**
-         * 覆盖写入多行文本到文件（UTF-8）
-         *
-         * <p>
-         * - 原文件内容会被清空
-         * - 每行自动追加系统换行符
-         *
-         * @param filePath 文件路径
-         * @param lines    文本行集合
-         */
-        public static void writeFileLines(String filePath, Iterable<String> lines) {
-            if (TextUtils.isEmpty(filePath) || lines == null) {
-                return;
-            }
-
-            File file = new File(filePath);
-            ensureParentDir(file);
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
-                for (String line : lines) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-            } catch (IOException e) {
-                AppLogUtils.e(TAG, "Failed to write file lines: " + filePath + ", " + e.getMessage());
-            }
-        }
-
-        /**
-         * 递归复制目录
-         *
-         * @param fromDir 源目录
-         * @param toDir   目标目录
-         */
-        public static void copyDirectory(File fromDir, File toDir) {
-            if (fromDir == null || toDir == null || !fromDir.isDirectory()) {
-                return;
-            }
-
-            if (!toDir.exists() && !toDir.mkdirs()) {
-                AppLogUtils.e(TAG, "Failed to create directory: " + toDir.getAbsolutePath());
-                return;
-            }
-
-            File[] files = fromDir.listFiles();
-            if (files == null) {
-                return;
-            }
-
-            for (File file : files) {
-                File target = new File(toDir, file.getName());
-                if (file.isDirectory()) {
-                    copyDirectory(file, target);
-                } else {
-                    copyFile(file, target);
-                }
-            }
-        }
-
-        /**
-         * 复制单个文件
-         *
-         * @param source 源文件
-         * @param dest   目标文件
-         */
-        public static void copyFile(File source, File dest) {
-            if (source == null || dest == null || !source.exists()) {
-                return;
-            }
-
-            ensureParentDir(dest);
-
-            try {
-                Files.copy(source.toPath(), dest.toPath());
-            } catch (IOException e) {
-                AppLogUtils.e(TAG, "Failed to copy file from " + source + " to " + dest + ", " + e.getMessage());
-            }
-        }
-
-        /**
-         * 确保父目录存在
-         */
-        private static void ensureParentDir(File file) {
-            File parent = file.getParentFile();
-            if (parent != null && !parent.exists()) {
-                parent.mkdirs();
-            }
-        }
-    }
-
-    private static class AppProcess {
-
-        private static volatile String sCurrentProcessName;
-
-        private AppProcess() {
-        }
-
-        /**
-         * 判断是不是 app 主进程（有些组件只应在主进程初始化）
-         */
-        static boolean isAppMainProcess(Context context) {
-            try {
-                if (context == null) {
-                    return true;
-                }
-                String packageName = context.getApplicationContext().getPackageName();
-                String current = getCurrentProcessName(context);
-                if (current == null) {
-                    return true;
-                }
-                return packageName.equalsIgnoreCase(current);
-            } catch (Throwable t) {
-                try {
-                    AppLogUtils.e("AppProcess", "isAppMainProcess error:" + t);
-                } catch (Throwable ignored) {
-                }
-                return true;
-            }
-        }
-
-        /**
-         * 获取当前进程名
-         */
-        static String getCurrentProcessName(Context context) {
-            if (!TextUtils.isEmpty(sCurrentProcessName)) {
-                return sCurrentProcessName;
-            }
-
-            synchronized (AppProcess.class) {
-                if (!TextUtils.isEmpty(sCurrentProcessName)) {
-                    return sCurrentProcessName;
-                }
-
-                String currentProcessName;
-
-                // 1.Application API (Android P+)
-                currentProcessName = getCurrentProcessNameByApplication();
-                AppLogUtils.v("AppProcess", "currentProcess:" + currentProcessName);
-                if (!TextUtils.isEmpty(currentProcessName)) {
-                    sCurrentProcessName = currentProcessName;
-                    return sCurrentProcessName;
-                }
-
-                // 2.反射 ActivityThread
-                currentProcessName = getCurrentProcessNameByActivityThread();
-                AppLogUtils.v("AppProcess", "getCurrentProcessNameByActivityThread = " + currentProcessName);
-                if (!TextUtils.isEmpty(currentProcessName)) {
-                    sCurrentProcessName = currentProcessName;
-                    return sCurrentProcessName;
-                }
-
-                // 3.ActivityManager（IPC）
-                currentProcessName = getCurrentProcessNameByActivityManager(context);
-                AppLogUtils.v("AppProcess", "getCurrentProcessNameByActivityManager = " + currentProcessName);
-                if (!TextUtils.isEmpty(currentProcessName)) {
-                    sCurrentProcessName = currentProcessName;
-                    return sCurrentProcessName;
-                }
-
-                return null;
-            }
-        }
-
-        /**
-         * 通过 Application 的 API 获取进程名（Android P 及以上）
-         */
-        private static String getCurrentProcessNameByApplication() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                try {
-                    return Application.getProcessName();
-                } catch (Throwable t) {
-                    try {
-                        AppLogUtils.e("AppProcess", "getCurrentProcessNameByApplication error:" + t);
-                    } catch (Throwable ignored) {
-                    }
-                }
-            }
-            return null;
-        }
-
-        /**
-         * 通过反射 android.app.ActivityThread.currentProcessName() 获取进程名，尽量避免 IPC
-         */
-        private static String getCurrentProcessNameByActivityThread() {
-            String processName = null;
-            try {
-                Method declaredMethod = Class.forName("android.app.ActivityThread", false,
-                        Application.class.getClassLoader()).getDeclaredMethod("currentProcessName");
-                declaredMethod.setAccessible(true);
-                Object result = declaredMethod.invoke(null);
-                if (result instanceof String) {
-                    processName = (String) result;
-                }
-            } catch (Throwable t) {
-                try {
-                    AppLogUtils.v("AppProcess", "ActivityThread reflection failed:" + t);
-                } catch (Throwable ignored) {
-                }
-            }
-            return processName;
-        }
-
-        /**
-         * 通过 ActivityManager 获取当前进程名（需要 IPC）
-         */
-        private static String getCurrentProcessNameByActivityManager(Context context) {
-            if (context == null) {
-                return null;
-            }
-            int pid = android.os.Process.myPid();
-            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-            if (am == null) {
-                return null;
-            }
-            List<ActivityManager.RunningAppProcessInfo> runningAppList = am.getRunningAppProcesses();
-            if (runningAppList == null) {
-                return null;
-            }
-            for (ActivityManager.RunningAppProcessInfo processInfo : runningAppList) {
-                if (processInfo != null && processInfo.pid == pid) {
-                    return processInfo.processName;
-                }
-            }
-            return null;
         }
     }
 
@@ -525,14 +194,14 @@ public class AppUtils {
      * 判断是不是 app 主进程
      */
     static boolean isAppMainProcess(Context context) {
-        return AppProcess.isAppMainProcess(context);
+        return InnerAppUtils.isAppMainProcess(context);
     }
 
     /**
      * 获取当前进程名
      */
     static String getCurrentProcessName(Context context) {
-        return AppProcess.getCurrentProcessName(context);
+        return InnerAppUtils.getCurrentProcessName(context);
     }
 
     /**

@@ -81,41 +81,47 @@ gradlew.bat test
 6. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
 7. **打印日志**: 打印日志时，必须使用 `AppLogUtils`（`com.wcl.test.utils.AppLogUtils`）
 
+## AppConstants 公共常量类说明
+
+路径：`com.wcl.test.utils.AppConstants`，存放全局公共常量。
+
+| 字段 | 说明 |
+|------|------|
+| `gson` | 全局单例 Gson 实例，基于 GsonFactory，统一使用此实例 |
+| `Toggle.isGrayscale` | 是否开启全局黑白（灰阶）模式，默认 `false` |
+
 ## AppUtils 工具类说明
 
 路径：`com.wcl.test.utils.AppUtils`
 
-| 方法 | 说明 |
-|------|------|
-| `getAppStoragePath()` | 获取应用私有可写目录 |
-| `getFolderSize(File)` | 递归计算文件或文件夹总大小（字节） |
-| `delete(String/File)` | 递归删除文件或目录 |
-| `writeFile(String, String)` | 追加写入文本到文件 |
-| `readFileLines(String)` | 按行读取文件内容 |
-| `writeFileLines(String, Iterable<String>)` | 覆盖写入多行文本到文件 |
-| `copyDirectory(File, File)` | 递归复制整个目录 |
-| `copyFile(File, File)` | 复制单个文件 |
-| `isNetAvailable()` | 判断当前是否联网 |
-| `dp2px(float)` | dp 转 px |
+| 方法                            | 说明 |
+|-------------------------------|------|
+| `getAppStoragePath()`         | 获取应用私有可写目录 |
+| `isNetAvailable()`            | 判断当前是否联网 |
+| `dp2px(float)`                | dp 转 px |
 | `showKeyboard(Context, EditText)` | 显示软键盘 |
 | `hideKeyboard(Context, EditText)` | 隐藏软键盘 |
-| `expandTouchArea(View, int)` | 扩大 View 的点击区域（单位 dp） |
-| `setViewCircle(View)` | 将 View 裁剪为纯圆形 |
-| `setViewRounded(View, int)` | 将 View 裁剪为圆角矩形（单位 dp） |
+| `expandTouchArea(View, int)`  | 扩大 View 的点击区域（单位 dp） |
+| `setViewCircle(View)`         | 将 View 裁剪为纯圆形 |
+| `setViewRounded(View, int)`   | 将 View 裁剪为圆角矩形（单位 dp） |
 | `setDialogEdgeToEdge(Dialog)` | 设置 Dialog 沉浸式全屏（Edge-to-Edge） |
-| `getTopActivity()` | 获取当前栈顶 Activity（可能为 null） |
-| `isAppInForeground()` | 判断 App 是否处于前台 |
+| `getTopActivity()`            | 获取当前栈顶 Activity（可能为 null） |
+| `isAppInForeground()`         | 判断 App 是否处于前台 |
 | `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity |
 | `isActivityDestroyed(Context)` | 判断 Activity 是否已销毁或正在 finish |
-| `getString(int)` | 通过资源 ID 获取字符串 |
-| `md5(String)` | 对字符串进行 MD5 加密 |
-| `getUiHandler()` | 获取全局主线程 Handler |
-| `formatDouble(double, int)` | 对 double 四舍五入保留指定小数位 |
-| `formatFloat(float, int)` | 对 float 四舍五入保留指定小数位 |
-| `getVersionCode()` | 获取应用 versionCode |
-| `getVersionName()` | 获取应用 versionName |
-| `getPackageName()` | 获取应用包名 |
-| `getAndroidId()` | 获取设备 Android ID |
-| `isUiThread()` | 判断当前线程是否为主线程 |
-| `isEdgeToEdge()` | 判断应用是否启用了 Edge-to-Edge 模式 |
-| `readTextFromAssets(String)` | 读取 assets 目录下的文本文件内容 |
+| `getString(int)`              | 通过资源 ID 获取字符串 |
+| `md5(String)`                 | 对字符串进行 MD5 加密 |
+| `getUiHandler()`              | 获取全局主线程 Handler |
+| `formatDouble(double, int)`   | 对 double 四舍五入保留指定小数位 |
+| `formatFloat(float, int)`     | 对 float 四舍五入保留指定小数位 |
+| `getVersionCode()`            | 获取应用 versionCode |
+| `getVersionName()`            | 获取应用 versionName |
+| `getPackageName()`            | 获取应用包名 |
+| `getAndroidId()`              | 获取设备 Android ID |
+| `isUiThread()`                | 判断当前线程是否为主线程 |
+| `isEdgeToEdge()`              | 判断应用是否启用了 Edge-to-Edge 模式 |
+| `readTextFromAssets(String)`  | 读取 assets 目录下的文本文件内容 |
+| `screenWidth`                 | 屏幕宽度（px），应用启动时自动初始化 |
+| `screenHeight`                | 屏幕高度（px），应用启动时自动初始化 |
+| `statusBarHeight`             | 状态栏高度（px），需业务层赋值后使用 |
+| `navBarHeight`                | 底部虚拟导航栏高度（px），需业务层赋值后使用 |

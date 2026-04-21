@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.utils.AppConstants;
+import com.wcl.test.utils.AppUtils;
 
 public class PullToZoomRecyclerView extends RecyclerView {
     private int mTouchSlop;
@@ -50,7 +51,7 @@ public class PullToZoomRecyclerView extends RecyclerView {
         mScale = viewScale;
         mScaleRatio = scaleRatio;
         //获取屏幕宽度
-        screenWidth = AppConstants.screenWidth;
+        screenWidth = AppUtils.screenWidth;
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) zoomView.getLayoutParams();
         //获取屏幕宽度
         lp.width = screenWidth;
