@@ -33,26 +33,10 @@ gradlew.bat test
 ### 事件总线
 
 - **EventBus**: 自定义实现的事件总线，通过 `register()`/`unregister()` 管理订阅者，使用 `EventAction` 定义事件 key
-- **EventBus2 / AppEventProvider**: 基于 ContentProvider 的进程间 IPC 事件总线（用于多进程场景）
-
-### 下载模块 (download 包)
-
-核心组件：
-- **DownloadManager** (单例): 管理所有下载任务、线程池（最大4线程）、等待队列
-- **DownloadTask**: 下载任务数据模型，状态包括 IDLE/WAITING/DOWNLOADING/PAUSED/FINISHED/ERROR
-- **DownloadWorker**: 执行实际下载的 Worker
-- **DownloadDBHelper**: 任务持久化
-
-**设计特点**：
-- `setDownloadListener(url, LifecycleOwner, DownloadListener)` 订阅下载状态，自动管理生命周期
-- 线程池满时任务进入 WAITING 状态并排队
-- 支持断点续传（.temp 文件）
 
 ### 网络模块 (http 包)
 
 - **HttpUtils**: 基于 OkHttp 的网络请求封装
-- **WebSocketExecutor**: WebSocket 长连接实现
-- **Downloader**: 另一套下载实现（旧版？）
 
 ### 其他重要模块
 
@@ -91,12 +75,12 @@ gradlew.bat test
 
 | 方法 | 说明 |
 |------|------|
-| `getAppStoragePath()` | 获取应用私有可写目录（优先外部存储，不可用则内部存储） |
+| `getAppStoragePath()` | 获取应用私有可写目录 |
 | `getFolderSize(File)` | 递归计算文件或文件夹总大小（字节） |
 | `delete(String/File)` | 递归删除文件或目录 |
-| `writeFile(String, String)` | 追加写入文本到文件（自动创建文件/父目录，UTF-8） |
-| `readFileLines(String)` | 按行读取文件内容，返回字符串列表（UTF-8） |
-| `writeFileLines(String, Iterable<String>)` | 覆盖写入多行文本到文件（UTF-8） |
+| `writeFile(String, String)` | 追加写入文本到文件 |
+| `readFileLines(String)` | 按行读取文件内容 |
+| `writeFileLines(String, Iterable<String>)` | 覆盖写入多行文本到文件 |
 | `copyDirectory(File, File)` | 递归复制整个目录 |
 | `copyFile(File, File)` | 复制单个文件 |
 
@@ -104,7 +88,7 @@ gradlew.bat test
 
 | 方法 | 说明 |
 |------|------|
-| `isNetAvailable()` | 判断当前是否联网（支持 WiFi / 移动网络 / 以太网） |
+| `isNetAvailable()` | 判断当前是否联网 |
 
 ### UI / View
 
@@ -124,23 +108,22 @@ gradlew.bat test
 |------|------|
 | `getTopActivity()` | 获取当前栈顶 Activity（可能为 null） |
 | `isAppInForeground()` | 判断 App 是否处于前台 |
-| `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity（解决 TintContextWrapper 转换问题） |
+| `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity |
 | `isActivityDestroyed(Context)` | 判断 Activity 是否已销毁或正在 finish |
-| `restartApp(Context)` | 重启应用 |
 
 ### 工具方法
 
 | 方法 | 说明 |
 |------|------|
 | `getString(int)` | 通过资源 ID 获取字符串 |
-| `md5(String)` | 对字符串进行 MD5 加密，返回 32 位小写十六进制 |
+| `md5(String)` | 对字符串进行 MD5 加密 |
 | `getUiHandler()` | 获取全局主线程 Handler |
 | `formatDouble(double, int)` | 对 double 四舍五入保留指定小数位 |
 | `formatFloat(float, int)` | 对 float 四舍五入保留指定小数位 |
 | `getVersionCode()` | 获取应用 versionCode |
 | `getVersionName()` | 获取应用 versionName |
 | `getPackageName()` | 获取应用包名 |
-| `getAndroidId()` | 获取设备 Android ID（不可用时用 UUID 的 MD5 替代，并持久化） |
+| `getAndroidId()` | 获取设备 Android ID |
 | `isUiThread()` | 判断当前线程是否为主线程 |
-| `isEdgeToEdge()` | 判断应用是否启用了 Edge-to-Edge 模式（系统 + targetSdk 均 ≥ 35） |
-| `readTextFromAssets(String)` | 读取 assets 目录下的文本文件内容（UTF-8，自动去除 BOM） |
+| `isEdgeToEdge()` | 判断应用是否启用了 Edge-to-Edge 模式 |
+| `readTextFromAssets(String)` | 读取 assets 目录下的文本文件内容 |
