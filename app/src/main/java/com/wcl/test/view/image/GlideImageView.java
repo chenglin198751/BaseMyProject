@@ -11,17 +11,17 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.wcl.test.GlideApp;
 
-public class GlideBgImageView extends RoundedBgImageView {
+public class GlideImageView extends RoundedBgImageView {
 
-    public GlideBgImageView(Context context) {
+    public GlideImageView(Context context) {
         super(context);
     }
 
-    public GlideBgImageView(Context context, @Nullable AttributeSet attrs) {
+    public GlideImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public GlideBgImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public GlideImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

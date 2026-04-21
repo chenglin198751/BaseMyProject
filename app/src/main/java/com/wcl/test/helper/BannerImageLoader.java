@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.wcl.test.view.image.GlideBgImageView;
+import com.wcl.test.view.image.GlideImageView;
 import com.youth.banner.adapter.BannerAdapter;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class BannerImageLoader extends BannerAdapter<String, BannerImageLoader.B
 
     @Override
     public BannerViewHolder onCreateHolder(ViewGroup parent, int viewType) {
-        GlideBgImageView imageView = new GlideBgImageView(parent.getContext());
+        GlideImageView imageView = new GlideImageView(parent.getContext());
         imageView.setCornerRadius(8);
         //注意，必须设置为match_parent，这个是viewpager2强制要求的
         imageView.setLayoutParams(new ViewGroup.LayoutParams(
@@ -37,9 +37,9 @@ public class BannerImageLoader extends BannerAdapter<String, BannerImageLoader.B
     }
 
     public static class BannerViewHolder extends RecyclerView.ViewHolder {
-        GlideBgImageView imageView;
+        GlideImageView imageView;
 
-        public BannerViewHolder(@NonNull GlideBgImageView view) {
+        public BannerViewHolder(@NonNull GlideImageView view) {
             super(view);
             this.imageView = view;
         }

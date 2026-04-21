@@ -20,7 +20,7 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.AppUtils;
-import com.wcl.test.view.image.GlideBgImageView;
+import com.wcl.test.view.image.GlideImageView;
 import com.youth.banner.Banner;
 
 import java.util.ArrayList;
@@ -220,7 +220,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         // 普通列表 Item Holder
         class ListHolder extends BaseRecyclerViewHolder {
             private final TextView title;
-            private final GlideBgImageView webImageView;
+            private final GlideImageView webImageView;
             private final RecyclerView childRecyclerView;
             private final ChildAdapter childAdapter;
 

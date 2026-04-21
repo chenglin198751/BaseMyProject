@@ -23,7 +23,7 @@ import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.listener.OnSingleClickListener;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.timer.CountDownManager;
-import com.wcl.test.view.image.GlideBgImageView;
+import com.wcl.test.view.image.GlideImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -184,7 +184,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         }
 
         class ListHolder extends BaseRecyclerViewHolder {
-            private GlideBgImageView imageView;
+            private GlideImageView imageView;
             private Button btnDelete;
             private TextView countdowner;
 

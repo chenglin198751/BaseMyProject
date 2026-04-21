@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
-import com.wcl.test.view.image.GlideBgImageView;
+import com.wcl.test.view.image.GlideImageView;
 
 public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
@@ -35,7 +35,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
     }
 
     private class ListHolder extends BaseRecyclerViewHolder {
-        GlideBgImageView imageView;
+        GlideImageView imageView;
         TextView title;
 
         public ListHolder(View itemView) {
