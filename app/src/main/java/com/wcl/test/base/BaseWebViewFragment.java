@@ -71,6 +71,7 @@ public class BaseWebViewFragment extends BaseFragment {
     }
 
     private void setupWebView() {
+        webView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
         WebSettings s = webView.getSettings();
 
         s.setJavaScriptEnabled(true);
