@@ -45,6 +45,13 @@ gradlew.bat test
 - **view/widget 包**: 自定义 View
 - **MainFirstFragment**: 首页 Fragment，用于测试各类组件
 
+## 通用工具类
+
+### PreferAppSettings
+
+路径：`com.wcl.test.storage.PreferAppSettings`，基于 MMKV 的全局 KV 存储。新增持久化字段时，必须在此类中统一定义 key 和读写方法，禁止在其他地方直接使用 MMKV。
+
+
 ## 通用组件
 
 ### GlideImageView（图片加载组件）
