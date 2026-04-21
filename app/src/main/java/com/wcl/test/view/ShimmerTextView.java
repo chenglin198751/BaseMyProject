@@ -10,6 +10,9 @@ import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
+/**
+ * facebook发光渐变文字效果 http://facebook.github.io/shimmer-android/
+ */
 public class ShimmerTextView extends AppCompatTextView {
 
     private LinearGradient mLinearGradient;
