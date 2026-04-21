@@ -41,23 +41,23 @@ public class AppLogUtils {
      * Android内核源码在logger.h中定义的最大字符长度LOGGER_ENTRY_MAX_LEN为4*1024
      * 如果日志超过4K就截断打印
      */
+    private static final int SEGMENT_SIZE = 4000;
+    private static final String SEG_START = "-----------log长度超过了" + SEGMENT_SIZE + "，分段打印start-----------";
+    private static final String SEG_END   = "-----------log长度超过了" + SEGMENT_SIZE + "，分段打印end-----------";
+
     private static void print(String tag, String msg, int level) {
-        final int segmentSize = 4000;
         final int length = msg.length();
 
-        if (length > segmentSize) {
-            print2(tag, "----------------------------log长度超过了" + segmentSize + "，分段打印start----------------------------", level);
-            for (int i = 0; i < length; i += segmentSize) {
-                if (i + segmentSize < length) {
-                    print2(tag, msg.substring(i, i + segmentSize), level);
-                } else {
-                    print2(tag, msg.substring(i, length), level);
-                }
-            }
-            print2(tag, "----------------------------log长度超过了" + segmentSize + "，分段打印end----------------------------", level);
-        } else {
+        if (length <= SEGMENT_SIZE) {
             print2(tag, msg, level);
+            return;
         }
+
+        print2(tag, SEG_START, level);
+        for (int i = 0; i < length; i += SEGMENT_SIZE) {
+            print2(tag, msg.substring(i, Math.min(i + SEGMENT_SIZE, length)), level);
+        }
+        print2(tag, SEG_END, level);
     }
 
     private static void print2(String tag, String log2, int level) {
