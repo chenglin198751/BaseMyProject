@@ -6,7 +6,7 @@
     android:background="#99000000"
     android:clickable="true">
 
-    <com.wcl.test.view.CornerLinearLayout
+    <LinearLayout
         android:id="@+id/corner"
         android:layout_width="300dp"
         android:layout_height="200dp"
@@ -45,7 +45,7 @@
                 android:textColor="#999999"
                 android:textSize="14dp" />
         </RelativeLayout>
-    </com.wcl.test.view.CornerLinearLayout>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/close_"
