@@ -14,8 +14,8 @@ import com.wcl.test.base.BaseApp;
  * 公共常量类
  */
 public class AppConstants {
-    public static int screenWidth = getScreenSize()[0]; //屏幕宽度
-    public static int screenHeight = getScreenSize()[1]; //屏幕高度
+    public final static int screenWidth = getScreenSize()[0]; //屏幕宽度
+    public final static int screenHeight = getScreenSize()[1]; //屏幕高度
     public static int statusBarHeight = 0; //状态栏高度
     public static int navBarHeight = 0; //底部虚拟导航栏高度
     public final static Gson gson = GsonFactory.getSingletonGson();
