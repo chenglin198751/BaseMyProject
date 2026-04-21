@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BigStringDb implements BigString {
+public class BigStringDb implements IBigString {
 
     private static final class InstanceHolder {
         private static final BigStringDb INSTANCE = new BigStringDb();

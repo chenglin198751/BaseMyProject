@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BigStringFile implements BigString {
+public class BigStringFile implements IBigString {
     private String mCachedPath = null;
 
     private static final class InstanceHolder {

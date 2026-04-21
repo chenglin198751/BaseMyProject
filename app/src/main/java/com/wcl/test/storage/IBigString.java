@@ -3,7 +3,7 @@ package com.wcl.test.storage;
 import java.util.List;
 
 
-public interface BigString {
+public interface IBigString {
     List<String> getAllKeys();
 
     boolean put(String key, String value);
