@@ -45,6 +45,14 @@ gradlew.bat test
 - **view/widget 包**: 自定义 View
 - **MainFirstFragment**: 首页 Fragment，用于测试各类组件
 
+## 通用组件
+
+### GlideImageView（图片加载组件）
+
+路径：`com.wcl.test.view.image.GlideImageView`，基于 Glide 的图片控件，支持圆角/圆形/边框/宽高比。
+- `loadImage(Object uri)` — 自动 CenterCrop + 圆角；`loadImage(uri, RequestOptions)` — 自定义加载
+- XML：`riv_corner_radius` / `riv_oval` / `riv_aspect_ratio` / `riv_border_width` / `riv_border_color` / `riv_solid_color`
+
 ## 技术栈
 
 - **Language**: Java 17, Kotlin
