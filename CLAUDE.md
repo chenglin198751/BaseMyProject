@@ -8,7 +8,7 @@ BaseMyProject 是一个 Android 应用测试项目，用于验证和调试常用
 
 ## 注意事项
 
-**注意：1.默认使用中文进行交流和代码注释，除非用户明确要求使用英文;2.禁止调用Windows PowerShell的任何命令，因为当前电脑管理员禁止了Windows PowerShell。可以使用cmd或者python或者git bash**
+**注意：1.默认使用中文进行交流和代码注释，除非用户明确要求使用英文;2.禁止调用Windows PowerShell的任何命令，因为当前电脑管理员禁止了Windows PowerShell。可以使用cmd或python或git bash**
 
 ## 构建命令
 
@@ -26,7 +26,7 @@ gradlew.bat test
 
 ### 核心基类 (base 包)
 
-- **BaseApp**: Application 基类，使用单例模式（volatile + double-check）。初始化 MMKV、AppHelper（前后台监听、Activity 栈）、GsonFactory
+- **BaseApp**: Application 基类，使用单例模式
 - **BaseActivity**: Activity 基类，实现 edge-to-edge、系统栏管理、灰色模式、EventBus 集成、标题栏/加载/空状态的统一管理
 - **BaseFragment**: Fragment 基类
 
@@ -43,7 +43,6 @@ gradlew.bat test
 - **storage 包**: 数据存储相关
 - **update 包**: 版本更新相关
 - **view/widget 包**: 自定义 View
-- **MainFirstFragment**: 首页 Fragment，用于测试各类组件
 
 ## 通用工具类
 
@@ -86,8 +85,6 @@ gradlew.bat test
 
 路径：`com.wcl.test.utils.AppUtils`
 
-### FileUtils（内部静态类）
-
 | 方法 | 说明 |
 |------|------|
 | `getAppStoragePath()` | 获取应用私有可写目录 |
@@ -98,17 +95,7 @@ gradlew.bat test
 | `writeFileLines(String, Iterable<String>)` | 覆盖写入多行文本到文件 |
 | `copyDirectory(File, File)` | 递归复制整个目录 |
 | `copyFile(File, File)` | 复制单个文件 |
-
-### 网络
-
-| 方法 | 说明 |
-|------|------|
 | `isNetAvailable()` | 判断当前是否联网 |
-
-### UI / View
-
-| 方法 | 说明 |
-|------|------|
 | `dp2px(float)` | dp 转 px |
 | `showKeyboard(Context, EditText)` | 显示软键盘 |
 | `hideKeyboard(Context, EditText)` | 隐藏软键盘 |
@@ -116,20 +103,10 @@ gradlew.bat test
 | `setViewCircle(View)` | 将 View 裁剪为纯圆形 |
 | `setViewRounded(View, int)` | 将 View 裁剪为圆角矩形（单位 dp） |
 | `setDialogEdgeToEdge(Dialog)` | 设置 Dialog 沉浸式全屏（Edge-to-Edge） |
-
-### Activity / Context
-
-| 方法 | 说明 |
-|------|------|
 | `getTopActivity()` | 获取当前栈顶 Activity（可能为 null） |
 | `isAppInForeground()` | 判断 App 是否处于前台 |
 | `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity |
 | `isActivityDestroyed(Context)` | 判断 Activity 是否已销毁或正在 finish |
-
-### 工具方法
-
-| 方法 | 说明 |
-|------|------|
 | `getString(int)` | 通过资源 ID 获取字符串 |
 | `md5(String)` | 对字符串进行 MD5 加密 |
 | `getUiHandler()` | 获取全局主线程 Handler |
