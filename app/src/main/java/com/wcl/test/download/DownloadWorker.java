@@ -18,7 +18,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * DownloadWorker 负责单个任务的下载
+ * DownloadWorker 负责单个任务的下载（内部使用，不对外）
  */
 class DownloadWorker implements Runnable {
 

@@ -12,6 +12,9 @@ import com.wcl.test.utils.AppConstants;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 下载信息存储类（内部使用，不对外）
+ */
 class DownloadDBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "okhttp3_download.db";

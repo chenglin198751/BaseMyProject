@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+/**
+ * 下载工具类（内部使用，不对外）
+ */
 class DownloadUtils {
 
     // 简单 URL 校验
