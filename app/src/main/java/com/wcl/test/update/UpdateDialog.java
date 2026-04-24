@@ -13,7 +13,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.http.HttpUrls;
 import com.wcl.test.http.HttpUtils;
-import com.wcl.test.storage.PreferAppSettings;
+import com.wcl.test.storage.PreferApp;
 import com.wcl.test.utils.ApkInstaller;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppConstants;
@@ -174,7 +174,7 @@ public class UpdateDialog extends Dialog {
 
             //非强制更新的对话框24H只弹一次
             if (VersionUpdateModel.UPDATE_NORMAL == infoModel.getUpdateType()) {
-                long lastTimes = PreferAppSettings.getUpdateTime();
+                long lastTimes = PreferApp.getUpdateTime();
                 if (lastTimes > 0 && currentTimeMillis - lastTimes <= TIMES) {
                     return;
                 }
@@ -203,7 +203,7 @@ public class UpdateDialog extends Dialog {
                 bottom_line.setVisibility(View.VISIBLE);
                 setCancelable(true);
                 setOnDismissListener(null);
-                PreferAppSettings.setUpdateTime(currentTimeMillis);
+                PreferApp.setUpdateTime(currentTimeMillis);
             } else if (VersionUpdateModel.UPDATE_FORCE == infoModel.getUpdateType()) {
                 mLeftBtn.setVisibility(View.GONE);
                 mRightBtn.setVisibility(View.VISIBLE);

@@ -2,7 +2,7 @@ package com.wcl.test.storage;
 
 import com.tencent.mmkv.MMKV;
 
-public class PreferAppSettings {
+public class PreferApp {
 
     private static final MMKV kv = MMKV.defaultMMKV();
     private static final String KEY_ANDROID_ID = "KEY_ANDROID_ID";

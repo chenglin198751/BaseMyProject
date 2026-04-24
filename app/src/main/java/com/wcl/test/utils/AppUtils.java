@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.wcl.test.BuildConfig;
 import com.wcl.test.base.BaseApp;
-import com.wcl.test.storage.PreferAppSettings;
+import com.wcl.test.storage.PreferApp;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -244,7 +244,7 @@ public class AppUtils {
     }
 
     public static String getAndroidId() {
-        String androidId = PreferAppSettings.getAndroidId();
+        String androidId = PreferApp.getAndroidId();
         if (!TextUtils.isEmpty(androidId)) {
             return androidId;
         }
@@ -253,7 +253,7 @@ public class AppUtils {
         if (TextUtils.isEmpty(androidId)) {
             androidId = md5(UUID.randomUUID().toString());
         }
-        PreferAppSettings.setAndroidId(androidId);
+        PreferApp.setAndroidId(androidId);
 
         return androidId;
     }
