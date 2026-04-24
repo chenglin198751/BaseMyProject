@@ -13,9 +13,9 @@ import com.wcl.test.utils.AppLogUtils;
 
 /**
  * 此 ContentProvider 仅仅用于巧用 onCreate() 来实现SDK产品的初始化。
- * CustomInitProvider的onCreate()方法，晚于application的attachBaseContext()方法，早于application的onCreate()方法。
+ * SdkProvider的onCreate()方法，晚于application的attachBaseContext()方法，早于application的onCreate()方法。
  */
-public class CustomInitProvider extends ContentProvider {
+public class SdkProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         AppLogUtils.v("tag_88", "CustomInitProvider onCreate = " + getContext());

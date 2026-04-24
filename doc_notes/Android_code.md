@@ -443,7 +443,7 @@
 
 **92、aar接入方式开发SDK可以使用自定义的ContentProvider初始化SDK：**
 
-    com.wcl.test.CustomInitProvider，其onCreate()方法，晚于Application的attachBaseContext()，早于Application的onCreate()。
+    com.wcl.test.SdkProvider，其onCreate()方法，晚于Application的attachBaseContext()，早于Application的onCreate()。
 
 **93、glide自定义各种变换形状，灰度，黑白等：** 
 
