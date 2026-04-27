@@ -22,7 +22,7 @@
 
         <receiver
             android:name="com.wcl.test.helper.DialPhoneBroadcastReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SECRET_CODE" />
                 <data
