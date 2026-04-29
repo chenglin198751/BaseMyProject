@@ -40,19 +40,7 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 GET 请求（无 Header）
-     */
-    public static void get(
-            Context context,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        get(context, url, params, null, callback);
-    }
-
-    /**
-     * 异步 GET 请求（支持 Header）
+     * 异步 GET 请求（headers可以传null）
      */
     public static void get(
             Context context,
@@ -71,19 +59,7 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 GET 请求（Fragment 专用，无 Header）
-     */
-    public static void get(
-            Fragment fragment,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        get(fragment, url, params, null, callback);
-    }
-
-    /**
-     * 异步 GET 请求（Fragment 专用，支持 Header）
+     * 异步 GET 请求（Fragment 专用，headers可以传null）
      */
     public static void get(
             Fragment fragment,
@@ -102,19 +78,7 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 POST 请求（Fragment 专用，无 Header）
-     */
-    public static void post(
-            Fragment fragment,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        post(fragment, url, params, null, callback);
-    }
-
-    /**
-     * 异步 POST 请求（Fragment 专用，支持 Header）
+     * 异步 POST 请求（Fragment 专用，headers可以传null）
      */
     public static void post(
             Fragment fragment,
@@ -133,19 +97,7 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 POST 请求（无 Header）
-     */
-    public static void post(
-            Context context,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        post(context, url, params, null, callback);
-    }
-
-    /**
-     * 异步 POST 请求（支持 Header）
+     * 异步 POST 请求（headers可以传null）
      */
     public static void post(
             Context context,
