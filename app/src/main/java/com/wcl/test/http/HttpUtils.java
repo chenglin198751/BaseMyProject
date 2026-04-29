@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import com.wcl.test.EnvToggle;
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppThreadPoolExecutor;
-import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +88,7 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (HttpHelper.isInvalidUrl(url)) {
             notifyResult(callback, false, "Invalid URL");
             return;
         }
@@ -120,7 +119,7 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (HttpHelper.isInvalidUrl(url)) {
             notifyResult(callback, false, "Invalid URL");
             return;
         }
@@ -151,7 +150,7 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (HttpHelper.isInvalidUrl(url)) {
             notifyResult(callback, false, "Invalid URL");
             return;
         }
@@ -182,7 +181,7 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (HttpHelper.isInvalidUrl(url)) {
             notifyResult(callback, false, "Invalid URL");
             return;
         }
@@ -200,7 +199,7 @@ public class HttpUtils {
             String fileKey,
             File file
     ) {
-        if (!HttpHelper.isValidUrl(url) || file == null || !file.exists()) {
+        if (HttpHelper.isInvalidUrl(url) || file == null || !file.exists()) {
             return;
         }
         Map<String, Object> finalParams = withCommonParams(params);
@@ -230,7 +229,7 @@ public class HttpUtils {
      * 异步下载文件（支持断点续传）
      */
     public static void download(String url, DownloadCallback callback) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (HttpHelper.isInvalidUrl(url)) {
             callback.onFinished(false, null, "非法 URL");
             return;
         }

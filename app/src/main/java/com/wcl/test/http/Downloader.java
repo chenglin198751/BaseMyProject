@@ -21,7 +21,7 @@ class Downloader {
      * @param callback 下载回调（主线程）
      */
     public static void fastDownload(String url, HttpUtils.DownloadCallback callback) {
-        if (!HttpHelper.isValidUrl(url)) {
+        if (HttpHelper.isInvalidUrl(url)) {
             callback.onFinished(false, null, "Invalid URL");
             return;
         }

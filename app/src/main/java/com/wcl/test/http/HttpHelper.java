@@ -21,9 +21,9 @@ import okhttp3.Response;
 
 class HttpHelper {
 
-    // 如果是有效url则返回true
-    static boolean isValidUrl(String url) {
-        return !TextUtils.isEmpty(url) && (url.startsWith("http://") || url.startsWith("https://"));
+    // 如果是无效 url（空或非 http/https）则返回 true
+    static boolean isInvalidUrl(String url) {
+        return TextUtils.isEmpty(url) || (!url.startsWith("http://") && !url.startsWith("https://"));
     }
 
     static void postToUi(Runnable r) {
