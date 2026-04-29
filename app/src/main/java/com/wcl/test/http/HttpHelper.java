@@ -77,7 +77,7 @@ class HttpHelper {
     // 从url获取文件长度
     static long fetchContentLength(String url) {
         Request request = new Request.Builder().url(url).build();
-        try (Response response = HttpUtils.CLIENT.newCall(request).execute()) {
+        try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 return response.body().contentLength();
             }
