@@ -80,7 +80,7 @@ class RoundedBgImageView extends AppCompatImageView implements IRoundedMethod {
 
         // 宽度确定 -> 推导高度
         if (widthExactly) {
-            int height = (int) (widthSize / aspectRatio);
+            int height = Math.round((float) widthSize / aspectRatio);
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
@@ -88,7 +88,7 @@ class RoundedBgImageView extends AppCompatImageView implements IRoundedMethod {
 
         // 高度确定 -> 推导宽度
         if (heightExactly) {
-            int width = (int) (heightSize * aspectRatio);
+            int width = Math.round((float) heightSize * aspectRatio);
             widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
