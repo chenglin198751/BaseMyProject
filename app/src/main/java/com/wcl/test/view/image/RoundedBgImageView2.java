@@ -64,7 +64,6 @@ class RoundedBgImageView2 extends AppCompatImageView implements IRoundedMethod {
         backgroundDrawable.setShape(GradientDrawable.RECTANGLE);
         applyDrawableState();
         setBackground(backgroundDrawable);
-
     }
 
     @Override
@@ -76,26 +75,36 @@ class RoundedBgImageView2 extends AppCompatImageView implements IRoundedMethod {
 
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        boolean widthIsZero = widthMode == MeasureSpec.EXACTLY && widthSize == 0;
-        boolean heightIsZero = heightMode == MeasureSpec.EXACTLY && heightSize == 0;
+        boolean widthExactly = widthMode == MeasureSpec.EXACTLY;
+        boolean heightExactly = heightMode == MeasureSpec.EXACTLY;
 
-        if (widthIsZero && !heightIsZero) {
-            int measuredHeight = resolveSize(heightSize, heightMeasureSpec);
-            int measuredWidth = (int) (measuredHeight * aspectRatio);
-            setMeasuredDimension(measuredWidth, measuredHeight);
+        // 双 EXACTLY：交给系统 / ConstraintLayout
+        if (widthExactly && heightExactly) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
 
-        if (heightIsZero && !widthIsZero) {
-            int measuredWidth = resolveSize(widthSize, widthMeasureSpec);
-            int measuredHeight = (int) (measuredWidth / aspectRatio);
-            setMeasuredDimension(measuredWidth, measuredHeight);
+        // 宽度确定 -> 推导高度
+        if (widthExactly) {
+            int height = (int) (widthSize / aspectRatio);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
 
+        // 高度确定 -> 推导宽度
+        if (heightExactly) {
+            int width = (int) (heightSize * aspectRatio);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
+
+        // 都不确定（wrap_content 等）：交给系统
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
