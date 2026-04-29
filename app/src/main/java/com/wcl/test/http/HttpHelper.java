@@ -1,5 +1,6 @@
 package com.wcl.test.http;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -112,13 +113,21 @@ class HttpHelper {
     }
 
     /**
-     * 判断 Fragment 是否仍处于存活状态（已 detach、remove、isRemoving 或宿主 Activity 销毁均返回 false）
+     * 判断 Fragment 是否仍处于存活状态
      */
     static boolean isFragmentAlive(Fragment fragment) {
         return fragment != null
                 && fragment.isAdded()
+                && fragment.getActivity() != null
                 && !fragment.isDetached()
                 && !fragment.isRemoving()
                 && !AppUtils.isActivityDestroyed(fragment.getActivity());
+    }
+
+    /**
+     * 判断 Activity 是否仍处于存活状态
+     */
+    static boolean isActivityAlive(Context context) {
+        return !AppUtils.isActivityDestroyed(context);
     }
 }

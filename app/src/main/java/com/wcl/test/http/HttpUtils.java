@@ -255,7 +255,7 @@ public class HttpUtils {
      * 统一的异步请求入口，自动切换到主线程回调
      */
     private static void enqueue(Context context, Request request, HttpCallback callback) {
-        enqueue(() -> !AppUtils.isActivityDestroyed(context), request, callback);
+        enqueue(() -> HttpHelper.isActivityAlive(context), request, callback);
     }
 
     /**
