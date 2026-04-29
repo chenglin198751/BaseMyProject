@@ -5,23 +5,17 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.wcl.test.EnvToggle;
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppThreadPoolExecutor;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -40,24 +34,7 @@ public class HttpUtils {
     }
 
     private static final String TAG = "HttpUtils";
-    private static final int TIME_OUT = 15;
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
-
-    static final OkHttpClient CLIENT;
-    static final Set<String> DOWNLOADING_URLS = ConcurrentHashMap.newKeySet();
-
-    static {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
-                .readTimeout(TIME_OUT, TimeUnit.SECONDS)
-                .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
-                .addInterceptor(new HttpRetryInterceptor(1));
-
-        if (!EnvToggle.isDebug()) {
-            builder.proxy(Proxy.NO_PROXY);
-        }
-        CLIENT = builder.build();
-    }
 
     private HttpUtils() {
     }
@@ -208,7 +185,7 @@ public class HttpUtils {
         builder.addFormDataPart(fileKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
         Request request = new Request.Builder().url(url).post(builder.build()).build();
 
-        CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
+        HttpRequestHelper.CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 AppLogUtils.w(TAG, "uploadImage error: " + e);

@@ -27,7 +27,7 @@ class Downloader {
         }
 
         // 正在下载的不再重复下载
-        if (!HttpUtils.DOWNLOADING_URLS.add(url)) {
+        if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
             HttpHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
             return;
         }
@@ -90,7 +90,7 @@ class Downloader {
                                     .addHeader("Range", "bytes=" + rangeStart + "-" + end)
                                     .build();
 
-                            try (Response response = HttpUtils.CLIENT.newCall(request).execute()) {
+                            try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
                                 if (!response.isSuccessful()) return;
 
                                 try (InputStream in = response.body().byteStream()) {
@@ -147,7 +147,7 @@ class Downloader {
                 t.printStackTrace();
                 HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
             } finally {
-                HttpUtils.DOWNLOADING_URLS.remove(url);
+                HttpRequestHelper.DOWNLOADING_URLS.remove(url);
             }
         }).start();
     }
@@ -167,7 +167,7 @@ class Downloader {
             return;
         }
 
-        if (!HttpUtils.DOWNLOADING_URLS.add(url)) {
+        if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
             HttpHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
             return;
         }
@@ -181,7 +181,7 @@ class Downloader {
             builder.addHeader("Range", "bytes=" + downloaded + "-");
         }
 
-        try (Response response = HttpUtils.CLIENT.newCall(builder.build()).execute()) {
+        try (Response response = HttpRequestHelper.CLIENT.newCall(builder.build()).execute()) {
             if (!response.isSuccessful()) {
                 HttpHelper.postToUi(() -> callback.onFinished(false, null, "download fail: " + response));
                 return;
@@ -217,7 +217,7 @@ class Downloader {
         } catch (Throwable t) {
             HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
         } finally {
-            HttpUtils.DOWNLOADING_URLS.remove(url);
+            HttpRequestHelper.DOWNLOADING_URLS.remove(url);
         }
     }
 
