@@ -1,9 +1,12 @@
-# review_uncommitted
+---
+name: review_uncommitted
+description: review当前已发生改动但是未git commit的代码
+---
 
-## Purpose
+## 目标
 review当前已发生改动但是未 git commit 的代码
 
-## Steps
+## 步骤
 1. git status 获取变更文件
 2. git diff 查看未暂存改动
 3. git diff --cached 查看已暂存改动
@@ -14,7 +17,7 @@ review当前已发生改动但是未 git commit 的代码
 - 必须指出具体问题（不要泛泛而谈）
 - 如果没有问题，不要强行找问题，说明“未发现明显问题”并给出依据
 
-## Output
+## 输出要求
 
 - 文件名：
     - 问题：
