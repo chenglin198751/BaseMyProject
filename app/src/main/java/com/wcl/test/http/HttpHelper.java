@@ -4,6 +4,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import androidx.fragment.app.Fragment;
+
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppUtils;
 
@@ -107,5 +109,16 @@ class HttpHelper {
     static String removeUtf8Bom(String input) {
         if (TextUtils.isEmpty(input)) return input;
         return input.charAt(0) == '\ufeff' ? input.substring(1) : input;
+    }
+
+    /**
+     * 判断 Fragment 是否仍处于存活状态（已 detach、remove、isRemoving 或宿主 Activity 销毁均返回 false）
+     */
+    static boolean isFragmentAlive(Fragment fragment) {
+        return fragment != null
+                && fragment.isAdded()
+                && !fragment.isDetached()
+                && !fragment.isRemoving()
+                && !AppUtils.isActivityDestroyed(fragment.getActivity());
     }
 }

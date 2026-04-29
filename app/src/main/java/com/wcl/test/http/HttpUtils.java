@@ -3,6 +3,7 @@ package com.wcl.test.http;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.wcl.test.EnvToggle;
 import com.wcl.test.utils.AppLogUtils;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -67,11 +69,6 @@ public class HttpUtils {
 
     /**
      * 异步 GET 请求（无 Header）
-     *
-     * @param context  Context，用于生命周期安全判断
-     * @param url      请求地址
-     * @param params   GET 参数（会自动追加公共参数）
-     * @param callback 回调（主线程）
      */
     public static void get(
             Context context,
@@ -84,12 +81,6 @@ public class HttpUtils {
 
     /**
      * 异步 GET 请求（支持 Header）
-     *
-     * @param context  Context，用于生命周期安全判断
-     * @param url      请求地址
-     * @param params   GET 参数（会自动追加公共参数）
-     * @param headers  HTTP Header（可为 null）
-     * @param callback 回调（主线程）
      */
     public static void get(
             Context context,
@@ -107,15 +98,70 @@ public class HttpUtils {
         enqueue(context, request, callback);
     }
 
-    /* ======================= POST ======================= */
+    /**
+     * 异步 GET 请求（Fragment 专用，无 Header）
+     */
+    public static void get(
+            Fragment fragment,
+            String url,
+            Map<String, Object> params,
+            HttpCallback callback
+    ) {
+        get(fragment, url, params, null, callback);
+    }
+
+    /**
+     * 异步 GET 请求（Fragment 专用，支持 Header）
+     */
+    public static void get(
+            Fragment fragment,
+            String url,
+            Map<String, Object> params,
+            Map<String, String> headers,
+            HttpCallback callback
+    ) {
+        if (!HttpHelper.isValidUrl(url)) {
+            notifyResult(callback, false, "Invalid URL");
+            return;
+        }
+        String finalUrl = HttpHelper.buildGetUrl(url, withCommonParams(params));
+        Request request = buildRequest(finalUrl, headers).get().build();
+        enqueue(fragment, request, callback);
+    }
+
+    /**
+     * 异步 POST 请求（Fragment 专用，无 Header）
+     */
+    public static void post(
+            Fragment fragment,
+            String url,
+            Map<String, Object> params,
+            HttpCallback callback
+    ) {
+        post(fragment, url, params, null, callback);
+    }
+
+    /**
+     * 异步 POST 请求（Fragment 专用，支持 Header）
+     */
+    public static void post(
+            Fragment fragment,
+            String url,
+            Map<String, Object> params,
+            Map<String, String> headers,
+            HttpCallback callback
+    ) {
+        if (!HttpHelper.isValidUrl(url)) {
+            notifyResult(callback, false, "Invalid URL");
+            return;
+        }
+        FormBody body = HttpHelper.buildFormBody(withCommonParams(params));
+        Request request = buildRequest(url, headers).post(body).build();
+        enqueue(fragment, request, callback);
+    }
 
     /**
      * 异步 POST 请求（无 Header）
-     *
-     * @param context  Context，用于生命周期安全判断
-     * @param url      请求地址
-     * @param params   POST 参数（Form 表单，会自动追加公共参数）
-     * @param callback 回调（主线程）
      */
     public static void post(
             Context context,
@@ -128,12 +174,6 @@ public class HttpUtils {
 
     /**
      * 异步 POST 请求（支持 Header）
-     *
-     * @param context  Context，用于生命周期安全判断
-     * @param url      请求地址
-     * @param params   POST 参数（Form 表单，会自动追加公共参数）
-     * @param headers  HTTP Header（可为 null）
-     * @param callback 回调（主线程）
      */
     public static void post(
             Context context,
@@ -153,11 +193,6 @@ public class HttpUtils {
 
     /**
      * 上传单张图片（异步）
-     *
-     * @param url     上传地址
-     * @param params  表单参数（会自动追加公共参数）
-     * @param fileKey 文件字段名（如 "image"）
-     * @param file    本地文件
      */
     public static void uploadImage(
             String url,
@@ -193,9 +228,6 @@ public class HttpUtils {
 
     /**
      * 异步下载文件（支持断点续传）
-     *
-     * @param url      文件下载地址
-     * @param callback 下载回调（主线程）
      */
     public static void download(String url, DownloadCallback callback) {
         if (!HttpHelper.isValidUrl(url)) {
@@ -207,24 +239,37 @@ public class HttpUtils {
 
     /**
      * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按1%回调）
-     *
-     * @param url      文件下载地址
-     * @param callback 下载回调（主线程）
      */
     public static void fastDownload(String url, DownloadCallback callback) {
         Downloader.fastDownload(url, callback);
     }
 
     /**
+     * 统一的异步请求入口（Fragment 专用），自动切换到主线程回调
+     */
+    private static void enqueue(Fragment fragment, Request request, HttpCallback callback) {
+        enqueue(() -> HttpHelper.isFragmentAlive(fragment), request, callback);
+    }
+
+    /**
      * 统一的异步请求入口，自动切换到主线程回调
      */
     private static void enqueue(Context context, Request request, HttpCallback callback) {
+        enqueue(() -> !AppUtils.isActivityDestroyed(context), request, callback);
+    }
+
+    /**
+     * 核心异步请求入口，自动切换到主线程回调
+     *
+     * @param isAlive 存活检测器，返回 false 时静默丢弃回调（用于 Activity/Fragment 生命周期安全判断）
+     */
+    private static void enqueue(BooleanSupplier isAlive, Request request, HttpCallback callback) {
         CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (AppUtils.isActivityDestroyed(context)) return;
+                if (!isAlive.getAsBoolean()) return;
                 HttpHelper.postToUi(() -> {
-                    if (!AppUtils.isActivityDestroyed(context)) {
+                    if (isAlive.getAsBoolean()) {
                         notifyResult(callback, false, e.toString());
                     }
                 });
@@ -232,14 +277,14 @@ public class HttpUtils {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (AppUtils.isActivityDestroyed(context)) return;
+                if (!isAlive.getAsBoolean()) return;
                 try (response) {
                     boolean ok = response.isSuccessful();
                     String responseContent = response.body().string();
                     final String result = HttpHelper.removeUtf8Bom(ok ? responseContent : response.toString());
                     AppLogUtils.i(TAG, "result:" + result);
                     HttpHelper.postToUi(() -> {
-                        if (!AppUtils.isActivityDestroyed(context)) {
+                        if (isAlive.getAsBoolean()) {
                             notifyResult(callback, ok, result);
                         }
                     });
