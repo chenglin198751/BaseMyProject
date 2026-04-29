@@ -33,13 +33,6 @@ public class GlideImageView extends RoundedBgImageView {
     public void loadImage(Object uri) {
         RequestOptions options = new RequestOptions();
 
-        // 如果 View 已经测量完，指定尺寸，优化 Glide 解码
-        int width = getWidth();
-        int height = getHeight();
-        if (width > 0 && height > 0) {
-            options = options.override(width, height);
-        }
-
         // 仅在 cornerRadius > 0 时添加圆角裁剪
         if (cornerRadius > 0) {
             options = options.transform(new CenterCrop(), new RoundedCorners((int) cornerRadius));
