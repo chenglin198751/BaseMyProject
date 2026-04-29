@@ -223,7 +223,11 @@ public class HttpUtils {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 if (AppUtils.isActivityDestroyed(context)) return;
-                HttpHelper.postToUi(() -> notifyResult(callback, false, e.toString()));
+                HttpHelper.postToUi(() -> {
+                    if (!AppUtils.isActivityDestroyed(context)) {
+                        notifyResult(callback, false, e.toString());
+                    }
+                });
             }
 
             @Override
@@ -234,7 +238,11 @@ public class HttpUtils {
                     String responseContent = response.body().string();
                     final String result = HttpHelper.removeUtf8Bom(ok ? responseContent : response.toString());
                     AppLogUtils.i(TAG, "result:" + result);
-                    HttpHelper.postToUi(() -> notifyResult(callback, ok, result));
+                    HttpHelper.postToUi(() -> {
+                        if (!AppUtils.isActivityDestroyed(context)) {
+                            notifyResult(callback, ok, result);
+                        }
+                    });
                 }
             }
         });
