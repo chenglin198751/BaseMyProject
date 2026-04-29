@@ -12,17 +12,13 @@ import com.wcl.test.utils.AppThreadPoolExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -55,7 +51,7 @@ public class HttpUtils {
                 .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .readTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
-                .addInterceptor(new RetryInterceptor(1));
+                .addInterceptor(new HttpRetryInterceptor(1));
 
         if (!EnvToggle.isDebug()) {
             builder.proxy(Proxy.NO_PROXY);
@@ -89,12 +85,12 @@ public class HttpUtils {
             HttpCallback callback
     ) {
         if (HttpHelper.isInvalidUrl(url)) {
-            notifyResult(callback, false, "Invalid URL");
+            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
             return;
         }
-        String finalUrl = HttpHelper.buildGetUrl(url, withCommonParams(params));
-        Request request = buildRequest(finalUrl, headers).get().build();
-        enqueue(context, request, callback);
+        String finalUrl = HttpHelper.buildGetUrl(url, HttpRequestHelper.withCommonParams(params));
+        Request request = HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
+        HttpRequestHelper.enqueue(context, request, callback);
     }
 
     /**
@@ -120,12 +116,12 @@ public class HttpUtils {
             HttpCallback callback
     ) {
         if (HttpHelper.isInvalidUrl(url)) {
-            notifyResult(callback, false, "Invalid URL");
+            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
             return;
         }
-        String finalUrl = HttpHelper.buildGetUrl(url, withCommonParams(params));
-        Request request = buildRequest(finalUrl, headers).get().build();
-        enqueue(fragment, request, callback);
+        String finalUrl = HttpHelper.buildGetUrl(url, HttpRequestHelper.withCommonParams(params));
+        Request request = HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
+        HttpRequestHelper.enqueue(fragment, request, callback);
     }
 
     /**
@@ -151,12 +147,12 @@ public class HttpUtils {
             HttpCallback callback
     ) {
         if (HttpHelper.isInvalidUrl(url)) {
-            notifyResult(callback, false, "Invalid URL");
+            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
             return;
         }
-        FormBody body = HttpHelper.buildFormBody(withCommonParams(params));
-        Request request = buildRequest(url, headers).post(body).build();
-        enqueue(fragment, request, callback);
+        FormBody body = HttpHelper.buildFormBody(HttpRequestHelper.withCommonParams(params));
+        Request request = HttpRequestHelper.buildRequest(url, headers).post(body).build();
+        HttpRequestHelper.enqueue(fragment, request, callback);
     }
 
     /**
@@ -182,12 +178,12 @@ public class HttpUtils {
             HttpCallback callback
     ) {
         if (HttpHelper.isInvalidUrl(url)) {
-            notifyResult(callback, false, "Invalid URL");
+            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
             return;
         }
-        FormBody body = HttpHelper.buildFormBody(withCommonParams(params));
-        Request request = buildRequest(url, headers).post(body).build();
-        enqueue(context, request, callback);
+        FormBody body = HttpHelper.buildFormBody(HttpRequestHelper.withCommonParams(params));
+        Request request = HttpRequestHelper.buildRequest(url, headers).post(body).build();
+        HttpRequestHelper.enqueue(context, request, callback);
     }
 
     /**
@@ -202,7 +198,7 @@ public class HttpUtils {
         if (HttpHelper.isInvalidUrl(url) || file == null || !file.exists()) {
             return;
         }
-        Map<String, Object> finalParams = withCommonParams(params);
+        Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
         for (Map.Entry<String, Object> entry : finalParams.entrySet()) {
@@ -243,98 +239,5 @@ public class HttpUtils {
         Downloader.fastDownload(url, callback);
     }
 
-    /**
-     * 统一的异步请求入口（Fragment 专用），自动切换到主线程回调
-     */
-    private static void enqueue(Fragment fragment, Request request, HttpCallback callback) {
-        enqueue(() -> HttpHelper.isFragmentAlive(fragment), request, callback);
-    }
 
-    /**
-     * 统一的异步请求入口，自动切换到主线程回调
-     */
-    private static void enqueue(Context context, Request request, HttpCallback callback) {
-        enqueue(() -> HttpHelper.isActivityAlive(context), request, callback);
-    }
-
-    /**
-     * 核心异步请求入口，自动切换到主线程回调
-     *
-     * @param isAlive 存活检测器，返回 false 时静默丢弃回调（用于 Activity/Fragment 生命周期安全判断）
-     */
-    private static void enqueue(BooleanSupplier isAlive, Request request, HttpCallback callback) {
-        CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (!isAlive.getAsBoolean()) return;
-                HttpHelper.postToUi(() -> {
-                    if (isAlive.getAsBoolean()) {
-                        notifyResult(callback, false, e.toString());
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!isAlive.getAsBoolean()) return;
-                try (response) {
-                    boolean ok = response.isSuccessful();
-                    String responseContent = response.body().string();
-                    final String result = HttpHelper.removeUtf8Bom(ok ? responseContent : response.toString());
-                    AppLogUtils.i(TAG, "result:" + result);
-                    HttpHelper.postToUi(() -> {
-                        if (isAlive.getAsBoolean()) {
-                            notifyResult(callback, ok, result);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private static Map<String, Object> withCommonParams(Map<String, Object> params) {
-        Map<String, Object> finalParams = params == null ? new HashMap<>() : new HashMap<>(params);
-        HttpHelper.addCommonParams(finalParams);
-        return finalParams;
-    }
-
-    private static void notifyResult(HttpCallback callback, boolean success, String result) {
-        if (callback != null) {
-            callback.onResult(success, result);
-        }
-    }
-
-    /**
-     * 构建支持 Header 的 Request.Builder
-     */
-    private static Request.Builder buildRequest(String url, Map<String, String> headers) {
-        Request.Builder builder = new Request.Builder().url(url);
-        if (headers != null && !headers.isEmpty()) {
-            builder.headers(Headers.of(headers));
-        }
-        return builder;
-    }
-
-    /**
-     * 简单重试拦截器（仅在请求失败时重试）
-     */
-    private record RetryInterceptor(int maxRetry) implements Interceptor {
-
-        @NonNull
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            long start = System.currentTimeMillis();
-            Request request = chain.request();
-            Response response = chain.proceed(request);
-            int retry = 0;
-            while (!response.isSuccessful() && retry < maxRetry) {
-                retry++;
-                response.close();
-                response = chain.proceed(request);
-            }
-            long end = System.currentTimeMillis();
-            AppLogUtils.v(TAG, "cost:" + (end - start) + "ms" + ",retry:" + retry + ",url:" + request.url());
-            return response;
-        }
-    }
 }
