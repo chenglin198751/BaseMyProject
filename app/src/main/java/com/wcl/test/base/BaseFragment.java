@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.wcl.test.R;
 import com.wcl.test.utils.AppConstants;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.widget.WaitDialog;
 
 /**
@@ -49,9 +50,9 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      * 将事件分发给当前 Fragment 中所有已附加的子 BaseFragment
      */
     private void dispatchEventToFragments(String eventKey, Object data) {
-        for (Fragment childFragment : getChildFragmentManager().getFragments()) {
-            if (childFragment instanceof BaseFragment && childFragment.isAdded()) {
-                ((BaseFragment) childFragment).onEvent(eventKey, data);
+        for (Fragment f : getChildFragmentManager().getFragments()) {
+            if (f instanceof BaseFragment && !AppUtils.isFragmentDestroyed(f)) {
+                ((BaseFragment) f).onEvent(eventKey, data);
             }
         }
     }

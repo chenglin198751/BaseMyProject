@@ -204,9 +204,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      */
     private void dispatchEventToFragments(String eventKey, Object data) {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        for (Fragment fragment : fragments) {
-            if (fragment instanceof BaseFragment && fragment.isAdded()) {
-                ((BaseFragment) fragment).onEvent(eventKey, data);
+        for (Fragment f : fragments) {
+            if (f instanceof BaseFragment && !AppUtils.isFragmentDestroyed(f)) {
+                ((BaseFragment) f).onEvent(eventKey, data);
             }
         }
     }
