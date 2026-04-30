@@ -14,7 +14,7 @@ import java.util.List;
  * weichenglin create in 15/9/17
  */
 public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewAdapter.BaseRecyclerViewHolder> {
-    protected final List<T> list = new ArrayList<>();
+    private final List<T> list = new ArrayList<>();
 
     @Override
     public int getItemCount() {
@@ -49,7 +49,7 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     }
 
     public List<T> getData() {
-        return new ArrayList<>(list);
+        return list;
     }
 
     @MainThread
