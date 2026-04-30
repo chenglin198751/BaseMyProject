@@ -62,7 +62,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     @Override
     public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContentView = (RelativeLayout) inflater.inflate(R.layout.base_fragment_layout, container, false);
-        mBaseViewHelper = new BaseViewHelper(getContext(), container);
+        mBaseViewHelper = new BaseViewHelper(getContext(), mContentView);
         return mContentView;
     }
 
@@ -73,7 +73,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         super.onViewCreated(view, savedInstanceState);
 
         if (getContentLayout() > 0) {
-            View content = LayoutInflater.from(getContext()).inflate(getContentLayout(), mContentView, false);
+            View content = LayoutInflater.from(view.getContext()).inflate(getContentLayout(), mContentView, false);
             mContentView.addView(content, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else if (getContentView() != null) {
             mContentView.addView(getContentView(), new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
