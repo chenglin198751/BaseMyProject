@@ -53,6 +53,7 @@ public class HttpUtils {
 
     /**
      * 异步 GET 请求
+     * <p>
      * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
      */
     private static void get(
@@ -85,6 +86,7 @@ public class HttpUtils {
 
     /**
      * 异步 GET 请求（Fragment 专用）
+     * <p>
      * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
      */
     private static void get(
@@ -117,6 +119,7 @@ public class HttpUtils {
 
     /**
      * 异步 POST 请求（Fragment 专用）
+     * <p>
      * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
      */
     private static void post(
@@ -149,6 +152,7 @@ public class HttpUtils {
 
     /**
      * 异步 POST 请求
+     * <p>
      * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
      */
     private static void post(
@@ -165,6 +169,60 @@ public class HttpUtils {
         FormBody body = HttpHelper.buildFormBody(HttpRequestHelper.withCommonParams(params));
         Request request = HttpRequestHelper.buildRequest(url, headers).post(body).build();
         HttpRequestHelper.enqueue(context, request, callback);
+    }
+
+    /**
+     * 同步 GET 请求，直接阻塞当前线程直到请求完成。
+     * <p>
+     * 注意：必须在子线程中调用，可搭配工程内线程池 AppThreadPoolExecutor 使用
+     */
+    public static String syncGet(
+            String url,
+            Map<String, Object> params,
+            Map<String, String> headers
+    ) {
+        if (HttpHelper.isInvalidUrl(url)) {
+            return null;
+        }
+        String finalUrl = HttpHelper.buildGetUrl(url, HttpRequestHelper.withCommonParams(params));
+        Request request = HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
+        try (okhttp3.Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return HttpHelper.removeUtf8Bom(response.body().string());
+            } else {
+                AppLogUtils.w(TAG, "getSync response.isSuccessful()=false");
+            }
+        } catch (IOException e) {
+            AppLogUtils.w(TAG, "getSync error: " + e);
+        }
+        return null;
+    }
+
+    /**
+     * 同步 POST 请求，直接阻塞当前线程直到请求完成。
+     * <p>
+     * 注意：必须在子线程中调用，可搭配工程内线程池 AppThreadPoolExecutor 使用
+     */
+    public static String syncPost(
+            String url,
+            Map<String, Object> params,
+            Map<String, String> headers
+    ) {
+        if (HttpHelper.isInvalidUrl(url)) {
+            return null;
+        }
+        FormBody body = HttpHelper.buildFormBody(HttpRequestHelper.withCommonParams(params));
+        Request request = HttpRequestHelper.buildRequest(url, headers).post(body).build();
+        try (okhttp3.Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return HttpHelper.removeUtf8Bom(response.body().string());
+            } else {
+                AppLogUtils.w(TAG, "syncPost response.isSuccessful()=false");
+            }
+        } catch (IOException e) {
+            AppLogUtils.w(TAG, "syncPost error: " + e);
+        }
+        return null;
     }
 
     /**
