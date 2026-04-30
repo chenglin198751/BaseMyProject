@@ -23,27 +23,6 @@ public class EventBus {
         return InstanceHolder.INSTANCE;
     }
 
-
-    /**
-     * 注册监听者
-     */
-    void register(OnEventBusListener observer) {
-        if (observer == null) {
-            throw new IllegalArgumentException("Observer cannot be null when registering.");
-        }
-        observers.addIfAbsent(observer);
-    }
-
-    /**
-     * 取消注册监听者
-     */
-    void unregister(OnEventBusListener observer) {
-        if (observer == null) {
-            throw new IllegalArgumentException("Observer cannot be null when unregistering.");
-        }
-        observers.remove(observer);
-    }
-
     /**
      * 发送事件（主线程分发）
      */
@@ -56,15 +35,31 @@ public class EventBus {
     }
 
     /**
+     * 注册监听者。不对外，只在BaseActivity中使用
+     */
+    void register(OnEventBusListener observer) {
+        if (observer == null) {
+            throw new IllegalArgumentException("Observer cannot be null when registering.");
+        }
+        observers.addIfAbsent(observer);
+    }
+
+    /**
+     * 取消注册监听者。不对外，只在BaseActivity中使用
+     */
+    void unregister(OnEventBusListener observer) {
+        if (observer == null) {
+            throw new IllegalArgumentException("Observer cannot be null when unregistering.");
+        }
+        observers.remove(observer);
+    }
+    
+    /**
      * 内部分发逻辑
      */
     private void dispatch(String eventKey, Object data) {
         for (OnEventBusListener observer : observers) {
-            try {
-                observer.onEvent(eventKey, data);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            observer.onEvent(eventKey, data);
         }
     }
 }
