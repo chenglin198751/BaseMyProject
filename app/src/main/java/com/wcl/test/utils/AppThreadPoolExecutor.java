@@ -1,10 +1,8 @@
 package com.wcl.test.utils;
 
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 通用线程池工具类
@@ -32,7 +30,6 @@ public class AppThreadPoolExecutor {
                             KEEP_ALIVE_SECONDS,
                             TimeUnit.SECONDS,
                             new LinkedBlockingQueue<>(QUEUE_CAPACITY),
-                            new NamedThreadFactory("AppPool-"),
                             new ThreadPoolExecutor.AbortPolicy()
                     );
                     executor.allowCoreThreadTimeOut(false);
@@ -70,29 +67,4 @@ public class AppThreadPoolExecutor {
         }
     }
 
-    /**
-     * 线程工厂：统一线程命名
-     */
-    static class NamedThreadFactory implements ThreadFactory {
-
-        private final String prefix;
-        private final AtomicInteger index = new AtomicInteger(1);
-
-        NamedThreadFactory(String prefix) {
-            this.prefix = prefix;
-        }
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, prefix + "thread-" + index.getAndIncrement());
-            thread.setDaemon(false);
-
-            // 防止线程内异常被吞
-            thread.setUncaughtExceptionHandler((t, e) -> {
-                e.printStackTrace();
-            });
-
-            return thread;
-        }
-    }
 }
