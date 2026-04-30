@@ -23,8 +23,8 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.wcl.test.R;
 import com.wcl.test.helper.MainTitleHelper;
-import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.AppConstants;
+import com.wcl.test.utils.AppUtils;
 import com.wcl.test.widget.WaitDialog;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (onKeepSingleActivity()) {
             EventBus.post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
         }
-        registerBroadcastReceiver();
+        EventBus.instance().register(this);
 
         setContentView(R.layout.base_activity_layout);
         mBaseRootView = findViewById(R.id.base_root);
@@ -211,19 +211,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
     }
 
-    private void registerBroadcastReceiver() {
-        EventBus.instance().register(this);
-    }
-
-    private void unregisterBroadcastReceiver() {
-        EventBus.instance().unregister(this);
-    }
-
     @CallSuper
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterBroadcastReceiver();
+        EventBus.instance().unregister(this);
     }
 
     @Override
