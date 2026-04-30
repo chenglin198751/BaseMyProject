@@ -108,7 +108,8 @@ gradlew.bat test
 | `getTopActivity()`                | 获取当前栈顶 Activity（可能为 null）     |
 | `isAppInForeground()`             | 判断 App 是否处于前台                 |
 | `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity      |
-| `isActivityDestroyed(Context)`    | 判断 Activity 是否已销毁或正在 finish   |
+| `isActivityDestroyed(Context)`    | 判断 Activity 是否被销毁             |
+| `isFragmentDestroyed`             | 判断 Fragment 是否被销毁             |
 | `getString(int)`                  | 通过资源 ID 获取字符串                 |
 | `md5(String)`                     | 对字符串进行 MD5 加密                 |
 | `getUiHandler()`                  | 获取全局主线程 Handler               |
