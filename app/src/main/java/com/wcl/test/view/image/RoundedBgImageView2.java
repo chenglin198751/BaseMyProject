@@ -18,7 +18,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import com.wcl.test.R;
 
 /**
- * 圆角/圆形图片视图，支持背景色、边框和宽高比（View是被裁剪的纯圆角）
+ * 圆角/圆形图片视图，支持背景色、边框和宽高比（View是真正被裁剪的圆角）
  */
 class RoundedBgImageView2 extends AppCompatImageView implements IRoundedMethod {
 
