@@ -216,6 +216,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     protected void onDestroy() {
         super.onDestroy();
         EventBus.instance().unregister(this);
+
+        if (mWaitDialog != null) {
+            mWaitDialog.dismiss();
+            mWaitDialog = null;
+        }
     }
 
     @Override
