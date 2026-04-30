@@ -1,6 +1,5 @@
 package com.wcl.test.http;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
@@ -117,20 +116,7 @@ class HttpHelper {
      * 判断 Fragment 是否仍处于存活状态
      */
     static boolean isFragmentAlive(Fragment fragment) {
-        if (fragment == null) return false;
-
-        Activity activity = fragment.getActivity();
-        if (activity == null) return false;
-
-        if (AppUtils.isActivityDestroyed(activity)) return false;
-
-        // Fragment 必须已经 attach
-        if (!fragment.isAdded()) return false;
-
-        // View 生命周期层面（关键）
-        if (fragment.getView() == null) return false;
-
-        return true;
+        return !AppUtils.isFragmentDestroyed(fragment);
     }
 
     /**

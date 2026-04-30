@@ -26,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.wcl.test.BuildConfig;
 import com.wcl.test.base.BaseApp;
@@ -354,12 +355,31 @@ public class AppUtils {
     }
 
     /**
-     * 判断Activity是否finish
+     * 判断Activity是否被销毁
      */
     public static boolean isActivityDestroyed(Context context) {
         Activity activity = getActivityFromContext(context);
         return activity == null || activity.isDestroyed() || activity.isFinishing();
     }
+
+    /**
+     * 判断Fragment是否被销毁
+     */
+    public static boolean isFragmentDestroyed(Fragment fragment) {
+        if (fragment == null) return true;
+
+        Activity activity = fragment.getActivity();
+        if (activity == null) return true;
+
+        if (activity.isFinishing() || activity.isDestroyed()) return true;
+
+        if (fragment.isRemoving()) return true;
+        if (fragment.getView() == null) return true;
+        if (!fragment.isAdded()) return true;
+
+        return false;
+    }
+
 
     /**
      * 重启应用
