@@ -1,5 +1,6 @@
 package com.wcl.test.http;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -63,6 +64,11 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
+        // 为了保证UI安全，context不能传Application
+        if (context instanceof Application) {
+            throw new IllegalArgumentException("Application context not allowed. Use Activity context");
+        }
+
         if (HttpHelper.isInvalidUrl(url)) {
             HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
             return;
@@ -162,6 +168,11 @@ public class HttpUtils {
             Map<String, String> headers,
             HttpCallback callback
     ) {
+        // 为了保证UI安全，context不能传Application
+        if (context instanceof Application) {
+            throw new IllegalArgumentException("Application context not allowed. Use Activity context");
+        }
+
         if (HttpHelper.isInvalidUrl(url)) {
             HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
             return;
