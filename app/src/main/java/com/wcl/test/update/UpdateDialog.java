@@ -129,7 +129,7 @@ public class UpdateDialog extends Dialog {
      * 检查更新
      */
     public void checkUpdate() {
-        HttpUtils.post(mActivity, HttpUrls.check_update, null, null, (success, result) -> {
+        HttpUtils.post(mActivity, HttpUrls.check_update, null, (success, result) -> {
             if (success) {
                 HcxUpdateModel model = AppConstants.gson.fromJson(result, HcxUpdateModel.class);
                 if (model == null || model.data == null) {
