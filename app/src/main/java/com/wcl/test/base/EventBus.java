@@ -56,13 +56,6 @@ public class EventBus {
     }
 
     /**
-     * 延迟发送事件（主线程分发）
-     */
-    public static void postDelay(String eventKey, Object data, long delayMillis) {
-        MAIN_HANDLER.postDelayed(() -> instance().dispatch(eventKey, data), delayMillis);
-    }
-
-    /**
      * 内部分发逻辑
      */
     private void dispatch(String eventKey, Object data) {
@@ -73,19 +66,5 @@ public class EventBus {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * 清除所有监听者
-     */
-    public void clear() {
-        observers.clear();
-    }
-
-    /**
-     * 获取当前注册监听者数量（调试用）
-     */
-    public int getObserverCount() {
-        return observers.size();
     }
 }
