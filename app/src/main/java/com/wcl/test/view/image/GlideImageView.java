@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.wcl.test.GlideApp;
 
 public class GlideImageView extends RoundedBgImageView {
+    private final ColorDrawable placeholder = new ColorDrawable(0x99e8e8e8);
 
     public GlideImageView(Context context) {
         super(context);
@@ -45,12 +46,11 @@ public class GlideImageView extends RoundedBgImageView {
 
 
     public void loadImage(Object uri, RequestOptions options) {
-        ColorDrawable d = new ColorDrawable(0x99e8e8e8);
         GlideApp.with(this)
                 .load(uri)
                 .apply(options)
-                .placeholder(d)
-                .error(d)
+                .placeholder(placeholder)
+                .error(placeholder)
                 .into(this);
     }
 
