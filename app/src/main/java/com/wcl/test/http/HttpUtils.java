@@ -40,9 +40,22 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 GET 请求（headers可以传null）
+     * 异步 GET 请求
      */
     public static void get(
+            Context context,
+            String url,
+            Map<String, Object> params,
+            HttpCallback callback
+    ) {
+        get(context, url, params, null, callback);
+    }
+
+    /**
+     * 异步 GET 请求
+     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
+     */
+    private static void get(
             Context context,
             String url,
             Map<String, Object> params,
@@ -59,9 +72,22 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 GET 请求（Fragment 专用，headers可以传null）
+     * 异步 GET 请求（Fragment 专用）
      */
     public static void get(
+            Fragment fragment,
+            String url,
+            Map<String, Object> params,
+            HttpCallback callback
+    ) {
+        get(fragment, url, params, null, callback);
+    }
+
+    /**
+     * 异步 GET 请求（Fragment 专用）
+     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
+     */
+    private static void get(
             Fragment fragment,
             String url,
             Map<String, Object> params,
@@ -78,9 +104,22 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 POST 请求（Fragment 专用，headers可以传null）
+     * 异步 POST 请求（Fragment 专用）
      */
     public static void post(
+            Fragment fragment,
+            String url,
+            Map<String, Object> params,
+            HttpCallback callback
+    ) {
+        post(fragment, url, params, null, callback);
+    }
+
+    /**
+     * 异步 POST 请求（Fragment 专用）
+     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
+     */
+    private static void post(
             Fragment fragment,
             String url,
             Map<String, Object> params,
@@ -97,9 +136,22 @@ public class HttpUtils {
     }
 
     /**
-     * 异步 POST 请求（headers可以传null）
+     * 异步 POST 请求
      */
     public static void post(
+            Context context,
+            String url,
+            Map<String, Object> params,
+            HttpCallback callback
+    ) {
+        post(context, url, params, null, callback);
+    }
+
+    /**
+     * 异步 POST 请求
+     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
+     */
+    private static void post(
             Context context,
             String url,
             Map<String, Object> params,
