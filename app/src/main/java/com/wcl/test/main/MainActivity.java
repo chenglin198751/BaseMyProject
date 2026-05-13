@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     };
 
     private ShowFragmentHelper mFragHelper;
-    private ActivityMainBinding mViewBinding;
+    private ActivityMainBinding mBinding;
     private long mLastBackPressTime = 0;
     private static final long BACK_EXIT_INTERVAL = 3000L;
     private View[] mTabViews;
@@ -51,8 +51,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewBinding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentLayout(mViewBinding.getRoot());
+        mBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentLayout(mBinding.getRoot());
         getTitleHelper().hideTitleBar();
 
         mFragHelper = new ShowFragmentHelper(getSupportFragmentManager(), FRAGMENTS);
@@ -64,7 +64,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void initBottomTabs() {
         mTabViews = new View[TAB_BOTTOM_ID_ARRAY.length];
         for (int index = 0; index < TAB_BOTTOM_ID_ARRAY.length; index++) {
-            View tabView = mViewBinding.bottomTab.findViewById(TAB_BOTTOM_ID_ARRAY[index]);
+            View tabView = mBinding.bottomTab.findViewById(TAB_BOTTOM_ID_ARRAY[index]);
             tabView.setOnClickListener(this);
             mTabViews[index] = tabView;
 
