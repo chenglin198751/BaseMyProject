@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 import com.wcl.test.R;
+import com.wcl.test.databinding.BaseFragmentLayoutBinding;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.widget.WaitDialog;
@@ -25,6 +26,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     protected static final Gson gson = AppConstants.gson;
 
     private BaseViewHelper mBaseViewHelper;
+    private BaseFragmentLayoutBinding mBinding;
     private RelativeLayout mContentView;
     private ViewGroup mNestedParentView;
     private boolean isFirstLoad = false;
@@ -61,7 +63,8 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     @Deprecated
     @Override
     public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mContentView = (RelativeLayout) inflater.inflate(R.layout.base_fragment_layout, container, false);
+        mBinding = BaseFragmentLayoutBinding.inflate(inflater, container, false);
+        mContentView = mBinding.getRoot();
         mBaseViewHelper = new BaseViewHelper(getContext(), mContentView);
         return mContentView;
     }
@@ -103,6 +106,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         }
         mContentView = null;
         mNestedParentView = null;
+        mBinding = null;
     }
 
     protected abstract int getContentLayout();

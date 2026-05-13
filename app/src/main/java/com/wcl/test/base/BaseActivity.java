@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 import com.wcl.test.R;
+import com.wcl.test.databinding.BaseActivityLayoutBinding;
 import com.wcl.test.helper.MainTitleHelper;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.AppUtils;
@@ -38,6 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     public static final String CLASS_NAME = "MainActivity";
     protected static final Gson gson = AppConstants.gson;
 
+    private BaseActivityLayoutBinding mBinding;
     private MainTitleHelper mTitleHelper;
     private BaseViewHelper mBaseViewHelper;
     private WaitDialog mWaitDialog;
@@ -57,8 +59,10 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
         EventBus.instance().register(this);
 
-        setContentView(R.layout.base_activity_layout);
-        mBaseRootView = findViewById(R.id.base_root);
+        mBinding = BaseActivityLayoutBinding.inflate(getLayoutInflater());
+        mBaseRootView = mBinding.getRoot();
+        setContentView(mBaseRootView);
+
         mTitleHelper = new MainTitleHelper(this);
         mBaseViewHelper = new BaseViewHelper(this, mBaseRootView);
 
