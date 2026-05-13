@@ -92,6 +92,19 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         }
     }
 
+    @CallSuper
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (mBaseViewHelper != null) {
+            mBaseViewHelper.destroy();
+            mBaseViewHelper = null;
+        }
+        mContentView = null;
+        mNestedParentView = null;
+    }
+
     protected abstract int getContentLayout();
 
     protected View getContentView() {
