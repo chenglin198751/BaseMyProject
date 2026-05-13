@@ -188,15 +188,17 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY.equals(eventKey) && onKeepSingleActivity()) {
             if (getClass().getName().equals(data)) {
                 finish();
+                return;
             }
         } else if (EventAction.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(eventKey)) {
             if (!getClass().getSimpleName().equals(CLASS_NAME)) {
                 finish();
+                return;
             }
-        } else {
-            //通知Activity里面所有的fragment接收广播
-            dispatchEventToFragments(eventKey, data);
         }
+
+        // 通知Activity里面所有的fragment接收广播
+        dispatchEventToFragments(eventKey, data);
     }
 
     /**
