@@ -2,20 +2,25 @@ package com.wcl.test.main
 
 import android.os.Bundle
 import android.view.View
-import com.wcl.test.R
 import com.wcl.test.base.BaseFragment
+import com.wcl.test.base.viewBinding
+import com.wcl.test.databinding.MainFourthFragLayoutBinding
 
 /**
  * Created by chenglin on 2017-9-14.
  */
 class MainFourthFragment : BaseFragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val binding by viewBinding(MainFourthFragLayoutBinding::inflate)
 
     override fun getContentLayout(): Int {
-        return R.layout.main_fourth_frag_layout
+        return 0
     }
 
-    public override fun onViewCreated(savedInstanceState: Bundle?, view: View?) {}
+    override fun getContentView(): View {
+        return binding.root
+    }
+
+    override fun onViewCreated(savedInstanceState: Bundle?, view: View?) {
+        // 直接使用 binding 即可
+    }
 }
