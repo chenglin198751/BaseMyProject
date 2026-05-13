@@ -22,8 +22,6 @@ public class MainFirstFragment extends BaseFragment {
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
-        mBinding = MainFirstFragLayoutBinding.bind(((ViewGroup) view).getChildAt(0));
-
         mBinding.viewLeft.setOnClickListener(v -> {
 
 //
@@ -41,7 +39,19 @@ public class MainFirstFragment extends BaseFragment {
 
     @Override
     protected int getContentLayout() {
-        return R.layout.main_first_frag_layout;
+        return 0;
+    }
+
+    @Override
+    protected View getContentView() {
+        mBinding = MainFirstFragLayoutBinding.inflate(getLayoutInflater());
+        return mBinding.getRoot();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mBinding = null;
     }
 
 
