@@ -31,9 +31,9 @@ class DownloadDBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 " ("
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "task_id TEXT UNIQUE, "
-                + "task_json TEXT, "
-                + "create_time INTEGER DEFAULT (strftime('%s','now') * 1000)"
+                + "task_id TEXT NOT NULL UNIQUE, "
+                + "task_json TEXT NOT NULL, "
+                + "create_time INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)"
                 + ")");
     }
 
@@ -62,8 +62,12 @@ class DownloadDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json"}, "task_id=?", new String[]{taskId}, null, null, null)) {
             if (c.moveToFirst()) {
-                String json = c.getString(0);
-                return gson.fromJson(json, DownloadTask.class);
+                try {
+                    String json = c.getString(0);
+                    return gson.fromJson(json, DownloadTask.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
@@ -74,8 +78,12 @@ class DownloadDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json"}, null, null, null, null, null)) {
             while (c.moveToNext()) {
-                String json = c.getString(0);
-                list.add(gson.fromJson(json, DownloadTask.class));
+                try {
+                    String json = c.getString(0);
+                    list.add(gson.fromJson(json, DownloadTask.class));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         return list;
