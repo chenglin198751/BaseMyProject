@@ -34,7 +34,8 @@ class DownloadDBHelper extends SQLiteOpenHelper {
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "task_id TEXT NOT NULL UNIQUE, "
                 + "task_json TEXT NOT NULL, "
-                + "create_time INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)"
+                + "create_time INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000), "
+                + "update_time INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)"
                 + ")");
     }
 
@@ -43,14 +44,19 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     }
 
     public void saveTask(DownloadTask task) {
+        if (task == null || task.taskId == null || task.taskId.isEmpty()) {
+            return;
+        }
+
         SQLiteDatabase db = getWritableDatabase();
-        // 先尝试更新，只更新 task_json 字段，不改变 _id 和 create_time
+        // 先尝试更新，只更新 task_json 和 update_time 字段，不改变 _id 和 create_time
         ContentValues updateCv = new ContentValues();
         String task_json = gson.toJson(task);
         updateCv.put("task_json", task_json);
+        updateCv.put("update_time", System.currentTimeMillis());
         int rows = db.update(TABLE_NAME, updateCv, "task_id=?", new String[]{task.taskId});
 
-        // 如果不存在则插入（_id 自增，create_time 由 DEFAULT 自动填充）
+        // 如果不存在则插入（_id 自增，create_time 由 DEFAULT 自动填充，update_time 留空）
         if (rows == 0) {
             ContentValues cv = new ContentValues();
             cv.put("task_id", task.taskId);
