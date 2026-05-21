@@ -77,7 +77,7 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     public List<DownloadTask> loadAllTasks() {
         List<DownloadTask> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json"}, null, null, null, null, null)) {
+        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json"}, null, null, null, null, "_id DESC")) {
             while (c.moveToNext()) {
                 try {
                     String json = c.getString(0);
