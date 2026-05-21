@@ -29,7 +29,7 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
-                " (`key` TEXT PRIMARY KEY, value TEXT)");
+                " (_id INTEGER PRIMARY KEY AUTOINCREMENT, `key` TEXT UNIQUE, value TEXT)");
 
     }
 
