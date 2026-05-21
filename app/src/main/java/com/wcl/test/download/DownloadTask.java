@@ -20,6 +20,11 @@ public class DownloadTask {
     public final String url;
     public final String savePath;
 
+    // 数据库自增字段
+    public long _id;
+    public long create_time;
+    public long update_time;
+
     // 以下是可变状态（只允许 DownloadWorker 改）
     public volatile long totalBytes;
     public volatile Status status;
