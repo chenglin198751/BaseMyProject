@@ -29,8 +29,12 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
-                " (_id INTEGER PRIMARY KEY AUTOINCREMENT, `key` TEXT UNIQUE, value TEXT)");
-
+                " ("
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "task_id TEXT UNIQUE, "
+                + "task_json TEXT, "
+                + "create_time INTEGER DEFAULT (strftime('%s','now') * 1000)"
+                + ")");
     }
 
     @Override
@@ -39,15 +43,24 @@ class DownloadDBHelper extends SQLiteOpenHelper {
 
     public void saveTask(DownloadTask task) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("key", task.taskId);
-        cv.put("value", gson.toJson(task));
-        db.insertWithOnConflict(TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+        // 先尝试更新，只更新 task_json 字段，不改变 _id 和 create_time
+        ContentValues updateCv = new ContentValues();
+        String task_json = gson.toJson(task);
+        updateCv.put("task_json", task_json);
+        int rows = db.update(TABLE_NAME, updateCv, "task_id=?", new String[]{task.taskId});
+
+        // 如果不存在则插入（_id 自增，create_time 由 DEFAULT 自动填充）
+        if (rows == 0) {
+            ContentValues cv = new ContentValues();
+            cv.put("task_id", task.taskId);
+            cv.put("task_json", task_json);
+            db.insert(TABLE_NAME, null, cv);
+        }
     }
 
     public DownloadTask loadTask(String taskId) {
         SQLiteDatabase db = getReadableDatabase();
-        try (Cursor c = db.query(TABLE_NAME, new String[]{"value"}, "key=?", new String[]{taskId}, null, null, null)) {
+        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json"}, "task_id=?", new String[]{taskId}, null, null, null)) {
             if (c.moveToFirst()) {
                 String json = c.getString(0);
                 return gson.fromJson(json, DownloadTask.class);
@@ -59,7 +72,7 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     public List<DownloadTask> loadAllTasks() {
         List<DownloadTask> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        try (Cursor c = db.query(TABLE_NAME, new String[]{"value"}, null, null, null, null, null)) {
+        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json"}, null, null, null, null, null)) {
             while (c.moveToNext()) {
                 String json = c.getString(0);
                 list.add(gson.fromJson(json, DownloadTask.class));
@@ -70,6 +83,6 @@ class DownloadDBHelper extends SQLiteOpenHelper {
 
     public void deleteTask(String taskId) {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_NAME, "key=?", new String[]{taskId});
+        db.delete(TABLE_NAME, "task_id=?", new String[]{taskId});
     }
 }
