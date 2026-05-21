@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.google.gson.Gson;
 import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppConstants;
+import com.wcl.test.utils.AppLogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,7 @@ class DownloadDBHelper extends SQLiteOpenHelper {
                     String json = c.getString(0);
                     return gson.fromJson(json, DownloadTask.class);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
                 }
             }
             return null;
@@ -82,7 +83,7 @@ class DownloadDBHelper extends SQLiteOpenHelper {
                     String json = c.getString(0);
                     list.add(gson.fromJson(json, DownloadTask.class));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
                 }
             }
         }
