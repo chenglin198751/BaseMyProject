@@ -13,17 +13,16 @@ public class DownloadTask {
 
     // 以下是 UI 层使用，不参与序列化
     public transient boolean isSelected;
-    public transient boolean lastNotifiedStatus;
 
     // 以下是不可被修改变量
     public final String taskId;
     public final String url;
     public final String savePath;
 
-    // 数据库自增字段
-    public long _id;
-    public long create_time;
-    public long update_time;
+    // 数据库自增字段，不参与序列化
+    public transient long _id;
+    public transient long create_time;
+    public transient long update_time;
 
     // 以下是可变状态（只允许 DownloadWorker 改）
     public volatile long totalBytes;
@@ -32,8 +31,8 @@ public class DownloadTask {
     public volatile long downloadedBytes;
     public volatile double progress;
 
-    // 下载任务携带的扩展信息json，比如app_info之类
-    public String extra;
+    // 扩展信息，比如应用详情json之类，不参与序列化
+    public transient String extra;
 
     public DownloadTask(String taskId,
                         String url,
