@@ -32,6 +32,9 @@ public class DownloadTask {
     public volatile long downloadedBytes;
     public volatile double progress;
 
+    // 下载任务携带的扩展信息json，比如app_info之类
+    public String extra;
+
     public DownloadTask(String taskId,
                         String url,
                         String savePath) {
