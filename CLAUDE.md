@@ -13,13 +13,18 @@ BaseMyProject 是一个 Android 应用测试项目，用于验证和调试常用
 ## 构建命令
 
 ```bash
-# 在 Windows 上使用 gradlew.bat
-gradlew.bat clean              # 清理构建
-gradlew.bat assembleDebug      # 构建 Debug APK
-gradlew.bat assembleRelease    # 构建 Release APK
+# Claude Code 使用（Bash 工具基于 git bash，用这个）
+bash gradlew assembleDebug
+bash gradlew assembleRelease
+bash gradlew clean
+bash gradlew test
 
-# 运行测试
-gradlew.bat test
+# Windows CMD / PowerShell（用户终端直接用）
+gradlew.bat assembleDebug
+.\gradlew.bat assembleDebug
+
+# Git Bash / Linux / macOS
+./gradlew assembleDebug
 ```
 
 ## 架构概览
