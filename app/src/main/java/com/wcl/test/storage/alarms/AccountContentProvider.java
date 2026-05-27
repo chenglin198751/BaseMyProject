@@ -147,7 +147,6 @@ public class AccountContentProvider {
                 }
                 return readStream(is);
             }
-
         } catch (Exception e) {
             Log.e(TAG, "readByMediaStore error", e);
             return null;
@@ -177,7 +176,6 @@ public class AccountContentProvider {
             }
         } catch (Exception e) {
             Log.e(TAG, "findFileUri error", e);
-
         }
 
         return null;
@@ -198,7 +196,6 @@ public class AccountContentProvider {
                 fos.write(content.getBytes(StandardCharsets.UTF_8));
                 fos.flush();
             }
-
             Log.i(TAG, "写入成功: " + file.getAbsolutePath());
             return Uri.fromFile(file);
         } catch (Exception e) {
