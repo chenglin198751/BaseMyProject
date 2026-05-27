@@ -9,8 +9,8 @@ BaseMyProject 是一个 Android 应用测试项目，用于验证和调试常用
 
 ## 注意事项
 
-- 默认使用中文交流与代码注释，除非用户明确要求英文。
-- 禁止使用 PowerShell 命令，可使用 cmd、Python 或 Git Bash。
+- 默认使用中文交流与代码注释
+- 禁止使用 PowerShell，优先使用 Git Bash，也可使用 cmd 或 Python
 
 ## 构建命令
 
