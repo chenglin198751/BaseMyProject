@@ -20,152 +20,224 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * AccountContentProvider
- * 用于通过 MediaStore 在公共 Alarms 目录中读写共享账户数据文件，
- * 支持 Android 各版本的兼容性处理，无需存储权限。
+ * 用于在公共 Alarms 目录中读写共享数据
+ * Android 10+ 使用 MediaStore
+ * Android 9 及以下使用 File
  */
 public class AccountContentProvider {
 
     private static final String TAG = "AccountContentProvider";
-    private static final String ALARM_MP3_NAME = "account_data_alarm.mp3";
+
+    // 文件名（故意伪装 mp3）
+    private static final String FILE_NAME = "account_data_alarm.mp3";
+
+    private AccountContentProvider() {
+    }
 
     /**
-     * 向公共 Alarms 目录写入文本内容（兼容所有 Android 版本）
-     *
-     * @param context Context
-     * @param content 要写入的文本内容（UTF-8 编码）
-     * @return 新文件的 Uri（失败返回 null）
+     * 写入数据
      */
-    public static Uri writeToAlarmsDir(Context context, String content) {
+    public static synchronized Uri writeToAlarmsDir(Context context, String content) {
+        if (context == null) {
+            return null;
+        }
+
+        if (content == null) {
+            content = "";
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // ✅ Android 10+ 使用 MediaStore 方式
-            ContentResolver resolver = context.getContentResolver();
-            ContentValues values = new ContentValues();
-
-            values.put(MediaStore.Audio.Media.DISPLAY_NAME, ALARM_MP3_NAME);
-            values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg");
-            values.put(MediaStore.Audio.Media.IS_ALARM, 1);
-            values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Alarms/");
-
-            Uri uri = null;
-            try {
-                uri = resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
-                if (uri == null) {
-                    Log.e(TAG, "插入 MediaStore 失败");
-                    return null;
-                }
-
-                try (OutputStream os = resolver.openOutputStream(uri)) {
-                    if (os != null) {
-                        if (content != null && !content.isEmpty()) {
-                            os.write(content.getBytes(StandardCharsets.UTF_8));
-                        } else {
-                            os.write(new byte[]{0});
-                        }
-                        os.flush();
-                    }
-                }
-                Log.i(TAG, "写入成功 (Q+): " + uri);
-                return uri;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (uri != null) resolver.delete(uri, null, null);
-                return null;
-            }
+            return writeByMediaStore(context, content);
         } else {
-            // ⚙️ Android 9 及以下版本使用传统文件方式（需要 WRITE_EXTERNAL_STORAGE 权限）
-            try {
-                File alarmsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
-                if (!alarmsDir.exists()) alarmsDir.mkdirs();
-
-                File file = new File(alarmsDir, ALARM_MP3_NAME);
-                try (FileOutputStream fos = new FileOutputStream(file)) {
-                    if (content != null && !content.isEmpty()) {
-                        fos.write(content.getBytes(StandardCharsets.UTF_8));
-                    } else {
-                        fos.write(new byte[]{0});
-                    }
-                    fos.flush();
-                }
-                Log.i(TAG, "写入成功 (legacy): " + file.getAbsolutePath());
-                return Uri.fromFile(file);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
+            return writeByFile(content);
         }
     }
 
     /**
-     * 从公共 Alarms 目录读取指定文件内容（兼容所有 Android 版本）
-     *
-     * @param context Context
-     * @return 文件内容字符串（失败返回 null）
+     * 读取数据
      */
-    public static String readFromAlarmsDir(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // ✅ Android 10+ 使用 MediaStore 方式读取
-            ContentResolver resolver = context.getContentResolver();
-            Uri collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-            String[] projection = {
-                    MediaStore.Audio.Media._ID,
-                    MediaStore.Audio.Media.DISPLAY_NAME
-            };
-            String selection = MediaStore.Audio.Media.DISPLAY_NAME + "=?";
-            String[] selectionArgs = {ALARM_MP3_NAME};
-
-            try (Cursor cursor = resolver.query(collection, projection, selection, selectionArgs, null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int idIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
-                    long id = cursor.getLong(idIndex);
-                    Uri contentUri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, String.valueOf(id));
-
-                    try (InputStream is = resolver.openInputStream(contentUri);
-                         BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                        StringBuilder sb = new StringBuilder();
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            sb.append(line).append('\n');
-                        }
-                        String result = sb.toString().trim();
-                        Log.i(TAG, "读取成功 (Q+): " + result);
-                        return result;
-                    }
-                } else {
-                    Log.w(TAG, "未找到文件：" + ALARM_MP3_NAME);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public static synchronized String readFromAlarmsDir(Context context) {
+        if (context == null) {
             return null;
+        }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return readByMediaStore(context);
         } else {
-            // ⚙️ Android 9 及以下使用 FileInputStream 读取
-            try {
-                File alarmsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
-                File file = new File(alarmsDir, ALARM_MP3_NAME);
-                if (!file.exists()) {
-                    Log.w(TAG, "文件不存在：" + file.getAbsolutePath());
-                    return null;
+            return readByFile();
+        }
+    }
+
+    /**
+     * Android 10+ 写入
+     */
+    private static Uri writeByMediaStore(Context context, String content) {
+        ContentResolver resolver = context.getContentResolver();
+        Uri oldUri = findFileUri(context);
+
+        try {
+            // 已存在 -> 直接覆盖写入
+            if (oldUri != null) {
+                OutputStream os = resolver.openOutputStream(oldUri, "wt");
+                try (os) {
+                    if (os == null) {
+                        return null;
+                    }
+                    os.write(content.getBytes(StandardCharsets.UTF_8));
+                    os.flush();
                 }
 
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line).append('\n');
-                    }
-                    String result = sb.toString().trim();
-                    Log.i(TAG, "读取成功 (legacy): " + result);
-                    return result;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+                Log.i(TAG, "覆盖写入成功: " + oldUri);
+                return oldUri;
+            }
+
+            // 不存在 -> 新建
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Audio.Media.DISPLAY_NAME, FILE_NAME);
+            values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg");
+            values.put(MediaStore.Audio.Media.IS_ALARM, 1);
+            values.put(MediaStore.Audio.Media.RELATIVE_PATH, Environment.DIRECTORY_ALARMS);
+            Uri uri = resolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
+            if (uri == null) {
+                Log.e(TAG, "insert MediaStore failed");
                 return null;
             }
+
+            try {
+                OutputStream os = resolver.openOutputStream(uri);
+                try (os) {
+                    if (os == null) {
+                        resolver.delete(uri, null, null);
+                        return null;
+                    }
+                    os.write(content.getBytes(StandardCharsets.UTF_8));
+                    os.flush();
+                }
+
+                Log.i(TAG, "写入成功: " + uri);
+                return uri;
+
+            } catch (Exception e) {
+                resolver.delete(uri, null, null);
+                throw e;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "writeByMediaStore error", e);
+            return null;
+        }
+    }
+
+    /**
+     * Android 10+ 读取
+     */
+    private static String readByMediaStore(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        Uri uri = findFileUri(context);
+
+        if (uri == null) {
+            Log.w(TAG, "文件不存在");
+            return null;
+        }
+
+        try {
+            InputStream is = resolver.openInputStream(uri);
+            try (is) {
+                if (is == null) {
+                    return null;
+                }
+                return readStream(is);
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "readByMediaStore error", e);
+            return null;
+        }
+    }
+
+    /**
+     * 查询文件 Uri
+     */
+    private static Uri findFileUri(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        String[] projection = {MediaStore.Audio.Media._ID};
+        String selection = MediaStore.Audio.Media.DISPLAY_NAME + "=?";
+
+        String[] selectionArgs = {FILE_NAME};
+
+        try (Cursor cursor = resolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                MediaStore.Audio.Media.DATE_MODIFIED + " DESC"
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                return Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, String.valueOf(id));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "findFileUri error", e);
+
+        }
+
+        return null;
+    }
+
+    /**
+     * Android 9 及以下写入
+     */
+    private static Uri writeByFile(String content) {
+        try {
+            File alarmsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
+            if (!alarmsDir.exists()) {
+                alarmsDir.mkdirs();
+            }
+
+            File file = new File(alarmsDir, FILE_NAME);
+            try (FileOutputStream fos = new FileOutputStream(file, false)) {
+                fos.write(content.getBytes(StandardCharsets.UTF_8));
+                fos.flush();
+            }
+
+            Log.i(TAG, "写入成功: " + file.getAbsolutePath());
+            return Uri.fromFile(file);
+        } catch (Exception e) {
+            Log.e(TAG, "writeByFile error", e);
+            return null;
+        }
+    }
+
+    /**
+     * Android 9 及以下读取
+     */
+    private static String readByFile() {
+        try {
+            File alarmsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_ALARMS);
+            File file = new File(alarmsDir, FILE_NAME);
+            if (!file.exists()) {
+                Log.w(TAG, "文件不存在");
+                return null;
+            }
+            try (InputStream is = new FileInputStream(file)) {
+                return readStream(is);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "readByFile error", e);
+            return null;
+        }
+    }
+
+    /**
+     * 读取流
+     */
+    private static String readStream(InputStream is) throws Exception {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
         }
     }
 }
