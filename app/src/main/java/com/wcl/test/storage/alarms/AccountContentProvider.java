@@ -10,12 +10,11 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -228,13 +227,16 @@ public class AccountContentProvider {
      * 读取流
      */
     private static String readStream(InputStream is) throws Exception {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } else {
+            ByteArrayOutputStream bas = new ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                bas.write(buffer, 0, len);
             }
-            return sb.toString();
+            return bas.toString(StandardCharsets.UTF_8.name());
         }
     }
 }
