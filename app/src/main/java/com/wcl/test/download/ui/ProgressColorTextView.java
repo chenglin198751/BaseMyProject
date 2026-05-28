@@ -58,17 +58,14 @@ class ProgressColorTextView extends AppCompatTextView {
      * 设置进度（0~100）
      */
     void setProgress(double p) {
-        int newProgress = (int) Math.round(Math.max(0, Math.min(p, 100)));
-        if (this.progress != newProgress) {
-            this.progress = newProgress;
+        this.progress = (int) Math.round(Math.max(0, Math.min(p, 100)));
 
-            // 1.设置文字变色进度
-            updateLinearGradient();
-            invalidate();
+        // 1.设置文字变色进度
+        updateLinearGradient();
+        invalidate();
 
-            // 2.设置背景进度条
-            updateBackgroundProgress();
-        }
+        // 2.设置背景进度条
+        updateBackgroundProgress();
     }
 
     @Override
