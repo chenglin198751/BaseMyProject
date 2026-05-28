@@ -2,6 +2,7 @@ package com.wcl.test.test;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ public class TestDownloadActivity extends BaseActivity {
             @Override
             public void onBind(@NonNull String url, int position) {
                 downloadButton.bind(url, activity);
+                Log.v("tag_99","url:"+url);
             }
 
         }
