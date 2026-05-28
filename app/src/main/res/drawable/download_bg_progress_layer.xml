@@ -3,7 +3,7 @@
     <!-- 背景层 -->
     <item>
         <shape>
-            <solid android:color="#E6E9EF" />
+            <solid android:color="#00CED1" />
         </shape>
     </item>
 
