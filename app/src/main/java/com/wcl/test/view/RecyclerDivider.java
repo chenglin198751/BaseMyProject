@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * RecyclerView 分割线装饰器
- *
+ * <p>
  * 支持：
  * 1. LinearLayoutManager
  * 2. GridLayoutManager
- *
+ * <p>
  * includeEdge:
  * true  -> 包含 RecyclerView 外围边框 + item 内部分割线
  * false -> 仅包含 item 内部分割线
@@ -28,9 +28,9 @@ public class RecyclerDivider extends RecyclerView.ItemDecoration {
     private final boolean includeEdge;  // 是否包含 RecyclerView 外围边框
 
     /**
-     * @param color             分割线颜色
-     * @param dividerThickness  分割线尺寸（单位：px）
-     * @param includeEdge       是否包含 RecyclerView 外围边框
+     * @param color            分割线颜色
+     * @param dividerThickness 分割线尺寸（单位：px）
+     * @param includeEdge      是否包含 RecyclerView 外围边框
      */
     public RecyclerDivider(@ColorInt int color, int dividerThickness, boolean includeEdge) {
         this.paint = new Paint(Paint.ANTI_ALIAS_FLAG);
