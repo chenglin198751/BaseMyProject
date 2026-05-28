@@ -11,12 +11,21 @@ import java.util.List;
 /**
  * weichenglin create in 15/9/17
  */
-public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
+public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewHolder<T>> {
     private final List<T> list = new ArrayList<>();
 
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    protected T getItem(int position) {
+        return list.get(position);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull BaseRecyclerViewHolder<T> holder, int position) {
+        holder.onBind(getItem(position), position);
     }
 
     @MainThread

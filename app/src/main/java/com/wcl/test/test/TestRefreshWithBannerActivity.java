@@ -197,15 +197,6 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             }
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull BaseRecyclerViewHolder holder, int position) {
-            if (holder instanceof BannerHolder2) {
-                ((BannerHolder2) holder).onBind(position);
-            } else if (holder instanceof ListHolder) {
-                ((ListHolder) holder).onBind(position);
-            }
-        }
-
         /**
          * 停止所有 Banner 的轮播
          */
@@ -219,7 +210,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
         }
 
         // 普通列表 Item Holder
-        class ListHolder extends BaseRecyclerViewHolder {
+        private static class ListHolder extends BaseRecyclerViewHolder<DataItem> {
             private final TextView title;
             private final GlideImageView webImageView;
             private final RecyclerView childRecyclerView;
@@ -239,13 +230,12 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             }
 
             @Override
-            public void onBind(int position) {
-                DataItem item = getData().get(position);
+            public void onBind(@NonNull DataItem t, int position) {
                 title.setText("标题 - " + position);
-                webImageView.loadImage(item.imgUrl);
+                webImageView.loadImage(t.imgUrl);
 
                 // 为每个父列表项生成随机数量的子项
-                List<DataItem> childItems = createChildDataItems(item);
+                List<DataItem> childItems = createChildDataItems(t);
                 childAdapter.setDataList(childItems);
             }
 
@@ -265,7 +255,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
 
 
         // Banner Item Holder
-        class BannerHolder2 extends BaseRecyclerViewHolder {
+        private static class BannerHolder2 extends BaseRecyclerViewHolder<DataItem> {
             private Banner banner;
 
             public BannerHolder2(@NonNull View itemView) {
@@ -275,12 +265,11 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             }
 
             @Override
-            public void onBind(int position) {
-                DataItem item = getData().get(position);
-                item.bannerHolder = BannerHolder2.this;
+            public void onBind(@NonNull DataItem t, int position) {
+                t.bannerHolder = BannerHolder2.this;
 
-                if (item.bannerImgUrl != null) {
-                    banner.setAdapter(new BannerImageLoader(item.bannerImgUrl));
+                if (t.bannerImgUrl != null) {
+                    banner.setAdapter(new BannerImageLoader(t.bannerImgUrl));
                     banner.setBannerGalleryEffect(BANNER_GALLERY_EFFECT_RADIUS, BANNER_GALLERY_EFFECT_SPACE);
                     banner.start();
                 }
@@ -312,15 +301,8 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             return new ListHolder(view);
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull BaseRecyclerViewHolder holder, int position) {
-            if (holder instanceof ListHolder) {
-                ((ListHolder) holder).onBind(position);
-            }
-        }
-
         // 普通Item
-        static class ListHolder extends BaseRecyclerViewHolder {
+        private static class ListHolder extends BaseRecyclerViewHolder<DataItem> {
             private TextView childTitle;
 
             public ListHolder(@NonNull View itemView) {
@@ -329,7 +311,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
             }
 
             @Override
-            public void onBind(int position) {
+            public void onBind(@NonNull DataItem t, int position) {
                 // 子列表项暂不需要显示内容，预留扩展
             }
         }

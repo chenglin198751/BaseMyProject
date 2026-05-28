@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.wcl.test.R;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.base.BaseRecyclerViewHolder;
@@ -26,16 +28,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
         return new ListHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder(BaseRecyclerViewHolder holder, int position) {
-        if (holder instanceof ListHolder) {
-            ListHolder listHolder = (ListHolder) holder;
-            listHolder.onBind(position);
-        }
-
-    }
-
-    private class ListHolder extends BaseRecyclerViewHolder {
+    private static class ListHolder extends BaseRecyclerViewHolder<String> {
         GlideImageView imageView;
         TextView title;
 
@@ -46,9 +39,9 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
         }
 
         @Override
-        public void onBind(int position) {
+        public void onBind(@NonNull String t, int position) {
             imageView.loadImage(TestUrls.ImgUrls.get(position));
-            title.setText("标题 " + getData().get(position));
+            title.setText("标题 " + t);
         }
 
     }

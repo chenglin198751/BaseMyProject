@@ -168,14 +168,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         @Override
         public ListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_1, parent, false);
-            return new ListHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(BaseRecyclerViewHolder holder, int position) {
-            if (holder instanceof ListHolder) {
-                ((ListHolder) holder).onBind(position);
-            }
+            return new ListHolder(view, this);
         }
 
         @Override
@@ -184,44 +177,43 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
             notifyItemRangeChanged(0, getItemCount(), PAYLOAD_TICK);
         }
 
-        class ListHolder extends BaseRecyclerViewHolder {
+        private static class ListHolder extends BaseRecyclerViewHolder<ModelData> {
+            private final MyAdapter mAdapter;
             private GlideImageView imageView;
             private Button btnDelete;
             private TextView countdowner;
 
-            public ListHolder(View itemView) {
+            public ListHolder(View itemView, MyAdapter adapter) {
                 super(itemView);
+                mAdapter = adapter;
                 imageView = itemView.findViewById(R.id.image_view);
                 btnDelete = itemView.findViewById(R.id.btn_delete);
                 countdowner = itemView.findViewById(R.id.countdowner);
             }
 
             @Override
-            public void onBind(final int position) {
-                ModelData model = getData().get(position);
-                imageView.loadImage(model.url);
+            public void onBind(@NonNull ModelData t, final int position) {
+                imageView.loadImage(t.url);
                 btnDelete.setText(TEXT_DELETE);
 
                 // 倒计时展示
-                updateCountdown(model);
+                updateCountdown(t);
 
-                setupDeleteButton(position);
+                setupDeleteButton();
                 setupImageClickListener();
             }
 
             /**
              * 设置删除按钮点击事件
-             *
-             * @param position 当前绑定位置
              */
-            private void setupDeleteButton(final int position) {
+            private void setupDeleteButton() {
                 btnDelete.setOnClickListener(new OnSingleClickListener() {
                     @Override
                     public void onSingleClick(View v) {
                         int currentPosition = getAbsoluteAdapterPosition();
-                        if (currentPosition >= 0 && currentPosition < getData().size()) {
-                            getData().remove(currentPosition);
-                            notifyItemRemoved(currentPosition);
+                        if (currentPosition >= 0 && currentPosition < mAdapter.getData().size()) {
+                            mAdapter.getData().remove(currentPosition);
+                            mAdapter.notifyItemRemoved(currentPosition);
                         }
                     }
                 });
