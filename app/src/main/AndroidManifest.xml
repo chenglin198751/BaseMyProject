@@ -63,6 +63,8 @@
 
         <activity android:name="com.wcl.test.test.TestSnapNestViewPager2Activity" />
 
+        <activity android:name="com.wcl.test.test.TestDownloadActivity" />
+
         <provider
             android:name="com.wcl.test.SdkProvider"
             android:authorities="${applicationId}.sdk.provider"
