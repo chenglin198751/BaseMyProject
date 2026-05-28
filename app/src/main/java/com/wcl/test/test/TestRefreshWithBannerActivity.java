@@ -18,6 +18,7 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
+import com.wcl.test.base.BaseRecyclerViewHolder;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.view.image.GlideImageView;
@@ -264,7 +265,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
 
 
         // Banner Item Holder
-        class BannerHolder2 extends BaseRecyclerViewAdapter.BaseRecyclerViewHolder {
+        class BannerHolder2 extends BaseRecyclerViewHolder {
             private Banner banner;
 
             public BannerHolder2(@NonNull View itemView) {

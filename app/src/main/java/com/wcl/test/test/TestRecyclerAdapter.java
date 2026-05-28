@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
+import com.wcl.test.base.BaseRecyclerViewHolder;
 import com.wcl.test.view.image.GlideImageView;
 
 public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {

@@ -20,6 +20,7 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
+import com.wcl.test.base.BaseRecyclerViewHolder;
 import com.wcl.test.listener.OnSingleClickListener;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.utils.timer.CountDownManager;

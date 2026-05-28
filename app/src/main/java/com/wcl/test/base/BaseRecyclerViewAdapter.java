@@ -1,7 +1,5 @@
 package com.wcl.test.base;
 
-import android.view.View;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +11,7 @@ import java.util.List;
 /**
  * weichenglin create in 15/9/17
  */
-public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewAdapter.BaseRecyclerViewHolder> {
+public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
     private final List<T> list = new ArrayList<>();
 
     @Override
@@ -53,6 +51,13 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     }
 
     @MainThread
+    public void add(T item) {
+        int position = list.size();
+        list.add(item);
+        notifyItemInserted(position);
+    }
+
+    @MainThread
     public void setDataList(Collection<? extends T> collection) {
         list.clear();
         if (collection != null && !collection.isEmpty()) {
@@ -61,12 +66,4 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         notifyDataSetChanged();
     }
 
-
-    public abstract static class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
-        public BaseRecyclerViewHolder(View itemView) {
-            super(itemView);
-        }
-
-        public abstract void onBind(int position);
-    }
 }
