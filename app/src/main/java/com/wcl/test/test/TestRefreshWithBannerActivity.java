@@ -187,7 +187,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
 
         @NonNull
         @Override
-        public BaseRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public BaseRecyclerViewHolder<DataItem> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             if (viewType == VIEW_TYPE_BANNER) {
                 View view = LayoutInflater.from(mContext).inflate(R.layout.banner_layout, parent, false);
                 return new BannerHolder2(view);
@@ -296,7 +296,7 @@ public class TestRefreshWithBannerActivity extends BaseActivity {
 
         @NonNull
         @Override
-        public BaseRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public BaseRecyclerViewHolder<DataItem> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_3_child, parent, false);
             return new ListHolder(view);
         }

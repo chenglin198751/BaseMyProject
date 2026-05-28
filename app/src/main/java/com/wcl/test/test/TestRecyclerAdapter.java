@@ -23,7 +23,7 @@ public class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
 
 
     @Override
-    public ListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseRecyclerViewHolder<String>  onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_4, parent, false);
         return new ListHolder(view);
     }

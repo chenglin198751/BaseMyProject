@@ -166,7 +166,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
         }
 
         @Override
-        public ListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public BaseRecyclerViewHolder<ModelData> onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.test_item_1, parent, false);
             return new ListHolder(view, this);
         }
