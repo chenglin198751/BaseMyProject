@@ -155,6 +155,7 @@ class DownloadWorker implements Runnable {
         } catch (Throwable t) {
             task.status = DownloadTask.Status.ERROR;
             task.errorMsg = t.toString();
+            DownloadDBHelper.ins().saveTask(task);
             notifyStatus();
         } finally {
             runFinishCallback();
