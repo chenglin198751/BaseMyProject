@@ -2,7 +2,6 @@ package com.wcl.test.download.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -20,7 +19,7 @@ public class DownloadButton extends ProgressColorTextView {
 
     private String url;
     private LifecycleOwner owner;
-    private DownloadTask task;
+    private DownloadTask curTask;
 
     private final DownloadListener callback = new DownloadListener() {
         @Override
@@ -79,13 +78,13 @@ public class DownloadButton extends ProgressColorTextView {
     private void handleClick() {
         if (url == null) return;
 
-        task = DownloadManager.ins().getTask(url);
-        if (task == null) {
+        curTask = DownloadManager.ins().getTask(url);
+        if (curTask == null) {
             DownloadManager.ins().start(url);
             return;
         }
 
-        switch (task.status) {
+        switch (curTask.status) {
             case IDLE:
             case WAITING:
             case PAUSED:
@@ -105,15 +104,15 @@ public class DownloadButton extends ProgressColorTextView {
      */
     private void syncState() {
         if (url == null) return;
-        task = DownloadManager.ins().getTask(url);
-        if (task == null) {
+        curTask = DownloadManager.ins().getTask(url);
+        if (curTask == null) {
             setProgress(0);
             setText("下载");
             return;
         }
 
-        setProgress(task.progress);
-        switch (task.status) {
+        setProgress(curTask.progress);
+        switch (curTask.status) {
             case IDLE:
                 setText("下载");
                 break;
@@ -121,7 +120,7 @@ public class DownloadButton extends ProgressColorTextView {
                 setText("等待中");
                 break;
             case DOWNLOADING:
-                setText(task.progress + "%");
+                setText(curTask.progress + "%");
                 break;
             case PAUSED:
                 setText("继续");
