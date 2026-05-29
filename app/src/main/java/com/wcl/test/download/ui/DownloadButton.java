@@ -93,7 +93,7 @@ public class DownloadButton extends ProgressColorTextView {
             observer = (LifecycleEventObserver) (source, event) -> {
                 if (event == Lifecycle.Event.ON_DESTROY) {
                     DownloadTask task = DownloadManager.ins().getTask(url);
-                    if (task != null && task.downloadedBytes <= 0) {
+                    if (task != null && task.status == DownloadTask.Status.IDLE && task.downloadedBytes <= 0) {
                         DownloadManager.ins().delete(url);
                     }
                 }
