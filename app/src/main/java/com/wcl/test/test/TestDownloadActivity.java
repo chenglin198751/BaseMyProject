@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseRecyclerViewAdapter;
 import com.wcl.test.base.BaseRecyclerViewHolder;
+import com.wcl.test.download.DownloadManager;
 import com.wcl.test.download.ui.DownloadButton;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.view.RecyclerDivider;
@@ -40,6 +42,12 @@ public class TestDownloadActivity extends BaseActivity {
         recyclerView.addItemDecoration(new RecyclerDivider(Color.BLUE, AppUtils.dp2px(5), false));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Log.w("tag_99","33 DownloadManager.ins().getTasks().size()="+ DownloadManager.ins().getTasks().size());
+    }
 
     public static class TestRecyclerAdapter extends BaseRecyclerViewAdapter<String> {
         private final BaseActivity activity;
@@ -59,16 +67,21 @@ public class TestDownloadActivity extends BaseActivity {
         private static class ListHolder extends BaseRecyclerViewHolder<String> {
             private final BaseActivity activity;
             DownloadButton downloadButton;
+            Button delete;
 
             public ListHolder(BaseActivity activity, View itemView) {
                 super(itemView);
                 this.activity = activity;
                 downloadButton = itemView.findViewById(R.id.down_btn);
+                delete = itemView.findViewById(R.id.delete);
             }
 
             @Override
             public void onBind(@NonNull String url, int position) {
                 downloadButton.bind(url, activity);
+                delete.setOnClickListener(v -> {
+                    DownloadManager.ins().delete(url);
+                });
             }
 
         }
