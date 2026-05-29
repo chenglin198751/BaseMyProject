@@ -51,6 +51,10 @@ class DownloadUtils {
         return new File(dir, AppUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
     }
 
+    public static double roundProgress(long downloaded, long total) {
+        return Math.round(downloaded * 10000.0 / total) / 100.0;
+    }
+
     private static String getSuffix(String url) {
         int i = url.lastIndexOf(".");
         return i > 0 ? url.substring(i) : "";

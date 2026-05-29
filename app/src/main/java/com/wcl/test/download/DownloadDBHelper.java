@@ -11,6 +11,7 @@ import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppConstants;
 import com.wcl.test.utils.AppLogUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +107,7 @@ class DownloadDBHelper extends SQLiteOpenHelper {
                     task.create_time = c.getLong(2);
                     task.update_time = c.getLong(3);
                     task.extra = c.getString(4);
+                    syncFromFileSystem(task);
                     list.add(task);
                 } catch (Exception e) {
                     AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
@@ -113,6 +115,32 @@ class DownloadDBHelper extends SQLiteOpenHelper {
             }
         }
         return list;
+    }
+
+    /**
+     * 根据文件系统状态同步 DownloadTask 真实进度
+     * 用于 APP 重启后从 DB 加载时恢复状态
+     */
+    private void syncFromFileSystem(DownloadTask task) {
+        File target = new File(task.savePath);
+        File temp = new File(task.savePath + ".temp");
+
+        // target 完整 → 不动，交给完成流程处理
+        if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
+            return;
+        }
+
+        if (temp.exists()) {
+            // temp 存在 → PAUSED，用真实大小恢复 progress
+            task.downloadedBytes = temp.length();
+            task.progress = task.totalBytes > 0 ? DownloadUtils.roundProgress(task.downloadedBytes, task.totalBytes) : 0;
+            task.status = DownloadTask.Status.PAUSED;
+        } else {
+            // temp 不存在 → IDLE
+            task.downloadedBytes = 0;
+            task.progress = 0;
+            task.status = DownloadTask.Status.IDLE;
+        }
     }
 
     public void deleteTask(String taskId) {

@@ -22,6 +22,7 @@ import okhttp3.Response;
  */
 class DownloadWorker implements Runnable {
 
+    private final DownloadDBHelper dbHelper;
     private final DownloadTask task;
     private final OkHttpClient client;
     private final Runnable finishCallback;
@@ -33,6 +34,7 @@ class DownloadWorker implements Runnable {
         this.task = task;
         this.client = client;
         this.finishCallback = finishCallback;
+        dbHelper = new DownloadDBHelper();
     }
 
     /**
@@ -87,7 +89,7 @@ class DownloadWorker implements Runnable {
         File temp = new File(task.savePath + ".temp");
         long downloaded = temp.exists() ? temp.length() : 0;
         task.downloadedBytes = downloaded;
-        task.progress = task.totalBytes > 0 ? roundProgress(downloaded, task.totalBytes) : 0;
+        task.progress = task.totalBytes > 0 ? DownloadUtils.roundProgress(downloaded, task.totalBytes) : 0;
 
         // 断点续传异常则直接删除下载任务
         if (downloaded > 0 && task.totalBytes > 0 && downloaded > task.totalBytes) {
@@ -109,7 +111,10 @@ class DownloadWorker implements Runnable {
                 return;
             }
 
-            if (task.totalBytes <= 0) task.totalBytes = response.body().contentLength();
+            if (task.totalBytes <= 0) {
+                task.totalBytes = response.body().contentLength();
+                dbHelper.saveTask(task);
+            }
 
             InputStream in = response.body().byteStream();
             FileOutputStream out = new FileOutputStream(temp, true);
@@ -128,7 +133,7 @@ class DownloadWorker implements Runnable {
                 if (now - lastCallbackTime >= 1000) {
                     lastCallbackTime = now;
                     task.downloadedBytes = sum;
-                    task.progress = roundProgress(sum, task.totalBytes);
+                    task.progress = DownloadUtils.roundProgress(sum, task.totalBytes);
                     notifyProgress();
                 }
             }
@@ -156,10 +161,6 @@ class DownloadWorker implements Runnable {
         } finally {
             runFinishCallback();
         }
-    }
-
-    private double roundProgress(long downloaded, long total) {
-        return Math.round(downloaded * 10000.0 / total) / 100.0;
     }
 
     private void runFinishCallback() {
