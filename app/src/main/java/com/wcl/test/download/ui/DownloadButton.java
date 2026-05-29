@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.wcl.test.R;
@@ -23,7 +24,7 @@ public class DownloadButton extends ProgressColorTextView {
 
     private String url;
     private LifecycleOwner owner;
-    private DownloadTask curTask;
+    private LifecycleObserver observer;
 
     private final DownloadListener callback = new DownloadListener() {
         @Override
@@ -73,15 +74,6 @@ public class DownloadButton extends ProgressColorTextView {
                 handleClick();
             }
         });
-
-        // 自动解绑未操作的下载任务
-        owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                if (curTask != null && curTask.status == DownloadTask.Status.IDLE) {
-                    DownloadManager.ins().delete(url);
-                }
-            }
-        });
     }
 
     /**
@@ -91,20 +83,36 @@ public class DownloadButton extends ProgressColorTextView {
         this.url = url;
         this.owner = owner;
         DownloadManager.ins().setDownloadListener(url, owner, callback);
+        addObserver();
         syncState();
+    }
+
+    // 自动解绑空下载任务
+    private void addObserver() {
+        if (observer == null) {
+            observer = (LifecycleEventObserver) (source, event) -> {
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    DownloadTask task = DownloadManager.ins().getTask(url);
+                    if (task != null && task.status == DownloadTask.Status.IDLE) {
+                        DownloadManager.ins().delete(url);
+                    }
+                }
+            };
+            owner.getLifecycle().addObserver(observer);
+        }
     }
 
     // 首次点击才真正创建并启动任务
     private void handleClick() {
         if (url == null) return;
 
-        curTask = DownloadManager.ins().getTask(url);
-        if (curTask == null) {
+        DownloadTask task = DownloadManager.ins().getTask(url);
+        if (task == null) {
             DownloadManager.ins().start(url);
             return;
         }
 
-        switch (curTask.status) {
+        switch (task.status) {
             case IDLE:
             case WAITING:
             case PAUSED:
@@ -124,15 +132,16 @@ public class DownloadButton extends ProgressColorTextView {
      */
     private void syncState() {
         if (url == null) return;
-        curTask = DownloadManager.ins().getTask(url);
-        if (curTask == null) {
+
+        DownloadTask task = DownloadManager.ins().getTask(url);
+        if (task == null) {
             setProgress(0);
             setText(R.string.down_download);
             return;
         }
 
-        setProgress(curTask.progress);
-        switch (curTask.status) {
+        setProgress(task.progress);
+        switch (task.status) {
             case IDLE:
                 setText(R.string.down_download);
                 break;
@@ -140,7 +149,7 @@ public class DownloadButton extends ProgressColorTextView {
                 setText(R.string.down_waiting);
                 break;
             case DOWNLOADING:
-                setText(getContext().getString(R.string.down_progress, curTask.progress));
+                setText(getContext().getString(R.string.down_progress, task.progress));
                 break;
             case PAUSED:
                 setText(R.string.down_continue);
