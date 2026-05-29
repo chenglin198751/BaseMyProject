@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.wcl.test.R;
 import com.wcl.test.download.DownloadListener;
 import com.wcl.test.download.DownloadManager;
 import com.wcl.test.download.DownloadTask;
@@ -68,7 +69,7 @@ public class DownloadButton extends ProgressColorTextView {
                 handleClick();
             }
         });
-        setText("下载");
+        setText(R.string.down_download);
     }
 
     /**
@@ -114,29 +115,29 @@ public class DownloadButton extends ProgressColorTextView {
         curTask = DownloadManager.ins().getTask(url);
         if (curTask == null) {
             setProgress(0);
-            setText("下载");
+            setText(R.string.down_download);
             return;
         }
 
         setProgress(curTask.progress);
         switch (curTask.status) {
             case IDLE:
-                setText("下载");
+                setText(R.string.down_download);
                 break;
             case WAITING:
-                setText("等待中");
+                setText(R.string.down_waiting);
                 break;
             case DOWNLOADING:
-                setText(curTask.progress + "%");
+                setText(getContext().getString(R.string.down_progress, curTask.progress));
                 break;
             case PAUSED:
-                setText("继续");
+                setText(R.string.down_continue);
                 break;
             case FINISHED:
-                setText("已完成");
+                setText(R.string.down_finished);
                 break;
             case ERROR:
-                setText("重试");
+                setText(R.string.down_retry);
                 break;
         }
     }
