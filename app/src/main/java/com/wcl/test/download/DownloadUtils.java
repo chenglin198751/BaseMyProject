@@ -8,6 +8,8 @@ import com.wcl.test.utils.AppUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  * 下载工具类（内部使用，不对外）
@@ -26,16 +28,9 @@ class DownloadUtils {
 
     // 替换文件（下载完成后覆盖）
     public static void replaceFile(File src, File dst) throws Exception {
-        if (dst.exists()) dst.delete();
-        try (FileInputStream in = new FileInputStream(src);
-             FileOutputStream out = new FileOutputStream(dst)) {
-            byte[] buffer = new byte[8192];
-            int len;
-            while ((len = in.read(buffer)) != -1) {
-                out.write(buffer, 0, len);
-            }
-        }
-        src.delete();
+        Files.move(src.toPath(), dst.toPath(),
+                StandardCopyOption.REPLACE_EXISTING,
+                StandardCopyOption.ATOMIC_MOVE);
     }
 
     public static String getTaskId(String url) {

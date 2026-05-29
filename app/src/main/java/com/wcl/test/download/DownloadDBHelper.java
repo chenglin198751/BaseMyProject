@@ -137,8 +137,16 @@ class DownloadDBHelper extends SQLiteOpenHelper {
         File target = new File(task.savePath);
         File temp = new File(task.savePath + ".temp");
 
-        // target 完整 → 不动，交给完成流程处理
+        // target 完整且有已知大小 → 不动，交给完成流程处理
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
+            return;
+        }
+
+        // 无 Content-Length 的情况下，target 存在即认为已完成
+        if (target.exists() && task.totalBytes <= 0) {
+            task.downloadedBytes = target.length();
+            task.progress = 100.0;
+            task.status = DownloadTask.Status.FINISHED;
             return;
         }
 
