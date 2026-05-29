@@ -24,9 +24,21 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String TABLE_NAME = "download_task";
     private static final Gson gson = AppConstants.gson;
+    private static volatile DownloadDBHelper sInstance;
 
-    public DownloadDBHelper() {
+    private DownloadDBHelper() {
         super(BaseApp.getApp(), DB_NAME, null, VERSION);
+    }
+
+    public static DownloadDBHelper ins() {
+        if (sInstance == null) {
+            synchronized (DownloadDBHelper.class) {
+                if (sInstance == null) {
+                    sInstance = new DownloadDBHelper();
+                }
+            }
+        }
+        return sInstance;
     }
 
     @Override

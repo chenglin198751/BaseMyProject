@@ -25,7 +25,6 @@ public class DownloadManager {
 
     private final ExecutorService executor;
     private final OkHttpClient client;
-    private final DownloadDBHelper dbHelper;
 
     // 已有任务映射
     private final Map<String, DownloadTask> taskMap;
@@ -39,7 +38,6 @@ public class DownloadManager {
     private DownloadManager() {
         executor = Executors.newFixedThreadPool(MAX_THREAD);
         client = new OkHttpClient();
-        dbHelper = new DownloadDBHelper();
 
         taskMap = Collections.synchronizedMap(new HashMap<>());
         workerMap = Collections.synchronizedMap(new HashMap<>());
@@ -47,7 +45,7 @@ public class DownloadManager {
         waitingQueue = Collections.synchronizedList(new ArrayList<>());
 
         // 加载数据库已有任务
-        for (DownloadTask t : dbHelper.loadAllTasks()) {
+        for (DownloadTask t : DownloadDBHelper.ins().loadAllTasks()) {
             taskMap.put(t.taskId, t);
         }
     }
@@ -79,7 +77,7 @@ public class DownloadManager {
         if (task == null) {
             task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
             taskMap.put(taskId, task);
-            dbHelper.saveTask(task);
+            DownloadDBHelper.ins().saveTask(task);
         }
 
         // 已有 Worker，直接返回
@@ -124,7 +122,7 @@ public class DownloadManager {
         if (task != null) {
             new File(task.savePath).delete();
             new File(task.savePath + ".temp").delete();
-            dbHelper.deleteTask(taskId);
+            DownloadDBHelper.ins().deleteTask(taskId);
         }
 
         taskMap.remove(taskId);
@@ -159,7 +157,7 @@ public class DownloadManager {
         if (task == null) {
             task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
             taskMap.put(taskId, task);
-            dbHelper.saveTask(task);
+            DownloadDBHelper.ins().saveTask(task);
         }
 
         // 如果已有 Worker，直接添加
@@ -219,9 +217,6 @@ public class DownloadManager {
 
     private void workerFinished(String taskId) {
         workerMap.remove(taskId);
-
-        DownloadTask task = taskMap.get(taskId);
-        if (task != null) dbHelper.saveTask(task);
 
         // 线程池空出来了，启动等待队列中的任务
         if (!waitingQueue.isEmpty()) {

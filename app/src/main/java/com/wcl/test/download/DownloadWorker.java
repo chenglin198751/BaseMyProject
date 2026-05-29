@@ -22,7 +22,6 @@ import okhttp3.Response;
  */
 class DownloadWorker implements Runnable {
 
-    private final DownloadDBHelper dbHelper;
     private final DownloadTask task;
     private final OkHttpClient client;
     private final Runnable finishCallback;
@@ -34,7 +33,6 @@ class DownloadWorker implements Runnable {
         this.task = task;
         this.client = client;
         this.finishCallback = finishCallback;
-        dbHelper = new DownloadDBHelper();
     }
 
     /**
@@ -113,7 +111,7 @@ class DownloadWorker implements Runnable {
 
             if (task.totalBytes <= 0) {
                 task.totalBytes = response.body().contentLength();
-                dbHelper.saveTask(task);
+                DownloadDBHelper.ins().saveTask(task);
             }
 
             InputStream in = response.body().byteStream();
@@ -145,15 +143,15 @@ class DownloadWorker implements Runnable {
 
             if (paused) {
                 task.status = DownloadTask.Status.PAUSED;
-                notifyStatus();
             } else {
                 DownloadUtils.replaceFile(temp, target);
                 task.downloadedBytes = task.totalBytes;
                 task.progress = 100.0;
                 notifyProgress();
                 task.status = DownloadTask.Status.FINISHED;
-                notifyStatus();
             }
+            DownloadDBHelper.ins().saveTask(task);
+            notifyStatus();
         } catch (Throwable t) {
             task.status = DownloadTask.Status.ERROR;
             task.errorMsg = t.toString();
