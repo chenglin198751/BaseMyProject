@@ -1,6 +1,7 @@
 package com.wcl.test.download.ui;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -24,17 +25,23 @@ public class DownloadButton extends ProgressColorTextView {
     private final DownloadListener callback = new DownloadListener() {
         @Override
         public void onProgress(DownloadTask task) {
-            syncState();
+            if (TextUtils.equals(url, task.url)) {
+                syncState();
+            }
         }
 
         @Override
         public void onStatusChanged(DownloadTask task) {
-            syncState();
+            if (TextUtils.equals(url, task.url)) {
+                syncState();
+            }
         }
 
         @Override
-        public void onDeleted(String url) {
-            syncState();
+        public void onDeleted(String _url) {
+            if (TextUtils.equals(url, _url)) {
+                syncState();
+            }
         }
     };
 
