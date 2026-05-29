@@ -157,7 +157,6 @@ public class DownloadManager {
         if (task == null) {
             task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
             taskMap.put(taskId, task);
-            DownloadDBHelper.ins().saveTask(task);
         }
 
         // 如果已有 Worker，直接添加
@@ -177,6 +176,28 @@ public class DownloadManager {
         // 添加 holder
         ListenerHolder holder = new ListenerHolder(owner, listener);
         holders.add(holder);
+    }
+
+    /**
+     * 移除指定下载监听器
+     */
+    public void removeDownloadListener(String url, DownloadListener listener) {
+        if (!DownloadUtils.isValidUrl(url) || listener == null) return;
+
+        String taskId = DownloadUtils.getTaskId(url);
+
+        // 从 Manager 层预存的 holders 中移除
+        List<ListenerHolder> holders = listenerMap.get(taskId);
+        if (holders != null) {
+            holders.removeIf(h -> h.listener() == listener);
+            if (holders.isEmpty()) listenerMap.remove(taskId);
+        }
+
+        // 从 Worker 层正在运行的任务中移除
+        DownloadWorker worker = workerMap.get(taskId);
+        if (worker != null) {
+            worker.removeCallback(listener);
+        }
     }
 
     /**

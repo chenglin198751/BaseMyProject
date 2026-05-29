@@ -46,13 +46,22 @@ class DownloadWorker implements Runnable {
         // 自动解绑回调
         owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
             if (event == Lifecycle.Event.ON_DESTROY) {
-                callbacks.remove(cb);
+                removeCallback(cb);
             }
         });
     }
 
     void pause() {
         paused = true;
+    }
+
+    /**
+     * 移除指定回调，不影响下载任务
+     */
+    void removeCallback(DownloadListener cb) {
+        synchronized (callbacks) {
+            callbacks.remove(cb);
+        }
     }
 
     private void notifyProgress() {
