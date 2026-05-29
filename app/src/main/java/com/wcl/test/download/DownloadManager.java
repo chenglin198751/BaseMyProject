@@ -1,5 +1,7 @@
 package com.wcl.test.download;
 
+import android.text.TextUtils;
+
 import androidx.lifecycle.LifecycleOwner;
 
 import java.io.File;
@@ -108,6 +110,9 @@ public class DownloadManager {
      * 删除任务时保留 listener，同时回调 onDeleted(url)
      */
     public String delete(String url) {
+        if (TextUtils.isEmpty(url)) {
+            return url;
+        }
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
 
