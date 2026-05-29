@@ -7,8 +7,8 @@
 
     <com.wcl.test.download.ui.DownloadButton
         android:id="@+id/down_btn"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
         android:layout_centerInParent="true" />
 
 </RelativeLayout>
