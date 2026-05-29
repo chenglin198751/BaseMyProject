@@ -29,7 +29,7 @@ public class DownloadTask {
     public volatile Status status;
     public volatile String errorMsg;
     public volatile long downloadedBytes;
-    public volatile double progress;
+    public volatile transient double progress;
 
     // 扩展信息，比如应用详情json之类，不参与序列化
     public transient String extra;
