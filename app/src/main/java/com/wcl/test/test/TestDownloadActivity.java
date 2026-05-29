@@ -69,7 +69,6 @@ public class TestDownloadActivity extends BaseActivity {
             @Override
             public void onBind(@NonNull String url, int position) {
                 downloadButton.bind(url, activity);
-                Log.v("tag_99","url:"+url);
             }
 
         }

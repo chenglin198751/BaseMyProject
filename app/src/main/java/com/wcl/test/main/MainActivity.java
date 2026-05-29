@@ -1,5 +1,6 @@
 package com.wcl.test.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +13,8 @@ import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.ActivityMainBinding;
 import com.wcl.test.helper.ShowFragmentHelper;
+import com.wcl.test.test.TestDownloadActivity;
+import com.wcl.test.test.TestRecyclerViewRefreshActivity;
 import com.wcl.test.widget.ToastUtils;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
@@ -59,6 +62,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initBottomTabs();
         showTab(TAB_FIRST);
         setupBackPressHandler();
+
+        Intent intent = new Intent(getContext(), TestDownloadActivity.class);
+        startActivity(intent);
     }
 
     private void initBottomTabs() {

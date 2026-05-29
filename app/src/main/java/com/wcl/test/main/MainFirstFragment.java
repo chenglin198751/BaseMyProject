@@ -1,12 +1,16 @@
 package com.wcl.test.main;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
+import com.wcl.test.download.DownloadManager;
+import com.wcl.test.test.TestDownloadActivity;
 
 
 /**
@@ -23,9 +27,11 @@ public class MainFirstFragment extends BaseFragment {
     @Override
     protected void onViewCreated(Bundle savedInstanceState, View view) {
         mBinding.viewLeft.setOnClickListener(v -> {
-
-//
+            Log.d("tag_99","22 DownloadManager.ins().getTasks().size()="+ DownloadManager.ins().getTasks().size());
+            Intent intent = new Intent(getContext(), TestDownloadActivity.class);
+            startActivity(intent);
         });
+
 
         String url = "http://qd.shouji.qihucdn.com/media/d22eee36c269dcae8dbfc6a469d02ffc/6602326c507c2.png";
         mBinding.image2.loadImage(url);
