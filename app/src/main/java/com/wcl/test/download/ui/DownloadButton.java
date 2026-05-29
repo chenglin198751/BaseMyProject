@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.wcl.test.R;
@@ -62,14 +64,24 @@ public class DownloadButton extends ProgressColorTextView {
     }
 
     private void init() {
+        setText(R.string.down_download);
         setClickable(true);
+
         setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
                 handleClick();
             }
         });
-        setText(R.string.down_download);
+
+        // 自动解绑未操作的下载任务
+        owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                if (curTask != null && curTask.status == DownloadTask.Status.IDLE) {
+                    DownloadManager.ins().delete(url);
+                }
+            }
+        });
     }
 
     /**
