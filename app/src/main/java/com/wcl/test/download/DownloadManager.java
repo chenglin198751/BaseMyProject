@@ -77,7 +77,9 @@ public class DownloadManager {
         // 判断线程池是否已满
         if (workerMap.size() >= MAX_THREAD) {
             task.status = DownloadTask.Status.WAITING;
-            notifyStatus(task);
+            for (DownloadListener listener : DownloadUtils.listeners) {
+                listener.onStatusChanged(task);
+            }
             if (!waitingQueue.contains(taskId)) waitingQueue.add(taskId);
             return;
         }
@@ -100,7 +102,7 @@ public class DownloadManager {
      */
     public String delete(String url) {
         if (TextUtils.isEmpty(url)) {
-            return url;
+            return null;
         }
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = allTaskMap.get(taskId);
@@ -187,9 +189,4 @@ public class DownloadManager {
         }
     }
 
-    private void notifyStatus(DownloadTask task) {
-        for (DownloadListener listener : DownloadUtils.listeners) {
-            listener.onStatusChanged(task);
-        }
-    }
 }
