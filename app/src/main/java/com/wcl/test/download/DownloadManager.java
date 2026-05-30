@@ -149,13 +149,6 @@ public class DownloadManager {
         if (!DownloadUtils.isValidUrl(url) || listener == null) return;
 
         String taskId = DownloadUtils.getTaskId(url);
-        DownloadTask task = taskMap.get(taskId);
-
-        // 任务不存在 → 创建但不启动
-        if (task == null) {
-            task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
-            taskMap.put(taskId, task);
-        }
 
         // 如果已有 Worker，直接添加
         DownloadWorker worker = workerMap.get(taskId);
