@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
@@ -23,8 +24,20 @@ import com.wcl.test.listener.OnSingleClickListener;
 public class DownloadButton extends ProgressColorTextView {
 
     private String url;
-    private LifecycleOwner owner;
-    private LifecycleObserver observer;
+    private boolean isBind = false;
+
+    private final LifecycleObserver observer = new LifecycleEventObserver() {
+        @Override
+        public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                DownloadManager.ins().removeDownloadListener(url, callback);
+                DownloadTask task = DownloadManager.ins().getTask(url);
+                if (task != null && task.status == DownloadTask.Status.IDLE && task.downloadedBytes <= 0) {
+                    DownloadManager.ins().delete(url);
+                }
+            }
+        }
+    };
 
     private final DownloadListener callback = new DownloadListener() {
         @Override
@@ -79,27 +92,21 @@ public class DownloadButton extends ProgressColorTextView {
     /**
      * 对外唯一入口：订阅下载状态（不启动下载）
      */
-    public void bind(String url, LifecycleOwner owner) {
+    public void bind(String url) {
         this.url = url;
-        this.owner = owner;
-        DownloadManager.ins().setDownloadListener(url, owner, callback);
+        DownloadManager.ins().setDownloadListener(url, callback);
         addObserver();
         syncState();
     }
 
     // 自动解绑空下载任务
     private void addObserver() {
-        if (observer == null) {
-            observer = (LifecycleEventObserver) (source, event) -> {
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    DownloadManager.ins().removeDownloadListener(url, callback);
-                    DownloadTask task = DownloadManager.ins().getTask(url);
-                    if (task != null && task.status == DownloadTask.Status.IDLE && task.downloadedBytes <= 0) {
-                        DownloadManager.ins().delete(url);
-                    }
-                }
-            };
-            owner.getLifecycle().addObserver(observer);
+        if (!isBind) {
+            isBind = true;
+            LifecycleOwner owner = (LifecycleOwner) getContext();
+            if (owner != null) {
+                owner.getLifecycle().addObserver(observer);
+            }
         }
     }
 

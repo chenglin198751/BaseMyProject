@@ -2,10 +2,6 @@ package com.wcl.test.download;
 
 import android.os.Looper;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -36,19 +32,12 @@ class DownloadWorker implements Runnable {
     }
 
     /**
-     * 添加回调，自动绑定生命周期，Activity/Fragment 销毁时移除回调
+     * 添加回调
      */
-    void addCallback(LifecycleOwner owner, DownloadListener cb) {
+    void addCallback(DownloadListener cb) {
         if (cb == null || callbacks.contains(cb)) return;
 
         callbacks.add(cb);
-
-        // 自动解绑回调
-        owner.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
-            if (event == Lifecycle.Event.ON_DESTROY) {
-                removeCallback(cb);
-            }
-        });
     }
 
     void pause() {

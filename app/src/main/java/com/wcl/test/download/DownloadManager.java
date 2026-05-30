@@ -2,8 +2,6 @@ package com.wcl.test.download;
 
 import android.text.TextUtils;
 
-import androidx.lifecycle.LifecycleOwner;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +29,7 @@ public class DownloadManager {
     // 正在下载的 Worker 映射
     private final Map<String, DownloadWorker> workerMap;
     // 已注册但任务可能尚不存在的监听器映射
-    private final Map<String, List<ListenerHolder>> listenerMap;
+    private final Map<String, List<DownloadListener>> listenerMap;
     // 等待下载队列
     private final List<String> waitingQueue;
 
@@ -129,10 +127,10 @@ public class DownloadManager {
         waitingQueue.remove(taskId);
 
         // 任务被删除，回调 listener
-        List<ListenerHolder> holders = listenerMap.get(taskId);
-        if (holders != null) {
-            for (ListenerHolder holder : holders) {
-                holder.listener.onDeleted(task != null ? task.url : null);
+        List<DownloadListener> listeners = listenerMap.get(taskId);
+        if (listeners != null) {
+            for (DownloadListener listener : listeners) {
+                listener.onDeleted(task != null ? task.url : null);
             }
         }
 
@@ -147,8 +145,8 @@ public class DownloadManager {
      * 1.如果任务不存在 → 创建任务但不启动
      * 2.注册 listener 到任务或待启动任务
      */
-    public void setDownloadListener(String url, LifecycleOwner owner, DownloadListener listener) {
-        if (!DownloadUtils.isValidUrl(url) || listener == null || owner == null) return;
+    public void setDownloadListener(String url, DownloadListener listener) {
+        if (!DownloadUtils.isValidUrl(url) || listener == null) return;
 
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
@@ -162,20 +160,18 @@ public class DownloadManager {
         // 如果已有 Worker，直接添加
         DownloadWorker worker = workerMap.get(taskId);
         if (worker != null) {
-            worker.addCallback(owner, listener);
+            worker.addCallback(listener);
             return;
         }
 
         // 暂存 listener
-        List<ListenerHolder> holders = listenerMap.get(taskId);
-        if (holders == null) {
-            holders = Collections.synchronizedList(new ArrayList<>());
-            listenerMap.put(taskId, holders);
+        List<DownloadListener> listeners = listenerMap.get(taskId);
+        if (listeners == null) {
+            listeners = Collections.synchronizedList(new ArrayList<>());
+            listenerMap.put(taskId, listeners);
         }
 
-        // 添加 holder
-        ListenerHolder holder = new ListenerHolder(owner, listener);
-        holders.add(holder);
+        listeners.add(listener);
     }
 
     /**
@@ -186,11 +182,11 @@ public class DownloadManager {
 
         String taskId = DownloadUtils.getTaskId(url);
 
-        // 从 Manager 层预存的 holders 中移除
-        List<ListenerHolder> holders = listenerMap.get(taskId);
-        if (holders != null) {
-            holders.removeIf(h -> h.listener() == listener);
-            if (holders.isEmpty()) listenerMap.remove(taskId);
+        // 从 Manager 层预存的 listeners 中移除
+        List<DownloadListener> listeners = listenerMap.get(taskId);
+        if (listeners != null) {
+            listeners.removeIf(l -> l == listener);
+            if (listeners.isEmpty()) listenerMap.remove(taskId);
         }
 
         // 从 Worker 层正在运行的任务中移除
@@ -225,10 +221,10 @@ public class DownloadManager {
         DownloadWorker worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
 
         // 添加 listener
-        List<ListenerHolder> holders = listenerMap.get(taskId);
-        if (holders != null) {
-            for (ListenerHolder holder : holders) {
-                worker.addCallback(holder.owner, holder.listener);
+        List<DownloadListener> listeners = listenerMap.get(taskId);
+        if (listeners != null) {
+            for (DownloadListener listener : listeners) {
+                worker.addCallback(listener);
             }
         }
 
@@ -250,17 +246,11 @@ public class DownloadManager {
     }
 
     private void notifyStatus(DownloadTask task) {
-        List<ListenerHolder> holders = listenerMap.get(task.taskId);
-        if (holders != null) {
-            for (ListenerHolder holder : holders) {
-                holder.listener.onStatusChanged(task);
+        List<DownloadListener> listeners = listenerMap.get(task.taskId);
+        if (listeners != null) {
+            for (DownloadListener listener : listeners) {
+                listener.onStatusChanged(task);
             }
         }
-    }
-
-    /**
-     * 包装 LifecycleOwner + DownloadListener
-     */
-    private record ListenerHolder(LifecycleOwner owner, DownloadListener listener) {
     }
 }
