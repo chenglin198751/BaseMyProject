@@ -75,8 +75,13 @@ public class DownloadButton extends ProgressColorTextView {
      */
     public void bind(String url) {
         this.url = url;
-        DownloadManager.ins().addListener(callback);
         syncState();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        DownloadManager.ins().addListener(callback);
     }
 
     @Override

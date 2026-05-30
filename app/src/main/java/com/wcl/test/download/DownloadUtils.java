@@ -45,7 +45,7 @@ class DownloadUtils {
         if (dir == null) {
             dir = new File(AppUtils.FileUtils.getAppStoragePath());
         }
-        return new File(dir, AppUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
+        return new File(dir, AppUtils.md5(url) + getSuffix(url)).getAbsolutePath();
     }
 
     public static double roundProgress(long downloaded, long total) {
