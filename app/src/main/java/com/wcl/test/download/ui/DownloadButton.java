@@ -75,14 +75,14 @@ public class DownloadButton extends ProgressColorTextView {
      */
     public void bind(String url) {
         this.url = url;
-        DownloadManager.ins().setDownloadListener(url, callback);
+        DownloadManager.ins().addListener(url, callback);
         syncState();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        DownloadManager.ins().removeDownloadListener(url, callback);
+        DownloadManager.ins().removeListener(url, callback);
     }
 
     // 首次点击才真正创建并启动任务

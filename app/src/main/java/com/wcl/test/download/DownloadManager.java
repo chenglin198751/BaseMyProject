@@ -145,7 +145,7 @@ public class DownloadManager {
      * 1.如果任务不存在 → 创建任务但不启动
      * 2.注册 listener 到任务或待启动任务
      */
-    public void setDownloadListener(String url, DownloadListener listener) {
+    public void addListener(String url, DownloadListener listener) {
         if (!DownloadUtils.isValidUrl(url) || listener == null) return;
 
         String taskId = DownloadUtils.getTaskId(url);
@@ -170,7 +170,7 @@ public class DownloadManager {
     /**
      * 移除指定下载监听器
      */
-    public void removeDownloadListener(String url, DownloadListener listener) {
+    public void removeListener(String url, DownloadListener listener) {
         if (!DownloadUtils.isValidUrl(url) || listener == null) return;
 
         String taskId = DownloadUtils.getTaskId(url);
