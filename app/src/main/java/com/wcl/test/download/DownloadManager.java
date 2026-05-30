@@ -4,10 +4,10 @@ import android.text.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,19 +25,15 @@ public class DownloadManager {
     private final OkHttpClient client;
 
     // 已有任务映射
-    private final Map<String, DownloadTask> taskMap;
+    private final Map<String, DownloadTask> taskMap = new ConcurrentHashMap<>();
     // 正在下载的 Worker 映射
-    private final Map<String, DownloadWorker> workerMap;
+    private final Map<String, DownloadWorker> workerMap = new ConcurrentHashMap<>();
     // 等待下载队列
-    private final List<String> waitingQueue;
+    private final List<String> waitingQueue = new CopyOnWriteArrayList<>();
 
     private DownloadManager() {
         executor = Executors.newFixedThreadPool(MAX_THREAD);
         client = new OkHttpClient();
-
-        taskMap = Collections.synchronizedMap(new HashMap<>());
-        workerMap = Collections.synchronizedMap(new HashMap<>());
-        waitingQueue = Collections.synchronizedList(new ArrayList<>());
 
         // 加载数据库已有任务
         for (DownloadTask t : DownloadDBHelper.ins().loadAllTasks()) {
