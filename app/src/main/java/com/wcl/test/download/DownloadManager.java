@@ -28,8 +28,6 @@ public class DownloadManager {
     private final Map<String, DownloadTask> taskMap;
     // 正在下载的 Worker 映射
     private final Map<String, DownloadWorker> workerMap;
-    // 已注册但任务可能尚不存在的监听器映射
-    private final Map<String, List<DownloadListener>> listenerMap;
     // 等待下载队列
     private final List<String> waitingQueue;
 
@@ -39,7 +37,6 @@ public class DownloadManager {
 
         taskMap = Collections.synchronizedMap(new HashMap<>());
         workerMap = Collections.synchronizedMap(new HashMap<>());
-        listenerMap = Collections.synchronizedMap(new HashMap<>());
         waitingQueue = Collections.synchronizedList(new ArrayList<>());
 
         // 加载数据库已有任务
@@ -127,11 +124,8 @@ public class DownloadManager {
         waitingQueue.remove(taskId);
 
         // 任务被删除，回调 listener
-        List<DownloadListener> listeners = listenerMap.get(taskId);
-        if (listeners != null) {
-            for (DownloadListener listener : listeners) {
-                listener.onDeleted(task != null ? task.url : null);
-            }
+        for (DownloadListener listener : DownloadUtils.listeners) {
+            listener.onDeleted(task != null ? task.url : null);
         }
 
         return taskId;
@@ -145,48 +139,19 @@ public class DownloadManager {
      * 1.如果任务不存在 → 创建任务但不启动
      * 2.注册 listener 到任务或待启动任务
      */
-    public void addListener(String url, DownloadListener listener) {
-        if (!DownloadUtils.isValidUrl(url) || listener == null) return;
-
-        String taskId = DownloadUtils.getTaskId(url);
-
-        // 如果已有 Worker，直接添加
-        DownloadWorker worker = workerMap.get(taskId);
-        if (worker != null) {
-            worker.addCallback(listener);
-            return;
+    public void addListener(DownloadListener listener) {
+        if (listener == null) return;
+        if (!DownloadUtils.listeners.contains(listener)) {
+            DownloadUtils.listeners.add(listener);
         }
-
-        // 暂存 listener
-        List<DownloadListener> listeners = listenerMap.get(taskId);
-        if (listeners == null) {
-            listeners = Collections.synchronizedList(new ArrayList<>());
-            listenerMap.put(taskId, listeners);
-        }
-
-        listeners.add(listener);
     }
 
     /**
      * 移除指定下载监听器
      */
-    public void removeListener(String url, DownloadListener listener) {
-        if (!DownloadUtils.isValidUrl(url) || listener == null) return;
-
-        String taskId = DownloadUtils.getTaskId(url);
-
-        // 从 Manager 层预存的 listeners 中移除
-        List<DownloadListener> listeners = listenerMap.get(taskId);
-        if (listeners != null) {
-            listeners.removeIf(l -> l == listener);
-            if (listeners.isEmpty()) listenerMap.remove(taskId);
-        }
-
-        // 从 Worker 层正在运行的任务中移除
-        DownloadWorker worker = workerMap.get(taskId);
-        if (worker != null) {
-            worker.removeCallback(listener);
-        }
+    public void removeListener(DownloadListener listener) {
+        if (listener == null) return;
+        DownloadUtils.listeners.removeIf(l -> l == listener);
     }
 
     /**
@@ -210,17 +175,7 @@ public class DownloadManager {
      */
     private void createAndStartWorker(String taskId, DownloadTask task) {
         task.status = DownloadTask.Status.DOWNLOADING;
-
         DownloadWorker worker = new DownloadWorker(task, client, () -> workerFinished(taskId));
-
-        // 添加 listener
-        List<DownloadListener> listeners = listenerMap.get(taskId);
-        if (listeners != null) {
-            for (DownloadListener listener : listeners) {
-                worker.addCallback(listener);
-            }
-        }
-
         workerMap.put(taskId, worker);
         executor.execute(worker);
     }
@@ -239,11 +194,8 @@ public class DownloadManager {
     }
 
     private void notifyStatus(DownloadTask task) {
-        List<DownloadListener> listeners = listenerMap.get(task.taskId);
-        if (listeners != null) {
-            for (DownloadListener listener : listeners) {
-                listener.onStatusChanged(task);
-            }
+        for (DownloadListener listener : DownloadUtils.listeners) {
+            listener.onStatusChanged(task);
         }
     }
 }

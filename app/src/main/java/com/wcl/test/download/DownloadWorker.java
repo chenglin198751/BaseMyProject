@@ -21,8 +21,6 @@ class DownloadWorker implements Runnable {
     private final DownloadTask task;
     private final OkHttpClient client;
     private final Runnable finishCallback;
-
-    private final List<DownloadListener> callbacks = Collections.synchronizedList(new ArrayList<>());
     private volatile boolean paused;
 
     DownloadWorker(DownloadTask task, OkHttpClient client, Runnable finishCallback) {
@@ -31,37 +29,19 @@ class DownloadWorker implements Runnable {
         this.finishCallback = finishCallback;
     }
 
-    /**
-     * 添加回调
-     */
-    void addCallback(DownloadListener cb) {
-        if (cb == null || callbacks.contains(cb)) return;
-
-        callbacks.add(cb);
-    }
-
     void pause() {
         paused = true;
     }
 
-    /**
-     * 移除指定回调，不影响下载任务
-     */
-    void removeCallback(DownloadListener cb) {
-        synchronized (callbacks) {
-            callbacks.remove(cb);
-        }
-    }
-
     private void notifyProgress() {
         runOnUiThread(() -> {
-            for (DownloadListener cb : callbacks) cb.onProgress(task);
+            for (DownloadListener cb : DownloadUtils.listeners) cb.onProgress(task);
         });
     }
 
     private void notifyStatus() {
         runOnUiThread(() -> {
-            for (DownloadListener cb : callbacks) cb.onStatusChanged(task);
+            for (DownloadListener cb : DownloadUtils.listeners) cb.onStatusChanged(task);
         });
     }
 

@@ -6,15 +6,16 @@ import com.wcl.test.base.BaseApp;
 import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 下载工具类（内部使用，不对外）
  */
 class DownloadUtils {
+    static final List<DownloadListener> listeners = new CopyOnWriteArrayList<>();
 
     // 简单 URL 校验
     public static boolean isValidUrl(String url) {
