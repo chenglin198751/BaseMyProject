@@ -18,8 +18,9 @@ class DownloadUtils {
     static final List<DownloadListener> listeners = new CopyOnWriteArrayList<>();
 
     // 简单 URL 校验
-    public static boolean isValidUrl(String url) {
-        return url != null && (url.startsWith("http://") || url.startsWith("https://"));
+    public static boolean isInvalidUrl(String url) {
+        boolean valid = url != null && (url.startsWith("http://") || url.startsWith("https://"));
+        return !valid;
     }
 
     // UI 线程执行

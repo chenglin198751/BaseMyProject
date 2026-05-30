@@ -60,7 +60,7 @@ public class DownloadManager {
      * 如果线程池满 → 状态 WAITING，排队等待
      */
     public void start(String url) {
-        if (!DownloadUtils.isValidUrl(url)) return;
+        if (DownloadUtils.isInvalidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);
         DownloadTask task = taskMap.get(taskId);
