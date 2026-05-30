@@ -25,7 +25,7 @@ public class DownloadManager {
     private final OkHttpClient client;
 
     // 已有任务映射
-    private final Map<String, DownloadTask> taskMap = new ConcurrentHashMap<>();
+    private final Map<String, DownloadTask> allTaskMap = new ConcurrentHashMap<>();
     // 正在下载的 Worker 映射
     private final Map<String, DownloadWorker> workerMap = new ConcurrentHashMap<>();
     // 等待下载队列
@@ -37,7 +37,7 @@ public class DownloadManager {
 
         // 加载数据库已有任务
         for (DownloadTask t : DownloadDBHelper.ins().loadAllTasks()) {
-            taskMap.put(t.taskId, t);
+            allTaskMap.put(t.taskId, t);
         }
     }
 
@@ -63,11 +63,11 @@ public class DownloadManager {
         if (DownloadUtils.isInvalidUrl(url)) return;
 
         String taskId = DownloadUtils.getTaskId(url);
-        DownloadTask task = taskMap.get(taskId);
+        DownloadTask task = allTaskMap.get(taskId);
 
         if (task == null) {
             task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
-            taskMap.put(taskId, task);
+            allTaskMap.put(taskId, task);
             DownloadDBHelper.ins().saveTask(task);
         }
 
@@ -103,7 +103,7 @@ public class DownloadManager {
             return url;
         }
         String taskId = DownloadUtils.getTaskId(url);
-        DownloadTask task = taskMap.get(taskId);
+        DownloadTask task = allTaskMap.get(taskId);
 
         DownloadWorker worker = workerMap.remove(taskId);
         if (worker != null) {
@@ -116,7 +116,7 @@ public class DownloadManager {
             DownloadDBHelper.ins().deleteTask(taskId);
         }
 
-        taskMap.remove(taskId);
+        allTaskMap.remove(taskId);
         waitingQueue.remove(taskId);
 
         // 任务被删除，回调 listener
@@ -137,9 +137,7 @@ public class DownloadManager {
      */
     public void addListener(DownloadListener listener) {
         if (listener == null) return;
-        if (!DownloadUtils.listeners.contains(listener)) {
-            DownloadUtils.listeners.add(listener);
-        }
+        DownloadUtils.listeners.addIfAbsent(listener);
     }
 
     /**
@@ -154,14 +152,14 @@ public class DownloadManager {
      * 获取 url 对应任务
      */
     public DownloadTask getTask(String url) {
-        return taskMap.get(DownloadUtils.getTaskId(url));
+        return allTaskMap.get(DownloadUtils.getTaskId(url));
     }
 
     /**
      * 获取所有任务列表
      */
     public List<DownloadTask> getTasks() {
-        return new ArrayList<>(taskMap.values());
+        return new ArrayList<>(allTaskMap.values());
     }
 
     //-----------内部使用-----------
@@ -182,7 +180,7 @@ public class DownloadManager {
         // 线程池空出来了，启动等待队列中的任务
         if (!waitingQueue.isEmpty()) {
             String nextTaskId = waitingQueue.remove(0);
-            DownloadTask nextTask = taskMap.get(nextTaskId);
+            DownloadTask nextTask = allTaskMap.get(nextTaskId);
             if (nextTask != null) {
                 createAndStartWorker(nextTaskId, nextTask);
             }
