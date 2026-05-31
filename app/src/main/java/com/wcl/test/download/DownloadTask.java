@@ -26,8 +26,8 @@ public class DownloadTask {
 
     // 以下是可变状态（只允许 DownloadWorker 改）
     public volatile long totalBytes;
-    public volatile Status status;
     public volatile String errorMsg;
+    public volatile transient Status status;
     public volatile transient long downloadedBytes;
     public volatile transient double progress;
 

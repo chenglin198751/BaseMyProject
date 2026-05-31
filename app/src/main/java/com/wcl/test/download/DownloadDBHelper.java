@@ -132,31 +132,28 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     /**
      * 根据文件系统状态同步 DownloadTask 真实进度
      * 用于 APP 重启后从 DB 加载时恢复状态
+     * 文件系统是状态的唯一真实来源，不依赖 DB 中可能过时的 status
      */
     private void syncFromFileSystem(DownloadTask task) {
         File target = new File(task.savePath);
         File temp = new File(task.savePath + ".temp");
 
-        // target 完整且有已知大小 → 不动，交给完成流程处理
+        // target 完整 FINISHED
         if (target.exists() && task.totalBytes > 0 && target.length() == task.totalBytes) {
-            return;
-        }
-
-        // 无 Content-Length 的情况下，target 存在即认为已完成
-        if (target.exists() && task.totalBytes <= 0) {
-            task.downloadedBytes = target.length();
+            task.downloadedBytes = task.totalBytes;
             task.progress = 100.0;
             task.status = DownloadTask.Status.FINISHED;
             return;
         }
 
+        // target 不完整或不存在，检查 temp
         if (temp.exists()) {
             // temp 存在 → PAUSED，用真实大小恢复 progress
             task.downloadedBytes = temp.length();
             task.progress = task.totalBytes > 0 ? DownloadUtils.roundProgress(task.downloadedBytes, task.totalBytes) : 0;
             task.status = DownloadTask.Status.PAUSED;
         } else {
-            // temp 不存在 → IDLE
+            // temp 不存在 → IDLE（未开始或已完全清理）
             task.downloadedBytes = 0;
             task.progress = 0;
             task.status = DownloadTask.Status.IDLE;
