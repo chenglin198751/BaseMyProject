@@ -22,7 +22,6 @@ public class DownloadTask {
     // 数据库自增字段，不参与序列化
     public transient long _id;
     public transient long create_time;
-    public transient long update_time;
 
     // 以下是可变状态（只允许 DownloadWorker 改）
     public volatile long totalBytes;

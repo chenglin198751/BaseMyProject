@@ -65,12 +65,10 @@ class DownloadDBHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         String task_json = gson.toJson(task);
-        long now = System.currentTimeMillis();
 
-        // 先尝试更新，只更新 task_json、update_time、extra，不改变 _id 和 create_time
+        // 先尝试更新，只更新 task_json 和 extra，不改变 _id 和 create_time
         ContentValues updateCv = new ContentValues();
         updateCv.put("task_json", task_json);
-        updateCv.put("update_time", now);
         updateCv.put("extra", !TextUtils.isEmpty(task.extra) ? task.extra : null);
         int rows = db.update(TABLE_NAME, updateCv, "task_id=?", new String[]{task.taskId});
 
@@ -82,22 +80,20 @@ class DownloadDBHelper extends SQLiteOpenHelper {
             cv.put("extra", !TextUtils.isEmpty(task.extra) ? task.extra : null);
             // 回填 DB 层生成的字段
             task._id = db.insert(TABLE_NAME, null, cv);
-            task.create_time = now;
+            task.create_time = System.currentTimeMillis();
         }
-        task.update_time = now;
     }
 
     public DownloadTask loadTask(String taskId) {
         SQLiteDatabase db = getReadableDatabase();
-        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json", "_id", "create_time", "update_time", "extra"}, "task_id=?", new String[]{taskId}, null, null, null)) {
+        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json", "_id", "create_time", "extra"}, "task_id=?", new String[]{taskId}, null, null, null)) {
             if (c.moveToFirst()) {
                 try {
                     String json = c.getString(0);
                     DownloadTask task = gson.fromJson(json, DownloadTask.class);
                     task._id = c.getLong(1);
                     task.create_time = c.getLong(2);
-                    task.update_time = c.getLong(3);
-                    task.extra = c.getString(4);
+                    task.extra = c.getString(3);
                     return task;
                 } catch (Exception e) {
                     AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
@@ -110,15 +106,14 @@ class DownloadDBHelper extends SQLiteOpenHelper {
     public List<DownloadTask> loadAllTasks() {
         List<DownloadTask> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json", "_id", "create_time", "update_time", "extra"}, null, null, null, null, "_id DESC")) {
+        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json", "_id", "create_time", "extra"}, null, null, null, null, "_id DESC")) {
             while (c.moveToNext()) {
                 try {
                     String json = c.getString(0);
                     DownloadTask task = gson.fromJson(json, DownloadTask.class);
                     task._id = c.getLong(1);
                     task.create_time = c.getLong(2);
-                    task.update_time = c.getLong(3);
-                    task.extra = c.getString(4);
+                    task.extra = c.getString(3);
                     syncFromFileSystem(task);
                     list.add(task);
                 } catch (Exception e) {
