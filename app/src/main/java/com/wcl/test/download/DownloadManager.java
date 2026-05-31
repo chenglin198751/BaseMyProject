@@ -66,7 +66,7 @@ public class DownloadManager {
         DownloadTask task = allTaskMap.get(taskId);
 
         if (task == null) {
-            task = new DownloadTask(taskId, url, DownloadUtils.getDownloadPath(url));
+            task = new DownloadTask(url);
             allTaskMap.put(taskId, task);
             DownloadDBHelper.ins().saveTask(task);
         }

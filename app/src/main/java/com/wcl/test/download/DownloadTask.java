@@ -34,12 +34,10 @@ public class DownloadTask {
     // 扩展信息，比如应用详情json之类，会被保存到DB
     public transient String extra;
 
-    public DownloadTask(String taskId,
-                        String url,
-                        String savePath) {
-        this.taskId = taskId;
+    public DownloadTask(String url) {
+        this.taskId = DownloadUtils.getTaskId(url);
         this.url = url;
-        this.savePath = savePath;
+        this.savePath = DownloadUtils.getDownloadPath(url);
         this.status = Status.IDLE;
     }
 }
