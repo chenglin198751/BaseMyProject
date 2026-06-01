@@ -35,13 +35,13 @@ class DownloadWorker implements Runnable {
 
     private void notifyProgress() {
         runOnUiThread(() -> {
-            for (DownloadListener cb : DownloadUtils.listeners) cb.onProgress(task);
+            for (DownloadListener cb : DownloadManager.listeners) cb.onProgress(task);
         });
     }
 
     private void notifyStatus() {
         runOnUiThread(() -> {
-            for (DownloadListener cb : DownloadUtils.listeners) cb.onStatusChanged(task);
+            for (DownloadListener cb : DownloadManager.listeners) cb.onStatusChanged(task);
         });
     }
 

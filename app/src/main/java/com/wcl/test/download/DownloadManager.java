@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient;
  */
 public class DownloadManager {
 
+    static final CopyOnWriteArrayList<DownloadListener> listeners = new CopyOnWriteArrayList<>();
     private static final int MAX_THREAD = 4;
     private static volatile DownloadManager sInstance;
 
@@ -77,7 +78,7 @@ public class DownloadManager {
         // 判断线程池是否已满
         if (workerMap.size() >= MAX_THREAD) {
             task.status = DownloadTask.Status.WAITING;
-            for (DownloadListener listener : DownloadUtils.listeners) {
+            for (DownloadListener listener : listeners) {
                 listener.onStatusChanged(task);
             }
             if (!waitingQueue.contains(taskId)) waitingQueue.add(taskId);
@@ -122,7 +123,7 @@ public class DownloadManager {
         waitingQueue.remove(taskId);
 
         // 任务被删除，回调 listener
-        for (DownloadListener listener : DownloadUtils.listeners) {
+        for (DownloadListener listener : listeners) {
             listener.onDeleted(task != null ? task.url : null);
         }
 
@@ -139,7 +140,7 @@ public class DownloadManager {
      */
     public void addListener(DownloadListener listener) {
         if (listener == null) return;
-        DownloadUtils.listeners.addIfAbsent(listener);
+        listeners.addIfAbsent(listener);
     }
 
     /**
@@ -147,7 +148,7 @@ public class DownloadManager {
      */
     public void removeListener(DownloadListener listener) {
         if (listener == null) return;
-        DownloadUtils.listeners.removeIf(l -> l == listener);
+        listeners.removeIf(l -> l == listener);
     }
 
     /**

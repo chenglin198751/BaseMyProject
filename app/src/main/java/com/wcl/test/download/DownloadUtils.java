@@ -15,7 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 下载工具类（内部使用，不对外）
  */
 class DownloadUtils {
-    static final CopyOnWriteArrayList<DownloadListener> listeners = new CopyOnWriteArrayList<>();
 
     // 简单 URL 校验
     public static boolean isInvalidUrl(String url) {
