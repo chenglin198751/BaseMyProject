@@ -49,7 +49,6 @@ class DownloadDBHelper extends SQLiteOpenHelper {
                 + "task_id TEXT NOT NULL UNIQUE, "
                 + "task_json TEXT NOT NULL, "
                 + "create_time INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000), "
-                + "update_time INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000), "
                 + "extra TEXT"
                 + ")");
     }
