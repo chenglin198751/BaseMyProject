@@ -5,9 +5,6 @@ import android.os.Looper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -79,45 +76,44 @@ class DownloadWorker implements Runnable {
             Request.Builder builder = new Request.Builder().url(task.url);
             if (downloaded > 0) builder.addHeader("Range", "bytes=" + downloaded + "-");
 
-            Response response = client.newCall(builder.build()).execute();
-            if (!response.isSuccessful()) {
-                task.status = DownloadTask.Status.ERROR;
-                task.errorMsg = response.toString();
-                notifyStatus();
-                return;
-            }
+            try (Response response = client.newCall(builder.build()).execute()) {
+                if (!response.isSuccessful()) {
+                    task.status = DownloadTask.Status.ERROR;
+                    task.errorMsg = response.toString();
+                    notifyStatus();
+                    return;
+                }
 
-            if (task.totalBytes <= 0) {
-                task.totalBytes = response.body().contentLength();
-                DownloadDBHelper.ins().saveTask(task);
-            }
+                if (task.totalBytes <= 0) {
+                    task.totalBytes = response.body().contentLength();
+                    DownloadDBHelper.ins().saveTask(task);
+                }
 
-            InputStream in = response.body().byteStream();
-            FileOutputStream out = new FileOutputStream(temp, true);
+                try (InputStream in = response.body().byteStream();
+                     FileOutputStream out = new FileOutputStream(temp, true)) {
 
-            byte[] buffer = new byte[8192];
-            int len;
-            long sum = downloaded;
+                    byte[] buffer = new byte[8192];
+                    int len;
+                    long sum = downloaded;
 
-            while ((len = in.read(buffer)) != -1) {
-                if (paused) break;
+                    while ((len = in.read(buffer)) != -1) {
+                        if (paused) break;
 
-                out.write(buffer, 0, len);
-                sum += len;
+                        out.write(buffer, 0, len);
+                        sum += len;
 
-                long now = System.currentTimeMillis();
-                if (now - lastCallbackTime >= 1000) {
-                    lastCallbackTime = now;
-                    task.downloadedBytes = sum;
-                    task.progress = DownloadUtils.roundProgress(sum, task.totalBytes);
-                    notifyProgress();
+                        long now = System.currentTimeMillis();
+                        if (now - lastCallbackTime >= 1000) {
+                            lastCallbackTime = now;
+                            task.downloadedBytes = sum;
+                            task.progress = DownloadUtils.roundProgress(sum, task.totalBytes);
+                            notifyProgress();
+                        }
+                    }
+
+                    out.flush();
                 }
             }
-
-            out.flush();
-            out.close();
-            in.close();
-            response.close();
 
             if (paused) {
                 task.status = DownloadTask.Status.PAUSED;

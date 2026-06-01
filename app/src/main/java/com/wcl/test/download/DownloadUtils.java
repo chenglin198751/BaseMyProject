@@ -3,18 +3,16 @@ package com.wcl.test.download;
 import android.os.Environment;
 
 import com.wcl.test.base.BaseApp;
+import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 下载工具类（内部使用，不对外）
  */
 class DownloadUtils {
+    private static final String TAG = "DownloadUtils";
 
     // 简单 URL 校验
     public static boolean isInvalidUrl(String url) {
@@ -28,10 +26,14 @@ class DownloadUtils {
     }
 
     // 替换文件（下载完成后覆盖）
-    public static void replaceFile(File src, File dst) throws Exception {
-        Files.move(src.toPath(), dst.toPath(),
-                StandardCopyOption.REPLACE_EXISTING,
-                StandardCopyOption.ATOMIC_MOVE);
+    public static void replaceFile(File src, File dst) {
+        if (dst.exists()) {
+            dst.delete();
+        }
+        if (!src.renameTo(dst)) {
+            String err = src + " renameTo " + dst + " failed!";
+            AppLogUtils.e(TAG, err);
+        }
     }
 
     public static String getTaskId(String url) {
