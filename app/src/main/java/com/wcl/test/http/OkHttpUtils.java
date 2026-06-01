@@ -22,7 +22,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class HttpUtils {
+public class OkHttpUtils {
 
     public interface HttpCallback {
         void onResult(boolean success, String result);
@@ -34,10 +34,10 @@ public class HttpUtils {
         void onFinished(boolean success, String filePath, String error);
     }
 
-    private static final String TAG = "HttpUtils";
+    private static final String TAG = "OkHttpUtils";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
-    private HttpUtils() {
+    private OkHttpUtils() {
     }
 
     /**

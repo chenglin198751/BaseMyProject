@@ -8,7 +8,7 @@ import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.wcl.test.http.HttpUtils;
+import com.wcl.test.http.OkHttpUtils;
 import com.wcl.test.utils.BitmapUtils;
 
 import java.io.File;
@@ -81,13 +81,13 @@ public class LongImageView extends WebView {
         load(url, showWidth, null);
     }
 
-    public void load(final String url, final int showWidth, final HttpUtils.DownloadCallback callback) {
+    public void load(final String url, final int showWidth, final OkHttpUtils.DownloadCallback callback) {
         if (TextUtils.isEmpty(url) || !URLUtil.isNetworkUrl(url)) {
             if (callback != null) callback.onFinished(false, null, "Invalid URL");
             return;
         }
 
-        HttpUtils.download(url, new HttpUtils.DownloadCallback() {
+        OkHttpUtils.download(url, new OkHttpUtils.DownloadCallback() {
 
             @Override
             public void onFinished(boolean ok, String filePath, String err) {

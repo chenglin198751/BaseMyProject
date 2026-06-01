@@ -20,7 +20,7 @@ class Downloader {
      * @param url      文件下载地址
      * @param callback 下载回调（主线程）
      */
-    public static void fastDownload(String url, HttpUtils.DownloadCallback callback) {
+    public static void fastDownload(String url, OkHttpUtils.DownloadCallback callback) {
         if (HttpHelper.isInvalidUrl(url)) {
             callback.onFinished(false, null, "Invalid URL");
             return;
@@ -46,7 +46,7 @@ class Downloader {
 
                 // 小文件直接使用普通下载
                 if (totalLength < 50L * 1024 * 1024) {
-                    HttpUtils.download(url, callback);
+                    OkHttpUtils.download(url, callback);
                     return;
                 }
 
@@ -152,7 +152,7 @@ class Downloader {
         }).start();
     }
 
-    static void downloadInternal(String url, HttpUtils.DownloadCallback callback) {
+    static void downloadInternal(String url, OkHttpUtils.DownloadCallback callback) {
         long totalLength = HttpHelper.fetchContentLength(url);
 
         if (totalLength <= 0) {

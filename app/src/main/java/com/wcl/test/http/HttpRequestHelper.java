@@ -22,10 +22,9 @@ import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 class HttpRequestHelper {
-    private static final String TAG = "HttpUtils";
+    private static final String TAG = "OkHttpUtils";
 
     static final OkHttpClient CLIENT;
     static final Set<String> DOWNLOADING_URLS = ConcurrentHashMap.newKeySet();
@@ -46,14 +45,14 @@ class HttpRequestHelper {
     /**
      * 统一的异步请求入口（Fragment 专用），自动切换到主线程回调
      */
-    static void enqueue(Fragment fragment, Request request, HttpUtils.HttpCallback callback) {
+    static void enqueue(Fragment fragment, Request request, OkHttpUtils.HttpCallback callback) {
         enqueue(() -> HttpHelper.isFragmentAlive(fragment), request, callback);
     }
 
     /**
      * 统一的异步请求入口，自动切换到主线程回调
      */
-    static void enqueue(Context context, Request request, HttpUtils.HttpCallback callback) {
+    static void enqueue(Context context, Request request, OkHttpUtils.HttpCallback callback) {
         enqueue(() -> HttpHelper.isActivityAlive(context), request, callback);
     }
 
@@ -62,7 +61,7 @@ class HttpRequestHelper {
      *
      * @param isAlive 存活检测器，返回 false 时静默丢弃回调（用于 Activity/Fragment 生命周期安全判断）
      */
-    static void enqueue(BooleanSupplier isAlive, Request request, HttpUtils.HttpCallback callback) {
+    static void enqueue(BooleanSupplier isAlive, Request request, OkHttpUtils.HttpCallback callback) {
         CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -98,7 +97,7 @@ class HttpRequestHelper {
         return finalParams;
     }
 
-    static void notifyResult(HttpUtils.HttpCallback callback, boolean success, String result) {
+    static void notifyResult(OkHttpUtils.HttpCallback callback, boolean success, String result) {
         if (callback != null) {
             callback.onResult(success, result);
         }
