@@ -63,7 +63,7 @@ public class DownloadButton extends ProgressColorTextView {
         setText(R.string.down_download);
         setClickable(true);
 
-        setOnClickListener(new OnSingleClickListener() {
+        setOnClickListener(new OnSingleClickListener(500L) {
             @Override
             public void onSingleClick(View v) {
                 handleClick();
