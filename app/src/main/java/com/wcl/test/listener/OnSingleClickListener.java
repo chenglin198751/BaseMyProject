@@ -3,10 +3,12 @@ package com.wcl.test.listener;
 import android.os.SystemClock;
 import android.view.View;
 
+/**
+ * 防止快速重复点击
+ */
 public abstract class OnSingleClickListener implements View.OnClickListener {
     private static final long DEFAULT_INTERVAL = 1000L;
-
-    private long lastClickTime;
+    private long lastClickTime = 0L;
     private final long interval;
 
     public OnSingleClickListener() {
@@ -21,13 +23,13 @@ public abstract class OnSingleClickListener implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
+    public final void onClick(View v) {
         long nowTime = SystemClock.elapsedRealtime();
-        if (nowTime - lastClickTime > interval) {
-            onSingleClick(v);
+        if (nowTime - lastClickTime >= interval) {
             lastClickTime = nowTime;
+            onSingleClick(v);
         }
     }
 
-    public abstract void onSingleClick(View v);
+    protected abstract void onSingleClick(View v);
 }
