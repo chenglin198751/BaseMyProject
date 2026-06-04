@@ -117,6 +117,7 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 | `utils.timer.AlarmTimer`               | 基于 AlarmManager 的定时器                                 |
 | `main.SingleClickUtils`                | 单击/多击工具类                                             |
 | `widget.ToastUtils`                    | Toast 工具                                             |
+| `EnvToggle`                            | 全局 debug/log 开关                                      |
 
 ## 通用组件
 

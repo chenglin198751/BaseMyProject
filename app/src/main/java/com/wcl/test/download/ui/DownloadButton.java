@@ -7,6 +7,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.wcl.test.EnvToggle;
 import com.wcl.test.R;
 import com.wcl.test.download.DownloadListener;
 import com.wcl.test.download.DownloadManager;
@@ -150,6 +151,9 @@ public class DownloadButton extends ProgressColorTextView {
                 break;
         }
 
-        setText(getText() + " " + task.status);
+        if (EnvToggle.isDebug()) {
+            setText(getText() + " " + task.status);
+        }
+
     }
 }
