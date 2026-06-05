@@ -20,6 +20,7 @@ class DownloadWorker implements Runnable {
     private final OkHttpClient client;
     private final Runnable finishCallback;
     private final AtomicBoolean paused = new AtomicBoolean(false);
+    private static final int PROGRESS_INTERVAL = 1000;
 
     DownloadWorker(DownloadTask task, OkHttpClient client, Runnable finishCallback) {
         this.task = task;
@@ -104,7 +105,7 @@ class DownloadWorker implements Runnable {
                         sum += len;
 
                         long now = System.currentTimeMillis();
-                        if (now - lastCallbackTime >= 1000) {
+                        if (now - lastCallbackTime >= PROGRESS_INTERVAL) {
                             lastCallbackTime = now;
                             task.downloadedBytes = sum;
                             task.progress = DownloadUtils.roundProgress(sum, task.totalBytes);
