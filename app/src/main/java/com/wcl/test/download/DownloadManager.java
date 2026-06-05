@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 
@@ -34,7 +35,11 @@ public class DownloadManager {
 
     private DownloadManager() {
         executor = Executors.newFixedThreadPool(MAX_THREAD);
-        client = new OkHttpClient();
+        client = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .build();
 
         // 加载数据库已有任务
         for (DownloadTask t : DownloadDBHelper.ins().loadAllTasks()) {
