@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -20,6 +21,7 @@ class DownloadWorker implements Runnable {
     private final OkHttpClient client;
     private final Runnable finishCallback;
     private final AtomicBoolean paused = new AtomicBoolean(false);
+    private volatile Call call;
     private static final int PROGRESS_INTERVAL = 500;
 
     DownloadWorker(DownloadTask task, OkHttpClient client, Runnable finishCallback) {
@@ -30,6 +32,9 @@ class DownloadWorker implements Runnable {
 
     void pause() {
         paused.set(true);
+        if (call != null) {
+            call.cancel();
+        }
     }
 
     private void notifyProgress() {
@@ -78,7 +83,8 @@ class DownloadWorker implements Runnable {
             Request.Builder builder = new Request.Builder().url(task.url);
             if (downloaded > 0) builder.addHeader("Range", "bytes=" + downloaded + "-");
 
-            try (Response response = client.newCall(builder.build()).execute()) {
+            call = client.newCall(builder.build());
+            try (Response response = call.execute()) {
                 if (!response.isSuccessful()) {
                     task.status = DownloadTask.Status.ERROR;
                     task.errorMsg = response.toString();
@@ -128,9 +134,14 @@ class DownloadWorker implements Runnable {
             }
             notifyStatus();
         } catch (Throwable t) {
-            task.status = DownloadTask.Status.ERROR;
-            task.errorMsg = t.toString();
-            DownloadDBHelper.ins().saveTask(task);
+            // 调用call.cancel() 会抛异常，需区分主动暂停和真正错误
+            if (paused.get()) {
+                task.status = DownloadTask.Status.PAUSED;
+            } else {
+                task.status = DownloadTask.Status.ERROR;
+                task.errorMsg = t.toString();
+                DownloadDBHelper.ins().saveTask(task);
+            }
             notifyStatus();
         } finally {
             runFinishCallback();
