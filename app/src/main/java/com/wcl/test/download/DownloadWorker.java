@@ -20,7 +20,7 @@ class DownloadWorker implements Runnable {
     private final OkHttpClient client;
     private final Runnable finishCallback;
     private final AtomicBoolean paused = new AtomicBoolean(false);
-    private static final int PROGRESS_INTERVAL = 1000;
+    private static final int PROGRESS_INTERVAL = 500;
 
     DownloadWorker(DownloadTask task, OkHttpClient client, Runnable finishCallback) {
         this.task = task;
