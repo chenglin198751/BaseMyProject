@@ -5,6 +5,7 @@ import android.os.Looper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,7 +19,7 @@ class DownloadWorker implements Runnable {
     private final DownloadTask task;
     private final OkHttpClient client;
     private final Runnable finishCallback;
-    private volatile boolean paused;
+    private final AtomicBoolean paused = new AtomicBoolean(false);
 
     DownloadWorker(DownloadTask task, OkHttpClient client, Runnable finishCallback) {
         this.task = task;
@@ -27,7 +28,7 @@ class DownloadWorker implements Runnable {
     }
 
     void pause() {
-        paused = true;
+        paused.set(true);
     }
 
     private void notifyProgress() {
@@ -97,7 +98,7 @@ class DownloadWorker implements Runnable {
                     long sum = downloaded;
 
                     while ((len = in.read(buffer)) != -1) {
-                        if (paused) break;
+                        if (paused.get()) break;
 
                         out.write(buffer, 0, len);
                         sum += len;
@@ -115,7 +116,7 @@ class DownloadWorker implements Runnable {
                 }
             }
 
-            if (paused) {
+            if (paused.get()) {
                 task.status = DownloadTask.Status.PAUSED;
             } else {
                 DownloadUtils.replaceFile(temp, target);

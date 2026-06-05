@@ -19,8 +19,8 @@ import com.wcl.test.R;
 class ProgressColorTextView extends AppCompatTextView {
 
     private int progress = 0; // 0 ~ 100
-    private final int colorLeft = Color.WHITE;
-    private final int colorRight = Color.parseColor("#2979FF");
+    private static final int COLOR_LEFT = 0xFFFFFFFF;   // Color.WHITE
+    private static final int COLOR_RIGHT = 0xFF2979FF;    // #2979FF
 
     public ProgressColorTextView(Context context) {
         super(context);
@@ -81,12 +81,12 @@ class ProgressColorTextView extends AppCompatTextView {
         int width = getWidth();
         if (width <= 0) return;
 
-        setTextColor(colorLeft);
+        setTextColor(COLOR_LEFT);
         float p = progress / 100f;
         LinearGradient shader = new LinearGradient(
                 0, 0,
                 width, 0,
-                new int[]{colorLeft, colorLeft, colorRight, colorRight},
+                new int[]{COLOR_LEFT, COLOR_LEFT, COLOR_RIGHT, COLOR_RIGHT},
                 new float[]{0f, p, p, 1f},
                 Shader.TileMode.CLAMP
         );
