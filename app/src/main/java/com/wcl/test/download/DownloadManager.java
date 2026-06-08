@@ -186,11 +186,12 @@ public class DownloadManager {
         workerMap.remove(taskId);
 
         // 线程池空出来了，启动等待队列中的任务
-        if (!waitingQueue.isEmpty()) {
+        while (!waitingQueue.isEmpty()) {
             String nextTaskId = waitingQueue.remove(0);
             DownloadTask nextTask = allTaskMap.get(nextTaskId);
             if (nextTask != null) {
                 createAndStartWorker(nextTaskId, nextTask);
+                break;
             }
         }
     }
