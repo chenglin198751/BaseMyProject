@@ -20,6 +20,7 @@ import java.util.List;
  */
 class DownloadDBHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "DownloadDBHelper";
     private static final String DB_NAME = "okhttp3_download.db";
     private static final String[] COLUMNS = {"task_json", "_id", "create_time", "extra"};
     private static final int VERSION = 1;
@@ -111,7 +112,7 @@ class DownloadDBHelper extends SQLiteOpenHelper {
             task.extra = c.getString(3);
             return task;
         } catch (Exception e) {
-            AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
+            AppLogUtils.e(TAG, "Failed:" + e);
             return null;
         }
     }
