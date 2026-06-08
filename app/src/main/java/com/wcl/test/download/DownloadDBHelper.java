@@ -21,6 +21,7 @@ import java.util.List;
 class DownloadDBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "okhttp3_download.db";
+    private static final String[] COLUMNS = {"task_json", "_id", "create_time", "extra"};
     private static final int VERSION = 1;
     private static final String TABLE_NAME = "download_task";
     private static final Gson gson = AppConstants.gson;
@@ -83,44 +84,36 @@ class DownloadDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public DownloadTask loadTask(String taskId) {
-        SQLiteDatabase db = getReadableDatabase();
-        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json", "_id", "create_time", "extra"}, "task_id=?", new String[]{taskId}, null, null, null)) {
-            if (c.moveToFirst()) {
-                try {
-                    String json = c.getString(0);
-                    DownloadTask task = gson.fromJson(json, DownloadTask.class);
-                    task._id = c.getLong(1);
-                    task.create_time = c.getLong(2);
-                    task.extra = c.getString(3);
-                    return task;
-                } catch (Exception e) {
-                    AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
-                }
-            }
-            return null;
-        }
-    }
-
     public List<DownloadTask> loadAllTasks() {
         List<DownloadTask> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        try (Cursor c = db.query(TABLE_NAME, new String[]{"task_json", "_id", "create_time", "extra"}, null, null, null, null, "_id DESC")) {
+        try (Cursor c = db.query(TABLE_NAME, COLUMNS, null, null, null, null, "_id DESC")) {
             while (c.moveToNext()) {
-                try {
-                    String json = c.getString(0);
-                    DownloadTask task = gson.fromJson(json, DownloadTask.class);
-                    task._id = c.getLong(1);
-                    task.create_time = c.getLong(2);
-                    task.extra = c.getString(3);
+                DownloadTask task = parseCursorRow(c);
+                if (task != null) {
                     syncFromFileSystem(task);
                     list.add(task);
-                } catch (Exception e) {
-                    AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
                 }
             }
         }
         return list;
+    }
+
+    /**
+     * 从 Cursor 当前行解析 DownloadTask，失败返回 null
+     */
+    private DownloadTask parseCursorRow(Cursor c) {
+        try {
+            String json = c.getString(0);
+            DownloadTask task = gson.fromJson(json, DownloadTask.class);
+            task._id = c.getLong(1);
+            task.create_time = c.getLong(2);
+            task.extra = c.getString(3);
+            return task;
+        } catch (Exception e) {
+            AppLogUtils.e("DownloadDBHelper", "Failed:" + e);
+            return null;
+        }
     }
 
     /**
