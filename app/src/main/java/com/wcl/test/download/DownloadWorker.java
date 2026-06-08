@@ -89,6 +89,7 @@ class DownloadWorker implements Runnable {
                 if (!response.isSuccessful()) {
                     task.status = DownloadTask.Status.ERROR;
                     task.errorMsg = response.toString();
+                    DownloadDBHelper.ins().saveTask(task);
                     notifyStatus();
                     return;
                 }
@@ -138,8 +139,12 @@ class DownloadWorker implements Runnable {
             // 调用call.cancel() 会抛异常，需区分主动暂停和真正错误
             if (paused.get()) {
                 task.status = DownloadTask.Status.PAUSED;
-                notifyStatus();
+            } else {
+                task.status = DownloadTask.Status.ERROR;
+                task.errorMsg = io.toString();
+                DownloadDBHelper.ins().saveTask(task);
             }
+            notifyStatus();
         } catch (Throwable t) {
             task.status = DownloadTask.Status.ERROR;
             task.errorMsg = t.toString();
