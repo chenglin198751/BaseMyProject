@@ -39,13 +39,13 @@ class DownloadWorker implements Runnable {
     }
 
     private void notifyProgress() {
-        runOnUiThread(() -> {
+        DownloadUtils.runOnUiThread(() -> {
             for (DownloadListener cb : DownloadManager.listeners) cb.onProgress(task);
         });
     }
 
     private void notifyStatus() {
-        runOnUiThread(() -> {
+        DownloadUtils.runOnUiThread(() -> {
             for (DownloadListener cb : DownloadManager.listeners) cb.onStatusChanged(task);
         });
     }
@@ -74,7 +74,7 @@ class DownloadWorker implements Runnable {
 
         // 断点续传异常则直接删除下载任务
         if (downloaded > 0 && task.totalBytes > 0 && downloaded > task.totalBytes) {
-            runOnUiThread(() -> DownloadManager.ins().delete(task.url));
+            DownloadUtils.runOnUiThread(() -> DownloadManager.ins().delete(task.url));
             return;
         }
 
@@ -156,16 +156,8 @@ class DownloadWorker implements Runnable {
     }
 
     private void runFinishCallback() {
-        runOnUiThread(() -> {
+        DownloadUtils.runOnUiThread(() -> {
             if (finishCallback != null) finishCallback.run();
         });
-    }
-
-    private void runOnUiThread(Runnable r) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            r.run();
-        } else {
-            DownloadUtils.runOnUiThread(r);
-        }
     }
 }
