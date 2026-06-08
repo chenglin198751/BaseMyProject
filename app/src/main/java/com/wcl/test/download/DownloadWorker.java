@@ -4,6 +4,7 @@ import android.os.Looper;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -133,15 +134,16 @@ class DownloadWorker implements Runnable {
                 task.status = DownloadTask.Status.FINISHED;
             }
             notifyStatus();
-        } catch (Throwable t) {
+        } catch (IOException io) {
             // 调用call.cancel() 会抛异常，需区分主动暂停和真正错误
             if (paused.get()) {
                 task.status = DownloadTask.Status.PAUSED;
-            } else {
-                task.status = DownloadTask.Status.ERROR;
-                task.errorMsg = t.toString();
-                DownloadDBHelper.ins().saveTask(task);
+                notifyStatus();
             }
+        } catch (Throwable t) {
+            task.status = DownloadTask.Status.ERROR;
+            task.errorMsg = t.toString();
+            DownloadDBHelper.ins().saveTask(task);
             notifyStatus();
         } finally {
             runFinishCallback();
