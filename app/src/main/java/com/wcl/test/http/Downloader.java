@@ -17,7 +17,7 @@ class Downloader {
 
     private static final String TAG = "Downloader";
     private static final int PROGRESS_INTERVAL = 500;
-    private static final long BIG_FILE_SIZE = 50L * 1024 * 1024;
+    private static final long BIG_FILE_SIZE = 200L * 1024 * 1024;
 
     /**
      * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按时间间隔回调）
@@ -49,7 +49,7 @@ class Downloader {
                     return;
                 }
 
-                // 小文件直接使用普通下载，先释放 DOWNLOADING_URLS 避免竞态
+                // 小文件强制使用普通下载，先释放 DOWNLOADING_URLS 避免竞态
                 if (totalLength < BIG_FILE_SIZE) {
                     HttpRequestHelper.DOWNLOADING_URLS.remove(url);
                     OkHttpUtils.download(url, callback);
