@@ -1,7 +1,5 @@
 package com.wcl.test.download;
 
-import android.os.Looper;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -75,6 +73,7 @@ class DownloadWorker implements Runnable {
         // 断点续传异常则直接删除下载任务
         if (downloaded > 0 && task.totalBytes > 0 && downloaded > task.totalBytes) {
             DownloadUtils.runOnUiThread(() -> DownloadManager.ins().delete(task.url));
+            runFinishCallback();
             return;
         }
 
@@ -87,9 +86,7 @@ class DownloadWorker implements Runnable {
             call = client.newCall(builder.build());
             try (Response response = call.execute()) {
                 if (!response.isSuccessful()) {
-                    task.status = DownloadTask.Status.ERROR;
-                    task.errorMsg = response.toString();
-                    DownloadDBHelper.ins().saveTask(task);
+                    saveErrorTask(response.toString());
                     notifyStatus();
                     return;
                 }
@@ -127,6 +124,9 @@ class DownloadWorker implements Runnable {
 
             if (paused.get()) {
                 task.status = DownloadTask.Status.PAUSED;
+            } else if (task.totalBytes > 0 && temp.length() < task.totalBytes) {
+                // 服务端提前断流，导致文件不完整
+                saveErrorTask("incomplete:" + temp.length() + "/" + task.totalBytes);
             } else {
                 DownloadUtils.replaceFile(temp, target);
                 task.downloadedBytes = task.totalBytes;
@@ -140,19 +140,21 @@ class DownloadWorker implements Runnable {
             if (paused.get()) {
                 task.status = DownloadTask.Status.PAUSED;
             } else {
-                task.status = DownloadTask.Status.ERROR;
-                task.errorMsg = io.toString();
-                DownloadDBHelper.ins().saveTask(task);
+                saveErrorTask(io.toString());
             }
             notifyStatus();
         } catch (Throwable t) {
-            task.status = DownloadTask.Status.ERROR;
-            task.errorMsg = t.toString();
-            DownloadDBHelper.ins().saveTask(task);
+            saveErrorTask(t.toString());
             notifyStatus();
         } finally {
             runFinishCallback();
         }
+    }
+
+    private void saveErrorTask(String error) {
+        task.status = DownloadTask.Status.ERROR;
+        task.errorMsg = error;
+        DownloadDBHelper.ins().saveTask(task);
     }
 
     private void runFinishCallback() {
