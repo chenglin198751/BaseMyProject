@@ -272,7 +272,7 @@ public class OkHttpUtils {
     }
 
     /**
-     * 异步下载文件（支持断点续传）
+     * 异步下载文件（支持断点续传 + 进度按时间间隔回调）
      */
     public static void download(String url, DownloadCallback callback) {
         if (HttpHelper.isInvalidUrl(url)) {

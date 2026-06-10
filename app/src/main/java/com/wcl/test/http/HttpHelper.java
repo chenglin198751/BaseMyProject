@@ -8,11 +8,10 @@ import android.text.TextUtils;
 import androidx.fragment.app.Fragment;
 
 import com.wcl.test.base.BaseApp;
+import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.Map;
 
 import okhttp3.FormBody;
@@ -20,6 +19,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 class HttpHelper {
+
+    private static final String TAG = "HttpHelper";
 
     // 如果是无效 url（空或非 http/https）则返回 true
     static boolean isInvalidUrl(String url) {
@@ -82,21 +83,18 @@ class HttpHelper {
                 return response.body().contentLength();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogUtils.e(TAG, "fetchContentLength error: " + e);
         }
         return 0;
     }
 
-    static void replaceFile(File src, File dest) throws Exception {
-        try (FileInputStream in = new FileInputStream(src);
-             FileOutputStream out = new FileOutputStream(dest)) {
-            byte[] buf = new byte[4096];
-            int len;
-            while ((len = in.read(buf)) != -1) {
-                out.write(buf, 0, len);
-            }
+    static void replaceFile(File src, File dest) {
+        if (dest.exists()) {
+            dest.delete();
         }
-        src.delete();
+        if (!src.renameTo(dest)) {
+            AppLogUtils.e(TAG, src + " renameTo " + dest + " failed!");
+        }
     }
 
     private static String getSuffix(String url) {
