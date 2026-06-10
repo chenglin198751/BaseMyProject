@@ -1,11 +1,13 @@
 package com.wcl.test.http;
 
+import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import okhttp3.Request;
@@ -13,10 +15,12 @@ import okhttp3.Response;
 
 class Downloader {
 
+    private static final String TAG = "Downloader";
     private static final int PROGRESS_INTERVAL = 500;
+    private static final long BIG_FILE_SIZE = 50L * 1024 * 1024;
 
     /**
-     * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按1%回调）
+     * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按时间间隔回调）
      *
      * @param url      文件下载地址
      * @param callback 下载回调（主线程）
@@ -45,8 +49,9 @@ class Downloader {
                     return;
                 }
 
-                // 小文件直接使用普通下载
-                if (totalLength < 50L * 1024 * 1024) {
+                // 小文件直接使用普通下载，先释放 DOWNLOADING_URLS 避免竞态
+                if (totalLength < BIG_FILE_SIZE) {
+                    HttpRequestHelper.DOWNLOADING_URLS.remove(url);
                     OkHttpUtils.download(url, callback);
                     return;
                 }
@@ -63,6 +68,7 @@ class Downloader {
                 Thread[] threads = new Thread[threadCount];
                 AtomicLong downloaded = new AtomicLong(0);
                 AtomicLong lastCallbackTime = new AtomicLong(0);
+                AtomicBoolean hasError = new AtomicBoolean(false);
 
                 // 计算已下载长度（每个分块已有文件）
                 for (int i = 0; i < threadCount; i++) {
@@ -92,7 +98,10 @@ class Downloader {
                                     .build();
 
                             try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
-                                if (!response.isSuccessful()) return;
+                                if (!response.isSuccessful()) {
+                                    hasError.set(true);
+                                    return;
+                                }
 
                                 try (InputStream in = response.body().byteStream()) {
                                     byte[] buffer = new byte[8192];
@@ -111,7 +120,8 @@ class Downloader {
                                 }
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            hasError.set(true);
+                            AppLogUtils.e(TAG, "chunk " + index + " download error: " + e);
                         }
                     });
 
@@ -120,6 +130,12 @@ class Downloader {
 
                 // 等待所有线程完成
                 for (Thread t : threads) t.join();
+
+                // 有分块下载失败，不合并，保留断点续传文件
+                if (hasError.get()) {
+                    HttpHelper.postToUi(() -> callback.onFinished(false, null, "部分分块下载失败"));
+                    return;
+                }
 
                 // 合并分块文件
                 try (RandomAccessFile out = new RandomAccessFile(target, "rw")) {
@@ -142,7 +158,7 @@ class Downloader {
                 HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
 
             } catch (Throwable t) {
-                t.printStackTrace();
+                AppLogUtils.e(TAG, "fastDownload error: " + t);
                 HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
             } finally {
                 HttpRequestHelper.DOWNLOADING_URLS.remove(url);
