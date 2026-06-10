@@ -61,24 +61,22 @@ public class TestDownloadActivity extends BaseActivity {
         @Override
         public BaseRecyclerViewHolder<String> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(activity).inflate(R.layout.test_download_item, parent, false);
-            return new ListHolder(activity, view);
+            return new ListHolder(view);
         }
 
         private static class ListHolder extends BaseRecyclerViewHolder<String> {
-            private final BaseActivity activity;
             DownloadButton downloadButton;
             Button delete;
 
-            public ListHolder(BaseActivity activity, View itemView) {
+            public ListHolder(View itemView) {
                 super(itemView);
-                this.activity = activity;
                 downloadButton = itemView.findViewById(R.id.down_btn);
                 delete = itemView.findViewById(R.id.delete);
             }
 
             @Override
             public void onBind(@NonNull String url, int position) {
-                downloadButton.bind(url, activity);
+                downloadButton.bind(url);
                 delete.setOnClickListener(v -> {
                     DownloadManager.ins().delete(url);
                 });
