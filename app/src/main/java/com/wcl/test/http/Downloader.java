@@ -38,132 +38,136 @@ class Downloader {
         }
 
         new Thread(() -> {
-            try {
-                File target = new File(HttpHelper.getDownloadPath(url));
-                File tempDir = new File(target.getAbsolutePath() + "_tmp");
-                if (!tempDir.exists()) tempDir.mkdirs();
+            executeFastDownload(url, callback);
+        }).start();
+    }
 
-                long totalLength = HttpHelper.fetchContentLength(url);
-                if (totalLength <= 0) {
-                    HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
-                    return;
+    private static void executeFastDownload(String url, OkHttpUtils.DownloadCallback callback) {
+        try {
+            File target = new File(HttpHelper.getDownloadPath(url));
+            File tempDir = new File(target.getAbsolutePath() + "_tmp");
+            if (!tempDir.exists()) tempDir.mkdirs();
+
+            long totalLength = HttpHelper.fetchContentLength(url);
+            if (totalLength <= 0) {
+                HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+                return;
+            }
+
+            // 小文件强制使用普通下载，先释放 DOWNLOADING_URLS 避免竞态
+            if (totalLength < BIG_FILE_SIZE) {
+                HttpRequestHelper.DOWNLOADING_URLS.remove(url);
+                OkHttpUtils.download(url, callback);
+                return;
+            }
+
+            // 文件已经完整下载
+            if (target.exists() && target.length() == totalLength) {
+                HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+                return;
+            }
+
+            int threadCount = 4;
+            long blockSize = totalLength / threadCount;
+
+            Thread[] threads = new Thread[threadCount];
+            AtomicLong downloaded = new AtomicLong(0);
+            AtomicLong lastCallbackTime = new AtomicLong(0);
+            AtomicBoolean hasError = new AtomicBoolean(false);
+
+            // 计算已下载长度（每个分块已有文件）
+            for (int i = 0; i < threadCount; i++) {
+                File partFile = new File(tempDir, "part_" + i);
+                if (partFile.exists()) {
+                    downloaded.addAndGet(partFile.length());
                 }
+            }
 
-                // 小文件强制使用普通下载，先释放 DOWNLOADING_URLS 避免竞态
-                if (totalLength < BIG_FILE_SIZE) {
-                    HttpRequestHelper.DOWNLOADING_URLS.remove(url);
-                    OkHttpUtils.download(url, callback);
-                    return;
-                }
+            for (int i = 0; i < threadCount; i++) {
+                long start = i * blockSize;
+                long end = (i == threadCount - 1) ? totalLength - 1 : (start + blockSize - 1);
+                int index = i;
 
-                // 文件已经完整下载
-                if (target.exists() && target.length() == totalLength) {
-                    HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
-                    return;
-                }
+                threads[i] = new Thread(() -> {
+                    File partFile = new File(tempDir, "part_" + index);
+                    long existing = partFile.exists() ? partFile.length() : 0;
+                    long rangeStart = start + existing;
+                    if (rangeStart > end) return; // 已下载完成
 
-                int threadCount = 4;
-                long blockSize = totalLength / threadCount;
+                    try (RandomAccessFile raf = new RandomAccessFile(partFile, "rw")) {
+                        raf.seek(existing);
 
-                Thread[] threads = new Thread[threadCount];
-                AtomicLong downloaded = new AtomicLong(0);
-                AtomicLong lastCallbackTime = new AtomicLong(0);
-                AtomicBoolean hasError = new AtomicBoolean(false);
+                        Request request = new Request.Builder()
+                                .url(url)
+                                .addHeader("Range", "bytes=" + rangeStart + "-" + end)
+                                .build();
 
-                // 计算已下载长度（每个分块已有文件）
-                for (int i = 0; i < threadCount; i++) {
-                    File partFile = new File(tempDir, "part_" + i);
-                    if (partFile.exists()) {
-                        downloaded.addAndGet(partFile.length());
-                    }
-                }
+                        try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+                            if (!response.isSuccessful()) {
+                                hasError.set(true);
+                                return;
+                            }
 
-                for (int i = 0; i < threadCount; i++) {
-                    long start = i * blockSize;
-                    long end = (i == threadCount - 1) ? totalLength - 1 : (start + blockSize - 1);
-                    int index = i;
+                            try (InputStream in = response.body().byteStream()) {
+                                byte[] buffer = new byte[8192];
+                                int len;
+                                while ((len = in.read(buffer)) != -1) {
+                                    raf.write(buffer, 0, len);
 
-                    threads[i] = new Thread(() -> {
-                        File partFile = new File(tempDir, "part_" + index);
-                        long existing = partFile.exists() ? partFile.length() : 0;
-                        long rangeStart = start + existing;
-                        if (rangeStart > end) return; // 已下载完成
-
-                        try (RandomAccessFile raf = new RandomAccessFile(partFile, "rw")) {
-                            raf.seek(existing);
-
-                            Request request = new Request.Builder()
-                                    .url(url)
-                                    .addHeader("Range", "bytes=" + rangeStart + "-" + end)
-                                    .build();
-
-                            try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
-                                if (!response.isSuccessful()) {
-                                    hasError.set(true);
-                                    return;
-                                }
-
-                                try (InputStream in = response.body().byteStream()) {
-                                    byte[] buffer = new byte[8192];
-                                    int len;
-                                    while ((len = in.read(buffer)) != -1) {
-                                        raf.write(buffer, 0, len);
-
-                                        long curDownloaded = downloaded.addAndGet(len);
-                                        long now = System.currentTimeMillis();
-                                        long lastTime = lastCallbackTime.get();
-                                        if (now - lastTime >= PROGRESS_INTERVAL && lastCallbackTime.compareAndSet(lastTime, now)) {
-                                            float floatPercent = AppUtils.formatFloat((curDownloaded * 100f) / totalLength, 2);
-                                            HttpHelper.postToUi(() -> callback.onProgress(totalLength, curDownloaded, floatPercent));
-                                        }
+                                    long curDownloaded = downloaded.addAndGet(len);
+                                    long now = System.currentTimeMillis();
+                                    long lastTime = lastCallbackTime.get();
+                                    if (now - lastTime >= PROGRESS_INTERVAL && lastCallbackTime.compareAndSet(lastTime, now)) {
+                                        float floatPercent = AppUtils.formatFloat((curDownloaded * 100f) / totalLength, 2);
+                                        HttpHelper.postToUi(() -> callback.onProgress(totalLength, curDownloaded, floatPercent));
                                     }
                                 }
                             }
-                        } catch (Exception e) {
-                            hasError.set(true);
-                            AppLogUtils.e(TAG, "chunk " + index + " download error: " + e);
                         }
-                    });
-
-                    threads[i].start();
-                }
-
-                // 等待所有线程完成
-                for (Thread t : threads) t.join();
-
-                // 有分块下载失败，不合并，保留断点续传文件
-                if (hasError.get()) {
-                    HttpHelper.postToUi(() -> callback.onFinished(false, null, "部分分块下载失败"));
-                    return;
-                }
-
-                // 合并分块文件
-                try (RandomAccessFile out = new RandomAccessFile(target, "rw")) {
-                    byte[] buffer = new byte[8192];
-                    for (int i = 0; i < threadCount; i++) {
-                        File partFile = new File(tempDir, "part_" + i);
-                        if (!partFile.exists()) continue;
-
-                        try (RandomAccessFile partRaf = new RandomAccessFile(partFile, "r")) {
-                            int len;
-                            while ((len = partRaf.read(buffer)) != -1) {
-                                out.write(buffer, 0, len);
-                            }
-                        }
-                        partFile.delete();
+                    } catch (Exception e) {
+                        hasError.set(true);
+                        AppLogUtils.e(TAG, "chunk " + index + " download error: " + e);
                     }
-                }
-                tempDir.delete();
+                });
 
-                HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
-
-            } catch (Throwable t) {
-                AppLogUtils.e(TAG, "fastDownload error: " + t);
-                HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
-            } finally {
-                HttpRequestHelper.DOWNLOADING_URLS.remove(url);
+                threads[i].start();
             }
-        }).start();
+
+            // 等待所有线程完成
+            for (Thread t : threads) t.join();
+
+            // 有分块下载失败，不合并，保留断点续传文件
+            if (hasError.get()) {
+                HttpHelper.postToUi(() -> callback.onFinished(false, null, "部分分块下载失败"));
+                return;
+            }
+
+            // 合并分块文件
+            try (RandomAccessFile out = new RandomAccessFile(target, "rw")) {
+                byte[] buffer = new byte[8192];
+                for (int i = 0; i < threadCount; i++) {
+                    File partFile = new File(tempDir, "part_" + i);
+                    if (!partFile.exists()) continue;
+
+                    try (RandomAccessFile partRaf = new RandomAccessFile(partFile, "r")) {
+                        int len;
+                        while ((len = partRaf.read(buffer)) != -1) {
+                            out.write(buffer, 0, len);
+                        }
+                    }
+                    partFile.delete();
+                }
+            }
+            tempDir.delete();
+
+            HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+
+        } catch (Throwable t) {
+            AppLogUtils.e(TAG, "fastDownload error: " + t);
+            HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
+        } finally {
+            HttpRequestHelper.DOWNLOADING_URLS.remove(url);
+        }
     }
 
     static void downloadInternal(String url, OkHttpUtils.DownloadCallback callback) {
