@@ -6,13 +6,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import okhttp3.Request;
 import okhttp3.Response;
 
 class Downloader {
+
+    private static final int PROGRESS_INTERVAL = 500;
 
     /**
      * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按1%回调）
@@ -61,7 +62,7 @@ class Downloader {
 
                 Thread[] threads = new Thread[threadCount];
                 AtomicLong downloaded = new AtomicLong(0);
-                AtomicInteger lastPercent = new AtomicInteger(0);
+                AtomicLong lastCallbackTime = new AtomicLong(0);
 
                 // 计算已下载长度（每个分块已有文件）
                 for (int i = 0; i < threadCount; i++) {
@@ -100,14 +101,11 @@ class Downloader {
                                         raf.write(buffer, 0, len);
 
                                         long curDownloaded = downloaded.addAndGet(len);
-                                        float floatPercent = (curDownloaded * 100f) / totalLength;
-                                        int percent = (int) floatPercent;
-                                        int last = lastPercent.get();
-                                        if (percent > last && lastPercent.compareAndSet(last, percent)) {
-                                            HttpHelper.postToUi(() -> {
-                                                float f = AppUtils.formatFloat(floatPercent, 2);
-                                                callback.onProgress(totalLength, curDownloaded, f);
-                                            });
+                                        long now = System.currentTimeMillis();
+                                        long lastTime = lastCallbackTime.get();
+                                        if (now - lastTime >= PROGRESS_INTERVAL && lastCallbackTime.compareAndSet(lastTime, now)) {
+                                            float floatPercent = AppUtils.formatFloat((curDownloaded * 100f) / totalLength, 2);
+                                            HttpHelper.postToUi(() -> callback.onProgress(totalLength, curDownloaded, floatPercent));
                                         }
                                     }
                                 }
@@ -192,22 +190,18 @@ class Downloader {
                 byte[] buffer = new byte[4096];
                 int len;
                 long sum = downloaded;
-                int lastPercent = (int) ((sum * 100) / totalLength);
+                long lastCallbackTime = 0;
 
                 while ((len = in.read(buffer)) != -1) {
                     out.write(buffer, 0, len);
                     sum += len;
 
-                    // 每下载1%回调一次下载进度
-                    float floatPercent = (sum * 100f) / totalLength;
-                    int percent = (int) floatPercent;
-                    if (percent > lastPercent) {
-                        lastPercent = percent;
+                    long now = System.currentTimeMillis();
+                    if (now - lastCallbackTime >= PROGRESS_INTERVAL) {
+                        lastCallbackTime = now;
                         long curSum = sum;
-                        HttpHelper.postToUi(() -> {
-                            float f = AppUtils.formatFloat(floatPercent, 2);
-                            callback.onProgress(totalLength, curSum, f);
-                        });
+                        float floatPercent = AppUtils.formatFloat((curSum * 100f) / totalLength, 2);
+                        HttpHelper.postToUi(() -> callback.onProgress(totalLength, curSum, floatPercent));
                     }
                 }
             }
