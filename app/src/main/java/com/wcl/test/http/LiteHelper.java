@@ -12,9 +12,11 @@ import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -122,5 +124,18 @@ class LiteHelper {
      */
     static boolean isActivityAlive(Context context) {
         return !AppUtils.isActivityDestroyed(context);
+    }
+
+    /**
+     * 根据文件后缀获取 MediaType，不认识的后缀兜底 application/octet-stream
+     */
+    static MediaType guessMediaType(File file) {
+        String name = file.getName().toLowerCase(Locale.US);
+        if (name.endsWith(".png")) return MediaType.parse("image/png");
+        if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return MediaType.parse("image/jpeg");
+        if (name.endsWith(".webp")) return MediaType.parse("image/webp");
+        if (name.endsWith(".gif")) return MediaType.parse("image/gif");
+        if (name.endsWith(".bmp")) return MediaType.parse("image/bmp");
+        return MediaType.parse("application/octet-stream");
     }
 }
