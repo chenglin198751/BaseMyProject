@@ -27,7 +27,7 @@ import okhttp3.Response;
  *
  * <h3>异步 GET（Activity 中使用）</h3>
  * <pre>{@code
- * OkHttpUtils.get("https://api.example.com/user")
+ * OkHttpExecutor.get("https://api.example.com/user")
  *     .params(params)
  *     .execute(activity, (success, result) -> {
  *         // 主线程回调，Activity 销毁后自动丢弃
@@ -36,7 +36,7 @@ import okhttp3.Response;
  *
  * <h3>异步 POST（Fragment 中使用）</h3>
  * <pre>{@code
- * OkHttpUtils.post("https://api.example.com/login")
+ * OkHttpExecutor.post("https://api.example.com/login")
  *     .params(params)
  *     .headers(headers)
  *     .execute(fragment, (success, result) -> {
@@ -48,19 +48,19 @@ import okhttp3.Response;
  * <pre>{@code
  * AppThreadPoolExecutor.getExecutor().execute(() -> {
  *     // 同步 GET
- *     String result = OkHttpUtils.get("https://api.example.com/config")
+ *     String result = OkHttpExecutor.get("https://api.example.com/config")
  *         .params(params)
  *         .headers(headers)
  *         .executeSync();
  *
  *     // 同步 POST
- *     String result2 = OkHttpUtils.post("https://api.example.com/submit")
+ *     String result2 = OkHttpExecutor.post("https://api.example.com/submit")
  *         .params(params)
  *         .executeSync();
  * });
  * }</pre>
  */
-public class OkHttpUtils {
+public class OkHttpExecutor {
 
     public interface HttpCallback {
         void onResult(boolean success, String result);
@@ -72,10 +72,10 @@ public class OkHttpUtils {
         void onFinished(boolean success, String filePath, String error);
     }
 
-    private static final String TAG = "OkHttpUtils";
+    private static final String TAG = "OkHttpExecutor";
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
-    private OkHttpUtils() {
+    private OkHttpExecutor() {
     }
 
     /**
