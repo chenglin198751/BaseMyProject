@@ -76,7 +76,7 @@ public class OkHttpExecutor {
          */
         void onProgress(int index, int totalCount);
 
-        void onFinished(boolean success, String response, String error);
+        void onFinished(boolean success, String error);
     }
 
     private static final String TAG = "OkHttpExecutor";
@@ -199,7 +199,7 @@ public class OkHttpExecutor {
     ) {
         if (LiteHelper.isInvalidUrl(url) || files == null || files.isEmpty()) {
             if (callback != null) {
-                callback.onFinished(false, null, "无效的 URL 或文件列表为空");
+                callback.onFinished(false, "无效的 URL 或文件列表为空");
             }
             return;
         }
@@ -211,7 +211,7 @@ public class OkHttpExecutor {
                 if (file == null || !file.exists()) {
                     LiteHelper.postToUi(() -> {
                         if (callback != null) {
-                            callback.onFinished(false, null, "文件不存在: " + file);
+                            callback.onFinished(false, "文件不存在: " + file);
                         }
                     });
                     return;
@@ -228,7 +228,7 @@ public class OkHttpExecutor {
                         String error = "上传失败: " + response.code();
                         LiteHelper.postToUi(() -> {
                             if (callback != null) {
-                                callback.onFinished(false, null, error);
+                                callback.onFinished(false, error);
                             }
                         });
                         return;
@@ -244,7 +244,7 @@ public class OkHttpExecutor {
                     String error = e.toString();
                     LiteHelper.postToUi(() -> {
                         if (callback != null) {
-                            callback.onFinished(false, null, error);
+                            callback.onFinished(false, error);
                         }
                     });
                     return;
@@ -252,7 +252,7 @@ public class OkHttpExecutor {
             }
             LiteHelper.postToUi(() -> {
                 if (callback != null) {
-                    callback.onFinished(true, null, null);
+                    callback.onFinished(true, null);
                 }
             });
         });
