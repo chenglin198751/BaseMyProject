@@ -3,7 +3,6 @@ package com.wcl.test.http;
 import android.app.Application;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.wcl.test.utils.AppLogUtils;
@@ -11,11 +10,10 @@ import com.wcl.test.utils.AppThreadPoolExecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import okhttp3.Call;
 import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -72,8 +70,16 @@ public class OkHttpExecutor {
         void onFinished(boolean success, String filePath, String error);
     }
 
+    public interface UploadCallback {
+        /**
+         * 第 index 张（从0开始）上传完成，totalCount 为总张数
+         */
+        void onProgress(int index, int totalCount);
+
+        void onFinished(boolean success, String response, String error);
+    }
+
     private static final String TAG = "OkHttpExecutor";
-    private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
     private OkHttpExecutor() {
     }
@@ -121,7 +127,7 @@ public class OkHttpExecutor {
             if (context instanceof Application) {
                 throw new IllegalArgumentException("Application context not allowed. Use Activity context");
             }
-            if (HttpHelper.isInvalidUrl(url)) {
+            if (LiteHelper.isInvalidUrl(url)) {
                 HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
                 return;
             }
@@ -133,7 +139,7 @@ public class OkHttpExecutor {
          * 异步执行请求（Fragment 场景）
          */
         public void execute(Fragment fragment, HttpCallback callback) {
-            if (HttpHelper.isInvalidUrl(url)) {
+            if (LiteHelper.isInvalidUrl(url)) {
                 HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
                 return;
             }
@@ -147,13 +153,13 @@ public class OkHttpExecutor {
          * 注意：必须在子线程中调用，可搭配工程内线程池 AppThreadPoolExecutor 使用
          */
         public String executeSync() {
-            if (HttpHelper.isInvalidUrl(url)) {
+            if (LiteHelper.isInvalidUrl(url)) {
                 return null;
             }
             Request request = buildRequest();
             try (okhttp3.Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
                 if (response.isSuccessful()) {
-                    return HttpHelper.removeUtf8Bom(response.body().string());
+                    return LiteHelper.removeUtf8Bom(response.body().string());
                 } else {
                     AppLogUtils.w(TAG, "executeSync response.isSuccessful()=false");
                 }
@@ -166,47 +172,89 @@ public class OkHttpExecutor {
         private Request buildRequest() {
             Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
             if ("GET".equals(method)) {
-                String finalUrl = HttpHelper.buildGetUrl(url, finalParams);
+                String finalUrl = LiteHelper.buildGetUrl(url, finalParams);
                 return HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
             } else {
-                FormBody body = HttpHelper.buildFormBody(finalParams);
+                FormBody body = LiteHelper.buildFormBody(finalParams);
                 return HttpRequestHelper.buildRequest(url, headers).post(body).build();
             }
         }
     }
 
     /**
-     * 上传单张图片（异步）
+     * 上传图片（异步，串行逐张上传，主线程回调）
+     *
+     * @param url      上传地址
+     * @param params   附加表单参数
+     * @param fileKey  文件对应的表单 key
+     * @param files    要上传的图片文件列表
+     * @param callback 上传回调（可为 null）
      */
-    public static void uploadImage(
+    public static void uploadImages(
             String url,
             Map<String, Object> params,
             String fileKey,
-            File file
+            List<File> files,
+            UploadCallback callback
     ) {
-        if (HttpHelper.isInvalidUrl(url) || file == null || !file.exists()) {
+        if (LiteHelper.isInvalidUrl(url) || files == null || files.isEmpty()) {
+            if (callback != null) {
+                callback.onFinished(false, null, "无效的 URL 或文件列表为空");
+            }
             return;
         }
-        Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-
-        for (Map.Entry<String, Object> entry : finalParams.entrySet()) {
-            builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
-        }
-
-        builder.addFormDataPart(fileKey, file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file));
-        Request request = new Request.Builder().url(url).post(builder.build()).build();
-
-        HttpRequestHelper.CLIENT.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                AppLogUtils.w(TAG, "uploadImage error: " + e);
+        AppThreadPoolExecutor.getExecutor().execute(() -> {
+            Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
+            int totalCount = files.size();
+            for (int i = 0; i < totalCount; i++) {
+                File file = files.get(i);
+                if (file == null || !file.exists()) {
+                    LiteHelper.postToUi(() -> {
+                        if (callback != null) {
+                            callback.onFinished(false, null, "文件不存在: " + file);
+                        }
+                    });
+                    return;
+                }
+                MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                for (Map.Entry<String, Object> entry : finalParams.entrySet()) {
+                    builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+                builder.addFormDataPart(fileKey, file.getName(),
+                        RequestBody.create(LiteHelper.guessMediaType(file), file));
+                Request request = new Request.Builder().url(url).post(builder.build()).build();
+                try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+                    if (!response.isSuccessful()) {
+                        String error = "上传失败: " + response.code();
+                        LiteHelper.postToUi(() -> {
+                            if (callback != null) {
+                                callback.onFinished(false, null, error);
+                            }
+                        });
+                        return;
+                    }
+                    final int index = i;
+                    LiteHelper.postToUi(() -> {
+                        if (callback != null) {
+                            callback.onProgress(index, totalCount);
+                        }
+                    });
+                } catch (IOException e) {
+                    AppLogUtils.w(TAG, "uploadImages error: " + e);
+                    String error = e.toString();
+                    LiteHelper.postToUi(() -> {
+                        if (callback != null) {
+                            callback.onFinished(false, null, error);
+                        }
+                    });
+                    return;
+                }
             }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                response.close();
-            }
+            LiteHelper.postToUi(() -> {
+                if (callback != null) {
+                    callback.onFinished(true, null, null);
+                }
+            });
         });
     }
 
@@ -214,7 +262,7 @@ public class OkHttpExecutor {
      * 异步下载文件（支持断点续传 + 进度按时间间隔回调）
      */
     public static void download(String url, DownloadCallback callback) {
-        if (HttpHelper.isInvalidUrl(url)) {
+        if (LiteHelper.isInvalidUrl(url)) {
             callback.onFinished(false, null, "非法 URL");
             return;
         }
