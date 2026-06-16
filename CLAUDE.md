@@ -45,7 +45,7 @@ gradlew.bat assembleDebug
 
 ### 网络模块 (http 包)
 
-- **OkHttpUtils**: 基于 OkHttp 的网络请求封装
+- **OkHttpExecutor**: 基于 OkHttp 的网络请求封装
 
 ### 下载系统 (download 包)
 
