@@ -42,6 +42,11 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         return (BaseActivity) getActivity();
     }
 
+    @NonNull
+    public BaseFragment getFragment() {
+        return this;
+    }
+
     @CallSuper
     @Override
     public void onEvent(String eventKey, Object data) {
