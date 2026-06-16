@@ -22,6 +22,44 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
+/**
+ * 基于 OkHttp 的网络请求工具类，采用 Builder 链式调用风格。
+ *
+ * <h3>异步 GET（Activity 中使用）</h3>
+ * <pre>{@code
+ * OkHttpUtils.get("https://api.example.com/user")
+ *     .params(params)
+ *     .execute(activity, (success, result) -> {
+ *         // 主线程回调，Activity 销毁后自动丢弃
+ *     });
+ * }</pre>
+ *
+ * <h3>异步 POST（Fragment 中使用）</h3>
+ * <pre>{@code
+ * OkHttpUtils.post("https://api.example.com/login")
+ *     .params(params)
+ *     .headers(headers)
+ *     .execute(fragment, (success, result) -> {
+ *         // 主线程回调，Fragment 销毁后自动丢弃
+ *     });
+ * }</pre>
+ *
+ * <h3>同步请求（必须在子线程调用）</h3>
+ * <pre>{@code
+ * AppThreadPoolExecutor.getExecutor().execute(() -> {
+ *     // 同步 GET
+ *     String result = OkHttpUtils.get("https://api.example.com/config")
+ *         .params(params)
+ *         .headers(headers)
+ *         .executeSync();
+ *
+ *     // 同步 POST
+ *     String result2 = OkHttpUtils.post("https://api.example.com/submit")
+ *         .params(params)
+ *         .executeSync();
+ * });
+ * }</pre>
+ */
 public class OkHttpUtils {
 
     public interface HttpCallback {
@@ -41,199 +79,100 @@ public class OkHttpUtils {
     }
 
     /**
-     * 异步 GET 请求
+     * 构建 GET 请求
      */
-    public static void get(
-            Context context,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        get(context, url, params, null, callback);
+    public static RequestBuilder get(String url) {
+        return new RequestBuilder(url, "GET");
     }
 
     /**
-     * 异步 GET 请求
-     * <p>
-     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
+     * 构建 POST 请求
      */
-    private static void get(
-            Context context,
-            String url,
-            Map<String, Object> params,
-            Map<String, String> headers,
-            HttpCallback callback
-    ) {
-        // 为了保证UI安全，context不能传Application
-        if (context instanceof Application) {
-            throw new IllegalArgumentException("Application context not allowed. Use Activity context");
+    public static RequestBuilder post(String url) {
+        return new RequestBuilder(url, "POST");
+    }
+
+    public static class RequestBuilder {
+        private final String url;
+        private final String method;
+        private Map<String, Object> params;
+        private Map<String, String> headers;
+
+        RequestBuilder(String url, String method) {
+            this.url = url;
+            this.method = method;
         }
 
-        if (HttpHelper.isInvalidUrl(url)) {
-            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
-            return;
-        }
-        String finalUrl = HttpHelper.buildGetUrl(url, HttpRequestHelper.withCommonParams(params));
-        Request request = HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
-        HttpRequestHelper.enqueue(context, request, callback);
-    }
-
-    /**
-     * 异步 GET 请求（Fragment 专用）
-     */
-    public static void get(
-            Fragment fragment,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        get(fragment, url, params, null, callback);
-    }
-
-    /**
-     * 异步 GET 请求（Fragment 专用）
-     * <p>
-     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
-     */
-    private static void get(
-            Fragment fragment,
-            String url,
-            Map<String, Object> params,
-            Map<String, String> headers,
-            HttpCallback callback
-    ) {
-        if (HttpHelper.isInvalidUrl(url)) {
-            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
-            return;
-        }
-        String finalUrl = HttpHelper.buildGetUrl(url, HttpRequestHelper.withCommonParams(params));
-        Request request = HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
-        HttpRequestHelper.enqueue(fragment, request, callback);
-    }
-
-    /**
-     * 异步 POST 请求（Fragment 专用）
-     */
-    public static void post(
-            Fragment fragment,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        post(fragment, url, params, null, callback);
-    }
-
-    /**
-     * 异步 POST 请求（Fragment 专用）
-     * <p>
-     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
-     */
-    private static void post(
-            Fragment fragment,
-            String url,
-            Map<String, Object> params,
-            Map<String, String> headers,
-            HttpCallback callback
-    ) {
-        if (HttpHelper.isInvalidUrl(url)) {
-            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
-            return;
-        }
-        FormBody body = HttpHelper.buildFormBody(HttpRequestHelper.withCommonParams(params));
-        Request request = HttpRequestHelper.buildRequest(url, headers).post(body).build();
-        HttpRequestHelper.enqueue(fragment, request, callback);
-    }
-
-    /**
-     * 异步 POST 请求
-     */
-    public static void post(
-            Context context,
-            String url,
-            Map<String, Object> params,
-            HttpCallback callback
-    ) {
-        post(context, url, params, null, callback);
-    }
-
-    /**
-     * 异步 POST 请求
-     * <p>
-     * 因为headers不常用，暂时声明为private，后续需要再改成public，或者方法内统一写死header
-     */
-    private static void post(
-            Context context,
-            String url,
-            Map<String, Object> params,
-            Map<String, String> headers,
-            HttpCallback callback
-    ) {
-        // 为了保证UI安全，context不能传Application
-        if (context instanceof Application) {
-            throw new IllegalArgumentException("Application context not allowed. Use Activity context");
+        public RequestBuilder params(Map<String, Object> params) {
+            this.params = params;
+            return this;
         }
 
-        if (HttpHelper.isInvalidUrl(url)) {
-            HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
-            return;
+        public RequestBuilder headers(Map<String, String> headers) {
+            this.headers = headers;
+            return this;
         }
-        FormBody body = HttpHelper.buildFormBody(HttpRequestHelper.withCommonParams(params));
-        Request request = HttpRequestHelper.buildRequest(url, headers).post(body).build();
-        HttpRequestHelper.enqueue(context, request, callback);
-    }
 
-    /**
-     * 同步 GET 请求，直接阻塞当前线程直到请求完成。
-     * <p>
-     * 注意：必须在子线程中调用，可搭配工程内线程池 AppThreadPoolExecutor 使用
-     */
-    public static String syncGet(
-            String url,
-            Map<String, Object> params,
-            Map<String, String> headers
-    ) {
-        if (HttpHelper.isInvalidUrl(url)) {
+        /**
+         * 异步执行请求（Activity 场景）
+         */
+        public void execute(Context context, HttpCallback callback) {
+            // 为了保证UI安全，context不能传Application
+            if (context instanceof Application) {
+                throw new IllegalArgumentException("Application context not allowed. Use Activity context");
+            }
+            if (HttpHelper.isInvalidUrl(url)) {
+                HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
+                return;
+            }
+            Request request = buildRequest();
+            HttpRequestHelper.enqueue(context, request, callback);
+        }
+
+        /**
+         * 异步执行请求（Fragment 场景）
+         */
+        public void execute(Fragment fragment, HttpCallback callback) {
+            if (HttpHelper.isInvalidUrl(url)) {
+                HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
+                return;
+            }
+            Request request = buildRequest();
+            HttpRequestHelper.enqueue(fragment, request, callback);
+        }
+
+        /**
+         * 同步执行请求，直接阻塞当前线程直到请求完成。
+         * <p>
+         * 注意：必须在子线程中调用，可搭配工程内线程池 AppThreadPoolExecutor 使用
+         */
+        public String executeSync() {
+            if (HttpHelper.isInvalidUrl(url)) {
+                return null;
+            }
+            Request request = buildRequest();
+            try (okhttp3.Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    return HttpHelper.removeUtf8Bom(response.body().string());
+                } else {
+                    AppLogUtils.w(TAG, "executeSync response.isSuccessful()=false");
+                }
+            } catch (IOException e) {
+                AppLogUtils.w(TAG, "executeSync error: " + e);
+            }
             return null;
         }
-        String finalUrl = HttpHelper.buildGetUrl(url, HttpRequestHelper.withCommonParams(params));
-        Request request = HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
-        try (okhttp3.Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return HttpHelper.removeUtf8Bom(response.body().string());
-            } else {
-                AppLogUtils.w(TAG, "getSync response.isSuccessful()=false");
-            }
-        } catch (IOException e) {
-            AppLogUtils.w(TAG, "getSync error: " + e);
-        }
-        return null;
-    }
 
-    /**
-     * 同步 POST 请求，直接阻塞当前线程直到请求完成。
-     * <p>
-     * 注意：必须在子线程中调用，可搭配工程内线程池 AppThreadPoolExecutor 使用
-     */
-    public static String syncPost(
-            String url,
-            Map<String, Object> params,
-            Map<String, String> headers
-    ) {
-        if (HttpHelper.isInvalidUrl(url)) {
-            return null;
-        }
-        FormBody body = HttpHelper.buildFormBody(HttpRequestHelper.withCommonParams(params));
-        Request request = HttpRequestHelper.buildRequest(url, headers).post(body).build();
-        try (okhttp3.Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return HttpHelper.removeUtf8Bom(response.body().string());
+        private Request buildRequest() {
+            Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
+            if ("GET".equals(method)) {
+                String finalUrl = HttpHelper.buildGetUrl(url, finalParams);
+                return HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
             } else {
-                AppLogUtils.w(TAG, "syncPost response.isSuccessful()=false");
+                FormBody body = HttpHelper.buildFormBody(finalParams);
+                return HttpRequestHelper.buildRequest(url, headers).post(body).build();
             }
-        } catch (IOException e) {
-            AppLogUtils.w(TAG, "syncPost error: " + e);
         }
-        return null;
     }
 
     /**
