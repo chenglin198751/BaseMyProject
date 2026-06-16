@@ -59,7 +59,8 @@ public class CommonDialog extends Dialog {
         Window window = getWindow();
         if (window != null) {
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-            window.getDecorView().setPadding(AppUtils.dp2px(40f), 0, AppUtils.dp2px(40f), 0);
+            int hPadding = AppUtils.dp2px(40f);
+            window.getDecorView().setPadding(hPadding, 0, hPadding, 0);
         }
         bindViews();
         applyStateToViews();
@@ -167,8 +168,6 @@ public class CommonDialog extends Dialog {
             mRightBtn.setOnClickListener(mRightListener);
         }
 
-        mButtonPanel.setVisibility(
-                (mLeftVisible || mRightVisible) ? View.VISIBLE : View.GONE
-        );
+        mButtonPanel.setVisibility((mLeftVisible || mRightVisible) ? View.VISIBLE : View.GONE);
     }
 }
