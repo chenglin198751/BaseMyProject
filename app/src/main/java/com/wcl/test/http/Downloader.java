@@ -26,14 +26,14 @@ class Downloader {
      * @param callback 下载回调（主线程）
      */
     public static void fastDownload(String url, OkHttpExecutor.DownloadCallback callback) {
-        if (HttpHelper.isInvalidUrl(url)) {
+        if (LiteHelper.isInvalidUrl(url)) {
             callback.onFinished(false, null, "Invalid URL");
             return;
         }
 
         // 正在下载的不再重复下载
         if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
-            HttpHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
+            LiteHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
             return;
         }
 
@@ -44,13 +44,13 @@ class Downloader {
 
     private static void executeFastDownload(String url, OkHttpExecutor.DownloadCallback callback) {
         try {
-            File target = new File(HttpHelper.getDownloadPath(url));
+            File target = new File(LiteHelper.getDownloadPath(url));
             File tempDir = new File(target.getAbsolutePath() + "_tmp");
             if (!tempDir.exists()) tempDir.mkdirs();
 
-            long totalLength = HttpHelper.fetchContentLength(url);
+            long totalLength = LiteHelper.fetchContentLength(url);
             if (totalLength <= 0) {
-                HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+                LiteHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
                 return;
             }
 
@@ -63,7 +63,7 @@ class Downloader {
 
             // 文件已经完整下载
             if (target.exists() && target.length() == totalLength) {
-                HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+                LiteHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
                 return;
             }
 
@@ -119,7 +119,7 @@ class Downloader {
                                     long lastTime = lastCallbackTime.get();
                                     if (now - lastTime >= PROGRESS_INTERVAL && lastCallbackTime.compareAndSet(lastTime, now)) {
                                         float floatPercent = AppUtils.formatFloat((curDownloaded * 100f) / totalLength, 2);
-                                        HttpHelper.postToUi(() -> callback.onProgress(totalLength, curDownloaded, floatPercent));
+                                        LiteHelper.postToUi(() -> callback.onProgress(totalLength, curDownloaded, floatPercent));
                                     }
                                 }
                             }
@@ -138,7 +138,7 @@ class Downloader {
 
             // 有分块下载失败，不合并，保留断点续传文件
             if (hasError.get()) {
-                HttpHelper.postToUi(() -> callback.onFinished(false, null, "部分分块下载失败"));
+                LiteHelper.postToUi(() -> callback.onFinished(false, null, "部分分块下载失败"));
                 return;
             }
 
@@ -160,37 +160,37 @@ class Downloader {
             }
             tempDir.delete();
 
-            HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+            LiteHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
 
         } catch (Throwable t) {
             AppLogUtils.e(TAG, "fastDownload error: " + t);
-            HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
+            LiteHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
         } finally {
             HttpRequestHelper.DOWNLOADING_URLS.remove(url);
         }
     }
 
     static void downloadInternal(String url, OkHttpExecutor.DownloadCallback callback) {
-        long totalLength = HttpHelper.fetchContentLength(url);
+        long totalLength = LiteHelper.fetchContentLength(url);
 
         if (totalLength <= 0) {
-            HttpHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
+            LiteHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
             return;
         }
 
         // 检查文件是否已经完整下载，如果已经被下载成功则直接返回file path
-        File downFile = new File(HttpHelper.getDownloadPath(url));
+        File downFile = new File(LiteHelper.getDownloadPath(url));
         if (downFile.exists() && totalLength == downFile.length()) {
-            HttpHelper.postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
+            LiteHelper.postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
             return;
         }
 
         if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
-            HttpHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
+            LiteHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
             return;
         }
 
-        File target = new File(HttpHelper.getDownloadPath(url));
+        File target = new File(LiteHelper.getDownloadPath(url));
         File temp = new File(target.getAbsolutePath() + ".temp");
         long downloaded = temp.exists() ? temp.length() : 0;
 
@@ -201,7 +201,7 @@ class Downloader {
 
         try (Response response = HttpRequestHelper.CLIENT.newCall(builder.build()).execute()) {
             if (!response.isSuccessful()) {
-                HttpHelper.postToUi(() -> callback.onFinished(false, null, "download fail: " + response));
+                LiteHelper.postToUi(() -> callback.onFinished(false, null, "download fail: " + response));
                 return;
             }
 
@@ -221,15 +221,15 @@ class Downloader {
                         lastCallbackTime = now;
                         long curSum = sum;
                         float floatPercent = AppUtils.formatFloat((curSum * 100f) / totalLength, 2);
-                        HttpHelper.postToUi(() -> callback.onProgress(totalLength, curSum, floatPercent));
+                        LiteHelper.postToUi(() -> callback.onProgress(totalLength, curSum, floatPercent));
                     }
                 }
             }
 
-            HttpHelper.replaceFile(temp, target);
-            HttpHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+            LiteHelper.replaceFile(temp, target);
+            LiteHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
         } catch (Throwable t) {
-            HttpHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
+            LiteHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
         } finally {
             HttpRequestHelper.DOWNLOADING_URLS.remove(url);
         }

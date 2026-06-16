@@ -46,14 +46,14 @@ class HttpRequestHelper {
      * 统一的异步请求入口（Fragment 专用），自动切换到主线程回调
      */
     static void enqueue(Fragment fragment, Request request, OkHttpExecutor.HttpCallback callback) {
-        enqueue(() -> HttpHelper.isFragmentAlive(fragment), request, callback);
+        enqueue(() -> LiteHelper.isFragmentAlive(fragment), request, callback);
     }
 
     /**
      * 统一的异步请求入口，自动切换到主线程回调
      */
     static void enqueue(Context context, Request request, OkHttpExecutor.HttpCallback callback) {
-        enqueue(() -> HttpHelper.isActivityAlive(context), request, callback);
+        enqueue(() -> LiteHelper.isActivityAlive(context), request, callback);
     }
 
     /**
@@ -66,7 +66,7 @@ class HttpRequestHelper {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 if (!isAlive.getAsBoolean()) return;
-                HttpHelper.postToUi(() -> {
+                LiteHelper.postToUi(() -> {
                     if (isAlive.getAsBoolean()) {
                         notifyResult(callback, false, e.toString());
                     }
@@ -79,9 +79,9 @@ class HttpRequestHelper {
                 try (response) {
                     boolean ok = response.isSuccessful();
                     String responseContent = response.body().string();
-                    final String result = HttpHelper.removeUtf8Bom(ok ? responseContent : response.toString());
+                    final String result = LiteHelper.removeUtf8Bom(ok ? responseContent : response.toString());
                     AppLogUtils.i(TAG, "result:" + result);
-                    HttpHelper.postToUi(() -> {
+                    LiteHelper.postToUi(() -> {
                         if (isAlive.getAsBoolean()) {
                             notifyResult(callback, ok, result);
                         }
@@ -93,7 +93,7 @@ class HttpRequestHelper {
 
     static Map<String, Object> withCommonParams(Map<String, Object> params) {
         Map<String, Object> finalParams = params == null ? new HashMap<>() : new HashMap<>(params);
-        HttpHelper.addCommonParams(finalParams);
+        LiteHelper.addCommonParams(finalParams);
         return finalParams;
     }
 
