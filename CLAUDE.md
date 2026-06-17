@@ -11,7 +11,8 @@ BaseMyProject 是一个 Android 应用测试项目，用于验证和调试常用
 
 - 默认使用中文交流与代码注释
 - 禁止使用 PowerShell，优先使用 Git Bash，也可使用 cmd 或 Python
-- Environment is Git Bash on Windows
+- Environment is Git Bash on Windows 
+- 优化代码时可以添加注释，但不要删除原有注释
 
 ## 构建命令
 
@@ -124,13 +125,6 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 - **Language**: Java 17, Kotlin
 - **Build**: Gradle 8.13.2, AGP 8.13.2
 - **Android SDK**: min 26, target 36 (Android 15)
-
-## 注意事项
-
-1. **语言偏好**: 代码使用 Java 语言编写（除非显式要求 Kotlin）
-2. **命名规范**: 包名 `com.wcl.test`
-3. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
-4. **打印日志**: 打印日志时，必须使用 `com.wcl.test.utils.AppLogUtils`
 
 ## AppConstants 公共常量类说明
 
