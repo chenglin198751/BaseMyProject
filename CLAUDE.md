@@ -38,7 +38,6 @@ gradlew.bat assembleDebug
 - **BaseFragment**: Fragment 基类
 - **BaseRecyclerViewAdapter**: RecyclerView 通用适配器基类
 - **BaseListViewAdapter**: ListView 通用适配器基类
-- **BaseModel**: 数据模型基类
 - **BaseWebViewActivity**: WebView Activity 基类
 - **BaseWebViewFragment**: WebView Fragment 基类
 - **EventBus**: 自定义实现的事件总线，使用 `EventAction` 定义事件 key，保证主线程回调
@@ -49,36 +48,26 @@ gradlew.bat assembleDebug
 
 ### 下载系统 (download 包)
 
-完整的下载管理模块：
-
 - **DownloadManager**: 下载任务管理（开始/暂停/删除）
 - **DownloadTask**: 下载任务模型，状态机（WAITING/DOWNLOADING/PAUSED/DONE/FAILED）
 - **DownloadWorker**: 后台下载 Worker
-- **DownloadDBHelper**: SQLite 持久化下载任务
-- **DownloadListener**: 下载进度回调（生命周期感知）
-- **download/ui**: `DownloadButton`（下载按钮）、`ProgressColorTextView`（进度文字）
+- **download/ui**: `DownloadButton`（下载按钮）
 
 ### 数据存储 (storage 包)
 
 - **PreferApp**: 基于 MMKV 的全局 KV 存储
-- **ToggleSettings**: 调试/日志开关存储
-- **UserManager**: 用户数据管理
 - **BigStringDb**: 基于 SQLite 的大文本 KV 存储
 - **BigStringFile**: 基于文件系统的大文本存储
-- **IBigString**: 大文本存储接口，BigStringDb/BigStringFile 均实现此接口
-- **AccountContentProvider**: ContentProvider 实现（storage/alarms 包）
 
 ### 通用适配器 (common 包)
 
 - **CommonFragmentViewPager2Adapter**: ViewPager2 + Fragment 通用适配器
-- **CommonFragmentViewPagerAdapter**: ViewPager + Fragment 通用适配器
 - **MagicIndicatorViewPager2Binder**: MagicIndicator 与 ViewPager2 绑定工具
 
 ### Helper 类 (helper 包)
 
 - **ShowFragmentHelper**: Fragment Tab 切换工具，支持懒实例化
 - **ReplaceViewUtils**: 动态替换 View 工具
-- **MainTitleHelper**: 标题栏管理（Kotlin）
 
 ### 监听器 (listener 包)
 
@@ -135,23 +124,13 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 - **Language**: Java 17, Kotlin
 - **Build**: Gradle 8.13.2, AGP 8.13.2
 - **Android SDK**: min 26, target 36 (Android 15)
-- **UI**: ViewBinding, Material Design
-- **Network**: OkHttp 5.3.2, Okio 3.16.4
-- **Image**: Glide 5.0.5
-- **Storage**: MMKV 2.3.0
-- **Async**: Kotlin Coroutines 1.10.2, WorkManager 2.11.2
-- **Architecture**: Lifecycle Components 2.10.0
 
 ## 注意事项
 
 1. **语言偏好**: 代码使用 Java 语言编写（除非显式要求 Kotlin）
 2. **命名规范**: 包名 `com.wcl.test`
-3. **签名配置**: debug 和 release 使用相同的签名配置（keystore_debug.jks）
-4. **Apk 输出路径**: `app/debug/base_project_v_{versionName}.apk`,
-   `app/release/base_project_v_{versionName}.apk`
-5. **日志**: 通过 `BuildConfig.LOG_ENABLED` 控制日志开关
-6. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
-7. **打印日志**: 打印日志时，必须使用 `AppLogUtils`（`com.wcl.test.utils.AppLogUtils`）
+3. **代码偏好**: 优化代码时可以添加注释，但不要删除原有注释
+4. **打印日志**: 打印日志时，必须使用 `com.wcl.test.utils.AppLogUtils`
 
 ## AppConstants 公共常量类说明
 
