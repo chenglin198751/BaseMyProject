@@ -32,7 +32,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     private boolean isFirstLoad = false;
 
     @NonNull
-    public BaseActivity getContext() {
+    public BaseActivity getBaseActivity() {
         if (getActivity() == null) {
             throw new IllegalStateException("Fragment is not attached to an Activity");
         }
@@ -128,12 +128,12 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
 
     @Override
     public final WaitDialog showWaitDialog() {
-        return getContext().showWaitDialog();
+        return getBaseActivity().showWaitDialog();
     }
 
     @Override
     public final void dismissWaitDialog() {
-        getContext().dismissWaitDialog();
+        getBaseActivity().dismissWaitDialog();
     }
 
     /**
