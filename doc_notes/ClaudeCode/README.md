@@ -2,8 +2,9 @@
 
 1. 查看最新版本：npm view @anthropic-ai/claude-code version
 2. 首次安装：npm install -g @anthropic-ai/claude-code
-3. 升级：npm install -g @anthropic-ai/claude-code@latest
-4. 安装claude.exe：claude install
+3. 升级：claude update
+4. 升级：npm install -g @anthropic-ai/claude-code@latest
+5. 安装claude.exe：claude install
 
 # 2. 常用命令
 
@@ -20,3 +21,4 @@
     - /code-review：风险导向（防炸）——代码是否有 bug、边界问题、异常风险或潜在隐患
     - /simplify：结构导向（变干净）——减少复杂度、去冗余、提升可读性与表达清晰度
     - 总结：code-review 看“会不会错”，simplify 看“写得好不好”。两者互补
+11. claude --dangerously-skip-permissions	
