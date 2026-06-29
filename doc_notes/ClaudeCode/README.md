@@ -1,9 +1,10 @@
 # 1. Claude Code 安装：
 
-1. 安装：claude install
-2. 升级：claude update
-3. 查看版本：claude --version
-4. 环境诊断：claude doctor
+1. 第一次安装：winget install Anthropic.ClaudeCode
+2. 安装：claude install
+3. 升级：claude update
+4. 查看版本：claude --version
+5. 环境诊断：claude doctor
 
 # 2. 常用命令
 
