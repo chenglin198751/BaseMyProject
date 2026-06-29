@@ -218,7 +218,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     }
 
     /**
-     * 当使用ShowFragmentHelper使用BaseFragment时，显示时触发此事件
+     * 当使用FragmentSwitcher使用BaseFragment时，显示时触发此事件
      */
     public void onSelected(int index) {
 

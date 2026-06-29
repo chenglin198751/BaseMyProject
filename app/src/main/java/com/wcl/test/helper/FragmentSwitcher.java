@@ -13,7 +13,7 @@ import com.wcl.test.base.BaseFragment;
  * 用于管理显示和切换 tab Fragment 的辅助类。
  * Created by chenglin on 2017-11-28.
  */
-public class ShowFragmentHelper {
+public class FragmentSwitcher {
     private final BaseFragment[] mFragArray;
     private final FragmentManager mFragmentManager;
     private final Class<? extends BaseFragment>[] mFragmentClasses;
@@ -26,7 +26,7 @@ public class ShowFragmentHelper {
      *                        在 Fragment 里请使用 getChildFragmentManager()。
      * @param fragmentClasses 需要管理的 Fragment 类数组。
      */
-    public ShowFragmentHelper(FragmentManager fragmentManager, Class<? extends BaseFragment>[] fragmentClasses) {
+    public FragmentSwitcher(FragmentManager fragmentManager, Class<? extends BaseFragment>[] fragmentClasses) {
         if (fragmentClasses == null || fragmentClasses.length == 0) {
             throw new IllegalArgumentException("Fragment classes must not be null or empty");
         }

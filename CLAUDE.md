@@ -79,7 +79,7 @@ gradlew.bat assembleDebug
 
 ### Helper 类 (helper 包)
 
-- **ShowFragmentHelper**: Fragment Tab 切换工具，支持懒实例化
+- **FragmentSwitcher**: Fragment Tab 切换工具，支持懒实例化
 - **ReplaceViewUtils**: 动态替换 View 工具
 
 ### 监听器 (listener 包)

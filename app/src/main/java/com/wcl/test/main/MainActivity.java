@@ -12,9 +12,8 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseActivity;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.ActivityMainBinding;
-import com.wcl.test.helper.ShowFragmentHelper;
+import com.wcl.test.helper.FragmentSwitcher;
 import com.wcl.test.test.TestDownloadActivity;
-import com.wcl.test.test.TestRecyclerViewRefreshActivity;
 import com.wcl.test.widget.ToastUtils;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
@@ -39,7 +38,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             MainFirstFragment.class, MainSecondFragment.class, MainThirdFragment.class, MainFourthFragment.class
     };
 
-    private ShowFragmentHelper mFragHelper;
+    private FragmentSwitcher mFragHelper;
     private ActivityMainBinding mBinding;
     private long mLastBackPressTime = 0;
     private static final long BACK_EXIT_INTERVAL = 3000L;
@@ -58,7 +57,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setContentLayout(mBinding.getRoot());
         getTitleHelper().hideTitleBar();
 
-        mFragHelper = new ShowFragmentHelper(getSupportFragmentManager(), FRAGMENTS);
+        mFragHelper = new FragmentSwitcher(getSupportFragmentManager(), FRAGMENTS);
         initBottomTabs();
         showTab(TAB_FIRST);
         setupBackPressHandler();
