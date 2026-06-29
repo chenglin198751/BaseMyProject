@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
+
+import androidx.annotation.IdRes;
+import androidx.core.util.Consumer;
 
 import com.wcl.test.EnvToggle;
 import com.wcl.test.R;
@@ -23,42 +25,25 @@ public class DialPhoneBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(SECRET_CODE)) {
+        if (SECRET_CODE.equals(intent.getAction())) {
             EventBus.post(SECRET_CODE, null);
         }
     }
 
     public static void showDebugView(Activity activity) {
         View view = View.inflate(activity, R.layout.sdk_debug_layout, null);
-        final ViewGroup viewGroup = activity.findViewById(android.R.id.content);
+        ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         viewGroup.addView(view);
-        CheckBox logToggle = view.findViewById(R.id.log_toggle);
-        CheckBox debugToggle = view.findViewById(R.id.debug_toggle);
-        logToggle.setChecked(EnvToggle.isLog());
-        debugToggle.setChecked(EnvToggle.isDebug());
 
-        logToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ToggleSettings.setLogEnable(isChecked);
-            }
-        });
+        initToggle(view, R.id.log_toggle, EnvToggle.isLog(), ToggleSettings::setLogEnable);
+        initToggle(view, R.id.debug_toggle, EnvToggle.isDebug(), ToggleSettings::setDebugEnable);
 
-        debugToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ToggleSettings.setDebugEnable(isChecked);
-            }
-        });
+        view.findViewById(R.id.close_).setOnClickListener(v -> viewGroup.removeView(view));
+    }
 
-        view.findViewById(R.id.close_).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (view.getParent() != null) {
-                    viewGroup.removeView(view);
-                }
-            }
-        });
-
+    private static void initToggle(View root, @IdRes int id, boolean current, Consumer<Boolean> setter) {
+        CheckBox cb = root.findViewById(id);
+        cb.setChecked(current);
+        cb.setOnCheckedChangeListener((buttonView, isChecked) -> setter.accept(isChecked));
     }
 }
