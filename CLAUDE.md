@@ -12,14 +12,6 @@ BaseMyProject 是一个 Android 应用测试项目，用于验证和调试常用
 - 默认使用中文交流与代码注释
 - 优化代码时可以添加注释，但不要删除原有注释
 
-## 开发环境
-
-- 优先使用 WSL（Ubuntu）执行命令
-- WSL 不可用时使用 Git Bash
-- 仅在必须时使用 Windows CMD
-- 默认使用 Bash（Linux）命令风格
-- 禁止使用 PowerShell
-
 ## 工作原则
 
 ### 1. 不确定时先提问，禁止擅自决策
