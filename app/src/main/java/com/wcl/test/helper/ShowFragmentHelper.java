@@ -79,7 +79,7 @@ public class ShowFragmentHelper {
 
     private BaseFragment createFragment(int index, Bundle args) {
         try {
-            BaseFragment fragment = mFragmentClasses[index].newInstance();
+            BaseFragment fragment = mFragmentClasses[index].getDeclaredConstructor().newInstance();
             if (args != null) {
                 fragment.setArguments(args);
             }
