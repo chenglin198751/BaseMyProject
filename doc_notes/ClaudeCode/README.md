@@ -28,4 +28,4 @@
 
 1. 说 “fan out subagents”，claude就会派出一个团队。每个成员都会深入挖掘，确保没有遗漏任何东西
 2. cd /mnt/d/AndroidCode/master_xmkw_new
-3. windows WSL更新软件包：sudo apt update && sudo apt upgrade
+
