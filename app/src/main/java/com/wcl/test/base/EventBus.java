@@ -11,16 +11,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class EventBus {
     private final CopyOnWriteArrayList<OnEventBusListener> observers = new CopyOnWriteArrayList<>();
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
-
-    private static final class InstanceHolder {
-        private static final EventBus INSTANCE = new EventBus();
-    }
+    private static final EventBus INSTANCE = new EventBus();
 
     private EventBus() {
     }
 
     public static EventBus instance() {
-        return InstanceHolder.INSTANCE;
+        return INSTANCE;
     }
 
     /**
