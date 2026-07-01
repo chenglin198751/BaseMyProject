@@ -2,6 +2,8 @@ package com.wcl.test.view.image;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
@@ -58,7 +60,17 @@ import com.wcl.test.GlideApp;
  * }</pre>
  */
 public class GlideImageView extends RoundedBgImageView {
-    private final ColorDrawable placeholder = new ColorDrawable(0x99e8e8e8);
+    private static final int PLACEHOLDER_COLOR = 0x99e8e8e8;
+
+    private Drawable getPlaceholder() {
+        if (cornerRadius > 0) {
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setColor(PLACEHOLDER_COLOR);
+            drawable.setCornerRadius(cornerRadius);
+            return drawable;
+        }
+        return new ColorDrawable(PLACEHOLDER_COLOR);
+    }
 
     public GlideImageView(Context context) {
         super(context);
@@ -92,11 +104,12 @@ public class GlideImageView extends RoundedBgImageView {
 
 
     public void loadImage(Object uri, RequestOptions options) {
+        Drawable ph = getPlaceholder();
         GlideApp.with(this)
                 .load(uri)
                 .apply(options)
-                .placeholder(placeholder)
-                .error(placeholder)
+                .placeholder(ph)
+                .error(ph)
                 .into(this);
     }
 
