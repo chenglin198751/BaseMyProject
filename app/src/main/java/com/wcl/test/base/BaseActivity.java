@@ -36,7 +36,7 @@ import java.util.List;
  * @author weiChengLin 2013-06-20
  */
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView, OnEventBusListener {
-    public static final String CLASS_NAME = "MainActivity";
+    public static final String MAIN_ACTIVITY_NAME = "MainActivity";
     protected static final Gson gson = AppConstants.gson;
 
     private BaseActivityLayoutBinding mBinding;
@@ -195,7 +195,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
                 return;
             }
         } else if (EventAction.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(eventKey)) {
-            if (!getClass().getSimpleName().equals(CLASS_NAME)) {
+            if (!getClass().getSimpleName().equals(MAIN_ACTIVITY_NAME)) {
                 finish();
                 return;
             }
