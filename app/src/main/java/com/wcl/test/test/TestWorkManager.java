@@ -1,20 +1,11 @@
-package com.wcl.test.main;
+package com.wcl.test.test;
 
 import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
-import androidx.work.Constraints;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-
-import java.util.concurrent.TimeUnit;
 
 public class TestWorkManager extends Worker {
     private static int index = 0;
