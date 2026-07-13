@@ -5,6 +5,7 @@
 3. 升级：claude update
 4. 查看版本：claude --version
 5. 环境诊断：claude doctor
+6. 查看官网最新版本号：https://www.npmjs.com/package/@anthropic-ai/claude-code
 
 # 2. 常用命令
 
@@ -27,5 +28,5 @@
 # 3. 其他
 
 1. 说 “fan out subagents”，claude就会派出一个团队。每个成员都会深入挖掘，确保没有遗漏任何东西
-2. cd /mnt/d/AndroidCode/master_xmkw_new
+2. 
 
