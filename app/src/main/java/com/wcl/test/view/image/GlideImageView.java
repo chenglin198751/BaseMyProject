@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.wcl.test.GlideApp;
@@ -63,6 +64,13 @@ public class GlideImageView extends RoundedBgImageView {
     private static final int PLACEHOLDER_COLOR = 0x99e8e8e8;
 
     private Drawable getPlaceholder() {
+        // 圆形优先：isOval为true时占位图为圆形
+        if (isOval) {
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.OVAL);
+            drawable.setColor(PLACEHOLDER_COLOR);
+            return drawable;
+        }
         if (cornerRadius > 0) {
             GradientDrawable drawable = new GradientDrawable();
             drawable.setColor(PLACEHOLDER_COLOR);
@@ -92,8 +100,10 @@ public class GlideImageView extends RoundedBgImageView {
     public void loadImage(Object uri) {
         RequestOptions options = new RequestOptions();
 
-        // 仅在 cornerRadius > 0 时添加圆角裁剪
-        if (cornerRadius > 0) {
+        // 圆形优先：isOval为true时直接圆形；否则圆角居中裁剪
+        if (isOval) {
+            options = options.transform(new CircleCrop());
+        } else if (cornerRadius > 0) {
             options = options.transform(new CenterCrop(), new RoundedCorners((int) cornerRadius));
         } else {
             options = options.transform(new CenterCrop());
