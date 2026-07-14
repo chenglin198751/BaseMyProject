@@ -31,13 +31,20 @@ public class BaseWebViewFragment extends BaseFragment {
 
     public WebView webView;
     private String url;
+    private boolean isViewReady = false;
 
+    // 带 url：view 就绪后自动加载
     public static BaseWebViewFragment newInstance(String url) {
         BaseWebViewFragment f = new BaseWebViewFragment();
         Bundle b = new Bundle();
         b.putString("url", url);
         f.setArguments(b);
         return f;
+    }
+
+    // 不带 url：只建 WebView 不加载，等外部调用 loadUrl
+    public static BaseWebViewFragment newInstance() {
+        return new BaseWebViewFragment();
     }
 
     @Override
@@ -47,8 +54,17 @@ public class BaseWebViewFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(Bundle savedInstanceState, View view) {
-        url = getArguments() != null ? getArguments().getString("url") : null;
         init(view);
+        isViewReady = true;
+
+        // newInstance(url) 带的 url → 自动加载；
+        // newInstance() 不带 url，则等外部 loadUrl（若 loadUrl 早于本方法，url 已存下，这里补加载）
+        String argUrl = getArguments() != null ? getArguments().getString("url") : null;
+        if (argUrl != null) {
+            loadUrl(argUrl);
+        } else if (url != null) {
+            realLoad();
+        }
     }
 
     @Override
@@ -58,14 +74,38 @@ public class BaseWebViewFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
+        isViewReady = false;
         destroyWebView();
         super.onDestroyView();
     }
 
+    /**
+     * 命令式加载 url，调一次加载一次（语义同 WebView.loadUrl，不做去重）。
+     * 若此时 WebView 尚未初始化，先存下 url，待 onViewCreated 就绪后自动补加载。
+     */
+    public void loadUrl(String url) {
+        this.url = url;
+        if (isViewReady) {
+            realLoad();
+        }
+    }
+
+    // 获取当前已设置的 url（未设置时为 null，可据此判断是否已加载过）
+    public String getUrl() {
+        return url;
+    }
+
     private void init(View root) {
-        showLoading();
         webView = root.findViewById(R.id.web_view);
         setupWebView();
+    }
+
+    // 真正执行加载：显示 loading、设置 cookie、加载 url
+    private void realLoad() {
+        if (webView == null || url == null) {
+            return;
+        }
+        showLoading();
         setCookies(url);
         webView.loadUrl(url);
     }
@@ -198,11 +238,6 @@ public class BaseWebViewFragment extends BaseFragment {
         cookieManager.setCookie(targetUrl, cookieStr);
 
         // 同步 Cookie
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            CookieSyncManager.createInstance(getContext());
-            CookieSyncManager.getInstance().sync();
-        } else {
-            cookieManager.flush();
-        }
+        cookieManager.flush();
     }
 }
