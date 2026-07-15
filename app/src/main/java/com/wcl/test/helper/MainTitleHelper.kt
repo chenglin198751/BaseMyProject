@@ -12,8 +12,12 @@ import com.wcl.test.base.BaseActivity
 class MainTitleHelper(private val activity: BaseActivity) {
 
     private val titleView: View by lazy { activity.findViewById(R.id.main_title) }
-    private val titleTextView: TextView by lazy { titleView.findViewById<TextView>(R.id.title_text) }
-    private val backBtn: View by lazy { titleView.findViewById<View>(R.id.back_btn) }
+    private val titleTextView: TextView by lazy { titleView.findViewById(R.id.title_text) }
+    private val backBtn: View by lazy { titleView.findViewById(R.id.back_btn) }
+
+    fun getTitleView(): View {
+        return titleView
+    }
 
     /**
      * 标题文字
