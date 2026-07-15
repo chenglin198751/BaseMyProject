@@ -41,9 +41,11 @@ public class BaseWebViewActivity extends BaseActivity {
 
         FragmentManager fm = getSupportFragmentManager();
         BaseWebViewFragment mWebViewFragment = (BaseWebViewFragment) fm.findFragmentById(R.id.fragment_base_id);
+        // 防叠加：重建时 super.onCreate 已恢复旧 Fragment，这里能找回则跳过 add，仅首次创建才 new
         if (mWebViewFragment == null) {
-            mWebViewFragment = BaseWebViewFragment.newInstance(url);
+            mWebViewFragment = new BaseWebViewFragment();
             fm.beginTransaction().replace(R.id.fragment_base_id, mWebViewFragment).commit();
+            mWebViewFragment.loadUrl(url);
         }
     }
 

@@ -16,6 +16,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 
 import com.wcl.test.R;
 import com.wcl.test.utils.AppLogUtils;
@@ -29,23 +31,11 @@ import java.util.Map;
 
 public class BaseWebViewFragment extends BaseFragment {
 
+    private static final String KEY_SAVED_URL = "key_saved_url";
+
     public WebView webView;
     private String url;
     private boolean isViewReady = false;
-
-    // 带 url：view 就绪后自动加载
-    public static BaseWebViewFragment newInstance(String url) {
-        BaseWebViewFragment f = new BaseWebViewFragment();
-        Bundle b = new Bundle();
-        b.putString("url", url);
-        f.setArguments(b);
-        return f;
-    }
-
-    // 不带 url：只建 WebView 不加载，等外部调用 loadUrl
-    public static BaseWebViewFragment newInstance() {
-        return new BaseWebViewFragment();
-    }
 
     @Override
     protected int getContentLayout() {
@@ -53,16 +43,24 @@ public class BaseWebViewFragment extends BaseFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // 重建（配置变更 / 进程被杀）后恢复 url，字段本身不跨重建存活
+        if (savedInstanceState != null) {
+            String saved = savedInstanceState.getString(KEY_SAVED_URL);
+            if (saved != null) {
+                this.url = saved;
+            }
+        }
+    }
+
+    @Override
     public void onViewCreated(Bundle savedInstanceState, View view) {
         init(view);
         isViewReady = true;
 
-        // newInstance(url) 带的 url → 自动加载；
-        // newInstance() 不带 url，则等外部 loadUrl（若 loadUrl 早于本方法，url 已存下，这里补加载）
-        String argUrl = getArguments() != null ? getArguments().getString("url") : null;
-        if (argUrl != null) {
-            loadUrl(argUrl);
-        } else if (url != null) {
+        // url 可能来自 onCreate 恢复，或视图就绪前调用的 loadUrl；此时补加载
+        if (url != null) {
             realLoad();
         }
     }
@@ -70,6 +68,14 @@ public class BaseWebViewFragment extends BaseFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (url != null) {
+            outState.putString(KEY_SAVED_URL, url);
+        }
     }
 
     @Override
@@ -83,6 +89,7 @@ public class BaseWebViewFragment extends BaseFragment {
      * 命令式加载 url，调一次加载一次（语义同 WebView.loadUrl，不做去重）。
      * 若此时 WebView 尚未初始化，先存下 url，待 onViewCreated 就绪后自动补加载。
      */
+    @UiThread
     public void loadUrl(String url) {
         this.url = url;
         if (isViewReady) {
