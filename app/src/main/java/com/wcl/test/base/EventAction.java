@@ -14,6 +14,6 @@ public class EventAction {
     }
 
     public interface App {
-        String action_test = "ACTION_TEST";
+        String ACTION_TEST = "ACTION_TEST";
     }
 }
