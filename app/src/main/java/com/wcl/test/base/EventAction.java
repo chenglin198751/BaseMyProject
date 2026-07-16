@@ -7,7 +7,7 @@ public class EventAction {
         String ACTION_KEEP_SINGLE_ACTIVITY = "ACTION_SYS_KEEP_SINGLE_ACTIVITY";
 
         // 关闭别的Activity，只保留MainActivity不关闭
-        String ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY = "ACTION_SYS_KEEP_MAIN_AND_CLOSE_ACTIVITY";
+        String ACTION_KEEP_ONLY_MAIN_ACTIVITY = "ACTION_KEEP_ONLY_MAIN_ACTIVITY";
     }
 
     public interface App {

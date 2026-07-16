@@ -194,7 +194,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
                 finish();
                 return;
             }
-        } else if (EventAction.System.ACTION_KEEP_MAIN_AND_CLOSE_ACTIVITY.equals(eventKey)) {
+        } else if (EventAction.System.ACTION_KEEP_ONLY_MAIN_ACTIVITY.equals(eventKey)) {
             if (!getClass().getSimpleName().equals(MAIN_ACTIVITY_NAME)) {
                 finish();
                 return;
