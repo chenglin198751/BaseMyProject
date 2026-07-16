@@ -12,16 +12,17 @@ review 当前工作区所有未提交的改动，包括未暂存、已暂存、�
 1. `git status` 获取全部变更文件（含 untracked）
 2. `git diff` 查看未暂存改动
 3. `git diff --cached` 查看已暂存改动
-4. 对 untracked 新文件，直接读取文件内容 review
-5. 自动跳过二进制及资源文件（如：png、jpg、jpeg、gif、webp、so、jar、aar、apk、dex、keystore、mp3、mp4 等）
-6. 逐个变更文件做 review
+4. 对每个被修改的已跟踪文件，`Read` 其工作区当前完整内容作为 review 依据；diff 仅用于定位"改了哪里"。特别注意 `AM`（部分暂存）文件：`git diff` 与 `git diff --cached` 各自只反映一部分，务必以 Read 到的当前文件为准。
+5. 对 untracked 新文件，直接读取文件内容 review
+6. 自动跳过二进制及资源文件（如：png、jpg、jpeg、gif、webp、so、jar、aar、apk、dex、keystore、mp3、mp4 等）
+7. 逐个变更文件做 review
 
 ## Review 要求
 
-- 只关注 diff 改动的代码是否有 bug（逻辑错误、边界条件、空指针、崩溃风险等），不做风格/优化建议
-- 必须逐文件 review，不允许跳过文件
+- 只关注 diff 改动的代码是否有 bug（逻辑错误、边界条件、空指针、崩溃风险等），不做风格/优化建议，以 Read 到的当前文件重新数行号
 - 必须指出具体问题并标注行号，不要泛泛而谈
 - 行号以改动后文件为准（即当前文件的实际行号），不要用 diff 的相对行号
+- 一律以 Read 到的工作区当前文件内容为准下结论，不要凭 diff 文本或之前读过的旧内容判断（文件可能在其间被编辑、被 IDE 回写或格式化）
 - 每条问题都要给出修复建议
 - 如果没有问题，说明“未发现明显问题”并给出依据，不要强行找问题
 
