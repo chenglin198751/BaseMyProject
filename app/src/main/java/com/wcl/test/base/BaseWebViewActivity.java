@@ -2,7 +2,6 @@ package com.wcl.test.base;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -39,9 +38,9 @@ public class BaseWebViewActivity extends BaseActivity {
         setContentLayout(R.layout.my_webview_layout);
         parseParams();
 
+        // 防叠加：重建时 super.onCreate 已恢复旧 Fragment，这里能找回则跳过 add，仅首次创建才 new
         FragmentManager fm = getSupportFragmentManager();
         BaseWebViewFragment mWebViewFragment = (BaseWebViewFragment) fm.findFragmentById(R.id.fragment_base_id);
-        // 防叠加：重建时 super.onCreate 已恢复旧 Fragment，这里能找回则跳过 add，仅首次创建才 new
         if (mWebViewFragment == null) {
             mWebViewFragment = new BaseWebViewFragment();
             fm.beginTransaction().replace(R.id.fragment_base_id, mWebViewFragment).commit();
@@ -53,17 +52,6 @@ public class BaseWebViewActivity extends BaseActivity {
         Intent intent = getIntent();
         url = intent.getStringExtra(KEY_URL);
         title = intent.getStringExtra(KEY_TITLE);
-
-        if (!TextUtils.isEmpty(url)) {
-            try {
-                Uri uri = Uri.parse(url);
-                String titleFromUrl = uri.getQueryParameter("title");
-                if (!TextUtils.isEmpty(titleFromUrl)) {
-                    title = titleFromUrl;
-                }
-            } catch (Exception ignored) {
-            }
-        }
 
         if (!TextUtils.isEmpty(title)) {
             getTitleHelper().setTitle(title);
