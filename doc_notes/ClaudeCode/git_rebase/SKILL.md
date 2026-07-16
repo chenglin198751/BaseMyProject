@@ -13,7 +13,7 @@ description: 自动执行 git fetch + git rebase，遇到冲突由 Claude 智能
 
 1. `git status` 确认工作区是否干净
 
-- 有未提交的改动 → 停止执行，提示用户先 commit 或 stash，不继续往下走
+- 有未提交的改动 → 停止执行，⚠️ 提示用户先 git stash，不继续往下走
 - 工作区干净 → 继续
 
 2. 记录当前分支名和 HEAD commit（用于失败时回滚参考）
