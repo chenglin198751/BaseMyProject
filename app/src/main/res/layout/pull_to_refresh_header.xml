@@ -4,20 +4,22 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingBottom="12dp"
-    android:paddingTop="12dp">
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp">
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:src="@drawable/refresh_loading_icon" />
 
     <TextView
         android:id="@+id/text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
+        android:layout_marginLeft="3dp"
+        android:includeFontPadding="false"
         android:text="@string/cube_ptr_pull_down_to_refresh"
-        android:textColor="@color/fc_2" />
+        android:textColor="@color/fc_1"
+        android:textSize="14dp" />
 </LinearLayout>
