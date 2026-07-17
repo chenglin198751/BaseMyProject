@@ -15,10 +15,6 @@ class MainTitleHelper(private val activity: BaseActivity) {
     private val titleTextView: TextView by lazy { titleView.findViewById(R.id.title_text) }
     private val backBtn: View by lazy { titleView.findViewById(R.id.back_btn) }
 
-    fun getTitleView(): View {
-        return titleView
-    }
-
     /**
      * 标题文字
      */
