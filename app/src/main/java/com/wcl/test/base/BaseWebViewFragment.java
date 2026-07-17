@@ -205,7 +205,7 @@ public class BaseWebViewFragment extends BaseFragment {
 
     private void setCookies(String urlStr) {
         // 支持的域名白名单
-        final List<String> domains = Arrays.asList(
+        final List<String> domains = List.of(
                 "app.api.sj.xx.cn"
         );
 
