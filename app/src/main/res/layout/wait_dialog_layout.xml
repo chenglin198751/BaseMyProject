@@ -14,7 +14,6 @@
 
         <ImageView
             android:id="@+id/image"
-            android:src="@drawable/wait_loading_icon"
             android:layout_width="25dp"
             android:layout_height="25dp" />
 
