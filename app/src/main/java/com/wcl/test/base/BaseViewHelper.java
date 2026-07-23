@@ -66,7 +66,7 @@ class BaseViewHelper {
         // 旋转动画
         ImageView image = mLoadingView.findViewById(R.id.loading_icon);
         rotateAnimator = ObjectAnimator.ofFloat(image, View.ROTATION, 0f, 360f);
-        rotateAnimator.setDuration(800);
+        rotateAnimator.setDuration(1500);
         rotateAnimator.setInterpolator(new LinearInterpolator());
         rotateAnimator.setRepeatCount(ValueAnimator.INFINITE);
         rotateAnimator.start();

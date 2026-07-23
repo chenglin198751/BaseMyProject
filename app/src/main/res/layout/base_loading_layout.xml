@@ -8,16 +8,16 @@
 
     <ImageView
         android:id="@+id/loading_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/small_loading_icon" />
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/big_loading_icon" />
 
     <TextView
         android:id="@+id/loading_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginRight="20dp"
         android:gravity="center|top"
         android:text="@string/data_loading"
