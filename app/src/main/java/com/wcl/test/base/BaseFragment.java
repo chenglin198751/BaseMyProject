@@ -70,7 +70,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = BaseFragmentLayoutBinding.inflate(inflater, container, false);
         mContentView = mBinding.getRoot();
-        mBaseViewHelper = new BaseViewHelper(getContext(), mContentView);
+        mBaseViewHelper = new BaseViewHelper(getContext());
         return mContentView;
     }
 
@@ -141,7 +141,6 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void showLoading(String text) {
-        detachHelperView();
         mBaseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
         attachHelperView();
     }
@@ -159,7 +158,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public void hideLoading() {
-        detachHelperView();
+        mBaseViewHelper.hideLoading();
     }
 
     /**
@@ -167,7 +166,6 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
-        hideNoNetView();
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
         attachHelperView();
     }
@@ -177,7 +175,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void hideNoNetView() {
-        detachHelperView();
+        mBaseViewHelper.hideNoNet();
     }
 
     /**
@@ -185,7 +183,6 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
-        hideEmptyView();
         mBaseViewHelper.showEmptyText(text, listener);
         attachHelperView();
     }
@@ -195,7 +192,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void hideEmptyView() {
-        detachHelperView();
+        mBaseViewHelper.hideEmpty();
     }
 
     /**
@@ -246,15 +243,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
         } else {
             mContentView.addView(helperView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
+        mBaseViewHelper.startLoadingAnimation();
     }
 
-    private void detachHelperView() {
-        View view = mBaseViewHelper.getView();
-        if (getView() == null || view == null || view.getParent() == null) {
-            return;
-        }
-
-        mBaseViewHelper.destroy();
-        ((ViewGroup) view.getParent()).removeView(view);
-    }
 }

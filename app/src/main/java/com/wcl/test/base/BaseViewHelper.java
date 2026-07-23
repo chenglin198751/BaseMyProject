@@ -16,29 +16,21 @@ import com.wcl.test.R;
 
 class BaseViewHelper {
     private final Context mContext;
-    private final ViewGroup mParentView;
 
     private LinearLayout mLoadingView;
     private LinearLayout mEmptyView;
     private LinearLayout mNoNetView;
+    private LinearLayout mCurrentView;
 
     private int mShowGravity = Gravity.CENTER;
     private ObjectAnimator rotateAnimator;
 
-    public BaseViewHelper(Context context, ViewGroup parentView) {
+    public BaseViewHelper(Context context) {
         this.mContext = context;
-        this.mParentView = parentView;
     }
 
     public LinearLayout getView() {
-        if (mLoadingView != null) {
-            return mLoadingView;
-        } else if (mEmptyView != null) {
-            return mEmptyView;
-        } else if (mNoNetView != null) {
-            return mNoNetView;
-        }
-        return null;
+        return mCurrentView;
     }
 
     /**
@@ -49,7 +41,9 @@ class BaseViewHelper {
      */
     public void setStateViewGravity(int position) {
         mShowGravity = position;
-        applyPosition(getView());
+        applyPosition(mLoadingView);
+        applyPosition(mEmptyView);
+        applyPosition(mNoNetView);
     }
 
     public void setLoadingText(String text) {
@@ -63,19 +57,12 @@ class BaseViewHelper {
             textView.setVisibility(View.GONE);
         }
 
-        // 旋转动画
-        ImageView image = mLoadingView.findViewById(R.id.loading_icon);
-        rotateAnimator = ObjectAnimator.ofFloat(image, View.ROTATION, 0f, 360f);
-        rotateAnimator.setDuration(1500);
-        rotateAnimator.setInterpolator(new LinearInterpolator());
-        rotateAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        rotateAnimator.start();
-
         showOnly(mLoadingView);
     }
 
     public void showEmptyText(String text, View.OnClickListener listener) {
-        ensureEmptyView(listener);
+        ensureEmptyView();
+        mEmptyView.setOnClickListener(listener);
 
         TextView textView = mEmptyView.findViewById(R.id.empty_text);
         if (!TextUtils.isEmpty(text)) {
@@ -88,7 +75,8 @@ class BaseViewHelper {
     }
 
     public void showNoNetView(String text, View.OnClickListener listener) {
-        ensureNoNetView(listener);
+        ensureNoNetView();
+        mNoNetView.setOnClickListener(listener);
 
         TextView textView = mNoNetView.findViewById(R.id.net_text);
         if (!TextUtils.isEmpty(text)) {
@@ -98,11 +86,37 @@ class BaseViewHelper {
         showOnly(mNoNetView);
     }
 
-    public void destroy() {
-        if (rotateAnimator != null) {
-            rotateAnimator.cancel();
-            rotateAnimator = null;
+    public void startLoadingAnimation() {
+        if (mCurrentView == mLoadingView && rotateAnimator != null && !rotateAnimator.isRunning()) {
+            rotateAnimator.start();
         }
+    }
+
+    public void hideLoading() {
+        hideView(mLoadingView);
+    }
+
+    public void hideEmpty() {
+        hideView(mEmptyView);
+    }
+
+    public void hideNoNet() {
+        hideView(mNoNetView);
+    }
+
+    public void destroy() {
+        stopLoadingAnimation();
+        removeFromParent(mLoadingView);
+        removeFromParent(mEmptyView);
+        removeFromParent(mNoNetView);
+        if (mEmptyView != null) {
+            mEmptyView.setOnClickListener(null);
+        }
+        if (mNoNetView != null) {
+            mNoNetView.setOnClickListener(null);
+        }
+        rotateAnimator = null;
+        mCurrentView = null;
         mLoadingView = null;
         mEmptyView = null;
         mNoNetView = null;
@@ -113,27 +127,53 @@ class BaseViewHelper {
         if (mLoadingView != null) return;
         mLoadingView = (LinearLayout) View.inflate(mContext, R.layout.base_loading_layout, null);
         applyPosition(mLoadingView);
+
+        ImageView image = mLoadingView.findViewById(R.id.loading_icon);
+        rotateAnimator = ObjectAnimator.ofFloat(image, View.ROTATION, 0f, 360f);
+        rotateAnimator.setDuration(1500);
+        rotateAnimator.setInterpolator(new LinearInterpolator());
+        rotateAnimator.setRepeatCount(ValueAnimator.INFINITE);
     }
 
-    private void ensureEmptyView(View.OnClickListener listener) {
+    private void ensureEmptyView() {
         if (mEmptyView != null) return;
         mEmptyView = (LinearLayout) View.inflate(mContext, R.layout.base_empty_layout, null);
-        mEmptyView.setOnClickListener(listener);
         applyPosition(mEmptyView);
     }
 
-    private void ensureNoNetView(View.OnClickListener listener) {
+    private void ensureNoNetView() {
         if (mNoNetView != null) return;
         mNoNetView = (LinearLayout) View.inflate(mContext, R.layout.base_no_net_layout, null);
-        mNoNetView.setOnClickListener(listener);
         applyPosition(mNoNetView);
     }
 
-    private void showOnly(View target) {
-        mParentView.addView(target, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-        ));
+    private void showOnly(LinearLayout target) {
+        if (mCurrentView == mLoadingView && target != mLoadingView) {
+            stopLoadingAnimation();
+        }
+        removeFromParent(mLoadingView);
+        removeFromParent(mEmptyView);
+        removeFromParent(mNoNetView);
+        mCurrentView = target;
+    }
+
+    private void hideView(LinearLayout target) {
+        if (mCurrentView != target) return;
+        stopLoadingAnimation();
+        removeFromParent(target);
+        mCurrentView = null;
+    }
+
+    private void stopLoadingAnimation() {
+        if (rotateAnimator != null) {
+            rotateAnimator.cancel();
+        }
+    }
+
+    private void removeFromParent(View view) {
+        if (view != null && view.getParent() instanceof ViewGroup) {
+            ((ViewGroup) view.getParent()).removeView(view);
+        }
     }
 
     private void applyPosition(LinearLayout view) {

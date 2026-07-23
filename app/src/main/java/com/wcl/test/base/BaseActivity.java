@@ -64,7 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         setContentView(mBaseRootView);
 
         mTitleHelper = new MainTitleHelper(this);
-        mBaseViewHelper = new BaseViewHelper(this, mBaseRootView);
+        mBaseViewHelper = new BaseViewHelper(this);
 
         if (getTitle() != null) {
             mTitleHelper.setTitle(getTitle().toString());
@@ -227,6 +227,10 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             mWaitDialog.dismiss();
             mWaitDialog = null;
         }
+        if (mBaseViewHelper != null) {
+            mBaseViewHelper.destroy();
+            mBaseViewHelper = null;
+        }
     }
 
     @Override
@@ -269,7 +273,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      */
     @Override
     public void hideLoading() {
-        detachHelperView();
+        mBaseViewHelper.hideLoading();
     }
 
     /**
@@ -286,7 +290,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      */
     @Override
     public final void hideNoNetView() {
-        detachHelperView();
+        mBaseViewHelper.hideNoNet();
     }
 
     /**
@@ -303,7 +307,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      */
     @Override
     public final void hideEmptyView() {
-        detachHelperView();
+        mBaseViewHelper.hideEmpty();
     }
 
     /**
@@ -332,24 +336,15 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         view.setClickable(true);
 
         if (mNestedParentLayout != null) {
-            mNestedParentLayout.addView(view,
-                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            mNestedParentLayout.addView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } else {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             params.addRule(RelativeLayout.BELOW, R.id.main_title);
             mBaseRootView.addView(view, params);
         }
-    }
-
-    private void detachHelperView() {
-        View view = mBaseViewHelper.getView();
-        if (view == null || view.getParent() == null) {
-            return;
+        if (view == mBaseViewHelper.getView()) {
+            mBaseViewHelper.startLoadingAnimation();
         }
-
-        mBaseViewHelper.destroy();
-        ((ViewGroup) view.getParent()).removeView(view);
     }
 
     /**
