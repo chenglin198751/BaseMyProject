@@ -38,6 +38,7 @@ import java.util.List;
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView, OnEventBusListener {
     public static final String MAIN_ACTIVITY_NAME = "MainActivity";
     protected static final Gson gson = AppConstants.gson;
+    private static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
 
     private BaseActivityLayoutBinding mBinding;
     private MainTitleHelper mTitleHelper;
@@ -150,7 +151,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (mContentView != null && mContentView.getParent() != null) {
             mBaseRootView.removeView(mContentView);
         }
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         params.addRule(RelativeLayout.BELOW, R.id.main_title);
         mContentView = layoutView;
         mBaseRootView.addView(mContentView, params);
@@ -336,9 +337,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         view.setClickable(true);
 
         if (mNestedParentLayout != null) {
-            mNestedParentLayout.addView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            mNestedParentLayout.addView(view, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         } else {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
             params.addRule(RelativeLayout.BELOW, R.id.main_title);
             mBaseRootView.addView(view, params);
         }
