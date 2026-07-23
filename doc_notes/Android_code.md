@@ -153,11 +153,6 @@
 
     自定义的用于显示长图的控件。基于WebView改造而来，性能卓越。
 
-**38、PolygonImageView 类：**
-
-    github 地址：https://github.com/AlbertGrobas/PolygonImageView
-    一个实现多边形的ImageView 类。四边形，五边形，六边形。另外还有星星，撕纸形状等，还可以自定义形状。
-
 **39、RoundedImageView 类：**
 
     app:riv_corner_radius="30dp" 圆角的角度
