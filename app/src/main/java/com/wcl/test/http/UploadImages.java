@@ -22,12 +22,11 @@ class UploadImages {
                     List<File> files,
                     OkHttpExecutor.UploadCallback callback) {
         if (LiteHelper.isInvalidUrl(url) || files == null || files.isEmpty()) {
-            if (callback != null) {
-                callback.onFinished(false, "无效的 URL 或文件列表为空");
-            }
+            LiteHelper.notifyUploadFailure(callback, "无效的 URL 或文件列表为空");
             return;
         }
-        AppThreadPoolExecutor.getExecutor().execute(() -> {
+        try {
+            AppThreadPoolExecutor.getExecutor().execute(() -> {
             Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
             int totalCount = files.size();
             for (int i = 0; i < totalCount; i++) {
@@ -46,7 +45,18 @@ class UploadImages {
                 }
                 builder.addFormDataPart(fileKey, file.getName(),
                         RequestBody.create(LiteHelper.guessMediaType(file), file));
-                Request request = new Request.Builder().url(url).post(builder.build()).build();
+                Request request;
+                try {
+                    request = new Request.Builder().url(url).post(builder.build()).build();
+                } catch (IllegalArgumentException e) {
+                    String error = e.toString();
+                    LiteHelper.postToUi(() -> {
+                        if (callback != null) {
+                            callback.onFinished(false, error);
+                        }
+                    });
+                    return;
+                }
                 try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
                     if (!response.isSuccessful()) {
                         String error = "上传失败: " + response.code();
@@ -79,6 +89,9 @@ class UploadImages {
                     callback.onFinished(true, null);
                 }
             });
-        });
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            LiteHelper.notifyUploadFailure(callback, e.toString());
+        }
     }
 }

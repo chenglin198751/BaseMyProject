@@ -1,238 +1,178 @@
 package com.wcl.test.http;
 
-import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 import okhttp3.Request;
 import okhttp3.Response;
 
 class Downloader {
 
-    private static final String TAG = "Downloader";
     private static final int PROGRESS_INTERVAL = 500;
-    private static final long BIG_FILE_SIZE = 200L * 1024 * 1024;
-
-    /**
-     * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按时间间隔回调）
-     *
-     * @param url      文件下载地址
-     * @param callback 下载回调（主线程）
-     */
-    public static void fastDownload(String url, OkHttpExecutor.DownloadCallback callback) {
-        if (LiteHelper.isInvalidUrl(url)) {
-            callback.onFinished(false, null, "Invalid URL");
-            return;
-        }
-
-        // 正在下载的不再重复下载
-        if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
-            LiteHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
-            return;
-        }
-
-        new Thread(() -> {
-            executeFastDownload(url, callback);
-        }).start();
-    }
-
-    private static void executeFastDownload(String url, OkHttpExecutor.DownloadCallback callback) {
-        try {
-            File target = new File(LiteHelper.getDownloadPath(url));
-            File tempDir = new File(target.getAbsolutePath() + "_tmp");
-            if (!tempDir.exists()) tempDir.mkdirs();
-
-            long totalLength = LiteHelper.fetchContentLength(url);
-            if (totalLength <= 0) {
-                LiteHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
-                return;
-            }
-
-            // 小文件强制使用普通下载，先释放 DOWNLOADING_URLS 避免竞态
-            if (totalLength < BIG_FILE_SIZE) {
-                HttpRequestHelper.DOWNLOADING_URLS.remove(url);
-                OkHttpExecutor.download(url, callback);
-                return;
-            }
-
-            // 文件已经完整下载
-            if (target.exists() && target.length() == totalLength) {
-                LiteHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
-                return;
-            }
-
-            int threadCount = 4;
-            long blockSize = totalLength / threadCount;
-
-            Thread[] threads = new Thread[threadCount];
-            AtomicLong downloaded = new AtomicLong(0);
-            AtomicLong lastCallbackTime = new AtomicLong(0);
-            AtomicBoolean hasError = new AtomicBoolean(false);
-
-            // 计算已下载长度（每个分块已有文件）
-            for (int i = 0; i < threadCount; i++) {
-                File partFile = new File(tempDir, "part_" + i);
-                if (partFile.exists()) {
-                    downloaded.addAndGet(partFile.length());
-                }
-            }
-
-            for (int i = 0; i < threadCount; i++) {
-                long start = i * blockSize;
-                long end = (i == threadCount - 1) ? totalLength - 1 : (start + blockSize - 1);
-                int index = i;
-
-                threads[i] = new Thread(() -> {
-                    File partFile = new File(tempDir, "part_" + index);
-                    long existing = partFile.exists() ? partFile.length() : 0;
-                    long rangeStart = start + existing;
-                    if (rangeStart > end) return; // 已下载完成
-
-                    try (RandomAccessFile raf = new RandomAccessFile(partFile, "rw")) {
-                        raf.seek(existing);
-
-                        Request request = new Request.Builder()
-                                .url(url)
-                                .addHeader("Range", "bytes=" + rangeStart + "-" + end)
-                                .build();
-
-                        try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
-                            if (!response.isSuccessful()) {
-                                hasError.set(true);
-                                return;
-                            }
-
-                            try (InputStream in = response.body().byteStream()) {
-                                byte[] buffer = new byte[8192];
-                                int len;
-                                while ((len = in.read(buffer)) != -1) {
-                                    raf.write(buffer, 0, len);
-
-                                    long curDownloaded = downloaded.addAndGet(len);
-                                    long now = System.currentTimeMillis();
-                                    long lastTime = lastCallbackTime.get();
-                                    if (now - lastTime >= PROGRESS_INTERVAL && lastCallbackTime.compareAndSet(lastTime, now)) {
-                                        float floatPercent = AppUtils.formatFloat((curDownloaded * 100f) / totalLength, 2);
-                                        LiteHelper.postToUi(() -> callback.onProgress(totalLength, curDownloaded, floatPercent));
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        hasError.set(true);
-                        AppLogUtils.e(TAG, "chunk " + index + " download error: " + e);
-                    }
-                });
-
-                threads[i].start();
-            }
-
-            // 等待所有线程完成
-            for (Thread t : threads) t.join();
-
-            // 有分块下载失败，不合并，保留断点续传文件
-            if (hasError.get()) {
-                LiteHelper.postToUi(() -> callback.onFinished(false, null, "部分分块下载失败"));
-                return;
-            }
-
-            // 合并分块文件
-            try (RandomAccessFile out = new RandomAccessFile(target, "rw")) {
-                byte[] buffer = new byte[8192];
-                for (int i = 0; i < threadCount; i++) {
-                    File partFile = new File(tempDir, "part_" + i);
-                    if (!partFile.exists()) continue;
-
-                    try (RandomAccessFile partRaf = new RandomAccessFile(partFile, "r")) {
-                        int len;
-                        while ((len = partRaf.read(buffer)) != -1) {
-                            out.write(buffer, 0, len);
-                        }
-                    }
-                    partFile.delete();
-                }
-            }
-            tempDir.delete();
-
-            LiteHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
-
-        } catch (Throwable t) {
-            AppLogUtils.e(TAG, "fastDownload error: " + t);
-            LiteHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
-        } finally {
-            HttpRequestHelper.DOWNLOADING_URLS.remove(url);
-        }
-    }
 
     static void downloadInternal(String url, OkHttpExecutor.DownloadCallback callback) {
-        long totalLength = LiteHelper.fetchContentLength(url);
+        downloadInternal(url, callback, false);
+    }
 
-        if (totalLength <= 0) {
-            LiteHelper.postToUi(() -> callback.onFinished(false, null, "无法获取文件大小"));
-            return;
-        }
-
-        // 检查文件是否已经完整下载，如果已经被下载成功则直接返回file path
-        File downFile = new File(LiteHelper.getDownloadPath(url));
-        if (downFile.exists() && totalLength == downFile.length()) {
-            LiteHelper.postToUi(() -> callback.onFinished(true, downFile.getAbsolutePath(), null));
-            return;
-        }
-
-        if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
-            LiteHelper.postToUi(() -> callback.onFinished(false, null, "file is downloading"));
-            return;
-        }
-
+    static void downloadInternal(String url, OkHttpExecutor.DownloadCallback callback, boolean claimed) {
         File target = new File(LiteHelper.getDownloadPath(url));
-        File temp = new File(target.getAbsolutePath() + ".temp");
-        long downloaded = temp.exists() ? temp.length() : 0;
+        LiteHelper.DownloadMetadata remoteMetadata = LiteHelper.fetchDownloadMetadata(url);
+        if (remoteMetadata == null) {
+            LiteHelper.notifyDownloadFailure(callback, "无法获取文件信息");
+            return;
+        }
+        long totalLength = remoteMetadata.totalLength();
+        LiteHelper.DownloadMetadata localMetadata = LiteHelper.readDownloadMetadata(target);
+        boolean hasValidator = !android.text.TextUtils.isEmpty(remoteMetadata.validator());
+        boolean canResume = metadataMatches(localMetadata, remoteMetadata);
 
-        Request.Builder builder = new Request.Builder().url(url);
-        if (downloaded > 0) {
-            builder.addHeader("Range", "bytes=" + downloaded + "-");
+        if (canResume && target.exists() && target.length() == totalLength) {
+            postSuccess(callback, target.getAbsolutePath());
+            return;
+        }
+        if (!claimed && !HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
+            LiteHelper.notifyDownloadFailure(callback, "file is downloading");
+            return;
         }
 
-        try (Response response = HttpRequestHelper.CLIENT.newCall(builder.build()).execute()) {
-            if (!response.isSuccessful()) {
-                LiteHelper.postToUi(() -> callback.onFinished(false, null, "download fail: " + response));
+        File temp = new File(target.getAbsolutePath() + ".temp");
+        if (!canResume || temp.length() > totalLength) {
+            if (temp.exists()) temp.delete();
+            LiteHelper.deleteDownloadMetadata(target);
+        }
+        LiteHelper.writeDownloadMetadata(target, remoteMetadata);
+
+        long downloaded = temp.exists() ? temp.length() : 0;
+        try {
+            if (canResume && downloaded == totalLength) {
+                if (!LiteHelper.replaceFile(temp, target)) {
+                    throw new IllegalStateException("完整临时文件替换失败");
+                }
+                postSuccess(callback, target.getAbsolutePath());
                 return;
             }
 
-            try (InputStream in = response.body().byteStream();
-                 FileOutputStream out = new FileOutputStream(temp, true)) {
-                byte[] buffer = new byte[4096];
-                int len;
-                long sum = downloaded;
-                long lastCallbackTime = 0;
+            Request.Builder builder = new Request.Builder()
+                    .url(url)
+                    .addHeader("Accept-Encoding", "identity");
+            if (canResume && downloaded > 0) {
+                builder.addHeader("Range", "bytes=" + downloaded + "-");
+                if (hasValidator) {
+                    builder.addHeader("If-Range", remoteMetadata.validator());
+                }
+            } else {
+                downloaded = 0;
+            }
 
-                while ((len = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, len);
-                    sum += len;
+            try (Response response = HttpRequestHelper.CLIENT.newCall(builder.build()).execute()) {
+                if (downloaded > 0 && response.code() == 200) {
+                    downloaded = 0;
+                    if (temp.exists() && !temp.delete()) {
+                        throw new IllegalStateException("无法重置临时文件");
+                    }
+                } else if (downloaded > 0) {
+                    ContentRange range = parseContentRange(response.header("Content-Range"));
+                    String responseValidator = getValidator(response);
+                    boolean validatorMatches = !hasValidator
+                            || remoteMetadata.validator().equals(responseValidator);
+                    if (response.code() != 206 || range == null || range.start != downloaded
+                            || range.end != totalLength - 1 || range.total != totalLength
+                            || !validatorMatches) {
+                        throw new IllegalStateException("断点响应不匹配");
+                    }
+                } else if (response.code() != 200) {
+                    throw new IllegalStateException("下载响应错误: " + response.code());
+                }
 
-                    long now = System.currentTimeMillis();
-                    if (now - lastCallbackTime >= PROGRESS_INTERVAL) {
-                        lastCallbackTime = now;
-                        long curSum = sum;
-                        float floatPercent = AppUtils.formatFloat((curSum * 100f) / totalLength, 2);
-                        LiteHelper.postToUi(() -> callback.onProgress(totalLength, curSum, floatPercent));
+                if (downloaded == 0) {
+                    String responseValidator = getValidator(response);
+                    if (!android.text.TextUtils.isEmpty(responseValidator)) {
+                        LiteHelper.writeDownloadMetadata(target,
+                                new LiteHelper.DownloadMetadata(totalLength, responseValidator));
+                    }
+                }
+
+                long expected = totalLength - downloaded;
+                try (InputStream in = response.body().byteStream();
+                     FileOutputStream out = new FileOutputStream(temp, downloaded > 0)) {
+                    byte[] buffer = new byte[4096];
+                    int len;
+                    long received = 0;
+                    long sum = downloaded;
+                    long lastCallbackTime = 0;
+                    while ((len = in.read(buffer)) != -1) {
+                        if (received + len > expected) {
+                            throw new IllegalStateException("下载响应超出文件长度");
+                        }
+                        out.write(buffer, 0, len);
+                        received += len;
+                        sum += len;
+                        long now = System.currentTimeMillis();
+                        if (now - lastCallbackTime >= PROGRESS_INTERVAL) {
+                            lastCallbackTime = now;
+                            long current = sum;
+                            float percent = AppUtils.formatFloat((current * 100f) / totalLength, 2);
+                            LiteHelper.postToUi(() -> {
+                                if (callback != null) callback.onProgress(totalLength, current, percent);
+                            });
+                        }
+                    }
+                    if (received != expected || temp.length() != totalLength) {
+                        throw new IllegalStateException("下载文件长度错误");
                     }
                 }
             }
 
-            LiteHelper.replaceFile(temp, target);
-            LiteHelper.postToUi(() -> callback.onFinished(true, target.getAbsolutePath(), null));
+            if (!LiteHelper.replaceFile(temp, target) || target.length() != totalLength) {
+                throw new IllegalStateException("下载文件替换失败");
+            }
+            postSuccess(callback, target.getAbsolutePath());
         } catch (Throwable t) {
-            LiteHelper.postToUi(() -> callback.onFinished(false, null, t.toString()));
+            LiteHelper.notifyDownloadFailure(callback, t.toString());
         } finally {
             HttpRequestHelper.DOWNLOADING_URLS.remove(url);
         }
     }
 
+    private static void postSuccess(OkHttpExecutor.DownloadCallback callback, String path) {
+        LiteHelper.postToUi(() -> {
+            if (callback != null) callback.onFinished(true, path, null);
+        });
+    }
+
+    private static String getValidator(Response response) {
+        String validator = response.header("ETag");
+        return android.text.TextUtils.isEmpty(validator)
+                ? response.header("Last-Modified") : validator;
+    }
+
+    private static boolean metadataMatches(LiteHelper.DownloadMetadata local,
+                                           LiteHelper.DownloadMetadata remote) {
+        if (local == null || local.totalLength() != remote.totalLength()) {
+            return false;
+        }
+        return android.text.TextUtils.isEmpty(remote.validator())
+                || remote.validator().equals(local.validator());
+    }
+
+    private static ContentRange parseContentRange(String value) {
+        if (value == null || !value.startsWith("bytes ")) return null;
+        int dash = value.indexOf('-', 6);
+        int slash = value.indexOf('/', dash + 1);
+        if (dash < 0 || slash < 0) return null;
+        try {
+            long start = Long.parseLong(value.substring(6, dash));
+            long end = Long.parseLong(value.substring(dash + 1, slash));
+            long total = Long.parseLong(value.substring(slash + 1));
+            return new ContentRange(start, end, total);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private record ContentRange(long start, long end, long total) {
+    }
 }

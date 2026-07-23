@@ -23,7 +23,7 @@ record HttpRetryInterceptor(int maxRetry) implements Interceptor {
         Request request = chain.request();
         Response response = chain.proceed(request);
         int retry = 0;
-        while (!response.isSuccessful() && retry < maxRetry) {
+        while (isRetryable(request, response) && retry < maxRetry) {
             retry++;
             response.close();
             response = chain.proceed(request);
@@ -31,5 +31,13 @@ record HttpRetryInterceptor(int maxRetry) implements Interceptor {
         long end = System.currentTimeMillis();
         AppLogUtils.v(TAG, "cost:" + (end - start) + "ms" + ",retry:" + retry + ",url:" + request.url());
         return response;
+    }
+
+    private static boolean isRetryable(Request request, Response response) {
+        if (!("GET".equals(request.method()) || "HEAD".equals(request.method()))) {
+            return false;
+        }
+        int code = response.code();
+        return code == 408 || code == 429 || code >= 500;
     }
 }

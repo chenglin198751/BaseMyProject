@@ -10,7 +10,9 @@ import com.wcl.test.R;
 import com.wcl.test.base.BaseFragment;
 import com.wcl.test.databinding.MainFirstFragLayoutBinding;
 import com.wcl.test.download.DownloadManager;
+import com.wcl.test.http.OkHttpExecutor;
 import com.wcl.test.test.TestDownloadActivity;
+import com.wcl.test.utils.ApkInstaller;
 
 
 /**

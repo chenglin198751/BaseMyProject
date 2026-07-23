@@ -74,11 +74,18 @@ class HttpRequestHelper {
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!isAlive.getAsBoolean()) return;
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try (response) {
+                    if (!isAlive.getAsBoolean()) return;
+
                     boolean ok = response.isSuccessful();
-                    String responseContent = response.body().string();
+                    String responseContent;
+                    try {
+                        responseContent = response.body().string();
+                    } catch (IOException e) {
+                        postFailure(isAlive, callback, e.toString());
+                        return;
+                    }
                     final String result = LiteHelper.removeUtf8Bom(ok ? responseContent : response.toString());
                     AppLogUtils.i(TAG, "result:" + result);
                     LiteHelper.postToUi(() -> {
@@ -87,6 +94,15 @@ class HttpRequestHelper {
                         }
                     });
                 }
+            }
+        });
+    }
+
+    private static void postFailure(BooleanSupplier isAlive, OkHttpExecutor.HttpCallback callback, String error) {
+        if (!isAlive.getAsBoolean()) return;
+        LiteHelper.postToUi(() -> {
+            if (isAlive.getAsBoolean()) {
+                notifyResult(callback, false, error);
             }
         });
     }

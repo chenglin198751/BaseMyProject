@@ -1,12 +1,12 @@
 package com.wcl.test.http;
 
-import android.app.Application;
-import android.content.Context;
+import android.app.Activity;
 
 import androidx.fragment.app.Fragment;
 
 import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppThreadPoolExecutor;
+import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,6 +77,8 @@ public class OkHttpExecutor {
     }
 
     private static final String TAG = "OkHttpExecutor";
+    private static final String METHOD_GET = "GET";
+    private static final String METHOD_POST = "POST";
 
     private OkHttpExecutor() {
     }
@@ -85,14 +87,14 @@ public class OkHttpExecutor {
      * 构建 GET 请求
      */
     public static RequestBuilder get(String url) {
-        return new RequestBuilder(url, "GET");
+        return new RequestBuilder(url, METHOD_GET);
     }
 
     /**
      * 构建 POST 请求
      */
     public static RequestBuilder post(String url) {
-        return new RequestBuilder(url, "POST");
+        return new RequestBuilder(url, METHOD_POST);
     }
 
     public static class RequestBuilder {
@@ -119,29 +121,39 @@ public class OkHttpExecutor {
         /**
          * 异步执行请求（Activity 场景）
          */
-        public void execute(Context context, HttpCallback callback) {
-            // 为了保证UI安全，context不能传Application
-            if (context instanceof Application) {
-                throw new IllegalArgumentException("Application context not allowed. Use Activity context");
-            }
-            if (LiteHelper.isInvalidUrl(url)) {
-                HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
+        public void execute(Activity activity, HttpCallback callback) {
+            if (AppUtils.isActivityDestroyed(activity)) {
+                AppLogUtils.e(TAG, "The Activity was destroyed");
                 return;
             }
-            Request request = buildRequest();
-            HttpRequestHelper.enqueue(context, request, callback);
+            if (LiteHelper.isInvalidUrl(url)) {
+                notifyFailure(callback, "Invalid URL");
+                return;
+            }
+            try {
+                HttpRequestHelper.enqueue(activity, buildRequest(), callback);
+            } catch (Exception e) {
+                notifyFailure(callback, e.toString());
+            }
         }
 
         /**
          * 异步执行请求（Fragment 场景）
          */
         public void execute(Fragment fragment, HttpCallback callback) {
-            if (LiteHelper.isInvalidUrl(url)) {
-                HttpRequestHelper.notifyResult(callback, false, "Invalid URL");
+            if (fragment == null) {
+                AppLogUtils.e(TAG, "The Fragment was destroyed");
                 return;
             }
-            Request request = buildRequest();
-            HttpRequestHelper.enqueue(fragment, request, callback);
+            if (LiteHelper.isInvalidUrl(url)) {
+                notifyFailure(callback, "Invalid URL");
+                return;
+            }
+            try {
+                HttpRequestHelper.enqueue(fragment, buildRequest(), callback);
+            } catch (Exception e) {
+                notifyFailure(callback, e.toString());
+            }
         }
 
         /**
@@ -168,13 +180,17 @@ public class OkHttpExecutor {
 
         private Request buildRequest() {
             Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
-            if ("GET".equals(method)) {
+            if (METHOD_GET.equals(method)) {
                 String finalUrl = LiteHelper.buildGetUrl(url, finalParams);
                 return HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
             } else {
                 FormBody body = LiteHelper.buildFormBody(finalParams);
                 return HttpRequestHelper.buildRequest(url, headers).post(body).build();
             }
+        }
+
+        private void notifyFailure(HttpCallback callback, String error) {
+            LiteHelper.postToUi(() -> HttpRequestHelper.notifyResult(callback, false, error));
         }
     }
 
@@ -200,17 +216,21 @@ public class OkHttpExecutor {
      */
     public static void download(String url, DownloadCallback callback) {
         if (LiteHelper.isInvalidUrl(url)) {
-            callback.onFinished(false, null, "非法 URL");
+            LiteHelper.notifyDownloadFailure(callback, "Invalid URL");
             return;
         }
-        AppThreadPoolExecutor.getExecutor().execute(() -> Downloader.downloadInternal(url, callback));
+        try {
+            AppThreadPoolExecutor.getExecutor().execute(() -> Downloader.downloadInternal(url, callback));
+        } catch (Exception e) {
+            LiteHelper.notifyDownloadFailure(callback, e.toString());
+        }
     }
 
     /**
      * 异步下载文件（多线程切块下载 + 支持断点续传 + 进度按1%回调）
      */
     public static void fastDownload(String url, DownloadCallback callback) {
-        Downloader.fastDownload(url, callback);
+        FastDownloader.fastDownload(url, callback);
     }
 
 
