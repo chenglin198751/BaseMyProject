@@ -26,6 +26,10 @@ public class ApkInstaller {
      * 安装一个APK包，此方法不需要获取安装权限，原理是调用系统安装包管理打开apk。建议优先使用此方法。
      */
     public static void installApk(Context context, String filePath) {
+        if (context == null || TextUtils.isEmpty(filePath)) {
+            return;
+        }
+
         File file = new File(filePath);
         if (!file.exists()) {
             Toast.makeText(context, "安装失败，找不到apk文件", Toast.LENGTH_SHORT).show();
