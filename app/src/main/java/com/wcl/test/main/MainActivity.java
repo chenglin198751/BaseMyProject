@@ -61,9 +61,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initBottomTabs();
         showTab(TAB_FIRST);
         setupBackPressHandler();
-
-        Intent intent = new Intent(getContext(), TestDownloadActivity.class);
-        startActivity(intent);
     }
 
     private void initBottomTabs() {
