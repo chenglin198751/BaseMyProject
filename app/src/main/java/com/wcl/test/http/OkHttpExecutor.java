@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.RejectedExecutionException;
 
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -133,7 +132,7 @@ public class OkHttpExecutor {
             }
             try {
                 HttpRequestHelper.enqueue(activity, buildRequest(), callback);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 notifyFailure(callback, e.toString());
             }
         }
@@ -152,7 +151,7 @@ public class OkHttpExecutor {
             }
             try {
                 HttpRequestHelper.enqueue(fragment, buildRequest(), callback);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 notifyFailure(callback, e.toString());
             }
         }
@@ -222,7 +221,7 @@ public class OkHttpExecutor {
         }
         try {
             AppThreadPoolExecutor.getExecutor().execute(() -> Downloader.downloadInternal(url, callback));
-        } catch (RejectedExecutionException e) {
+        } catch (Exception e) {
             LiteHelper.notifyDownloadFailure(callback, e.toString());
         }
     }
