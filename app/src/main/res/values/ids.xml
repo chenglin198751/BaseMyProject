@@ -5,4 +5,6 @@
     <item name="web_image_id" type="id" />
     <item name="offset_x" type="id" />
     <item name="offset_y" type="id" />
+    <item name="banner_data_key" type="id"/>
+    <item name="banner_pos_key" type="id"/>
 </resources>

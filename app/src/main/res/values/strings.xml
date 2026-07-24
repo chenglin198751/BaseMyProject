@@ -4,7 +4,7 @@
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="dialog_download_file_message">你确定要下载此文件吗？</string>
-    <string name="no_net_tips">网络失败，点击重试</string>
+    <string name="no_net_tips">网络错误，点击重试</string>
     <string name="empty_tips">暂无相关数据</string>
     <string name="host_first_tab">首页</string>
     <string name="host_second_tab">分类</string>
@@ -19,6 +19,8 @@
     <string name="publish_camera_open_error">打开相机失败,请检查是否开了启相机权限</string>
     <string name="publish_max_selected_photo_limit">最多选择X张图片~</string>
     <string name="publish_selected_single_photo">请至少选择一张图片~</string>
+    <string name="indicator_color_error">indicator color attribute : “@color/colorID or #000000”</string>
+    <string name="banner_adapter_null_error">Adapter is NULL!</string>
 
     <!-- 下载按钮状态文字 -->
     <string name="down_download">下载</string>
