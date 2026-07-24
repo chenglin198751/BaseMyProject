@@ -24,7 +24,7 @@ class FastDownloader {
     private static final ExecutorService CHUNK_EXECUTOR = Executors.newFixedThreadPool(4);
 
     static void fastDownload(String url, OkHttpExecutor.DownloadCallback callback) {
-        if (LiteHelper.isInvalidUrl(url)) {
+        if (LiteHelper.invalidUrl(url)) {
             LiteHelper.notifyDownloadFailure(callback, "Invalid URL");
             return;
         }
@@ -49,33 +49,20 @@ class FastDownloader {
                 throw new IllegalStateException("无法创建临时目录");
             }
 
-            LiteHelper.DownloadMetadata remoteMetadata = LiteHelper.fetchDownloadMetadata(url);
-            if (remoteMetadata == null) {
+            long totalLength = LiteHelper.fetchContentLength(url);
+            if (totalLength <= 0) {
                 LiteHelper.notifyDownloadFailure(callback, "无法获取文件信息");
                 return;
             }
-            long totalLength = remoteMetadata.totalLength();
-            LiteHelper.DownloadMetadata localMetadata = LiteHelper.readDownloadMetadata(target);
-            boolean metadataMatches = metadataMatches(localMetadata, remoteMetadata);
-            if (!metadataMatches) {
-                deleteParts(tempDir, 4);
-                if (!target.exists()) {
-                    LiteHelper.deleteDownloadMetadata(target);
-                }
-            }
-            if (!target.exists()) {
-                LiteHelper.writeDownloadMetadata(target, remoteMetadata);
-            }
 
-            if (metadataMatches && target.exists() && target.length() == totalLength) {
-                postSuccess(callback, target.getAbsolutePath());
+            if (target.exists() && target.length() == totalLength) {
+                LiteHelper.postSuccess(callback, target.getAbsolutePath());
                 return;
             }
 
             int threadCount = 4;
             long blockSize = totalLength / threadCount;
-            DownloadSession session = new DownloadSession(url, tempDir, totalLength,
-                    remoteMetadata.validator(), callback);
+            DownloadSession session = new DownloadSession(url, tempDir, totalLength, callback);
             AtomicBoolean hasError = new AtomicBoolean(false);
             CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -128,16 +115,16 @@ class FastDownloader {
                 }
             }
 
-            if (merged.length() != totalLength || !LiteHelper.replaceFile(merged, target)) {
+            if (merged.length() != totalLength || !LiteHelper.replaceFile(merged, target)
+                    || target.length() != totalLength) {
                 throw new IllegalStateException("合并文件校验失败");
             }
-            LiteHelper.writeDownloadMetadata(target, remoteMetadata);
             deleteParts(tempDir, threadCount);
             tempDir.delete();
-            postSuccess(callback, target.getAbsolutePath());
-        } catch (Throwable t) {
-            AppLogUtils.e(TAG, "fastDownload error: " + t);
-            LiteHelper.notifyDownloadFailure(callback, t.toString());
+            LiteHelper.postSuccess(callback, target.getAbsolutePath());
+        } catch (Exception e) {
+            AppLogUtils.e(TAG, "fastDownload error: " + e);
+            LiteHelper.notifyDownloadFailure(callback, e.toString());
         } finally {
             HttpRequestHelper.DOWNLOADING_URLS.remove(url);
         }
@@ -157,27 +144,19 @@ class FastDownloader {
         }
 
         long rangeStart = part.start() + existing;
-        Request.Builder builder = new Request.Builder()
+        Request request = new Request.Builder()
                 .url(session.url())
                 .addHeader("Accept-Encoding", "identity")
-                .addHeader("Range", "bytes=" + rangeStart + "-" + part.end());
-        boolean hasValidator = !android.text.TextUtils.isEmpty(session.validator());
-        if (hasValidator) {
-            builder.addHeader("If-Range", session.validator());
-        }
-        Request request = builder.build();
+                .addHeader("Range", "bytes=" + rangeStart + "-" + part.end())
+                .build();
         try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
             if (response.code() != 206) {
                 throw new IllegalStateException("服务器不支持精确 Range");
             }
-            ContentRange range = parseContentRange(response.header("Content-Range"));
-            if (range == null || range.start != rangeStart || range.end != part.end()
-                    || range.total != session.totalLength()) {
+            LiteHelper.ContentRange range = LiteHelper.parseContentRange(response.header("Content-Range"));
+            if (range == null || range.start() != rangeStart || range.end() != part.end()
+                    || range.total() != session.totalLength()) {
                 throw new IllegalStateException("Content-Range 不匹配");
-            }
-            String responseValidator = getValidator(response);
-            if (hasValidator && !session.validator().equals(responseValidator)) {
-                throw new IllegalStateException("分块版本校验失败");
             }
             try (InputStream in = response.body().byteStream();
                  RandomAccessFile raf = new RandomAccessFile(partFile, "rw")) {
@@ -218,42 +197,6 @@ class FastDownloader {
         }
     }
 
-    private static void postSuccess(OkHttpExecutor.DownloadCallback callback, String path) {
-        LiteHelper.postToUi(() -> {
-            if (callback != null) callback.onFinished(true, path, null);
-        });
-    }
-
-    private static String getValidator(Response response) {
-        String validator = response.header("ETag");
-        return android.text.TextUtils.isEmpty(validator)
-                ? response.header("Last-Modified") : validator;
-    }
-
-    private static boolean metadataMatches(LiteHelper.DownloadMetadata local,
-                                           LiteHelper.DownloadMetadata remote) {
-        if (local == null || local.totalLength() != remote.totalLength()) {
-            return false;
-        }
-        return android.text.TextUtils.isEmpty(remote.validator())
-                || remote.validator().equals(local.validator());
-    }
-
-    private static ContentRange parseContentRange(String value) {
-        if (value == null || !value.startsWith("bytes ")) return null;
-        int dash = value.indexOf('-', 6);
-        int slash = value.indexOf('/', dash + 1);
-        if (dash < 0 || slash < 0) return null;
-        try {
-            long start = Long.parseLong(value.substring(6, dash));
-            long end = Long.parseLong(value.substring(dash + 1, slash));
-            long total = Long.parseLong(value.substring(slash + 1));
-            return new ContentRange(start, end, total);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
     private record DownloadPart(int index, long start, long end) {
     }
 
@@ -261,18 +204,14 @@ class FastDownloader {
             String url,
             File tempDir,
             long totalLength,
-            String validator,
             OkHttpExecutor.DownloadCallback callback,
             AtomicLong downloaded,
             AtomicLong lastCallbackTime
     ) {
-        private DownloadSession(String url, File tempDir, long totalLength, String validator,
+        private DownloadSession(String url, File tempDir, long totalLength,
                                 OkHttpExecutor.DownloadCallback callback) {
-            this(url, tempDir, totalLength, validator, callback,
+            this(url, tempDir, totalLength, callback,
                     new AtomicLong(), new AtomicLong());
         }
-    }
-
-    private record ContentRange(long start, long end, long total) {
     }
 }

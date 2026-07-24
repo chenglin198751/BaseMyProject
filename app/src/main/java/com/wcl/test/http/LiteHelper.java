@@ -12,12 +12,9 @@ import com.wcl.test.utils.AppLogUtils;
 import com.wcl.test.utils.AppUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
@@ -33,7 +30,7 @@ class LiteHelper {
     private static final String TAG = "HttpHelper";
 
     // 如果是无效 url（空或无法解析为 http/https）则返回 true
-    static boolean isInvalidUrl(String url) {
+    static boolean invalidUrl(String url) {
         HttpUrl parsed = url == null ? null : HttpUrl.parse(url);
         return parsed == null || !("http".equals(parsed.scheme()) || "https".equals(parsed.scheme()));
     }
@@ -110,25 +107,44 @@ class LiteHelper {
         return dot > 0 && dot < fileName.length() - 1 ? fileName.substring(dot) : "";
     }
 
-    // 从 url 获取文件长度和版本校验值
-    static DownloadMetadata fetchDownloadMetadata(String url) {
+    // 从 url 获取文件长度
+    static long fetchContentLength(String url) {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Accept-Encoding", "identity")
                 .build();
         try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
-            if (!response.isSuccessful()) return null;
+            if (!response.isSuccessful()) return 0;
             long totalLength = response.body().contentLength();
-            String validator = response.header("ETag");
-            if (TextUtils.isEmpty(validator)) {
-                validator = response.header("Last-Modified");
-            }
-            if (totalLength <= 0) return null;
-            return new DownloadMetadata(totalLength, validator);
+            return Math.max(totalLength, 0);
         } catch (Exception e) {
-            AppLogUtils.e(TAG, "fetch download metadata error: " + e);
+            AppLogUtils.e(TAG, "fetch content length error: " + e);
+            return 0;
+        }
+    }
+
+    static void postSuccess(OkHttpExecutor.DownloadCallback callback, String path) {
+        postToUi(() -> {
+            if (callback != null) callback.onFinished(true, path, null);
+        });
+    }
+
+    static ContentRange parseContentRange(String value) {
+        if (value == null || !value.startsWith("bytes ")) return null;
+        int dash = value.indexOf('-', 6);
+        int slash = value.indexOf('/', dash + 1);
+        if (dash < 0 || slash < 0) return null;
+        try {
+            long start = Long.parseLong(value.substring(6, dash));
+            long end = Long.parseLong(value.substring(dash + 1, slash));
+            long total = Long.parseLong(value.substring(slash + 1));
+            return new ContentRange(start, end, total);
+        } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    record ContentRange(long start, long end, long total) {
     }
 
     static boolean replaceFile(File src, File dest) {
@@ -146,54 +162,6 @@ class LiteHelper {
                 return false;
             }
         }
-    }
-
-    static File getDownloadMetadataFile(File target) {
-        return new File(target.getAbsolutePath() + ".download.meta");
-    }
-
-    static DownloadMetadata readDownloadMetadata(File target) {
-        File metadataFile = getDownloadMetadataFile(target);
-        if (!metadataFile.isFile()) return null;
-
-        Properties properties = new Properties();
-        try (FileInputStream input = new FileInputStream(metadataFile)) {
-            properties.load(input);
-            long totalLength = Long.parseLong(properties.getProperty("totalLength"));
-            String validator = properties.getProperty("validator");
-            if (totalLength <= 0) return null;
-            return new DownloadMetadata(totalLength, validator);
-        } catch (Exception e) {
-            AppLogUtils.e(TAG, "read download metadata error: " + e);
-            return null;
-        }
-    }
-
-    static boolean writeDownloadMetadata(File target, DownloadMetadata metadata) {
-        File metadataFile = getDownloadMetadataFile(target);
-        File tempFile = new File(metadataFile.getAbsolutePath() + ".tmp");
-        Properties properties = new Properties();
-        properties.setProperty("totalLength", String.valueOf(metadata.totalLength()));
-        if (!TextUtils.isEmpty(metadata.validator())) {
-            properties.setProperty("validator", metadata.validator());
-        }
-        try (FileOutputStream output = new FileOutputStream(tempFile)) {
-            properties.store(output, null);
-        } catch (IOException e) {
-            AppLogUtils.e(TAG, "write download metadata error: " + e);
-            return false;
-        }
-        return replaceFile(tempFile, metadataFile);
-    }
-
-    static void deleteDownloadMetadata(File target) {
-        File metadataFile = getDownloadMetadataFile(target);
-        if (metadataFile.exists() && !metadataFile.delete()) {
-            AppLogUtils.w(TAG, "delete download metadata failed: " + metadataFile);
-        }
-    }
-
-    record DownloadMetadata(long totalLength, String validator) {
     }
 
     /**

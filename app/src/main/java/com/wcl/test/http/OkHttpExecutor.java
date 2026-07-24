@@ -126,13 +126,13 @@ public class OkHttpExecutor {
                 AppLogUtils.e(TAG, "The Activity was destroyed");
                 return;
             }
-            if (LiteHelper.isInvalidUrl(url)) {
+            if (LiteHelper.invalidUrl(url)) {
                 notifyFailure(callback, "Invalid URL");
                 return;
             }
             try {
                 HttpRequestHelper.enqueue(activity, buildRequest(), callback);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 notifyFailure(callback, e.toString());
             }
         }
@@ -141,17 +141,17 @@ public class OkHttpExecutor {
          * 异步执行请求（Fragment 场景）
          */
         public void execute(Fragment fragment, HttpCallback callback) {
-            if (fragment == null) {
+            if (AppUtils.isFragmentDestroyed(fragment)) {
                 AppLogUtils.e(TAG, "The Fragment was destroyed");
                 return;
             }
-            if (LiteHelper.isInvalidUrl(url)) {
+            if (LiteHelper.invalidUrl(url)) {
                 notifyFailure(callback, "Invalid URL");
                 return;
             }
             try {
                 HttpRequestHelper.enqueue(fragment, buildRequest(), callback);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 notifyFailure(callback, e.toString());
             }
         }
@@ -162,7 +162,7 @@ public class OkHttpExecutor {
          * 注意：必须在子线程中调用，可搭配工程内线程池 AppThreadPoolExecutor 使用
          */
         public String executeSync() {
-            if (LiteHelper.isInvalidUrl(url)) {
+            if (LiteHelper.invalidUrl(url)) {
                 return null;
             }
             Request request = buildRequest();
@@ -215,7 +215,7 @@ public class OkHttpExecutor {
      * 异步下载文件（支持断点续传 + 进度按时间间隔回调）
      */
     public static void download(String url, DownloadCallback callback) {
-        if (LiteHelper.isInvalidUrl(url)) {
+        if (LiteHelper.invalidUrl(url)) {
             LiteHelper.notifyDownloadFailure(callback, "Invalid URL");
             return;
         }

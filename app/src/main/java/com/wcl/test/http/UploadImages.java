@@ -21,7 +21,7 @@ class UploadImages {
                     String fileKey,
                     List<File> files,
                     OkHttpExecutor.UploadCallback callback) {
-        if (LiteHelper.isInvalidUrl(url) || files == null || files.isEmpty()) {
+        if (LiteHelper.invalidUrl(url) || files == null || files.isEmpty()) {
             LiteHelper.notifyUploadFailure(callback, "无效的 URL 或文件列表为空");
             return;
         }
