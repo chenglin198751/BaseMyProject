@@ -136,9 +136,11 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 
 ## 技术栈
 
-- **Language**: Java 17, Kotlin
-- **Build**: Gradle 8.13.2, AGP 8.13.2
-- **Android SDK**: min 26, target 36 (Android 15)
+- **Language**: Java 17、Kotlin（AGP 9 built-in Kotlin）
+- **Gradle Daemon JVM**: JetBrains JDK 21，由 Foojay Resolver 管理
+- **Build**: Gradle 9.6.1、Android Gradle Plugin 9.3.0
+- **Android SDK**: minSdk 28、compileSdk 37、targetSdk 37
+- **Build Tools**: 37.0.0
 
 ## AppConstants 公共常量类说明
 
