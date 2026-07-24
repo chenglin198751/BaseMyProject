@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -221,7 +222,7 @@ public class OkHttpExecutor {
         }
         try {
             AppThreadPoolExecutor.getExecutor().execute(() -> Downloader.downloadInternal(url, callback));
-        } catch (Exception e) {
+        } catch (RejectedExecutionException e) {
             LiteHelper.notifyDownloadFailure(callback, e.toString());
         }
     }

@@ -70,22 +70,16 @@ class FastDownloader {
                 long start = i * blockSize;
                 long end = i == threadCount - 1 ? totalLength - 1 : start + blockSize - 1;
                 DownloadPart part = new DownloadPart(i, start, end);
-                try {
-                    CHUNK_EXECUTOR.execute(() -> {
-                        try {
-                            downloadPart(session, part);
-                        } catch (Exception e) {
-                            hasError.set(true);
-                            AppLogUtils.e(TAG, "chunk " + part.index() + " download error: " + e);
-                        } finally {
-                            latch.countDown();
-                        }
-                    });
-                } catch (RejectedExecutionException e) {
-                    hasError.set(true);
-                    latch.countDown();
-                    AppLogUtils.e(TAG, "chunk " + part.index() + " rejected: " + e);
-                }
+                CHUNK_EXECUTOR.execute(() -> {
+                    try {
+                        downloadPart(session, part);
+                    } catch (Exception e) {
+                        hasError.set(true);
+                        AppLogUtils.e(TAG, "chunk " + part.index() + " download error: " + e);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
             }
 
             latch.await();
@@ -115,8 +109,7 @@ class FastDownloader {
                 }
             }
 
-            if (merged.length() != totalLength || !LiteHelper.replaceFile(merged, target)
-                    || target.length() != totalLength) {
+            if (merged.length() != totalLength || !LiteHelper.replaceFile(merged, target)) {
                 throw new IllegalStateException("合并文件校验失败");
             }
             deleteParts(tempDir, threadCount);

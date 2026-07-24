@@ -27,68 +27,46 @@ class UploadImages {
         }
         try {
             AppThreadPoolExecutor.getExecutor().execute(() -> {
-            Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
-            int totalCount = files.size();
-            for (int i = 0; i < totalCount; i++) {
-                File file = files.get(i);
-                if (file == null || !file.exists()) {
-                    LiteHelper.postToUi(() -> {
-                        if (callback != null) {
-                            callback.onFinished(false, "文件不存在: " + file);
-                        }
-                    });
-                    return;
-                }
-                MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-                for (Map.Entry<String, Object> entry : finalParams.entrySet()) {
-                    builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
-                }
-                builder.addFormDataPart(fileKey, file.getName(),
-                        RequestBody.create(LiteHelper.guessMediaType(file), file));
-                Request request;
-                try {
-                    request = new Request.Builder().url(url).post(builder.build()).build();
-                } catch (IllegalArgumentException e) {
-                    String error = e.toString();
-                    LiteHelper.postToUi(() -> {
-                        if (callback != null) {
-                            callback.onFinished(false, error);
-                        }
-                    });
-                    return;
-                }
-                try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
-                    if (!response.isSuccessful()) {
-                        String error = "上传失败: " + response.code();
-                        LiteHelper.postToUi(() -> {
-                            if (callback != null) {
-                                callback.onFinished(false, error);
-                            }
-                        });
+                Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
+                int totalCount = files.size();
+                for (int i = 0; i < totalCount; i++) {
+                    File file = files.get(i);
+                    if (file == null || !file.exists()) {
+                        LiteHelper.notifyUploadFailure(callback, "文件不存在: " + file);
                         return;
                     }
-                    final int index = i;
-                    LiteHelper.postToUi(() -> {
-                        if (callback != null) {
-                            callback.onProgress(index, totalCount);
+                    MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                    for (Map.Entry<String, Object> entry : finalParams.entrySet()) {
+                        builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
+                    }
+                    builder.addFormDataPart(fileKey, file.getName(),
+                            RequestBody.create(LiteHelper.guessMediaType(file), file));
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(builder.build())
+                            .build();
+                    try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+                        if (!response.isSuccessful()) {
+                            LiteHelper.notifyUploadFailure(callback, "上传失败: " + response.code());
+                            return;
                         }
-                    });
-                } catch (IOException e) {
-                    AppLogUtils.w(TAG, "uploadImages error: " + e);
-                    String error = e.toString();
-                    LiteHelper.postToUi(() -> {
-                        if (callback != null) {
-                            callback.onFinished(false, error);
-                        }
-                    });
-                    return;
+                        final int index = i;
+                        LiteHelper.postToUi(() -> {
+                            if (callback != null) {
+                                callback.onProgress(index, totalCount);
+                            }
+                        });
+                    } catch (IOException e) {
+                        AppLogUtils.w(TAG, "uploadImages error: " + e);
+                        LiteHelper.notifyUploadFailure(callback, e.toString());
+                        return;
+                    }
                 }
-            }
-            LiteHelper.postToUi(() -> {
-                if (callback != null) {
-                    callback.onFinished(true, null);
-                }
-            });
+                LiteHelper.postToUi(() -> {
+                    if (callback != null) {
+                        callback.onFinished(true, null);
+                    }
+                });
             });
         } catch (java.util.concurrent.RejectedExecutionException e) {
             LiteHelper.notifyUploadFailure(callback, e.toString());

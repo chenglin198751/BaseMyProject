@@ -38,6 +38,6 @@ record HttpRetryInterceptor(int maxRetry) implements Interceptor {
             return false;
         }
         int code = response.code();
-        return code == 408 || code == 429 || code >= 500;
+        return code == 408 || code >= 500;
     }
 }

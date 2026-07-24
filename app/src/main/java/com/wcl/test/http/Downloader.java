@@ -14,10 +14,6 @@ class Downloader {
     private static final int PROGRESS_INTERVAL = 500;
 
     static void downloadInternal(String url, OkHttpExecutor.DownloadCallback callback) {
-        downloadInternal(url, callback, false);
-    }
-
-    static void downloadInternal(String url, OkHttpExecutor.DownloadCallback callback, boolean claimed) {
         File target = new File(LiteHelper.getDownloadPath(url));
         long totalLength = LiteHelper.fetchContentLength(url);
         if (totalLength <= 0) {
@@ -29,7 +25,7 @@ class Downloader {
             LiteHelper.postSuccess(callback, target.getAbsolutePath());
             return;
         }
-        if (!claimed && !HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
+        if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
             LiteHelper.notifyDownloadFailure(callback, "file is downloading");
             return;
         }
@@ -44,7 +40,7 @@ class Downloader {
         long downloaded = temp.exists() ? temp.length() : 0;
         try {
             if (downloaded == totalLength) {
-                if (!LiteHelper.replaceFile(temp, target) || target.length() != totalLength) {
+                if (!LiteHelper.replaceFile(temp, target)) {
                     throw new IllegalStateException("完整临时文件替换失败");
                 }
                 LiteHelper.postSuccess(callback, target.getAbsolutePath());
@@ -107,7 +103,7 @@ class Downloader {
                 }
             }
 
-            if (!LiteHelper.replaceFile(temp, target) || target.length() != totalLength) {
+            if (!LiteHelper.replaceFile(temp, target)) {
                 throw new IllegalStateException("下载文件替换失败");
             }
             LiteHelper.postSuccess(callback, target.getAbsolutePath());
