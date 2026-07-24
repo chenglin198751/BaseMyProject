@@ -131,7 +131,7 @@ public class OkHttpExecutor {
                 return;
             }
             try {
-                HttpRequestHelper.enqueue(activity, buildRequest(), callback);
+                HttpRequest.enqueue(activity, buildRequest(), callback);
             } catch (Exception e) {
                 notifyFailure(callback, e.toString());
             }
@@ -150,7 +150,7 @@ public class OkHttpExecutor {
                 return;
             }
             try {
-                HttpRequestHelper.enqueue(fragment, buildRequest(), callback);
+                HttpRequest.enqueue(fragment, buildRequest(), callback);
             } catch (Exception e) {
                 notifyFailure(callback, e.toString());
             }
@@ -166,7 +166,7 @@ public class OkHttpExecutor {
                 return null;
             }
             Request request = buildRequest();
-            try (okhttp3.Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+            try (okhttp3.Response response = HttpRequest.CLIENT.newCall(request).execute()) {
                 if (response.isSuccessful()) {
                     return LiteHelper.removeUtf8Bom(response.body().string());
                 } else {
@@ -179,18 +179,18 @@ public class OkHttpExecutor {
         }
 
         private Request buildRequest() {
-            Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
+            Map<String, Object> finalParams = HttpRequest.withCommonParams(params);
             if (METHOD_GET.equals(method)) {
                 String finalUrl = LiteHelper.buildGetUrl(url, finalParams);
-                return HttpRequestHelper.buildRequest(finalUrl, headers).get().build();
+                return HttpRequest.buildRequest(finalUrl, headers).get().build();
             } else {
                 FormBody body = LiteHelper.buildFormBody(finalParams);
-                return HttpRequestHelper.buildRequest(url, headers).post(body).build();
+                return HttpRequest.buildRequest(url, headers).post(body).build();
             }
         }
 
         private void notifyFailure(HttpCallback callback, String error) {
-            LiteHelper.postToUi(() -> HttpRequestHelper.notifyResult(callback, false, error));
+            LiteHelper.postToUi(() -> HttpRequest.notifyResult(callback, false, error));
         }
     }
 

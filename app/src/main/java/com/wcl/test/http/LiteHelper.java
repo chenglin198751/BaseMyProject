@@ -27,7 +27,7 @@ import java.nio.file.StandardCopyOption;
 
 class LiteHelper {
 
-    private static final String TAG = "HttpHelper";
+    private static final String TAG = "LiteHelper";
 
     // 如果是无效 url（空或无法解析为 http/https）则返回 true
     static boolean invalidUrl(String url) {
@@ -113,7 +113,7 @@ class LiteHelper {
                 .url(url)
                 .addHeader("Accept-Encoding", "identity")
                 .build();
-        try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+        try (Response response = HttpRequest.CLIENT.newCall(request).execute()) {
             if (!response.isSuccessful()) return 0;
             long totalLength = response.body().contentLength();
             return Math.max(totalLength, 0);

@@ -28,7 +28,7 @@ class FastDownloader {
             LiteHelper.notifyDownloadFailure(callback, "Invalid URL");
             return;
         }
-        if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
+        if (!HttpRequest.DOWNLOADING_URLS.add(url)) {
             LiteHelper.notifyDownloadFailure(callback, "file is downloading");
             return;
         }
@@ -36,7 +36,7 @@ class FastDownloader {
         try {
             AppThreadPoolExecutor.getExecutor().execute(() -> executeFastDownload(url, callback));
         } catch (RejectedExecutionException e) {
-            HttpRequestHelper.DOWNLOADING_URLS.remove(url);
+            HttpRequest.DOWNLOADING_URLS.remove(url);
             LiteHelper.notifyDownloadFailure(callback, e.toString());
         }
     }
@@ -119,7 +119,7 @@ class FastDownloader {
             AppLogUtils.e(TAG, "fastDownload error: " + e);
             LiteHelper.notifyDownloadFailure(callback, e.toString());
         } finally {
-            HttpRequestHelper.DOWNLOADING_URLS.remove(url);
+            HttpRequest.DOWNLOADING_URLS.remove(url);
         }
     }
 
@@ -142,7 +142,7 @@ class FastDownloader {
                 .addHeader("Accept-Encoding", "identity")
                 .addHeader("Range", "bytes=" + rangeStart + "-" + part.end())
                 .build();
-        try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+        try (Response response = HttpRequest.CLIENT.newCall(request).execute()) {
             if (response.code() != 206) {
                 throw new IllegalStateException("服务器不支持精确 Range");
             }

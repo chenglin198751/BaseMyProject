@@ -14,7 +14,7 @@ import okhttp3.Response;
  * 简单重试拦截器（仅在请求失败时重试）
  */
 record HttpRetryInterceptor(int maxRetry) implements Interceptor {
-    private static final String TAG = "OkHttpUtils";
+    private static final String TAG = "HttpRetryInterceptor";
 
     @NonNull
     @Override

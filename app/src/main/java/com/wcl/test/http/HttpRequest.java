@@ -23,8 +23,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-class HttpRequestHelper {
-    private static final String TAG = "OkHttpUtils";
+class HttpRequest {
+    private static final String TAG = "HttpRequest";
 
     static final OkHttpClient CLIENT;
     static final Set<String> DOWNLOADING_URLS = ConcurrentHashMap.newKeySet();

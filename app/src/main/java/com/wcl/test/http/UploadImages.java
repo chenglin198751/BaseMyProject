@@ -27,7 +27,7 @@ class UploadImages {
         }
         try {
             AppThreadPoolExecutor.getExecutor().execute(() -> {
-                Map<String, Object> finalParams = HttpRequestHelper.withCommonParams(params);
+                Map<String, Object> finalParams = HttpRequest.withCommonParams(params);
                 int totalCount = files.size();
                 for (int i = 0; i < totalCount; i++) {
                     File file = files.get(i);
@@ -45,7 +45,7 @@ class UploadImages {
                             .url(url)
                             .post(builder.build())
                             .build();
-                    try (Response response = HttpRequestHelper.CLIENT.newCall(request).execute()) {
+                    try (Response response = HttpRequest.CLIENT.newCall(request).execute()) {
                         if (!response.isSuccessful()) {
                             LiteHelper.notifyUploadFailure(callback, "上传失败: " + response.code());
                             return;
