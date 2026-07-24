@@ -26,3 +26,10 @@
 **3、官方baksmali.jar和smali.jar**
 
     https://github.com/baksmali/smali/releases?utm_source=chatgpt.com
+
+**4、全局claude配置**
+
+- 默认使用中文。
+- 当前系统为 Windows，Git Bash 仅作为命令行 Shell，不得按 Linux 环境处理。
+- 禁止使用 PowerShell；优先使用 Git Bash，必要时使用 cmd 或 Python。
+- 路径以 Windows 文件系统为准；工具参数使用 `D:\...`，Git Bash 命令中优先使用 `D:/...`，不要使用 WSL 路径（如 `/mnt/d/...`）。
