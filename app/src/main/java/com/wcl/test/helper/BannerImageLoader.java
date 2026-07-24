@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wcl.test.view.image.GlideImageView;
-import com.youth.banner.adapter.BannerAdapter;
+import com.wcl.test.banner.adapter.BannerAdapter;
 
 import java.util.List;
 

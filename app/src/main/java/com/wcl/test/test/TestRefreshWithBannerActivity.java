@@ -22,7 +22,7 @@ import com.wcl.test.base.BaseRecyclerViewHolder;
 import com.wcl.test.helper.BannerImageLoader;
 import com.wcl.test.utils.AppUtils;
 import com.wcl.test.view.image.GlideImageView;
-import com.youth.banner.Banner;
+import com.wcl.test.banner.Banner;
 
 import java.util.ArrayList;
 import java.util.List;

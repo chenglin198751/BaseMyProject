@@ -128,7 +128,7 @@
 
     不可滚动的ViewPager，具体使用场景自己发挥。
 
-**29、com.youth.banner.Banner 类：**
+**29、com.wcl.test.banner.Banner 类：**
 
     github 地址：//https://github.com/youth5201314/banner 一个很优秀的实现自动滚动banner的库。
     另外，里面有WeakHandler这个防止内存泄露的Handler类使用。还有各种的ViewPager Transformer可以使用。 
