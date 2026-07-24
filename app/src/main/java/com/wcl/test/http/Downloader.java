@@ -25,7 +25,7 @@ class Downloader {
             LiteHelper.postSuccess(callback, target.getAbsolutePath());
             return;
         }
-        if (!HttpRequestHelper.DOWNLOADING_URLS.add(url)) {
+        if (!HttpRequest.DOWNLOADING_URLS.add(url)) {
             LiteHelper.notifyDownloadFailure(callback, "file is downloading");
             return;
         }
@@ -33,7 +33,7 @@ class Downloader {
         File temp = new File(target.getAbsolutePath() + ".temp");
         if (temp.length() > totalLength && !temp.delete()) {
             LiteHelper.notifyDownloadFailure(callback, "无法重置临时文件");
-            HttpRequestHelper.DOWNLOADING_URLS.remove(url);
+            HttpRequest.DOWNLOADING_URLS.remove(url);
             return;
         }
 
@@ -56,7 +56,7 @@ class Downloader {
                 downloaded = 0;
             }
 
-            try (Response response = HttpRequestHelper.CLIENT.newCall(builder.build()).execute()) {
+            try (Response response = HttpRequest.CLIENT.newCall(builder.build()).execute()) {
                 if (downloaded > 0 && response.code() == 200) {
                     downloaded = 0;
                     if (temp.exists() && !temp.delete()) {
@@ -110,7 +110,7 @@ class Downloader {
         } catch (Exception e) {
             LiteHelper.notifyDownloadFailure(callback, e.toString());
         } finally {
-            HttpRequestHelper.DOWNLOADING_URLS.remove(url);
+            HttpRequest.DOWNLOADING_URLS.remove(url);
         }
     }
 }
