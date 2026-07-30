@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#ff3a71</color>
+    <color name="colorPrimary">#0B57CF</color>
     <color name="colorPrimaryDark">#ff3a71</color>
     <color name="colorAccent">#FF4081</color>
 
@@ -31,7 +31,7 @@
     <color name="holo_red_light">#ffff4444</color>
     <color name="holo_blue_dark">#ff0099cc</color>
     <color name="holo_green_dark">#ff669900</color>
-    <color name="holo_red_dark">#ffcc0000</color>
+    <color name="holo_red_dark">#ffff4444</color>
     <color name="holo_purple">#ffaa66cc</color>
     <color name="holo_orange_light">#ffffbb33</color>
     <color name="holo_orange_dark">#ffff8800</color>
@@ -49,6 +49,4 @@
     <color name="test_color_8">#DDA0DD</color>
     <color name="test_color_9">#E0FFFF</color>
     <color name="test_color_10">#8B7B8B</color>
-
-
 </resources>

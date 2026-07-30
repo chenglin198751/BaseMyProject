@@ -6,6 +6,7 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.tencent.mmkv.MMKV;
 
@@ -29,6 +30,7 @@ public class BaseApp extends Application {
         super.onCreate();
         sApp = this;
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         MMKV.initialize(this);
         AppHelper.initAppForegroundObserver();
         AppHelper.initActivityLifecycleObserver(this);

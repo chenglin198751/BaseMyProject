@@ -96,6 +96,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         if (!AppUtils.isEdgeToEdge()) {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
+            getWindow().setNavigationBarColor(Color.TRANSPARENT);
         }
 
         // 状态栏黑色文字

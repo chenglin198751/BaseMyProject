@@ -1,14 +1,10 @@
 package com.wcl.test.base;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,7 +19,6 @@ class BaseViewHelper {
     private LinearLayout mCurrentView;
 
     private int mShowGravity = Gravity.CENTER;
-    private ObjectAnimator rotateAnimator;
 
     public BaseViewHelper(Context context) {
         this.mContext = context;
@@ -87,9 +82,7 @@ class BaseViewHelper {
     }
 
     public void startLoadingAnimation() {
-        if (mCurrentView == mLoadingView && rotateAnimator != null && !rotateAnimator.isRunning()) {
-            rotateAnimator.start();
-        }
+        // 保留接口，空实现
     }
 
     public void hideLoading() {
@@ -105,7 +98,6 @@ class BaseViewHelper {
     }
 
     public void destroy() {
-        stopLoadingAnimation();
         removeFromParent(mLoadingView);
         removeFromParent(mEmptyView);
         removeFromParent(mNoNetView);
@@ -115,7 +107,6 @@ class BaseViewHelper {
         if (mNoNetView != null) {
             mNoNetView.setOnClickListener(null);
         }
-        rotateAnimator = null;
         mCurrentView = null;
         mLoadingView = null;
         mEmptyView = null;
@@ -127,12 +118,6 @@ class BaseViewHelper {
         if (mLoadingView != null) return;
         mLoadingView = (LinearLayout) View.inflate(mContext, R.layout.base_loading_layout, null);
         applyPosition(mLoadingView);
-
-        ImageView image = mLoadingView.findViewById(R.id.loading_icon);
-        rotateAnimator = ObjectAnimator.ofFloat(image, View.ROTATION, 0f, 360f);
-        rotateAnimator.setDuration(1500);
-        rotateAnimator.setInterpolator(new LinearInterpolator());
-        rotateAnimator.setRepeatCount(ValueAnimator.INFINITE);
     }
 
     private void ensureEmptyView() {
@@ -148,9 +133,6 @@ class BaseViewHelper {
     }
 
     private void showOnly(LinearLayout target) {
-        if (mCurrentView == mLoadingView && target != mLoadingView) {
-            stopLoadingAnimation();
-        }
         removeFromParent(mLoadingView);
         removeFromParent(mEmptyView);
         removeFromParent(mNoNetView);
@@ -159,15 +141,8 @@ class BaseViewHelper {
 
     private void hideView(LinearLayout target) {
         if (mCurrentView != target) return;
-        stopLoadingAnimation();
         removeFromParent(target);
         mCurrentView = null;
-    }
-
-    private void stopLoadingAnimation() {
-        if (rotateAnimator != null) {
-            rotateAnimator.cancel();
-        }
     }
 
     private void removeFromParent(View view) {
