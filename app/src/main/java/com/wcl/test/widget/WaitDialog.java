@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.wcl.test.R;
+import com.wcl.test.utils.AppUtils;
 
 
 public class WaitDialog extends Dialog {
@@ -20,6 +21,8 @@ public class WaitDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppUtils.setDialogEdgeToEdge(this);
         setContentView(R.layout.wait_dialog_layout);
     }
 }

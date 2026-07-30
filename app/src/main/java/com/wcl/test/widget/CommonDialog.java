@@ -51,10 +51,9 @@ public class CommonDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.common_alert_dialog);
-
-        AppUtils.setViewRounded(findViewById(R.id.dialog_view), 8);
         AppUtils.setDialogEdgeToEdge(this);
+        setContentView(R.layout.common_alert_dialog);
+        AppUtils.setViewRounded(findViewById(R.id.dialog_view), 8);
 
         Window window = getWindow();
         if (window != null) {
