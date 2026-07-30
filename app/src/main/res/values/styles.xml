@@ -14,7 +14,7 @@
 
     <!-- 对话框 -->
     <style name="dialogNullBg" parent="@style/dialog">
-        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
     </style>
 
     <style name="dialog.from.bottom" parent="@style/dialog">
