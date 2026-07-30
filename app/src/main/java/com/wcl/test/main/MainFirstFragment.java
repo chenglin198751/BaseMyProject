@@ -37,9 +37,6 @@ public class MainFirstFragment extends BaseFragment {
 
         String url = "http://qd.shouji.qihucdn.com/media/d22eee36c269dcae8dbfc6a469d02ffc/6602326c507c2.png";
         mBinding.image2.loadImage(url);
-
-//        showWaitDialog();
-        showLoading();
     }
 
     @Override
