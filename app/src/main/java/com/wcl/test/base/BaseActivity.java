@@ -1,6 +1,5 @@
 package com.wcl.test.base;
 
-import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
@@ -10,14 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
@@ -52,8 +50,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         installFontScaleFactory();
-        super.onCreate(savedInstanceState);
         applyGrayScale();
+        EdgeToEdge.enable(this);
+        super.onCreate(savedInstanceState);
 
         if (onKeepSingleActivity()) {
             EventBus.post(EventAction.System.ACTION_KEEP_SINGLE_ACTIVITY, getClass().getName());
@@ -77,7 +76,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             displayInCutoutMode(onDisplayInCutoutMode());
             return insets;
         });
-        setupSystemBars();
     }
 
     // 所有彩色变成黑白色
@@ -89,19 +87,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             paint.setColorFilter(new ColorMatrixColorFilter(matrix));
             getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
         }
-    }
-
-    private void setupSystemBars() {
-        // 边到边（edge-to-edge），false沉浸式，true不沉浸
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        if (!AppUtils.isEdgeToEdge()) {
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-            getWindow().setNavigationBarColor(Color.TRANSPARENT);
-        }
-
-        // 状态栏黑色文字
-        View decorView = getWindow().getDecorView();
-        new WindowInsetsControllerCompat(getWindow(), decorView).setAppearanceLightStatusBars(true);
     }
 
     // 设置当前页面是否显示在缺口屏内
