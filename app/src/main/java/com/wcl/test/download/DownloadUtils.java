@@ -41,12 +41,15 @@ class DownloadUtils {
     }
 
     // 根据url获取文件下载路径
-    public static String getDownloadPath(String url) {
+    static String getDownloadPath(String url) {
         File dir = BaseApp.getApp().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         if (dir == null) {
-            dir = new File(AppUtils.FileUtils.getAppStoragePath());
+            dir = new File(BaseApp.getApp().getFilesDir(), Environment.DIRECTORY_DOWNLOADS);
         }
-        return new File(dir, AppUtils.md5(url) + getSuffix(url)).getAbsolutePath();
+        if (!dir.exists() && !dir.mkdirs()) {
+            AppLogUtils.e(TAG, "create download directory failed: " + dir.getAbsolutePath());
+        }
+        return new File(dir, AppUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
     }
 
     public static double roundProgress(long downloaded, long total) {

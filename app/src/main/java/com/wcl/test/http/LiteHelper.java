@@ -91,7 +91,10 @@ class LiteHelper {
     static String getDownloadPath(String url) {
         File dir = BaseApp.getApp().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         if (dir == null) {
-            dir = new File(AppUtils.FileUtils.getAppStoragePath());
+            dir = new File(BaseApp.getApp().getFilesDir(), Environment.DIRECTORY_DOWNLOADS);
+        }
+        if (!dir.exists() && !dir.mkdirs()) {
+            AppLogUtils.e(TAG, "create download directory failed: " + dir.getAbsolutePath());
         }
         return new File(dir, AppUtils.md5(url).toLowerCase() + getSuffix(url)).getAbsolutePath();
     }
