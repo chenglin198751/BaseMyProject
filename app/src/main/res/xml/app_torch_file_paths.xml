@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- 仅映射 app 外部 files 的 download 子目录 -->
-    <external-files-path name="apk_downloads" path="Download/" />
+    <!-- app 外部私有目录与内部私有目录中的 Download 子目录。 -->
+    <external-files-path name="external_apk_downloads" path="Download/" />
+    <files-path name="internal_apk_downloads" path="Download/" />
 </paths>
