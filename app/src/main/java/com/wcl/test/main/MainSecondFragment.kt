@@ -3,10 +3,8 @@ package com.wcl.test.main
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
 import com.wcl.test.base.BaseFragment
 import com.wcl.test.databinding.MainSecondFragLayoutBinding
-import com.wcl.test.test.TestUserViewModel
 
 /**
  * Created by chenglin on 2017-9-14.
@@ -14,12 +12,6 @@ import com.wcl.test.test.TestUserViewModel
 class MainSecondFragment : BaseFragment() {
     private var _binding: MainSecondFragLayoutBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: TestUserViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[TestUserViewModel::class.java]
-    }
 
     override fun getContentLayout(): Int {
         return 0
@@ -33,8 +25,7 @@ class MainSecondFragment : BaseFragment() {
     }
 
     override fun onViewCreated(savedInstanceState: Bundle?, view: View) {
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.testViewModel = viewModel
+        // 使用 binding 进行 UI 操作
     }
 
     override fun onDestroyView() {
