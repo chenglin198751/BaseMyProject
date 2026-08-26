@@ -69,27 +69,26 @@ class RoundedBgImageView extends AppCompatImageView implements IRoundedMethod {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        boolean widthExactly = widthMode == MeasureSpec.EXACTLY;
-        boolean heightExactly = heightMode == MeasureSpec.EXACTLY;
-
         // 双 EXACTLY：交给系统 / ConstraintLayout
-        if (widthExactly && heightExactly) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            return;
-        }
-
-        // 宽度确定 -> 推导高度
-        if (widthExactly) {
-            int height = Math.round((float) widthSize / aspectRatio);
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+        if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
 
         // 高度确定 -> 推导宽度
-        if (heightExactly) {
+        if (heightMode == MeasureSpec.EXACTLY) {
             int width = Math.round((float) heightSize * aspectRatio);
             widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
+
+        // 宽度确定 -> 推导高度
+        // 注意：match_parent 在 wrap_content 容器 / Dialog（默认窗口宽度 wrap_content）里会被降级为 AT_MOST，
+        // 此时宽度仍会填满 widthSize，所以 AT_MOST 也要按宽度推导高度，否则比例失效
+        if (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST) {
+            int height = Math.round((float) widthSize / aspectRatio);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
