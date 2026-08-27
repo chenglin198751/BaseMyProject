@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
+import com.bumptech.glide.request.RequestOptions;
+import com.wcl.test.GlideApp;
+
 /**
  * 支持根据图片自身宽高比例自动调整尺寸的 ImageView。
  *
@@ -109,5 +112,31 @@ public class RatioImageView extends AppCompatImageView {
 
         // 宽高都不是确定的：交给系统处理
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    /**
+     * 使用 Glide 加载网络或本地图片
+     *
+     * <p>与 {@link GlideImageView} 不同的是，此处不做 CenterCrop / 圆角等变换，
+     * 保持图片原始宽高比例。图片加载完成后会自动重新测量，
+     * 使 View 根据实际图片尺寸重新计算宽高。</p>
+     *
+     * @param uri 图片 URL、文件路径或资源 ID
+     */
+    public void loadImage(Object uri) {
+        loadImage(uri, new RequestOptions());
+    }
+
+    /**
+     * 使用 Glide 加载网络或本地图片，支持自定义加载参数
+     *
+     * @param uri     图片 URL、文件路径或资源 ID
+     * @param options 自定义 RequestOptions
+     */
+    public void loadImage(Object uri, RequestOptions options) {
+        GlideApp.with(this)
+                .load(uri)
+                .apply(options)
+                .into(this);
     }
 }
