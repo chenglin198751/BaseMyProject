@@ -1,4 +1,4 @@
-package com.wcl.test.main;
+package com.wcl.test.utils;
 
 import android.os.SystemClock;
 import android.text.TextUtils;
