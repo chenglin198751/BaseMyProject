@@ -25,7 +25,7 @@
 
 **3、官方baksmali.jar和smali.jar**
 
-    https://github.com/baksmali/smali/releases?utm_source=chatgpt.com
+    https://github.com/baksmali/smali/releases
 
 **4、全局claude配置**
 
