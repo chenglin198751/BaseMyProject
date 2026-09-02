@@ -3,4 +3,6 @@
     <!-- app 外部私有目录与内部私有目录中的 Download 子目录。 -->
     <external-files-path name="external_apk_downloads" path="Download/" />
     <files-path name="internal_apk_downloads" path="Download/" />
+    <external-files-path name="external_image_pictures" path="Pictures/" />
+    <cache-path name="image_cache" path="." />
 </paths>

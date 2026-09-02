@@ -1,6 +1,5 @@
 package com.wcl.test.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
 
 /**
  * 图片选择器（现代实现）
@@ -44,12 +45,12 @@ public class PhotosPicker {
      * 创建 Activity 版本的 Picker
      */
     public static PhotosPicker from(@NonNull AppCompatActivity activity, @NonNull OnFinishedListener2<String> listener) {
+        Context appContext = activity.getApplicationContext();
         ActivityResultLauncher<Intent> launcher =
                 activity.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                    if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-                        Uri uri = result.getData().getData();
-                        resolveUriAsync(activity.getApplicationContext(), uri, listener);
-                    }
+                    if (result.getResultCode() != AppCompatActivity.RESULT_OK) return;
+                    Uri uri = result.getData() == null ? null : result.getData().getData();
+                    resolveUriAsync(appContext, uri, listener);
                 });
         return new PhotosPicker(activity, launcher, listener);
     }
@@ -58,12 +59,12 @@ public class PhotosPicker {
      * 创建 Fragment 版本的 Picker
      */
     public static PhotosPicker from(@NonNull Fragment fragment, @NonNull OnFinishedListener2<String> listener) {
+        Context appContext = fragment.requireContext().getApplicationContext();
         ActivityResultLauncher<Intent> launcher =
                 fragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                    if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-                        Uri uri = result.getData().getData();
-                        resolveUriAsync(fragment.requireContext().getApplicationContext(), uri, listener);
-                    }
+                    if (result.getResultCode() != AppCompatActivity.RESULT_OK) return;
+                    Uri uri = result.getData() == null ? null : result.getData().getData();
+                    resolveUriAsync(appContext, uri, listener);
                 });
         return new PhotosPicker(fragment.requireContext(), launcher, listener);
     }
@@ -72,8 +73,8 @@ public class PhotosPicker {
      * 启动选择器
      */
     public void start() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         pickerLauncher.launch(intent);
     }
 
@@ -81,12 +82,12 @@ public class PhotosPicker {
      * 异步解析 URI 为本地路径
      */
     private static void resolveUriAsync(Context ctx, Uri uri, OnFinishedListener2<String> listener) {
-        new Thread(() -> {
+        AppThreadPoolExecutor.getExecutor().execute(() -> {
             String path = UriPathResolver.getPath(ctx, uri);
-            if (listener != null) {
-                listener.onFinished(path);
-            }
-        }).start();
+            AppUtils.getUiHandler().post(() -> {
+                if (listener != null) listener.onFinished(path);
+            });
+        });
     }
 
     // ---------------- 内部类：路径解析 ----------------
@@ -98,27 +99,30 @@ public class PhotosPicker {
          */
         public static String getPath(Context context, Uri uri) {
             if (uri == null) return null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return copyUriToCache(context, uri);
-            } else {
-                return LegacyPathResolver.getPathFromUri(context, uri);
+            if ("file".equalsIgnoreCase(uri.getScheme())) return uri.getPath();
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                String path = LegacyPathResolver.getPathFromUri(context, uri);
+                if (!TextUtils.isEmpty(path)) return path;
             }
+            return copyUriToCache(context, uri);
         }
 
         private static String copyUriToCache(Context context, Uri uri) {
             File cacheDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             if (cacheDir == null) cacheDir = context.getCacheDir();
-            File destFile = new File(cacheDir, "IMG_" + System.currentTimeMillis() + ".jpg");
+            if (!cacheDir.exists() && !cacheDir.mkdirs()) cacheDir = context.getCacheDir();
+            File destFile = new File(cacheDir, "IMG_" + UUID.randomUUID() + ".jpg");
 
-            try (InputStream in = context.getContentResolver().openInputStream(uri);
-                 OutputStream out = new FileOutputStream(destFile)) {
-                byte[] buf = new byte[8192];
-                int len;
-                while ((len = in.read(buf)) != -1) {
-                    out.write(buf, 0, len);
+            try (InputStream in = context.getContentResolver().openInputStream(uri)) {
+                if (in == null) return null;
+                try (OutputStream out = new FileOutputStream(destFile)) {
+                    byte[] buf = new byte[8192];
+                    int len;
+                    while ((len = in.read(buf)) != -1) out.write(buf, 0, len);
                 }
                 return destFile.getAbsolutePath();
             } catch (Exception e) {
+                if (destFile.exists()) destFile.delete();
                 e.printStackTrace();
                 return null;
             }
@@ -132,8 +136,8 @@ public class PhotosPicker {
             String[] projection = {MediaStore.Images.Media.DATA};
             try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                    return cursor.getString(columnIndex);
+                    int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+                    if (columnIndex >= 0) return cursor.getString(columnIndex);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
