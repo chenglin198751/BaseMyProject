@@ -63,10 +63,12 @@ gradlew.bat assembleDebug
 
 ### 下载系统 (download 包)
 
-- **DownloadManager**: 下载任务管理（开始/暂停/删除）
+- **DownloadManager**: 下载任务管理（开始/暂停/删除，最多 4 个并发任务）
 - **DownloadTask**: 下载任务模型，状态机（WAITING/DOWNLOADING/PAUSED/DONE/FAILED）
-- **DownloadWorker**: 后台下载 Worker
-- **download/ui**: `DownloadButton`（下载按钮）
+- **DownloadWorker**: 后台下载执行单元（普通 Runnable，非 AndroidX WorkManager 的 Worker）
+- **DownloadDBHelper**: 基于 SQLite 的下载任务记录
+- **DownloadListener**: 下载状态监听
+- **download/ui**: `DownloadButton`（下载按钮）、`ProgressColorTextView`（进度文本控件）
 
 ### 数据存储 (storage 包)
 
@@ -98,7 +100,7 @@ gradlew.bat assembleDebug
 
 ## 通用工具类
 
-### PreferAppSettings
+### PreferApp
 
 路径：`com.wcl.test.storage.PreferApp`，基于 MMKV 的全局 KV 存储。新增持久化字段时，必须在此类中统一定义
 key 和读写方法，禁止在其他地方直接使用 MMKV。
@@ -117,10 +119,10 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 | `utils.TextViewLinesUtils`             | TextView 行数计算                                        |
 | `utils.PhotosPicker` / `PhotoPicker2`  | 图片选择工具                                               |
 | `utils.EnglishCharFilter`              | 英文字符过滤器                                              |
-| `utils.timer.CountDownManager`         | 倒计时管理器，支持生命周期感知                                      |
+| `utils.timer.CountDownManager`         | 倒计时管理器（全局单例，弱引用监听器；stop() 会停止全局 tick）                 |
 | `utils.timer.HandlerTimer`             | 基于 Handler 的定时器                                      |
 | `utils.timer.AlarmTimer`               | 基于 AlarmManager 的定时器                                 |
-| `main.SingleClickUtils`                | 单击/多击工具类                                             |
+| `utils.SingleClickUtils`              | 单击/多击工具类                                             |
 | `widget.ToastUtils`                    | Toast 工具                                             |
 | `EnvToggle`                            | 全局 debug/log 开关                                      |
 
@@ -133,6 +135,13 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 - `loadImage(Object uri)` — 自动 CenterCrop + 圆角；`loadImage(uri, RequestOptions)` — 自定义加载
 - XML：`riv_corner_radius` / `riv_oval` / `riv_aspect_ratio` / `riv_border_width` /
   `riv_border_color` / `riv_solid_color`
+
+### PhotosPicker / PhotoPicker2（图片选择）
+
+- `utils.PhotosPicker`：单图选择，`from(AppCompatActivity/Fragment, listener)` + `start()`
+- `utils.PhotoPicker2`：单选、多选、拍照、裁剪，`from(...)` + `pickSingle()/pickMultiple()/capture(Activity)/crop(Uri, aspectX, aspectY)`
+- 依赖 FileProvider：`CustomTorchFileProvider`（authority `${applicationId}.custom.file_provider`）与 `res/xml/app_torch_file_paths.xml`
+- 返回本地可读路径；拍照/裁剪依赖外部相机与 `com.android.camera.action.CROP` 处理器，设备无对应组件时会抛 `ActivityNotFoundException`
 
 ## 技术栈
 
