@@ -581,7 +581,6 @@ app/src/main/java/com/wcl/test/utils/SingleClickUtils.java
 
 - `TextViewLinesUtils`：计算 TextView 文本行数，传入的宽度单位为 px；
 - `EnglishCharFilter`：按字符编码范围限制输入长度；
-- `SignUtils`：请求签名工具；
 - `ReflectUtils`、`SystemProperties`：反射和系统属性工具；
 - `ZipByAnt`、`ZipByJava`：压缩工具；
 - `DESUtils`、`DesUtils2`：DES 相关工具。
