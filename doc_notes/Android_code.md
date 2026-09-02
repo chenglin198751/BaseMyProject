@@ -1,622 +1,678 @@
+# BaseMyProject 当前工程功能索引
 
-**1、BaseActivity 类：** 
+> 本文档仅记录当前 `app` 模块中可定位到源码、Manifest 或 Gradle 配置的能力。
+> 已删除实现、未接入的第三方库、通用 Android/Java 技巧不再在本文档维护。
 
-    基础Activity类，把最外层的View 给封装好了，用的时候调用setContentLayout塞进去你的layout 即可。
-    好处：便于统一管理页面，比如可以在页面内部显示加载框，可以添加右侧菜单，添加空View，无网页面等等。
-    其中里面包含了Post() 网络请求的方法，建议使用这个请求网络，可以防止内存泄漏。
-    BaseFragment里面的方法和和BaseActivity大体类似。所有的Fragment都要继承自BaseFragment
+## 工程基线
 
-**2、debug切换：**
-    
-    EnvToggle.java 和 在拨号键盘输入 *#*#2022360#*#* 可以打开debug模式。具体见：DialPhoneBroadcastReceiver.java类
+| 项目                        | 当前配置           |
+|---------------------------|----------------|
+| 模块                        | `app`          |
+| namespace / applicationId | `com.wcl.test` |
+| Java                      | 17             |
+| minSdk                    | 28             |
+| compileSdk / targetSdk    | 37 / 37        |
+| Gradle                    | 9.6.1          |
+| Android Gradle Plugin     | 9.3.1          |
+| ViewBinding / BuildConfig | 已启用            |
 
-**3、内建广播：**
+当前源码、依赖与注册组件以 `app/src/main`、`app/build.gradle`、`common.gradle`、`AndroidManifest.xml` 为准。
 
-    BaseActivity 里面封装了一个广播，可以很方便的发广播接收广播，不需要注册，因为已经自动注册了。
-    使用很方便，性能很高且资源消耗也很低。建议以后所有的异步消息传递都用这个，解耦性强。。
+---
 
-**4、MainApp 类：**
+## 1. 应用与基础架构
 
-    程序的入口，这里把Application的Context 给持有了，获取的方法叫做getApp() 。
-    切记，工程里凡是要用到Context的地方，MainApp.getApp() 方法，以免造成内存泄漏。
-    还有，这里面有一句话叫做AppHelper.isAppMainProcess() ，是判断的主UI 进程的。
-    因为Application的onCreate()有多少个进程就会执行多少次，而有些代码我们只需要在UI 进程执行，所以这里可以用上述方法判断。
+### 1.1 `MainApp` / `BaseApp`
 
-**5、BaseListViewAdapter 类 && BaseRecyclerViewAdapter 类：**
+- Manifest 中注册的 Application 是 `com.wcl.test.base.MainApp`。
+- `MainApp` 继承 `BaseApp`；全局 Application 实例由 `BaseApp.getApp()` 提供。
+- `BaseApp.onCreate()` 负责：
+  - 初始化 MMKV；
+  - 禁用默认夜间模式；
+  - 初始化应用前后台观察；
+  - 跟踪顶部 Activity；
+  - 初始化 GsonFactory 容错配置；
+  - 注册 SmartRefreshLayout 的默认 Header/Footer。
 
-    对BaseAdapter简单的封装了下，统一了增加数据，删除数据的方法。不用大家每个adapter都要写增删数据的方法，使用也很简单。
-    为了以后的维护方便，建议大家都使用这个作为baseAdapter 。
+路径：`app/src/main/java/com/wcl/test/base/BaseApp.java`
 
-**6、OkHttpUtils 类：**
+`BaseApp.getApp()` 返回 Application Context。需要主题、Window、Dialog 或页面生命周期时，应继续使用 Activity / Fragment 的 Context，不能一律替换为 Application Context。
 
-    Http请求类，是基于OKHttp3封装的，包含文件下载，让使用起来变的很简单，一眼就知道怎么用。
+### 1.2 `AppUtils`
 
-**7、GlideImageView 类：**
+`AppUtils` 是当前公共工具入口，包含：
 
-    <!-- 圆角半径（单位 dp） -->
-    <attr name="riv_corner_radius" format="dimension" />
-    <!-- 是否圆形 -->
-    <attr name="riv_oval" format="boolean" />
-    <!-- 宽高比（宽 / 高） -->
-    <attr name="riv_aspect_ratio" format="float" />
-    <!-- 边框宽度（单位 dp） -->
-    <attr name="riv_border_width" format="dimension" />
-    <!-- 边框颜色 -->
-    <attr name="riv_border_color" format="color" />
-    <!-- 背景色 -->
-    <attr name="riv_solid_color" format="color" />    
+- 屏幕宽高、状态栏高度、导航栏高度；
+- 网络状态：`isNetAvailable()`；
+- dp 转 px：`dp2px(float)`；
+- 主线程 Handler：`getUiHandler()`；
+- 版本、包名、Android ID；
+- 顶部 Activity：`getTopActivity()`；
+- 前后台状态：`isAppInForeground()`；
+- Context 中提取 Activity：`getActivityFromContext(Context)`；
+- Activity / Fragment 销毁判断；
+- 输入法显示、隐藏；
+- View 点击区域扩展；
+- 资源、assets 文本读取；
+- MD5 与数字格式化。
 
-**8、PullToRefreshView 类：**
-    
-    实现了上拉加载更多，下拉刷新。封装自https://github.com/scwang90/SmartRefreshLayout ，它可以很随意的定制自己的header 和footer ，并有很多属性可以设置，极为好用。
+路径：`app/src/main/java/com/wcl/test/utils/AppUtils.java`
 
-**9、ReplaceViewUtils 类：**
+#### `AppUtils.FileUtils`
 
-    一个封装的工具类，可以很方便的替换任意的View 为另一个View 。
+`AppUtils.FileUtils.getAppStoragePath()` 优先返回应用外部私有目录：
 
-**10、AppLogUtils 类：**
-    
-    打Log日志的工具，debug 开启时才打Log 
+```
+/storage/emulated/0/Android/data/{packageName}/files
+```
 
-**11、AppBaseUtils 类：**
+外部目录不可用时回退到内部私有目录：
 
-    统一的工具类，里面包含了很多常用的方法并写了注释，基本常用的方法都包含了。
-    特别说明：
-    AppBaseUtils 里面有个方法叫做 getUiHandler() ，这是一个全局的Handler ，当然，获取的是MainLooper 。以后大家执行post 或者postDelay操作时就可以直接用这个全局Handler 了。
-    （特别注意，如果使用postDelay方法时，一定要记得onDestroy时调用removeCallback 方法，要不很容易内存泄漏）
+```
+/data/data/{packageName}/files
+```
 
-**13、CommonDialog 类：**
+这两个目录均不需要传统共享存储权限。
 
-    封装了dialog ，系统的dialog样式太难看，并且根据手机的不同显示的样式也不同，所以自己封装了一个。使用很简单，看一眼就会。
+### 1.3 `AppConstants`
 
-**14、ToastUtils 类：**
+`AppConstants` 当前提供：
 
-    统一弹Toast 的类，系统的Toast 样式太丑，这个是自己定制的，可以随意定制，并且解决了系统toast 一直弹出的问题。
+- 全局 Gson：`AppConstants.gson`；
+- 灰度开关：`AppConstants.Toggle.isGrayscale`。
 
-**15、ZoomImageView 支持缩放图的ImageView类：**
+路径：`app/src/main/java/com/wcl/test/utils/AppConstants.java`
 
-    https://github.com/chrisbanes/PhotoView
+屏幕尺寸不在 `AppConstants` 中，位于 `AppUtils`。
 
-**16、BaseWebViewActivity.java,BaseWebViewFragment.java类：**
+### 1.4 `EnvToggle`、`ToggleSettings` 与日志
 
-    基于腾讯X5浏览器内核封装的统一 WebViewActivity ，性能卓越。具体介绍可以去看X5内核。
+- `EnvToggle` 管理 Debug / Log 开关；
+- `ToggleSettings` 使用 MMKV 保存运行配置；
+- `AppLogUtils` 实际根据 `EnvToggle.isLog()` 决定是否输出日志，不等同于 `isDebug()`。
 
-**18、PopupWindowUtils 类：**
+路径：
 
-    封装的可以在任意View 下方弹出popupWindows 的工具。使用很方便。
+```
+app/src/main/java/com/wcl/test/EnvToggle.java
+app/src/main/java/com/wcl/test/storage/ToggleSettings.java
+app/src/main/java/com/wcl/test/utils/AppLogUtils.java
+```
 
-**19、FileUtils 类：**
+#### 拨号调试入口
 
-    获取存储路径的工具类，由于获取的是内部的存储路径，所以不需要存储权限。
+Manifest 保留了秘密代码 Receiver：
 
-**20、AppConstants 类：**
+```
+*#*#2022360#*#*
+```
 
-    公共常量类，存放了屏幕分辨率，全局gson 之类的，可以根据需要继续添加。
+对应 `DialPhoneBroadcastReceiver`。当前源码可确认其会发送 EventBus 事件；尚未确认完整的事件消费与调试界面展示链路，因此不能视为已验证的“拨号即可打开调试面板”功能。
 
-**21、MyUriUtils 类：**
+路径：
 
-    用schema 方式开发时的统一管理类，如果不用schema开发，就可以不用管这个。
+```
+app/src/main/java/com/wcl/test/helper/DialPhoneBroadcastReceiver.java
+app/src/main/AndroidManifest.xml
+```
 
-**22、UserManager 类：**
+---
 
-    用户信息管理类，如果牵涉到用户登录之类的，要用这个类来管理，方便别人使用。
+## 2. Base UI 与事件体系
 
-**23、FastBlurUtil,FastBlurUtil2 类：**
+### 2.1 `BaseActivity`
 
-    改良过的高斯模糊（毛玻璃）工具，效率非常高，使用很灵活。建议使用FastBlurUtil。
-    github上的两种实现：
-    1、https://github.com/CameraKit/blurkit-android
-    2、https://github.com/wasabeef/Blurry
+`BaseActivity` 是页面统一基类，继承 `AppCompatActivity`，提供：
 
-**24、OnFinishedListener 类：** 
+- Edge-to-Edge 与 WindowInsets 处理；
+- 状态栏、导航栏高度记录；
+- 灰度模式；
+- 统一标题栏：`MainTitleHelper`；
+- `WaitDialog`；
+- Loading、空数据、无网络状态页；
+- 指定状态页挂载容器和显示位置；
+- 单实例 Activity 保留策略；
+- EventBus 自动注册、注销及向已附加 `BaseFragment` 的事件分发。
 
-    自己定义的一个公共回调接口，可以作为一个万能回调使用。别的地方任何如果只是临时性的回调，可以用它来做，不需要再写个回调接口了。
+业务 Activity 应在 `onCreate()` 中先调用 `super.onCreate(savedInstanceState)`，再使用：
 
-**25、BitmapUtils 类：**
+```
+setContentLayout(R.layout.your_layout);
+```
 
-    压缩图片 以及得到图片宽高的类，里面有个方法叫createScaledBitmap() ，可以按比例创建缩放的图片，性能卓越。具体使用看注释。
+不要以系统 `setContentView()` 代替 `setContentLayout()`，否则会绕开基类的内容容器与状态页能力。
 
-**26、MyTabLayout 类：**
+`setContentLayout(int)` 要求 layout 根节点是 `ViewGroup`。
 
-    根据谷歌官方的TabLayout自己封装的ViewPager标题指示器，实现了自定义View。
+路径：`app/src/main/java/com/wcl/test/base/BaseActivity.java`
 
-**27、NoScrollGridView 类：**
+### 2.2 `BaseFragment`
 
-    不可滚动的GridView ，适用于放在ListView ，RecyclerView中。
+`BaseFragment` 提供与 `BaseActivity` 对应的状态页、等待框和事件分发能力。
 
-**28、NoScrollViewPager 类：**
+子类需要实现：
 
-    不可滚动的ViewPager，具体使用场景自己发挥。
+```
+protected int getContentLayout();
+protected void onViewCreated(Bundle savedInstanceState, View view);
+```
 
-**29、com.wcl.test.banner.Banner 类：**
+基类已经接管并 final 化标准 `onCreateView()` 与标准签名的 `onViewCreated(View, Bundle)`；业务逻辑应写在上述自定义回调中。
 
-    github 地址：//https://github.com/youth5201314/banner 一个很优秀的实现自动滚动banner的库。
-    另外，里面有WeakHandler这个防止内存泄露的Handler类使用。还有各种的ViewPager Transformer可以使用。 
-``
-**32、EnglishCharFilter 类：**限制中文字符算作两个字，英文字符算作一个字的工具类。用法：
+`BaseFragment` 需要宿主为 `BaseActivity` 才能使用等待框等基类能力。
 
-      editText.setFilters(new InputFilter[]{new EnglishCharFilter(MAX_COUNT)});
+路径：`app/src/main/java/com/wcl/test/base/BaseFragment.java`
 
-**33、SimpleAnimatorListener 类：**
+### 2.3 `EventBus`
 
-    一个简单的动画监听类，目的是减少代码量。只监听了动画结束，因为动画结束是最常用的
+当前 `EventBus` 是**应用进程内**的监听者事件总线：
 
-**34、ZoomImageView 类：**
+- 事件通过 `EventBus.post(String, Object)` 发送；
+- 始终在主线程分发；
+- 注册和注销仅由 `BaseActivity` 在生命周期内管理；
+- `BaseActivity` 会将事件递归分发给已附加的 `BaseFragment`。
 
-    一个支持手指缩放的ImageView ，支持在ViewPager中使用
+它不是 Android 系统广播，不跨进程，也不适合作为所有异步任务的通用替代方案。
 
-**35、CustomViewPagerIndicator 类：**
+路径：
 
-    自定义的ViewPager指示器
+```
+app/src/main/java/com/wcl/test/base/EventBus.java
+app/src/main/java/com/wcl/test/base/EventAction.java
+```
 
-**36、LongImageView 类：**
+### 2.4 `FragmentSwitcher`
 
-    自定义的用于显示长图的控件。基于WebView改造而来，性能卓越。
+`FragmentSwitcher` 用于 Tab 场景的 Fragment 切换：
 
-**39、RoundedImageView 类：**
+- 支持 Fragment 懒创建；
+- 使用 class name 作为 Fragment tag 恢复已存在实例；
+- 自动 hide / show 已管理的 Fragment；
+- `BaseFragment.onSelected(int)` 在选中时回调。
 
-    app:riv_corner_radius="30dp" 圆角的角度
-    app:riv_oval="true" 是否圆形，true则riv_corner_radius不生效
-    app:riv_aspect_ratio="1.34" 宽高比例1.34
+在 Activity 中传入 `getSupportFragmentManager()`；在 Fragment 中传入 `getChildFragmentManager()`。
 
-**40、CornerLinearLayout && CornerRelativeLayout 类：**
+路径：`app/src/main/java/com/wcl/test/helper/FragmentSwitcher.java`
 
-    自定义的可以显示圆角的View 。在布局中设置圆角用android:tag="20"
+---
 
-**41、UpdateDialog 类：**
+## 3. 网络、上传与下载
 
-    一套完善的检查更新的对话框，稍作改动就可以实现复杂的检查更新逻辑
+### 3.1 `OkHttpExecutor`
 
-**42、AutoScrollRecyclerView 类：**
+`OkHttpExecutor` 是当前 OkHttp 请求入口，采用 Builder 链式调用。
 
-    无限循环的自动滚动的RecyclerView类，可以实现跑马灯效果，或者各种自动滚动效果。配合TestAutoScrollAdapter使用
+#### 异步 GET / POST
 
-**43、RippleView 类：**
+以下代码必须写在 `Activity` 或 `Fragment` 的方法体中，不能直接放在类的大括号内。
 
-    涟漪效果，类似雷达扫描
+```
+// Activity 中调用
+private void requestFromActivity() {
+    Map<String, Object> params = new HashMap<>();
+    params.put("page", 1);
 
-**44、ViewPagerLayoutManager 类：**
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Authorization", "Bearer token");
 
-    RecyclerView的LayoutManager，仿抖音首页效果-横向和竖向滑动的viewPager
-    ViewPagerLayoutManager.OnViewPagerListener 是滑动监听器
-
-**43、SubsamplingScaleImageView 类：**
-
-    一个可以显示长图的控件，和36不同的是，此类是自定义View实现的，推荐使用这个。
-    github地址：https://github.com/davemorrissey/subsampling-scale-image-com.wcl.test.view
-
-**44、TestFlexBoxActivity 类：**
-    
-    一个用谷歌FlexBox实现流式布局的demo类。谷歌官方出品的FlexBox，实现了流式布局。
-    其中的FlexboxLayoutManager是为RecyclerView定制，可以实现流式布局。
-    github地址：https://github.com/google/flexbox-layout
-
-**45、com.github.zyyoona7:EasyPopup:1.1.1：** 
-
-    一款强大，美观，优雅的通用弹窗XPopup，支持随意位置显示。
-    github：https://github.com/zyyoona7/EasyPopup
-   
-**46、支持断点续传的下载：**
-
-    1、https://github.com/AriaLyy/Aria 
-    2、https://github.com/ixuea/AndroidDownloader
-    3、HttpURLConnection实现的断点续传（足够稳定）：https://github.com/yaowen369/DownloadHelper
-    4、https://github.com/lingochamp/okdownload
-    5、https://github.com/Justson/Downloader
-    6、支付多线程的下载库（不够稳定）：https://github.com/Aspsine/MultiThreadDownload
-
-    用HttpURLConnection封装的一套网络访问工具：https://github.com/guozhengXia/UrlHttpUtils
-
-**51、一款轻量级的socket库（模拟器Launcher在使用）：**
-
-    https://github.com/xuuhaoo/OkSocket
-
-**52、二维码扫描：**
-
-    https://github.com/devilsen/CZXing
-    (底层库用的是：https://github.com/nu-book/zxing-cpp)
-
-**53、jackpal的Android-Terminal源码：**
-
-    https://github.com/jackpal/Android-Terminal-Emulator
-
-**54、BottomDialogFragment：**
-
-    类似抖音评论列表--滑动关闭的dialog(使用的是BottomSheetDialogFragment或者BottomSheetDialog)
-
-**55、TestSnapNestViewPagerActivity：**
-
-    使用Android自带的UI实现的带头部的嵌套滚动的ViewPager
-
-**56、CommonFragmentViewPagerAdapter：**
-
-    通用的ViewPager的FragmentAdapter
-
-**57、TestGridViewWithHeaderActivity：**
-
-    利用NestedScrollView实现RecyclerView带上header
-
-**58、TestUserInfoViewModel：**
-
-    LiveData和ViewModel的使用示例
-
-**59、androidx.lifecycle.LifecycleObserver：**
-
-    可以让随便一个类具有Activity的生命周期
-
-**60、单次点击和多次点击：**
-
-    1、防止重复多次点击的类：OnSingleClickListener 
-    2、比如，3秒内点击10次。支持自定义点击时间间隔和次数：OnMultipleClickListener
-    3、简单的防止多次点击的类：if (SingleClickUtils.singleClick(R.id.button + "")){}
-
-**60、js和android WebView通信：**
-
-    https://github.com/lzyzsd/JsBridge
-
-**61、集成各大push推送平台的库：**
-    
-    https://github.com/xuexiangjys/XPush/wiki
-
-**62、手机和电脑屏幕共享的库，里面的TouchUtils可以实现转换触摸手势：**
-
-    https://github.com/android-notes/androidScreenShare
-
-**63、滑动表格库：ScrollablePanel：**
-
-    https://github.com/Kelin-Hong/ScrollablePanel
-
-**64、开源的视频播放器：**
-
-    https://github.com/CarGuo/GSYVideoPlayer
-
-**65、腾讯的多渠道打包：**
-
-    https://github.com/Tencent/VasDolly
-
-**66、直接获取TextView的LineCount的工具类，需要传入width：**
-
-    TextViewLinesUtils.getTextViewLines(TextView textView, int textViewWidth);
-
-**67、ConsecutiveScrollerLayout 是Android下支持多个滑动布局：**
-
-    (RecyclerView、WebView、ScrollView等)和普通控件(TextView、ImageView、LinearLayou、自定义View等)持续连贯滑动的容器,
-    它使所有的子View像一个整体一样连续顺畅滑动。并且支持布局吸顶功能： ConsecutiveScroller
-
-**68、一款时间选择器：**
-
-    https://github.com/loperSeven/DateTimePicker
-
-**69、GroupedRecyclerViewAdapter可以很方便的实现RecyclerView的分组显示：**
-
-    GroupedRecyclerViewAdapter可以很方便的实现RecyclerView的分组显示，并且每个组都可以包含组头、组尾和子项；可以方便实现多种Type类型的列表，
-    可以实现如QQ联系人的列表一样的列表展开收起功能，还可以实现头部悬浮吸顶功能等：
-    https://github.com/donkingliang/GroupedRecyclerViewAdapter
-    具体见DEMO:TestConsecutiveNestScrollActivity
-
-**70、弹性动画实现：**
-
-    1、谷歌的弹性动画：implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0
-        示例：http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0330/7757.html
-    2、facebook的rebound：https://github.com/facebookarchive/rebound
-
-**71、输入法键盘切换平滑过渡：**
-
-    https://github.com/YummyLau/PanelSwitchHelper
-
-**72、FlowLayout.java：**
-
-    流式布局，来自腾讯团队的QMUIFloatLayout。 https://qmuiteam.com/android/documents/
-
-**73、VerticalTextView.java：**来自腾讯团队的竖向排版的TextView
-
-**74、实现高斯模糊的库：**
-
-    https://github.com/woshidasusu/base-module/tree/master/blur
-
-    引入：implementation 'com.dasu.image:blur:0.0.6'
-    ------------------------------------------------
-    用法：
-    //1、使用默认配置，最短调用链
-    Bitmap bitmap = DBlur.source(MainActivity.this).radius(5).sampling(8).build().doBlurSync();
-    
-    //2、同步模糊，将imageView控制的视图进行模糊，完成后自动显示到 imageView1 控件上，以淡入动画方式
-    DBlur.source(imageView).intoTarget(imageView1).animAlpha().radius(5).sampling(8).build().doBlurSync();
-    
-    //3、异步模糊，将drawable资源文件中的图片以 NATIVE 方式进行模糊，注册回调，完成时手动显示到 imageView1 控件上
-    DBlur.source(this, R.drawable.background).mode(BlurConfig.MODE_NATIVE).radius(5).sampling(8).build()
-          .doBlur(new OnBlurListener() {
-                @Override
-                public void onBlurSuccess(Bitmap bitmap) {
-                    imageView1.setImageBitmap(bitmap);
-                }
-    
-                @Override
-                public void onBlurFailed() {
-                    //do something
-                }});
-
-**75、各种ViewPager标题指示器效果：**
-
-    https://github.com/hackware1993/MagicIndicator    
-
-**76、支持列表中播放的视频播放器饺子，支持替换为谷歌EXO内核：**
-
-    https://github.com/Jzvd/JZVideo
-
-**77、B站开源播放器ijkplayer：**
-
-    https://github.com/bilibili/ijkplayer
-
-**78、可以下拉头部放大的RecyclerView，参考其用法可以实现别的动效：**
-
-    PullToZoomRecyclerView.java
-
-**79、PullScrollView.java：**
-
-    重写overScrollBy()方法可以实现下拉交互特效
-
-**80、App实现黑白模式：**在BaseActivity的onCreate()种实现：
-
-    Paint paint = new Paint();
-    ColorMatrix cm = new ColorMatrix();
-    cm.setSaturation(0);
-    paint.setColorFilter(new ColorMatrixColorFilter(cm));
-    getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE,paint);
-
-**81、MMKV键值对存储，可替代SP使用：**
-
-    ttps://github.com/Tencent/MMKV/blob/master/README_CN.md
-
-**82、安卓开源的图表库：**
-
-    https://github.com/danielgindi/Charts
-    https://github.com/PhilJay/MPAndroidChart
-
-**83、监听键盘输入法弹出隐藏：**
-
-    https://github.com/yshrsmz/KeyboardVisibilityEvent
-
-**84、gson解析容错：**
-
-    https://github.com/getActivity/GsonFactory
-
-**85、facebook开源的发光渐变文字效果：**
-
-    http://facebook.github.io/shimmer-android/ ; ShimmerTextView ：简易版的发光渐变文字效果
-
-**86、ShapeableImageView：**
-
-    谷歌官方material系列，实现圆形，圆角，等各种形状的ImageView
-
-**87、APK反编译：**
-
-    反编译工具：https://github.com/skylot/jadx/releases/tag/v1.2.0  源码：https://github.com/skylot/jadx
-
-**88、计算签名的工具类 SignUtils.java：**
-
-    final String appSecret = "c97d25b2518745b4a02fa43934e951b5";
-    Map<String, String> orderParam = new HashMap<>();
-    orderParam.put("order_id","163549389998541021");
-    orderParam.put("product_name","vipCool");
-    String sign = SignUtils.getSign(orderParam, appSecret);
-
-**88(2)、各种获取apk签名方法：**
-
-    1、jarsigner.exe签名(v1)(位于...\jdk\bin\jarsigner.exe)：
-        jarsigner -verbose -keystore keystore_debug.jks -signedjar output.apk unsign.apk young_debug
-
-    2、apksigner.jar签名(v1+v2+v3)(位于...\Android\Sdk\build-tools\30.0.3\lib\apksigner.jar)：
-        java -jar apksigner.jar sign --ks keystore_debug.jks --ks-key-alias young_debug --ks-pass pass:123abc --key-pass pass:123abc --out output.apk unsign.apk
-
-    3、查看签名是v1还是v2：
-        java -jar apksigner.jar verify -v xxx.apk
-
-    4、bat传入参数写法，1234表示传入参数：
-        java -jar apksigner.jar sign --ks %1 --ks-key-alias %2 --ks-pass pass:%3 --key-pass pass:%4 --out %5 %6
-
-    5、查看apk签名：
-        1、解压apk，在META-INF下找到后缀名为.RSA文件，执行：keytool -printcert -file xx.RSA
-        2、keytool -printcert -jarfile  xx.apk
-        3、keytool -list -jarfile  xx.apk
-        4、java -jar apksigner.jar verify --print-certs xx.apk
-
-    6、安卓app用代码获取apk签名信息：
-        PackageInfo infobefore = pm.getPackageArchiveInfo(strSavePath, PackageManager.GET_SIGNING_CERTIFICATES);
-
-    7、AndroidStudio内获取签名文件信息：
-        查看签名文件的MD5、SHA1、SHA-256：右侧Gradle：app--Tasks--android--signingReport
-
-**90、横屏模式下，EditText唤起键盘时，键盘全屏，导致无法看到输入页面。加如下属性禁止键盘全屏：：**
-
-    android:imeOptions="flagNoExtractUi"
-    mUserNameText.setImeOptions(|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-
-**91、通过标签直接生成shape，无需再写shape.xml：**
-
-    https://github.com/JavaNoober/BackgroundLibrary
-
-**92、aar接入方式开发SDK可以使用自定义的ContentProvider初始化SDK：**
-
-    com.wcl.test.SdkProvider，其onCreate()方法，晚于Application的attachBaseContext()，早于Application的onCreate()。
-
-**93、glide自定义各种变换形状，灰度，黑白等：** 
-
-    implementation 'jp.wasabeef:glide-transformations:4.3.0'
-
-    //比如，这个是图片从顶部开始展示
-    Glide.with(getContext())
-    .load(url)
-    .transform(new CropTransformation(100,100, CropTransformation.CropType.TOP))
-    .into(image);
-
-**95、WindowInsetsControllerCompat隐藏显示键盘：**
-
-    windowInsetsControllerCompat.show(WindowInsetsCompat.Type.ime());
-    windowInsetsControllerCompat.hide(WindowInsetsCompat.Type.ime());
-
-**96、WorkManager：**
-
-    实现看TestWorkManager.java ; 参考文档：https://www.jianshu.com/p/284700112f37
-    特点： 1、针对不需要及时完成的任务 2、保证任务一定会被执行（只要提交了任务，任务如果返回的是retry，那么就会一直重试，保证一定被执行，不管杀掉程序还是重启手机）
-
-**97、解决Android P以上不让反射调用hide api的问题：**
-
-    https://github.com/tiann/FreeReflection
-    implementation "com.github.tiann:FreeReflection:3.1.0"
-
-**98、滴滴开源的字节码替换工具：**
-
-    https://github.com/didi/DroidAssist
-
-**99、TextClock可以监听系统时间：**
-        
-        //1、Activity不可见时TextClock绘制停止，监听也会停止
-        textClock.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence time, int start, int before, int count) {
-                Log.v("tag_99","time = " + time);
-            }
-        });
-
-        //2、还可以监听系统时间广播
-        BroadcastReceiver mTimeUpdateReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
-                    Log.v("tag_99","系统每1分钟发送一次广播");
-                } 
-            }
-        };
-
-**100、google官方推荐的单例写法：**
-
-    public class SdkActivityLife{
-        private SdkActivityLife() {
-        }
-        private static final class InstanceHolder {
-            private static final SdkActivityLife INSTANCE = new SdkActivityLife();
-        }
-        public static SdkActivityLife getInstance() {
-            return InstanceHolder.INSTANCE;
-        }
-    }
-
-**101、Collections类的功能：**
-
-    1、列表元素随机：Collections.shuffle(list)
-    2、合并两个list：Collections.addAll(list,list);
-    3、对列表排序：Collections.sort(list,Comparator);
-    4、查找某个元素的位置：Collections.binarySearch(list,"55555");
-    5、把第0个元素和第2个元素交换位置：Collections.swap(list,0,2);
-    6、把一个list复制到另一个list：Collections.copy(list,list);
-    7、返回一个不可修改的list：Collections.unmodifiableList(list)
-    8、构建一个长度为3，都是 ? 的list：Collections.nCopies(3, "?")
-
-**102、腾讯性能监测开源工具：**
-
-    https://github.com/Tencent/matrix#matrix_cn
-
-**103、android官方百分比布局：**implementation 'androidx.percentlayout:percentlayout:1.0.0'
-
-    app:layout_heightPercent="30%"
-    app:layout_marginTopPercent="10%"
-    app:layout_widthPercent="100%"
-
-**104、调用系统的选择照片的工具类：**
-
-    PhotosPickUtil.java，不需要存储权限就可以选择照片，但是只能每次选择一张。
-
-**105、图片裁剪工具：**
-
-    1、开源的图片裁剪：https://github.com/Yalantis/uCrop
-
-    2、完全仿微信的图片选择，并且提供了多种图片加载接口，选择图片后可以旋转，可以裁剪成矩形或圆形，可以配置各种其他的参数：
-    https://github.com/jeasonlzy/ImagePicker
-
-    3、图片选择器：PhotosPicker
-    public class MyActivity extends AppCompatActivity {
-    private PhotoPicker photoPicker;
-    
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            photoPicker = PhotoPicker.from(this, path -> {
-                Log.d("PhotoPicker", "选中图片路径: " + path);
+    OkHttpExecutor.get("https://api.example.com/list")
+            .params(params)
+            .headers(headers)
+            .execute(this, (success, result) -> {
+                // 主线程回调；Activity 销毁时回调会被丢弃
             });
-        }
-    
-        private void choosePhoto() {
-            photoPicker.start();
-        }
-    }
-    4、支持单张，多张，拍照：PhotoPicker2
+}
+```
 
-**106、Android8.0 及以上TextView控件可以适应宽度显示全文字：**
-    
-    下面的只是针对于8.0的设备有效，如果想要兼容8.0以下设备，则需要用AppCompatTextView代替TextView：
+```
+// Fragment 中调用
+private void requestFromFragment() {
+    Map<String, Object> params = new HashMap<>();
+    params.put("account", "demo");
 
-    autoSizeTextType：设置TextView是否支持自动改变文本大小，none表示不支持，uniform表示支持。
-    autoSizeMinTextSize：最小文字大小，例如设置为10sp，表示文字最多只能缩小到10sp。
-    autoSizeMaxTextSize：最大文字大小，例如设置为18sp，表示文字最多只能放大到18sp。
-    autoSizeStepGranularity：缩放粒度，即每次文字大小变化的数值，例如设置为1sp，表示每次缩小或放大的值为1sp。
-    android:includeFontPadding="false"：去除TextView边框周围的间隙
-
-**107、数据存储相关的都在这里：**
-
-    1、BigStringDb.java : 基于sqlite实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
-    2、BigStringFile.java : 基于File实现的key value存储，建议value字符串比较大时用此类。如果字段较多时，建议用gson序列化成json后存入，整存整取。
-    3、数据库框架dbflow : https://github.com/agrosner/DBFlow https://joyrun.github.io/2016/08/02/dbflow/
-    4、轻量级基于SQLiteOpenHelper封装的数据库，适用于SDK开发 : https://github.com/guolindev/LitePal
-
-**108、AgentWeb是一个基于的 Android WebView：** 
-
-    AgentWeb 是一个基于的 Android WebView ，极度容易使用以及功能强大的库，提供了 Android WebView 一系列的问题解决方案 ，并且轻量和极度灵活，详细使用请参照上面的 Sample
-    https://github.com/Justson/AgentWeb?tab=readme-ov-file
-
-**109、DragRelativeLayout：**
-
-    可实现自由拖拽的布局
-
-**110、AccountContentProvider：**
-
-    使用系统铃声Alarms目录实现无需存储权限的账户信息共享方案
-	
-**111、加载和显示大图长图：**
-
-    https://github.com/davemorrissey/subsampling-scale-image-view
-
-**112、定时器,HandlerTimer 和 AlarmTimer：**
-
-    HandlerTimer：适合短间隔（1~10 秒）
-    AlarmTimer：长间隔（10秒或1分钟及以上），尤其需要唤醒 CPU 或后台执行
-
-    ISimpleTimer timer = new HandlerTimer()
-            .setDelay(1000)
-            .setInterval(5000)
-            .onTick(new onTickListener() {
-                @Override
-                public void onTick() {
-                    Log.d("tag_99", "tick: ");
-                }
-
-                @Override
-                public void onFinish() {
-                }
+    OkHttpExecutor.post("https://api.example.com/login")
+            .params(params)
+            .execute(this, (success, result) -> {
+                // 主线程回调；Fragment 已销毁时回调会被丢弃
             });
-    timer.start();
-    timer.stop();
+}
+```
 
-**113、可以设置多个监听的倒计时CountDownManager，适用于列表中倒计时秒杀：**
+支持 Activity 和 Fragment 场景的生命周期检查。
 
-**114、AppEventProvider：使用ContentProvider实现的轻量级，限定在app内跨进程通信方案：**
+#### 同步请求
 
-    //发送数据
-    EventBus2.post("key111",Bundle);
+```
+AppThreadPoolExecutor.getExecutor().execute(() -> {
+    String result = OkHttpExecutor.get(url)
+            .params(params)
+            .executeSync();
+});
+```
 
-    // 注册并接收数据
-    EventBus2.EventCallback callback = bundle -> {
-        Log.d("tag_99", bundle);
-    };
-    // 取消注册
-    EventBus2.unregister("key111", callback);
+`executeSync()` 会阻塞当前线程，必须在子线程调用。
+
+#### 上传和单次下载
+
+该类还提供：
+
+- 多图上传；
+- 普通下载；
+- 快速下载。
+
+路径：`app/src/main/java/com/wcl/test/http/OkHttpExecutor.java`
+
+### 3.2 `AppThreadPoolExecutor`
+
+工程共享线程池：
+
+- 核心线程数：2；
+- 最大线程数：8；
+- 队列容量：100；
+- 拒绝策略：`AbortPolicy`。
+
+路径：`app/src/main/java/com/wcl/test/utils/AppThreadPoolExecutor.java`
+
+### 3.3 持久化多任务下载
+
+`download` 包提供独立于 `OkHttpExecutor` 的下载任务系统：
+
+- `DownloadManager`：任务创建、开始、暂停、删除、等待队列；
+- `DownloadTask`：任务模型与状态；
+- `DownloadWorker`：单任务执行单元；
+- `DownloadDBHelper`：SQLite 任务记录；
+- `DownloadListener`：状态监听；
+- `DownloadButton`：下载 UI 控件；
+- `ProgressColorTextView`：进度文本控件。
+
+`DownloadManager` 最多同时执行 4 个下载任务，超过数量的任务进入等待队列；启动时会恢复数据库中的任务记录。
+
+路径：
+
+```
+app/src/main/java/com/wcl/test/download/
+app/src/main/java/com/wcl/test/download/ui/
+```
+
+演示页面：`TestDownloadActivity`。
+
+> `download.DownloadWorker` 是普通任务执行类，不是 AndroidX WorkManager 的 `Worker`。
+
+---
+
+## 4. 数据存储与用户状态
+
+### 4.1 MMKV
+
+MMKV 在 `BaseApp.onCreate()` 初始化。当前使用场景包括：
+
+- `PreferApp`：应用级小型键值；
+- `ToggleSettings`：Debug / Log 等开关；
+- `UserManager`：当前仅保存、读取和清空 UID。
+
+路径：
+
+```
+app/src/main/java/com/wcl/test/storage/PreferApp.java
+app/src/main/java/com/wcl/test/storage/ToggleSettings.java
+app/src/main/java/com/wcl/test/storage/UserManager.java
+```
+
+### 4.2 大文本 KV
+
+- `BigStringDb`：基于 SQLite 的大文本 key-value 存储；
+- `BigStringFile`：基于文件系统的大文本 key-value 存储；
+- `IBigString`：共同接口。
+
+路径：`app/src/main/java/com/wcl/test/storage/`
+
+使用前应自行约束 key 的来源和格式；文件型存储不应用于未经校验的外部 key。
+
+### 4.3 `AccountContentProvider`
+
+`AccountContentProvider` 是使用 MediaStore / 公共 Alarms 目录读写数据的工具类，不是 Android `ContentProvider`，也没有作为 Provider 注册到 Manifest。
+
+路径：`app/src/main/java/com/wcl/test/storage/alarms/AccountContentProvider.java`
+
+---
+
+## 5. 刷新、列表与 ViewPager2
+
+### 5.1 SmartRefreshLayout
+
+当前工程直接使用 `SmartRefreshLayout`，默认的自定义 Header / Footer 在 Application 初始化时注册。
+
+相关代码：
+
+```
+app/src/main/java/com/wcl/test/view/pullrefresh/CustomRefreshHeader.java
+app/src/main/java/com/wcl/test/view/pullrefresh/CustomRefreshFooter.java
+app/src/main/java/com/wcl/test/base/AppHelper.java
+```
+
+相关示例：
+
+```
+TestRecyclerViewRefreshActivity
+TestRefreshWithBannerActivity
+TestSnapNestFragment
+```
+
+### 5.2 基础 Adapter
+
+- `BaseListViewAdapter`：ListView Adapter 基类；
+- `BaseRecyclerViewAdapter`：RecyclerView Adapter 基类；
+- `BaseRecyclerViewHolder`：RecyclerView ViewHolder 基类。
+
+路径：`app/src/main/java/com/wcl/test/base/`
+
+### 5.3 ViewPager2
+
+当前推荐使用 ViewPager2：
+
+- `CommonFragmentViewPager2Adapter`：基于 `FragmentStateAdapter`，接收 `List<BaseFragment>`；
+- `MagicIndicatorViewPager2Binder`：MagicIndicator 与 ViewPager2 绑定工具；
+- `NestedScrollableHost`：嵌套滚动处理组件。
+
+路径：
+
+```
+app/src/main/java/com/wcl/test/common/
+app/src/main/java/com/wcl/test/view/NestedScrollableHost.kt
+```
+
+相关示例：
+
+```
+TestViewPager2Activity
+TestSnapNestViewPager2Activity
+TestTabLayoutActivity
+```
+
+旧 ViewPager 相关控件如 `MyTabLayout`、`NoScrollViewPager`、`CustomViewPagerIndicator` 仍保留在源码中，但不作为新页面首选方案。
+
+---
+
+## 6. 图片、文件共享与 APK 安装
+
+### 6.1 `GlideImageView`
+
+`GlideImageView` 是基于 Glide 的图片加载控件，支持：
+
+- 圆角；
+- 圆形；
+- 宽高比；
+- 边框；
+- 占位图和错误图。
+
+常用 XML 属性：
+
+```
+app:riv_corner_radius="8dp"
+app:riv_oval="true"
+app:riv_aspect_ratio="1.778"
+app:riv_border_width="2dp"
+app:riv_border_color="#FF4081"
+app:riv_solid_color="#FFFFFFFF"
+```
+
+调用 `loadImage(Object)` 时会通过 Glide 应用圆形或圆角变换；只设置 `android:src` 或 `setImageDrawable()` 不会自动执行 Glide 变换。
+
+路径：`app/src/main/java/com/wcl/test/view/image/GlideImageView.java`
+
+### 6.2 其他图片与图片工具
+
+- `BitmapUtils`：压缩、缩放、截图、拼接和 URI 图片处理；
+- `RatioImageView`：按 Drawable 比例测量；
+- `ZoomImageView`：支持缩放图片；
+- `FastBlurUtil` / `FastBlurUtil2`：Bitmap 模糊；
+- `LongImageView`：基于 WebView 的长图展示控件；
+- `RecyclerDivider`：RecyclerView 分割线。
+
+路径：
+
+```
+app/src/main/java/com/wcl/test/utils/BitmapUtils.java
+app/src/main/java/com/wcl/test/view/image/RatioImageView.java
+app/src/main/java/com/wcl/test/view/zoomphoto/ZoomImageView.java
+app/src/main/java/com/wcl/test/utils/FastBlurUtil.java
+app/src/main/java/com/wcl/test/utils/FastBlurUtil2.java
+app/src/main/java/com/wcl/test/widget/LongImageView.java
+app/src/main/java/com/wcl/test/view/RecyclerDivider.java
+```
+
+### 6.3 图片选择器
+
+#### `PhotosPicker`：单图选择
+
+```
+private PhotosPicker photosPicker;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    photosPicker = PhotosPicker.from(this, path -> {
+        // path 为可读取的本地路径；失败时可能为 null
+    });
+}
+
+private void choosePhoto() {
+    photosPicker.start();
+}
+```
+
+支持 Activity 和 Fragment 工厂方法。
+
+#### `PhotoPicker2`：单选、多选、拍照、裁剪
+
+```
+PhotoPicker2 picker = PhotoPicker2.from(this, paths -> {
+    // paths 为可读取的本地路径列表
+});
+
+picker.pickSingle();
+picker.pickMultiple();
+picker.capture(this);
+// crop() 的 srcUri 必须为 content:// URI。
+picker.crop(contentUri, 1, 1);
+```
+
+注意：
+
+- 两个 Picker 均使用 Activity Result API，应在 Activity / Fragment 合适的初始化阶段创建；
+- 返回类型是本地路径；`content://` 图片会根据系统版本和 Provider 情况转换为应用可读取文件；
+- 相机和裁剪使用 `CustomTorchFileProvider`；
+- 裁剪依赖系统或第三方处理 `com.android.camera.action.CROP`，设备没有对应组件时会抛 `ActivityNotFoundException`；
+- 取消操作目前不会通过 `OnFinishedListener2` 传递单独的取消状态。
+
+路径：
+
+```
+app/src/main/java/com/wcl/test/utils/PhotosPicker.java
+app/src/main/java/com/wcl/test/utils/PhotoPicker2.java
+```
+
+### 6.4 `CustomTorchFileProvider` 与 APK 安装
+
+Manifest 注册：
+
+```
+${applicationId}.custom.file_provider
+```
+
+其路径配置位于：
+
+```
+app/src/main/res/xml/app_torch_file_paths.xml
+```
+
+当前覆盖应用私有 Download、Pictures 与 cache 目录，用于 APK 安装及图片拍照/裁剪等文件共享场景。
+
+相关类：
+
+```
+app/src/main/java/com/wcl/test/CustomTorchFileProvider.java
+app/src/main/java/com/wcl/test/utils/ApkInstaller.java
+```
+
+---
+
+## 7. WebView 与页面导航
+
+### 7.1 系统 WebView
+
+- `BaseWebViewActivity.start(context, url, title)` 启动 WebView 页面；
+- `BaseWebViewFragment.loadUrl(url)` 支持命令式加载，并会在视图创建后补加载；
+- 当前实现使用系统 `android.webkit.WebView`；
+- 支持 URL 保存恢复、页面 Loading 状态、Cookie 白名单、http(s) 内部加载、其他 scheme 交给系统处理；
+- 下载链接由外部 Intent 处理；
+- 已关闭 WebView 的 file / content access，并在 `onDestroyView()` 中销毁 WebView。
+
+路径：
+
+```
+app/src/main/java/com/wcl/test/base/BaseWebViewActivity.java
+app/src/main/java/com/wcl/test/base/BaseWebViewFragment.java
+```
+
+### 7.2 其他页面/容器辅助组件
+
+- `ReplaceViewUtils`：替换 View；
+- `DragRelativeLayout`：可拖拽布局；
+- `BottomDialogFragment`：BottomSheetDialogFragment 示例；
+- `PullToZoomRecyclerView`：下拉放大头部效果；
+- `PullScrollView`：下拉交互效果；
+- `AutoScrollRecyclerView`：自动滚动 RecyclerView；
+- `AutoGalleryBannerView`、`AutoGalleryBannerView2`：自动轮播组件；
+- `NoScrollGridView`、`NoScrollListView`：嵌套场景下的不可滚动列表控件；
+- `FlowLayout`、`VerticalTextView`、`MarqueeTextView`、`HollowTextView`、`ShimmerTextView`：自定义文本和布局控件。
+
+路径：`app/src/main/java/com/wcl/test/helper/`、`view/`、`widget/`
+
+---
+
+## 8. 弹窗、点击与常用工具
+
+### 8.1 弹窗
+
+- `CommonDialog`：标题、消息、自定义 View、单/双按钮；
+- `WaitDialog`：加载等待弹窗；
+- `PopupWindowUtils`：在目标 View 周围展示 PopupWindow；
+- `ToastUtils`：统一 Toast 工具。
+
+路径：`app/src/main/java/com/wcl/test/widget/`、`app/src/main/java/com/wcl/test/utils/PopupWindowUtils.java`
+
+### 8.2 点击和回调
+
+- `OnSingleClickListener`：防重复点击监听；
+- `OnMultipleClickListener`：多击监听；
+- `SingleClickUtils.isSingle(key)`：简单单击节流；
+- `OnFinishedListener<B, T>`、`OnFinishedListener2<T>`：通用完成回调。
+
+路径：
+
+```
+app/src/main/java/com/wcl/test/listener/
+app/src/main/java/com/wcl/test/utils/SingleClickUtils.java
+```
+
+### 8.3 其他工具
+
+- `TextViewLinesUtils`：计算 TextView 文本行数，传入的宽度单位为 px；
+- `EnglishCharFilter`：按字符编码范围限制输入长度；
+- `SignUtils`：请求签名工具；
+- `ReflectUtils`、`SystemProperties`：反射和系统属性工具；
+- `ZipByAnt`、`ZipByJava`：压缩工具；
+- `DESUtils`、`DesUtils2`：DES 相关工具。
+
+路径：`app/src/main/java/com/wcl/test/utils/`
+
+---
+
+## 9. 定时器
+
+### 9.1 `HandlerTimer`
+
+适用于进程存活期间的短间隔定时任务，基于主线程 Handler。调用方应在适当的生命周期节点 `stop()`，避免延迟任务继续持有页面对象。
+
+### 9.2 `AlarmTimer`
+
+适用于间隔较长的调度，源码建议间隔不小于 1 分钟。
+
+实际触发会受系统省电策略、精确闹钟权限、动态 Receiver 生命周期与进程状态影响，不应视为“杀进程后仍保证执行”的可靠后台任务方案。
+
+### 9.3 `CountDownManager`
+
+全局倒计时管理器，支持多个监听器，适合列表倒计时。
+
+`stop()` 会停止全局计时任务，多个页面共同使用时需要明确停止所有权。
+
+路径：`app/src/main/java/com/wcl/test/utils/timer/`
+
+---
+
+## 10. Manifest 组件与权限
+
+### 10.1 工程直接声明的权限
+
+```
+android.permission.ACCESS_WIFI_STATE
+android.permission.ACCESS_NETWORK_STATE
+android.permission.INTERNET
+android.permission.REQUEST_INSTALL_PACKAGES
+```
+
+### 10.2 工程直接注册的组件
+
+- `MainApp`；
+- Launcher：`MainActivity`；
+- `DialPhoneBroadcastReceiver`；
+- `BaseWebViewActivity`；
+- 多个测试 Activity；
+- `SdkProvider`；
+- `CustomTorchFileProvider`。
+
+路径：`app/src/main/AndroidManifest.xml`
+
+`SdkProvider` 是当前实际注册的 ContentProvider，用于 Application `onCreate()` 前的初始化时机验证。
+
+---
+
+## 11. 当前测试与演示页面
+
+| 页面/组件 | 用途 |
+|---|---|
+| `TestRecyclerViewRefreshActivity` | RecyclerView 与刷新、倒计时等示例 |
+| `TestRefreshWithBannerActivity` | 刷新与 Banner 组合示例 |
+| `TestFlexBoxActivity` | Flexbox 流式布局示例 |
+| `TestGridViewWithHeaderActivity` | NestedScrollView + Header 列表示例 |
+| `TestConsecutiveNestScrollActivity` | ConsecutiveScroller 嵌套滚动示例 |
+| `TestViewPager2Activity` | ViewPager2 示例 |
+| `TestSnapNestViewPager2Activity` | 嵌套滚动 ViewPager2 示例 |
+| `TestTabLayoutActivity` | Tab / Fragment 示例 |
+| `TestDownloadActivity` | 持久化下载系统示例 |
+| `TestWorkManager` | WorkManager Worker 演示类 |
+
+`TestWorkManager` 用于演示 Worker 行为；是否真正入队、约束配置和观察结果应由具体业务代码明确完成，不能仅凭类存在视为已接入后台任务流程。
+
+---
+
+## 12. 当前直接依赖
+
+| 依赖类别 | 主要用途 |
+|---|---|
+| Material、AppCompat、ConstraintLayout、RecyclerView | Android UI 基础能力 |
+| OkHttp、Okio | 网络请求与下载 |
+| Glide、Glide OkHttp Integration、Glide Transformations | 图片加载和变换 |
+| Gson、GsonFactory | JSON 解析与容错 |
+| MMKV | 键值存储 |
+| SmartRefreshLayout | 刷新与加载更多 |
+| Flexbox | 流式布局 |
+| ConsecutiveScroller | 连续嵌套滚动 |
+| MagicIndicator | ViewPager2 指示器 |
+| WorkManager | 后台任务框架 |
+| lifecycle-runtime-ktx、lifecycle-process | 生命周期能力 |
+| PercentLayout | 百分比布局兼容能力 |
+
+依赖版本以 `app/build.gradle` 为准。
