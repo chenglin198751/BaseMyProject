@@ -11,112 +11,104 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipByJava {
 
-    public static void unZip(String inputZip,String destDir) {
-        try {
-            File srcFile = new File(inputZip);
-            if (!srcFile.exists()) {
-                System.out.println(srcFile.getAbsolutePath() + " not exist");
-            }
+    public static void unZip(String inputZip, String destDir) {
+        File srcFile = new File(inputZip);
+        if (!srcFile.exists()) {
+            System.out.println(srcFile.getAbsolutePath() + " not exist");
+            return;
+        }
 
-            File destDirF = new File(destDir);
-            if (destDirF.exists()) {
-                deleteDirectory(destDirF);
-            }
+        File destDirF = new File(destDir);
+        if (destDirF.exists()) {
+            deleteDirectory(destDirF);
+        }
 
-            ZipFile zipFile = new ZipFile(srcFile);
+        try (ZipFile zipFile = new ZipFile(srcFile)) {
             Enumeration<?> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
+                File targetFile = new File(destDir + File.separator + entry.getName());
                 if (entry.isDirectory()) {
-                    srcFile.mkdirs();
+                    targetFile.mkdirs();
                 } else {
-                    File targetFile = new File(destDir + File.separator + entry.getName());
-
-                    if (!targetFile.getParentFile().exists()) {
-                        targetFile.getParentFile().mkdirs();
+                    File parent = targetFile.getParentFile();
+                    if (parent != null && !parent.exists()) {
+                        parent.mkdirs();
                     }
-                    targetFile.createNewFile();
-
-                    InputStream is = zipFile.getInputStream(entry);
-                    FileOutputStream fos = new FileOutputStream(targetFile);
-                    int len;
-                    byte[] buf = new byte[1024];
-                    while ((len = is.read(buf)) != -1) {
-                        fos.write(buf, 0, len);
+                    try (InputStream is = zipFile.getInputStream(entry);
+                         FileOutputStream fos = new FileOutputStream(targetFile)) {
+                        byte[] buf = new byte[8192];
+                        int len;
+                        while ((len = is.read(buf)) != -1) {
+                            fos.write(buf, 0, len);
+                        }
                     }
-
-                    fos.close();
-                    is.close();
                 }
             }
-            zipFile.close();
         } catch (Exception e) {
             System.out.println("zipUncompress error = " + e.toString());
         }
     }
 
     public static void fileToZip(String srcFile, String zipFile) {
-        try {
-            File file = new File(srcFile);
-            String name = file.getName();
-            FileInputStream inputStream = new FileInputStream(file);
-            ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-            zipOutputStream.putNextEntry(new ZipEntry("Image\\01.jpg"));
+        File file = new File(srcFile);
+        String name = file.getName();
+        try (FileInputStream inputStream = new FileInputStream(file);
+             ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile))) {
+            zipOutputStream.putNextEntry(new ZipEntry(name));
 
-            int temp = 0;
-            while ((temp = inputStream.read()) != -1) {
-                zipOutputStream.write(temp);
+            byte[] buf = new byte[8192];
+            int len;
+            while ((len = inputStream.read(buf)) != -1) {
+                zipOutputStream.write(buf, 0, len);
             }
-            zipOutputStream.close();
-            inputStream.close();
         } catch (Exception e) {
             System.out.println("zip error1 = " + e.toString());
         }
-
     }
 
-    public static Boolean zip(String inputFileName, String zipFileName) {
-        try {
-            File inputFile = new File(inputFileName);
-            if (inputFile.exists()) {
-                inputFile.delete();
-            } else {
-                inputFile.createNewFile();
-            }
-
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
-            zip(out, inputFile, "");
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            System.out.println("zip error1 = " + e.toString());
+    public static boolean zip(String inputFileName, String zipFileName) {
+        File inputFile = new File(inputFileName);
+        if (!inputFile.exists()) {
+            System.out.println("zip error: " + inputFile.getAbsolutePath() + " not exist");
+            return false;
         }
 
-        return true;
+        try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName))) {
+            zip(out, inputFile, "");
+            out.flush();
+            return true;
+        } catch (Exception e) {
+            System.out.println("zip error1 = " + e.toString());
+            return false;
+        }
     }
 
     private static void zip(ZipOutputStream out, File f, String base) {
         try {
             if (f.isDirectory()) {
-                File[] fl = f.listFiles();
+                File[] files = f.listFiles();
+                if (files == null) {
+                    return;
+                }
                 out.putNextEntry(new ZipEntry(base + File.separator));
-                base = base.length() == 0 ? "" : base + File.separator;
-                for (int i = 0; i < fl.length; i++) {
-                    zip(out, fl[i], base + fl[i].getName());
+                String childBase = base.length() == 0 ? "" : base + File.separator;
+                for (File file : files) {
+                    zip(out, file, childBase + file.getName());
                 }
             } else {
                 out.putNextEntry(new ZipEntry(base));
-                FileInputStream in = new FileInputStream(f);
-                int b;
-                while ((b = in.read()) != -1) {
-                    out.write(b);
+                try (FileInputStream in = new FileInputStream(f)) {
+                    byte[] buf = new byte[8192];
+                    int len;
+                    while ((len = in.read(buf)) != -1) {
+                        out.write(buf, 0, len);
+                    }
                 }
-                in.close();
             }
         } catch (Exception e) {
             System.out.println("zip error2 = " + e.toString());
         }
-
     }
 
     private static void deleteDirectory(File file) {

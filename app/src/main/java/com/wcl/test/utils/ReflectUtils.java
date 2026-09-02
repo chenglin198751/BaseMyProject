@@ -8,8 +8,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ReflectUtils {
-    private static final String TAG = "ReflectUtils";
-
     private ReflectUtils() {
         // 私有构造函数防止实例化
     }
@@ -18,7 +16,8 @@ public class ReflectUtils {
      * 获取指定类的DeclaredMethod（支持继承链查找）
      */
     public static Method getDeclaredMethod(Object object, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
-        Class<?> clazz = (object instanceof Class<?>) ? (Class<?>) object : object.getClass();
+        Class<?> originalClass = getTargetClass(object);
+        Class<?> clazz = originalClass;
 
         while (clazz != Object.class) {
             try {
@@ -30,7 +29,7 @@ public class ReflectUtils {
             }
         }
 
-        throw new NoSuchMethodException("Method " + methodName + " not found in " + object.getClass());
+        throw new NoSuchMethodException("Method " + methodName + " not found in " + originalClass);
     }
 
     /**
@@ -53,7 +52,8 @@ public class ReflectUtils {
      * 获取指定类的DeclaredField（支持继承链查找）
      */
     public static Field getDeclaredField(Object object, String fieldName) throws NoSuchFieldException {
-        Class<?> clazz = (object instanceof Class<?>) ? (Class<?>) object : object.getClass();
+        Class<?> originalClass = getTargetClass(object);
+        Class<?> clazz = originalClass;
 
         while (clazz != Object.class) {
             try {
@@ -65,7 +65,14 @@ public class ReflectUtils {
             }
         }
 
-        throw new NoSuchFieldException("Field " + fieldName + " not found in " + object.getClass());
+        throw new NoSuchFieldException("Field " + fieldName + " not found in " + originalClass);
+    }
+
+    /**
+     * 解析目标类型：传入 Class 对象时直接使用，否则取对象的运行时类型。
+     */
+    private static Class<?> getTargetClass(Object object) {
+        return (object instanceof Class<?>) ? (Class<?>) object : object.getClass();
     }
 
     /**

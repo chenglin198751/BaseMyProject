@@ -17,7 +17,7 @@ public class ZipByAnt {
         expand.setOverwrite(true);
         File file = new File(destDir);
         if (!file.exists()) {
-            file.mkdir();
+            file.mkdirs();
         }
         expand.setDest(file);
         expand.execute();
@@ -26,7 +26,7 @@ public class ZipByAnt {
     public static void zip(String inputFile, String outputZipFile) {
         File srcDir = new File(inputFile);
         if (!srcDir.exists()) {
-            throw new RuntimeException(srcDir.getAbsolutePath() + "not exists");
+            throw new RuntimeException(srcDir.getAbsolutePath() + " not exists");
         }
         Project prj = new Project();
         Zip zip = new Zip();
