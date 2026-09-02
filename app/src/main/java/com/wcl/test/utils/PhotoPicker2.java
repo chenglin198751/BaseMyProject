@@ -1,6 +1,7 @@
 package com.wcl.test.utils;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -25,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -34,6 +37,8 @@ import java.util.UUID;
 public class PhotoPicker2 {
 
     private static final String FILE_PROVIDER_SUFFIX = ".custom.file_provider";
+    private static final String CROP_ACTION = "com.android.camera.action.CROP";
+    private static final int CROP_OUTPUT_SIZE = 800;
 
     public enum Mode {
         PICK_SINGLE,  // 选单张
@@ -44,131 +49,200 @@ public class PhotoPicker2 {
 
     private final Context context;
     private final ActivityResultLauncher<Intent> launcher;
-    private final OnFinishedListener2<List<String>> listener;
-
-    private Uri tempCameraUri; // 拍照临时文件
-    private Uri cropSrcUri;    // 待裁剪的图片URI
-    private Uri cropOutputUri; // 裁剪输出文件URI
-    private int cropWidth = 1, cropHeight = 1; // 裁剪比例
+    private final PendingOperation pendingOperation;
 
     private PhotoPicker2(@NonNull Context ctx,
                          @NonNull ActivityResultLauncher<Intent> launcher,
-                         @NonNull OnFinishedListener2<List<String>> listener) {
-        this.context = ctx;
+                         @NonNull PendingOperation pendingOperation) {
+        this.context = ctx.getApplicationContext();
         this.launcher = launcher;
-        this.listener = listener;
+        this.pendingOperation = pendingOperation;
+    }
+
+    /**
+     * 保存拍照/裁剪临时文件，结果回调时优先使用 EXTRA_OUTPUT 对应的文件。
+     */
+    private static final class PendingOperation {
+        private File outputFile;
+
+        synchronized void setOutputFile(File file) {
+            outputFile = file;
+        }
+
+        synchronized File takeOutputFile() {
+            File file = outputFile;
+            outputFile = null;
+            return file;
+        }
+
+        synchronized void cancel() {
+            File file = outputFile;
+            outputFile = null;
+            deleteQuietly(file);
+        }
     }
 
     // ---------- 创建入口 ----------
 
-    public static PhotoPicker2 from(@NonNull AppCompatActivity activity, @NonNull OnFinishedListener2<List<String>> listener) {
+    public static PhotoPicker2 from(@NonNull AppCompatActivity activity,
+                                    @NonNull OnFinishedListener2<List<String>> listener) {
         Context appContext = activity.getApplicationContext();
-        PhotoPicker2[] pickerHolder = new PhotoPicker2[1];
+        PendingOperation pendingOperation = new PendingOperation();
         ActivityResultLauncher<Intent> launcher =
                 activity.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                    if (result.getResultCode() != Activity.RESULT_OK) return;
-                    PhotoPicker2 picker = pickerHolder[0];
-                    Uri outputUri = picker == null ? null : picker.getOutputUri();
-                    handleResult(appContext, result.getData(), outputUri, listener);
+                    File outputFile = pendingOperation.takeOutputFile();
+                    if (result.getResultCode() != Activity.RESULT_OK) {
+                        deleteQuietly(outputFile);
+                        return;
+                    }
+                    handleResult(appContext, result.getData(), outputFile, listener);
                 });
-        pickerHolder[0] = new PhotoPicker2(activity, launcher, listener);
-        return pickerHolder[0];
+        return new PhotoPicker2(appContext, launcher, pendingOperation);
     }
 
-    public static PhotoPicker2 from(@NonNull Fragment fragment, @NonNull OnFinishedListener2<List<String>> listener) {
+    public static PhotoPicker2 from(@NonNull Fragment fragment,
+                                    @NonNull OnFinishedListener2<List<String>> listener) {
         Context appContext = fragment.requireContext().getApplicationContext();
-        PhotoPicker2[] pickerHolder = new PhotoPicker2[1];
+        PendingOperation pendingOperation = new PendingOperation();
         ActivityResultLauncher<Intent> launcher =
                 fragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                    if (result.getResultCode() != Activity.RESULT_OK) return;
-                    PhotoPicker2 picker = pickerHolder[0];
-                    Uri outputUri = picker == null ? null : picker.getOutputUri();
-                    handleResult(appContext, result.getData(), outputUri, listener);
+                    File outputFile = pendingOperation.takeOutputFile();
+                    if (result.getResultCode() != Activity.RESULT_OK) {
+                        deleteQuietly(outputFile);
+                        return;
+                    }
+                    handleResult(appContext, result.getData(), outputFile, listener);
                 });
-        pickerHolder[0] = new PhotoPicker2(fragment.requireContext(), launcher, listener);
-        return pickerHolder[0];
+        return new PhotoPicker2(appContext, launcher, pendingOperation);
     }
 
     // ---------- 图片选择 ----------
 
     public void pickSingle() {
-        tempCameraUri = null;
-        cropOutputUri = null;
+        pendingOperation.cancel();
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         launcher.launch(intent);
     }
 
     public void pickMultiple() {
-        tempCameraUri = null;
-        cropOutputUri = null;
+        pendingOperation.cancel();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         launcher.launch(Intent.createChooser(intent, "选择图片"));
     }
 
     // ---------- 拍照 ----------
 
-    public void capture(Activity activity) {
-        cropOutputUri = null;
+    public void capture(@NonNull Activity activity) {
+        pendingOperation.cancel();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(activity.getPackageManager()) == null) {
+            throw new ActivityNotFoundException("No camera application is available");
+        }
+
         File photoFile = createTempImageFile(context);
-        tempCameraUri = getProviderUri(photoFile);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, tempCameraUri);
-        addUriGrants(intent, tempCameraUri);
-        launcher.launch(intent);
+        pendingOperation.setOutputFile(photoFile);
+        try {
+            Uri cameraUri = getProviderUri(photoFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+            addUriGrants(intent, cameraUri);
+            launcher.launch(intent);
+        } catch (RuntimeException e) {
+            pendingOperation.cancel();
+            throw e;
+        }
     }
 
     // ---------- 裁剪 ----------
 
     public void crop(@NonNull Uri srcUri, int aspectX, int aspectY) {
-        tempCameraUri = null;
-        cropSrcUri = srcUri;
-        cropWidth = aspectX;
-        cropHeight = aspectY;
+        if (aspectX <= 0 || aspectY <= 0) {
+            throw new IllegalArgumentException("aspectX and aspectY must be greater than zero");
+        }
+        if ("file".equalsIgnoreCase(srcUri.getScheme())) {
+            throw new IllegalArgumentException("crop() requires a content URI, not a file URI");
+        }
 
-        Intent intent = new Intent("com.android.camera.action.CROP");
+        pendingOperation.cancel();
+        Intent intent = new Intent(CROP_ACTION);
         intent.setDataAndType(srcUri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("aspectX", aspectX);
         intent.putExtra("aspectY", aspectY);
-        intent.putExtra("outputX", 800);
-        intent.putExtra("outputY", 800);
+        int outputX;
+        int outputY;
+        if (aspectX >= aspectY) {
+            outputX = CROP_OUTPUT_SIZE;
+            outputY = Math.max(1, Math.round(CROP_OUTPUT_SIZE * (float) aspectY / aspectX));
+        } else {
+            outputX = Math.max(1, Math.round(CROP_OUTPUT_SIZE * (float) aspectX / aspectY));
+            outputY = CROP_OUTPUT_SIZE;
+        }
+        intent.putExtra("outputX", outputX);
+        intent.putExtra("outputY", outputY);
         intent.putExtra("scale", true);
 
         File outputFile = createTempImageFile(context);
-        cropOutputUri = getProviderUri(outputFile);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropOutputUri);
-        intent.putExtra("return-data", false);
-        addUriGrants(intent, srcUri, cropOutputUri);
-
-        launcher.launch(intent);
+        pendingOperation.setOutputFile(outputFile);
+        try {
+            Uri outputUri = getProviderUri(outputFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+            intent.putExtra("return-data", false);
+            addUriGrants(intent, srcUri, outputUri);
+            if (intent.resolveActivity(context.getPackageManager()) == null) {
+                throw new ActivityNotFoundException("No image crop application is available");
+            }
+            launcher.launch(intent);
+        } catch (RuntimeException e) {
+            pendingOperation.cancel();
+            throw e;
+        }
     }
 
     // ---------- 结果处理 ----------
 
-    private Uri getOutputUri() {
-        return cropOutputUri != null ? cropOutputUri : tempCameraUri;
-    }
-
-    private static void handleResult(Context ctx, Intent data, Uri outputUri,
+    private static void handleResult(Context ctx, Intent data, File outputFile,
                                      OnFinishedListener2<List<String>> listener) {
         AppThreadPoolExecutor.getExecutor().execute(() -> {
             List<String> resultPaths = new ArrayList<>();
-            boolean outputResolved = outputUri != null && addResolvedPath(resultPaths, ctx, outputUri);
-            if (!outputResolved && data != null && data.getClipData() != null) {
-                int count = data.getClipData().getItemCount();
-                for (int i = 0; i < count; i++) {
-                    addResolvedPath(resultPaths, ctx, data.getClipData().getItemAt(i).getUri());
+            boolean outputResolved = addFilePath(resultPaths, outputFile);
+            if (!outputResolved) {
+                deleteQuietly(outputFile);
+                if (data != null) {
+                    android.content.ClipData clipData = data.getClipData();
+                    if (clipData != null && clipData.getItemCount() > 0) {
+                        int count = clipData.getItemCount();
+                        for (int i = 0; i < count; i++) {
+                            addResolvedPath(resultPaths, ctx, clipData.getItemAt(i).getUri());
+                        }
+                    } else if (data.getData() != null) {
+                        addResolvedPath(resultPaths, ctx, data.getData());
+                    }
                 }
-            } else if (!outputResolved && data != null && data.getData() != null) {
-                addResolvedPath(resultPaths, ctx, data.getData());
             }
+
             AppUtils.getUiHandler().post(() -> {
-                if (listener != null) listener.onFinished(resultPaths);
+                if (listener != null) {
+                    listener.onFinished(resultPaths);
+                }
             });
         });
+    }
+
+    private static boolean addFilePath(List<String> paths, File file) {
+        if (file == null || !file.isFile() || file.length() <= 0 || !file.canRead()) {
+            return false;
+        }
+        String path = file.getAbsolutePath();
+        if (!paths.contains(path)) {
+            paths.add(path);
+            return true;
+        }
+        return false;
     }
 
     private static boolean addResolvedPath(List<String> paths, Context context, Uri uri) {
@@ -181,9 +255,8 @@ public class PhotoPicker2 {
     }
 
     private Uri getProviderUri(File file) {
-        Context appContext = context.getApplicationContext();
-        return FileProvider.getUriForFile(appContext,
-                appContext.getPackageName() + FILE_PROVIDER_SUFFIX, file);
+        return FileProvider.getUriForFile(context,
+                context.getPackageName() + FILE_PROVIDER_SUFFIX, file);
     }
 
     private static void addUriGrants(Intent intent, Uri... uris) {
@@ -205,21 +278,37 @@ public class PhotoPicker2 {
     private static File createTempImageFile(Context context) {
         File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         if (dir == null) dir = context.getCacheDir();
-        if (!dir.exists() && !dir.mkdirs()) {
+        if (dir != null && !dir.exists() && !dir.mkdirs()) {
             dir = context.getCacheDir();
         }
+        if (dir == null || (!dir.exists() && !dir.mkdirs())) {
+            throw new IllegalStateException("Unable to create image directory");
+        }
         return new File(dir, "IMG_" + UUID.randomUUID() + ".jpg");
+    }
+
+    private static void deleteQuietly(File file) {
+        if (file != null && file.exists() && !file.delete()) {
+            file.deleteOnExit();
+        }
     }
 
     // ---------- 内部类：路径解析 ----------
 
     public static class UriPathResolver {
         public static String getPath(Context context, Uri uri) {
-            if (uri == null) return null;
-            if ("file".equalsIgnoreCase(uri.getScheme())) return uri.getPath();
+            if (context == null || uri == null) return null;
+
+            String scheme = uri.getScheme();
+            if ("file".equalsIgnoreCase(scheme)) {
+                return getReadablePath(uri.getPath());
+            }
+
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 String path = LegacyResolver.getPathFromUri(context, uri);
-                if (!TextUtils.isEmpty(path)) return path;
+                if (!TextUtils.isEmpty(path) && isReadableFile(path)) {
+                    return path;
+                }
             }
             return copyUriToCache(context, uri);
         }
@@ -227,21 +316,74 @@ public class PhotoPicker2 {
         private static String copyUriToCache(Context context, Uri uri) {
             File cacheDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             if (cacheDir == null) cacheDir = context.getCacheDir();
+            if (cacheDir == null) return null;
             if (!cacheDir.exists() && !cacheDir.mkdirs()) cacheDir = context.getCacheDir();
-            File destFile = new File(cacheDir, "IMG_" + UUID.randomUUID() + ".jpg");
+            if (cacheDir == null || (!cacheDir.exists() && !cacheDir.mkdirs())) return null;
+
+            String extension = getExtension(context, uri);
+            File destFile = new File(cacheDir, "IMG_" + UUID.randomUUID() + "." + extension);
             try (InputStream in = context.getContentResolver().openInputStream(uri)) {
-                if (in == null) return null;
+                if (in == null) {
+                    deleteQuietly(destFile);
+                    return null;
+                }
                 try (OutputStream out = new FileOutputStream(destFile)) {
                     byte[] buf = new byte[8192];
                     int len;
-                    while ((len = in.read(buf)) != -1) out.write(buf, 0, len);
+                    while ((len = in.read(buf)) != -1) {
+                        out.write(buf, 0, len);
+                    }
+                }
+                if (!destFile.isFile() || destFile.length() <= 0) {
+                    deleteQuietly(destFile);
+                    return null;
                 }
                 return destFile.getAbsolutePath();
             } catch (Exception e) {
-                if (destFile.exists()) destFile.delete();
+                deleteQuietly(destFile);
                 e.printStackTrace();
                 return null;
             }
+        }
+
+        private static String getExtension(Context context, Uri uri) {
+            String extension = null;
+            try {
+                String mimeType = context.getContentResolver().getType(uri);
+                extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+            } catch (Exception ignored) {
+                // 某些 ContentProvider 不支持查询 MIME 类型，继续从 URI 推断。
+            }
+            if (TextUtils.isEmpty(extension)) {
+                String path = uri.getPath();
+                if (!TextUtils.isEmpty(path)) {
+                    int dot = path.lastIndexOf('.');
+                    if (dot >= 0 && dot < path.length() - 1) {
+                        String candidate = path.substring(dot + 1).toLowerCase(Locale.US);
+                        if (isSafeExtension(candidate)) extension = candidate;
+                    }
+                }
+            }
+            return TextUtils.isEmpty(extension) ? "bin" : extension.toLowerCase(Locale.US);
+        }
+
+        private static boolean isSafeExtension(String extension) {
+            if (TextUtils.isEmpty(extension) || extension.length() > 10) return false;
+            for (int i = 0; i < extension.length(); i++) {
+                char c = extension.charAt(i);
+                if (!(c >= 'a' && c <= 'z') && !(c >= '0' && c <= '9')) return false;
+            }
+            return true;
+        }
+
+        private static String getReadablePath(String path) {
+            return isReadableFile(path) ? path : null;
+        }
+
+        private static boolean isReadableFile(String path) {
+            if (TextUtils.isEmpty(path)) return false;
+            File file = new File(path);
+            return file.isFile() && file.canRead();
         }
 
         private static class LegacyResolver {
