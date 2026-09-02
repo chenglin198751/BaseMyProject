@@ -48,14 +48,15 @@ gradlew.bat assembleDebug
 
 ### 核心基类 (base 包)
 
-- **BaseApp**: Application 基类，使用单例模式
+- **BaseApp**: Application 基类，`getApp()` 提供全局单例，初始化 MMKV/前后台监听/GsonFactory/刷新头尾；Manifest 注册入口是其子类 `MainApp`
+- **MainApp**: Manifest 注册的 Application 入口（继承 BaseApp）
 - **BaseActivity**: Activity 基类，实现 edge-to-edge、系统栏管理、灰色模式、EventBus 集成、标题栏/加载/空状态的统一管理
 - **BaseFragment**: Fragment 基类
 - **BaseRecyclerViewAdapter**: RecyclerView 通用适配器基类
 - **BaseListViewAdapter**: ListView 通用适配器基类
 - **BaseWebViewActivity**: WebView Activity 基类
 - **BaseWebViewFragment**: WebView Fragment 基类
-- **EventBus**: 自定义实现的事件总线，使用 `EventAction` 定义事件 key，保证主线程回调
+- **EventBus**: 自定义实现的事件总线，使用 `EventAction` 定义事件 key，保证主线程回调（进程内事件，非系统广播）
 
 ### 网络模块 (http 包)
 
@@ -73,8 +74,11 @@ gradlew.bat assembleDebug
 ### 数据存储 (storage 包)
 
 - **PreferApp**: 基于 MMKV 的全局 KV 存储
+- **ToggleSettings**: 基于 MMKV 的运行开关（Debug/Log 等）
+- **UserManager**: 用户 UID 管理
 - **BigStringDb**: 基于 SQLite 的大文本 KV 存储
 - **BigStringFile**: 基于文件系统的大文本存储
+- **AccountContentProvider** (storage/alarms): 基于 MediaStore/Alarms 目录读写的工具类，非 Android `ContentProvider`
 
 ### 通用适配器 (common 包)
 
@@ -85,6 +89,7 @@ gradlew.bat assembleDebug
 
 - **FragmentSwitcher**: Fragment Tab 切换工具，支持懒实例化
 - **ReplaceViewUtils**: 动态替换 View 工具
+- **DialPhoneBroadcastReceiver**: 拨号 secret code 广播接收器（调试入口）
 
 ### 监听器 (listener 包)
 
@@ -147,7 +152,7 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 
 - **Language**: Java 17、Kotlin（AGP 9 built-in Kotlin）
 - **Gradle Daemon JVM**: JetBrains JDK 21，由 Foojay Resolver 管理
-- **Build**: Gradle 9.6.1、Android Gradle Plugin 9.3.0
+- **Build**: Gradle 9.6.1、Android Gradle Plugin 9.3.1
 - **Android SDK**: minSdk 28、compileSdk 37、targetSdk 37
 - **Build Tools**: 37.0.0
 
@@ -166,7 +171,7 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 
 | 方法or常量                            | 说明                            |
 |-----------------------------------|-------------------------------|
-| `getAppStoragePath()`             | 获取应用私有可写目录                    |
+| `FileUtils.getAppStoragePath()`       | 获取应用私有可写目录（位于内部类 `AppUtils.FileUtils`）          |
 | `isNetAvailable()`                | 判断当前是否联网                      |
 | `dp2px(float)`                    | dp 转 px                       |
 | `showKeyboard(Context, EditText)` | 显示软键盘                         |
