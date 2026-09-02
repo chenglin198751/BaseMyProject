@@ -21,8 +21,17 @@ public class TextViewLinesUtils {
             staticLayout = getStaticLayout(textView, width);
         }
         int lines = staticLayout.getLineCount();
+        return Math.min(lines, getMaxLines(textView));
+    }
+
+    /**
+     * 获取 TextView 的最大行数。
+     * 注意：getMaxLines() 在 mMaxMode == PIXELS（即调用过 setMaxHeight/setHeight）时返回 -1，
+     * 这里统一映射为 Integer.MAX_VALUE（表示不限制行数）。
+     */
+    private static int getMaxLines(TextView textView) {
         int maxLines = textView.getMaxLines();
-        return Math.min(lines, maxLines);
+        return maxLines < 0 ? Integer.MAX_VALUE : maxLines;
     }
 
     /**
@@ -38,7 +47,7 @@ public class TextViewLinesUtils {
                 .setIncludePad(textView.getIncludeFontPadding())
                 .setBreakStrategy(textView.getBreakStrategy())
                 .setHyphenationFrequency(textView.getHyphenationFrequency())
-                .setMaxLines(textView.getMaxLines());
+                .setMaxLines(getMaxLines(textView));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setJustificationMode(textView.getJustificationMode());
         }
