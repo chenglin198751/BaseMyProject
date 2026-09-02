@@ -22,10 +22,7 @@ public class TextViewLinesUtils {
         }
         int lines = staticLayout.getLineCount();
         int maxLines = textView.getMaxLines();
-        if (maxLines > lines) {
-            return lines;
-        }
-        return maxLines;
+        return Math.min(lines, maxLines);
     }
 
     /**
@@ -41,7 +38,7 @@ public class TextViewLinesUtils {
                 .setIncludePad(textView.getIncludeFontPadding())
                 .setBreakStrategy(textView.getBreakStrategy())
                 .setHyphenationFrequency(textView.getHyphenationFrequency())
-                .setMaxLines(textView.getMaxLines() == -1 ? Integer.MAX_VALUE : textView.getMaxLines());
+                .setMaxLines(textView.getMaxLines());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setJustificationMode(textView.getJustificationMode());
         }

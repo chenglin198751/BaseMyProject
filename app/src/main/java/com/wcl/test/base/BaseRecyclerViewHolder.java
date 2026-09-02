@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class BaseRecyclerViewHolder<T> extends RecyclerView.ViewHolder {
-    public BaseRecyclerViewHolder(View itemView) {
+    public BaseRecyclerViewHolder(@NonNull View itemView) {
         super(itemView);
     }
 
