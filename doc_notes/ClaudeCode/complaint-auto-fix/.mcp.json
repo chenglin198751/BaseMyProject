@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "complaint-backend": {
+      "type": "http",
+      "url": "https://complaint.qh-safe.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <token>"
+      }
+    }
+  }
+}
