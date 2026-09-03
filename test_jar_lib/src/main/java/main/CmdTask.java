@@ -11,15 +11,15 @@ import java.util.List;
 /**
  * 新版命令行执行工具，使用这个
  */
-public class CmdTask2 {
+public class CmdTask {
     private final String[] command;
     private final String workDir;
 
-    public CmdTask2(String[] command) {
+    public CmdTask(String[] command) {
         this(command, null);
     }
 
-    public CmdTask2(String[] command, String workDir) {
+    public CmdTask(String[] command, String workDir) {
         this.command = command;
         this.workDir = workDir;
     }

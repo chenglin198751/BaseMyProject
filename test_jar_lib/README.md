@@ -1,8 +1,8 @@
-## CmdTask2 使用方法：
+## CmdTask 使用方法：
 
     // 执行命令（execute 参数为是否实时打印输出）
-    CmdTask2 task = new CmdTask2(new String[]{"java", "-jar", "E:\\AndroidCode\\xxx.jar"});
-    CmdTask2.Result result = task.execute(false);
+    CmdTask task = new CmdTask(new String[]{"java", "-jar", "E:\\AndroidCode\\xxx.jar"});
+    CmdTask.Result result = task.execute(false);
 
     // 是否执行成功（无异常且退出码为 0）
     if (result.isSuccess()) {
