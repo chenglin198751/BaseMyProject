@@ -24,61 +24,79 @@ public class CmdTask2 {
         this.workDir = workDir;
     }
 
-    public Outs run(boolean isLog) {
-        Outs outs = new Outs();
-        String error = null;
-
+    /**
+     * 执行命令并返回结果。
+     *
+     * @param printOutput 是否实时打印命令输出
+     */
+    public Result execute(boolean printOutput) {
+        Result result = new Result();
+        Process process = null;
         try {
             ProcessBuilder pb = new ProcessBuilder(command);
+            // 把 stderr 合并进 stdout，单流顺序读取，避免死锁，也无需另起线程
             pb.redirectErrorStream(true);
             if (workDir != null && !workDir.isEmpty()) {
                 pb.directory(new File(workDir));
             }
-            Process process = pb.start();
-            try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
-                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            process = pb.start();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    outs.addInputList(line);
-                    if (isLog) {
+                while ((line = reader.readLine()) != null) {
+                    result.output.add(line);
+                    if (printOutput) {
                         PackTools.Printer.print(line);
                     }
                 }
-                outs.setExitValue(process.waitFor());
+                result.exitValue = process.waitFor();
             }
         } catch (Exception e) {
-            error = "IOException: " + e.getMessage();
-            PackTools.Printer.print("IOException occurred" + e);
+            result.error = e.toString();
+            PackTools.Printer.print("exec exception: " + e);
+            if (process != null) {
+                // 中断或异常时销毁子进程，避免残留孤儿进程
+                process.destroy();
+            }
         }
 
-        if (error != null || outs.getExitValue() != 0) {
-            error = "cmd=" + Arrays.toString(command) + ";exec failed:" + error + ";exitValue=" + outs.getExitValue();
-            PackTools.Printer.print(error);
-            PackTools.Error_Msg = error;
-            outs.addInputList(error);
-            return outs;
+        if (!result.isSuccess()) {
+            String msg = "cmd=" + Arrays.toString(command) + ";exec failed:" + result.failReason();
+            PackTools.Printer.print(msg);
+            PackTools.Error_Msg = msg;
         }
-        return outs;
+        return result;
     }
 
-    public static final class Outs {
+    /**
+     * 命令执行结果
+     */
+    public static final class Result {
         private int exitValue = -1;
-        private final List<String> inputList = new ArrayList<>();
+        private final List<String> output = new ArrayList<>();
+        private String error;
+
+        /** 是否执行成功：无异常且退出码为 0 */
+        public boolean isSuccess() {
+            return error == null && exitValue == 0;
+        }
 
         public int getExitValue() {
             return exitValue;
         }
 
-        public void setExitValue(int exitValue) {
-            this.exitValue = exitValue;
+        /** 命令的合并输出（stdout + stderr），失败时也包含命令自身打印的错误 */
+        public List<String> getOutput() {
+            return output;
         }
 
-        public List<String> getInputList() {
-            return inputList;
+        /** 执行过程抛出的异常信息；命令正常结束（即使退出码非 0）时为空 */
+        public String getError() {
+            return error;
         }
 
-        public void addInputList(String line) {
-            inputList.add(line);
+        private String failReason() {
+            return error != null ? error : "exitValue=" + exitValue;
         }
     }
 }

@@ -1,22 +1,16 @@
+## CmdTask2 使用方法：
 
-## CmdTask使用方法：
-    CmdTask task = new CmdTask("java -jar E:\\AndroidCode\\xxx.jar");
-    CmdTask.Outs outs = task.run(false);
+    // 执行命令（execute 参数为是否实时打印输出）
+    CmdTask2 task = new CmdTask2(new String[]{"java", "-jar", "E:\\AndroidCode\\xxx.jar"});
+    CmdTask2.Result result = task.execute(false);
 
-    //执行过程中同步获取输出日志：
-    task.setLogListener(new OnLogListener<String>() {
-        @Override
-        public void onFinished(String line) {
+    // 是否执行成功（无异常且退出码为 0）
+    if (result.isSuccess()) {
+        // 命令合并输出（stdout + stderr）
+        for (String line : result.getOutput()) {
             System.out.println(line);
         }
-    });
-
-    //执行结束才能获取输出的命令行日志：
-    for (String str:outs.getInputList()){
-        System.out.println(str);
-    }
-
-    //执行结束才能获取错误日志：
-    for (String str:outs.getErrorList()){
-        System.out.println(str);
+    } else {
+        // 失败原因：执行异常用 getError()，非零退出码用 getExitValue()
+        System.err.println(result.getError());
     }
