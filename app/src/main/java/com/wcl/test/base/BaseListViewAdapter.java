@@ -40,6 +40,29 @@ public abstract class BaseListViewAdapter<T, VH extends BaseListViewAdapter.Base
         notifyDataSetChanged();
     }
 
+    public void removeAt(int position) {
+        if (position < 0 || position >= mData.size()) {
+            return;
+        }
+        mData.remove(position);
+        notifyDataSetChanged();
+    }
+
+    public void remove(T item) {
+        int i = mData.indexOf(item);
+        if (i >= 0) {
+            removeAt(i);
+        }
+    }
+
+    public void updateAt(int position, T item) {
+        if (position < 0 || position >= mData.size()) {
+            return;
+        }
+        mData.set(position, item);
+        notifyDataSetChanged();
+    }
+
     public List<T> getData() {
         return mData;
     }

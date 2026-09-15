@@ -212,8 +212,7 @@ public class TestRecyclerViewRefreshActivity extends BaseActivity {
                     public void onSingleClick(View v) {
                         int currentPosition = getAbsoluteAdapterPosition();
                         if (currentPosition >= 0 && currentPosition < mAdapter.getData().size()) {
-                            mAdapter.getData().remove(currentPosition);
-                            mAdapter.notifyItemRemoved(currentPosition);
+                            mAdapter.removeAt(currentPosition);
                         }
                     }
                 });

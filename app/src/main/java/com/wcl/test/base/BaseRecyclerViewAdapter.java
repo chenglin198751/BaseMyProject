@@ -67,6 +67,32 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     }
 
     @MainThread
+    public void removeAt(int position) {
+        if (position < 0 || position >= list.size()) {
+            return;
+        }
+        list.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    @MainThread
+    public void remove(T item) {
+        int i = list.indexOf(item);
+        if (i >= 0) {
+            removeAt(i);
+        }
+    }
+
+    @MainThread
+    public void updateAt(int position, T item) {
+        if (position < 0 || position >= list.size()) {
+            return;
+        }
+        list.set(position, item);
+        notifyItemChanged(position);
+    }
+
+    @MainThread
     public void setDataList(Collection<? extends T> collection) {
         list.clear();
         if (collection != null && !collection.isEmpty()) {
