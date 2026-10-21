@@ -50,7 +50,7 @@ gradlew.bat assembleDebug
 
 - **BaseApp**: Application 基类，`getApp()` 提供全局单例，初始化 MMKV/前后台监听/GsonFactory/刷新头尾；Manifest 注册入口是其子类 `MainApp`
 - **MainApp**: Manifest 注册的 Application 入口（继承 BaseApp）
-- **BaseActivity**: Activity 基类，实现 edge-to-edge、系统栏管理、灰色模式、EventBus 集成、标题栏/加载/空状态的统一管理
+- **BaseActivity**: Activity 基类，实现 edge-to-edge、系统栏管理、灰色模式、EventBus 集成、标题栏/加载/空状态的统一管理（详细用法见下方 [BaseActivity 使用说明](#baseactivity-使用说明)）
 - **BaseFragment**: Fragment 基类
 - **BaseRecyclerViewAdapter**: RecyclerView 通用适配器基类
 - **BaseListViewAdapter**: ListView 通用适配器基类
@@ -97,6 +97,37 @@ gradlew.bat assembleDebug
 - **OnMultipleClickListener**: 多击监听（如双击）
 - **OnFinishedListener / OnFinishedListener2**: 完成回调
 
+## BaseActivity 使用说明
+
+路径：`com.wcl.test.base.BaseActivity`，抽象类，继承 `AppCompatActivity`。
+内容布局必须用 `setContentLayout(...)`，系统 `setContentView(...)` 已废弃且会绕过标题栏。
+
+### 常用方法与可重写钩子
+
+| 方法                                                | 说明                                                                                                      |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| `onKeepSingleActivity()`                            | 默认 `false`；返回 `true` 时同类 Activity 只保留最后打开的一个                                            |
+| `onDisplayInCutoutMode()`                           | 默认 `false`；返回 `true` 时内容延伸到刘海/挖孔屏区域，否则避让状态栏和导航栏                             |
+| `onEvent(eventKey, data)`                           | EventBus 回调，自动转发给内部存活的 BaseFragment；重写需调用 `super`                                      |
+| `setContentLayout(int / ViewGroup)`                 | 设置内容布局，自动放在标题栏下方                                                                          |
+| `setTitle(CharSequence / int)`                      | 设置标题                                                                                                  |
+| `getTitleHelper()`                                  | 获取 `MainTitleHelper`：`title`、`hideTitleBar()`、`showTitleBar()`、`setReturnListener()`（默认 finish） |
+| `showWaitDialog()` / `dismissWaitDialog()`          | 全屏加载弹窗，已显示时复用，Activity 销毁时自动关闭                                                       |
+| `showLoading(text)` / `hideLoading()`               | 嵌入式加载覆盖层，`text` 可为空                                                                           |
+| `showEmptyView(text, listener)` / `hideEmptyView()` | 空数据页面，点击触发 listener                                                                             |
+| `showNoNetView(listener)` / `hideNoNetView()`       | 无网络页面，点击触发 listener                                                                             |
+| `setNestedParentView(parent)`                       | 指定状态页覆盖的父容器，默认覆盖整个内容区                                                                |
+| `setStateViewGravity(int)`                          | 状态页对齐方式（如 `Gravity.TOP`），对 Loading/Empty/NoNet 同时生效                                       |
+
+### 内置 EventBus 事件
+
+| 事件                             | 说明                                              |
+|----------------------------------|---------------------------------------------------|
+| `ACTION_KEEP_SINGLE_ACTIVITY`    | 配合 `onKeepSingleActivity()`，同类只保留最后一个 |
+| `ACTION_KEEP_ONLY_MAIN_ACTIVITY` | 关闭除 MainActivity 外的所有 BaseActivity         |
+
+注意：Loading / Empty / NoNet 三者互斥，显示后需手动调用对应 `hideXxx()`；EventBus 已在基类自动注册/反注册。
+
 ## 对话框组件 (widget 包)
 
 - **CommonDialog**: 通用弹窗，支持标题/消息/自定义 View/单双按钮
@@ -116,20 +147,20 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 
 ### 其他工具类
 
-| 类名                                     | 说明                                                   |
-|----------------------------------------|------------------------------------------------------|
+| 类名                                   | 说明                                                            |
+|----------------------------------------|-----------------------------------------------------------------|
 | `utils.BitmapUtils`                    | Bitmap 创建/压缩/截图（ScrollView/ListView/RecyclerView）、拼接 |
-| `utils.FastBlurUtil` / `FastBlurUtil2` | Bitmap 模糊效果                                          |
-| `utils.PopupWindowUtils`               | PopupWindow 工具                                       |
-| `utils.TextViewLinesUtils`             | TextView 行数计算                                        |
-| `utils.PhotosPicker` / `PhotoPicker2`  | 图片选择工具                                               |
-| `utils.EnglishCharFilter`              | 英文字符过滤器                                              |
-| `utils.timer.CountDownManager`         | 倒计时管理器（全局单例，弱引用监听器；stop() 会停止全局 tick）                |
-| `utils.timer.HandlerTimer`             | 基于 Handler 的定时器                                      |
-| `utils.timer.AlarmTimer`               | 基于 AlarmManager 的定时器                                 |
-| `utils.SingleClickUtils`               | 单击/多击工具类                                             |
-| `widget.ToastUtils`                    | Toast 工具                                             |
-| `EnvToggle`                            | 全局 debug/log 开关                                      |
+| `utils.FastBlurUtil` / `FastBlurUtil2` | Bitmap 模糊效果                                                 |
+| `utils.PopupWindowUtils`               | PopupWindow 工具                                                |
+| `utils.TextViewLinesUtils`             | TextView 行数计算                                               |
+| `utils.PhotosPicker` / `PhotoPicker2`  | 图片选择工具                                                    |
+| `utils.EnglishCharFilter`              | 英文字符过滤器                                                  |
+| `utils.timer.CountDownManager`         | 倒计时管理器（全局单例，弱引用监听器；stop() 会停止全局 tick）  |
+| `utils.timer.HandlerTimer`             | 基于 Handler 的定时器                                           |
+| `utils.timer.AlarmTimer`               | 基于 AlarmManager 的定时器                                      |
+| `utils.SingleClickUtils`               | 单击/多击工具类                                                 |
+| `widget.ToastUtils`                    | Toast 工具                                                      |
+| `EnvToggle`                            | 全局 debug/log 开关                                             |
 
 ## 通用组件
 
@@ -160,8 +191,8 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 
 路径：`com.wcl.test.utils.AppConstants`，存放全局公共常量。
 
-| 字段                   | 说明                                  |
-|----------------------|-------------------------------------|
+| 字段                 | 说明                                                 |
+|----------------------|------------------------------------------------------|
 | `gson`               | 全局单例 Gson 实例，基于 GsonFactory，统一使用此实例 |
 | `Toggle.isGrayscale` | 是否开启全局黑白（灰阶）模式，默认 `false`           |
 
@@ -169,35 +200,35 @@ key 和读写方法，禁止在其他地方直接使用 MMKV。
 
 路径：`com.wcl.test.utils.AppUtils`
 
-| 方法or常量                            | 说明                                     |
-|-----------------------------------|----------------------------------------|
+| 方法or常量                        | 说明                                                    |
+|-----------------------------------|---------------------------------------------------------|
 | `FileUtils.getAppStoragePath()`   | 获取应用私有可写目录（位于内部类 `AppUtils.FileUtils`） |
-| `isNetAvailable()`                | 判断当前是否联网                               |
-| `dp2px(float)`                    | dp 转 px                                |
-| `showKeyboard(Context, EditText)` | 显示软键盘                                  |
-| `hideKeyboard(Context, EditText)` | 隐藏软键盘                                  |
-| `expandTouchArea(View, int)`      | 扩大 View 的点击区域（单位 dp）                   |
-| `setViewCircle(View)`             | 将 View 裁剪为纯圆形                          |
-| `setViewRounded(View, int)`       | 将 View 裁剪为圆角矩形（单位 dp）                  |
-| `setDialogEdgeToEdge(Dialog)`     | 设置 Dialog 沉浸式全屏（Edge-to-Edge）          |
-| `getTopActivity()`                | 获取当前栈顶 Activity（可能为 null）              |
-| `isAppInForeground()`             | 判断 App 是否处于前台                          |
-| `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity               |
-| `isActivityDestroyed(Context)`    | 判断 Activity 是否被销毁                      |
-| `isFragmentDestroyed`             | 判断 Fragment 是否被销毁                      |
-| `getString(int)`                  | 通过资源 ID 获取字符串                          |
-| `md5(String)`                     | 对字符串进行 MD5 加密                          |
-| `getUiHandler()`                  | 获取全局主线程 Handler                        |
-| `formatDouble(double, int)`       | 对 double 四舍五入保留指定小数位                   |
-| `formatFloat(float, int)`         | 对 float 四舍五入保留指定小数位                    |
-| `getVersionCode()`                | 获取应用 versionCode                       |
-| `getVersionName()`                | 获取应用 versionName                       |
-| `getPackageName()`                | 获取应用包名                                 |
-| `getAndroidId()`                  | 获取设备 Android ID                        |
-| `isUiThread()`                    | 判断当前线程是否为主线程                           |
-| `isEdgeToEdge()`                  | 判断应用是否启用了 Edge-to-Edge 模式              |
-| `readTextFromAssets(String)`      | 读取 assets 目录下的文本文件内容                   |
+| `isNetAvailable()`                | 判断当前是否联网                                        |
+| `dp2px(float)`                    | dp 转 px                                                |
+| `showKeyboard(Context, EditText)` | 显示软键盘                                              |
+| `hideKeyboard(Context, EditText)` | 隐藏软键盘                                              |
+| `expandTouchArea(View, int)`      | 扩大 View 的点击区域（单位 dp）                         |
+| `setViewCircle(View)`             | 将 View 裁剪为纯圆形                                    |
+| `setViewRounded(View, int)`       | 将 View 裁剪为圆角矩形（单位 dp）                       |
+| `setDialogEdgeToEdge(Dialog)`     | 设置 Dialog 沉浸式全屏（Edge-to-Edge）                  |
+| `getTopActivity()`                | 获取当前栈顶 Activity（可能为 null）                    |
+| `isAppInForeground()`             | 判断 App 是否处于前台                                   |
+| `getActivityFromContext(Context)` | 从任意 Context 中提取 Activity                          |
+| `isActivityDestroyed(Context)`    | 判断 Activity 是否被销毁                                |
+| `isFragmentDestroyed`             | 判断 Fragment 是否被销毁                                |
+| `getString(int)`                  | 通过资源 ID 获取字符串                                  |
+| `md5(String)`                     | 对字符串进行 MD5 加密                                   |
+| `getUiHandler()`                  | 获取全局主线程 Handler                                  |
+| `formatDouble(double, int)`       | 对 double 四舍五入保留指定小数位                        |
+| `formatFloat(float, int)`         | 对 float 四舍五入保留指定小数位                         |
+| `getVersionCode()`                | 获取应用 versionCode                                    |
+| `getVersionName()`                | 获取应用 versionName                                    |
+| `getPackageName()`                | 获取应用包名                                            |
+| `getAndroidId()`                  | 获取设备 Android ID                                     |
+| `isUiThread()`                    | 判断当前线程是否为主线程                                |
+| `isEdgeToEdge()`                  | 判断应用是否启用了 Edge-to-Edge 模式                    |
+| `readTextFromAssets(String)`      | 读取 assets 目录下的文本文件内容                        |
 | `screenWidth`                     | 屏幕宽度（px），应用启动时自动初始化                    |
 | `screenHeight`                    | 屏幕高度（px），应用启动时自动初始化                    |
 | `statusBarHeight`                 | 状态栏高度（px），需业务层赋值后使用                    |
-| `navBarHeight`                    | 底部虚拟导航栏高度（px），需业务层赋值后使用                |
+| `navBarHeight`                    | 底部虚拟导航栏高度（px），需业务层赋值后使用            |
