@@ -91,13 +91,26 @@ class DownloadWorker implements Runnable {
                     return;
                 }
 
-                if (task.totalBytes <= 0) {
+                if (downloaded > 0 && response.code() == 200) {
+                    downloaded = 0;
+                    task.downloadedBytes = 0;
+                    task.progress = 0;
                     task.totalBytes = response.body().contentLength();
+                    DownloadDBHelper.ins().saveTask(task);
+                } else if (downloaded > 0 && response.code() != 206) {
+                    saveErrorTask("invalid range response: " + response.code());
+                    notifyStatus();
+                    return;
+                }
+
+                if (task.totalBytes <= 0) {
+                    long contentLength = response.body().contentLength();
+                    task.totalBytes = contentLength >= 0 ? downloaded + contentLength : -1;
                     DownloadDBHelper.ins().saveTask(task);
                 }
 
                 try (InputStream in = response.body().byteStream();
-                     FileOutputStream out = new FileOutputStream(temp, true)) {
+                     FileOutputStream out = new FileOutputStream(temp, downloaded > 0)) {
 
                     byte[] buffer = new byte[8192];
                     int len;
@@ -124,15 +137,18 @@ class DownloadWorker implements Runnable {
 
             if (paused.get()) {
                 task.status = DownloadTask.Status.PAUSED;
-            } else if (task.totalBytes > 0 && temp.length() < task.totalBytes) {
+            } else if (task.totalBytes > 0 && temp.length() != task.totalBytes) {
                 // 服务端提前断流，导致文件不完整
                 saveErrorTask("incomplete:" + temp.length() + "/" + task.totalBytes);
             } else {
-                DownloadUtils.replaceFile(temp, target);
-                task.downloadedBytes = task.totalBytes;
-                task.progress = 100.0;
-                notifyProgress();
-                task.status = DownloadTask.Status.FINISHED;
+                if (!DownloadUtils.replaceFile(temp, target)) {
+                    saveErrorTask("replace file failed");
+                } else {
+                    task.downloadedBytes = task.totalBytes;
+                    task.progress = 100.0;
+                    notifyProgress();
+                    task.status = DownloadTask.Status.FINISHED;
+                }
             }
             notifyStatus();
         } catch (IOException io) {

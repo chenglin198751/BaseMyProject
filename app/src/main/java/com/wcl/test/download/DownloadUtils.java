@@ -26,14 +26,16 @@ class DownloadUtils {
     }
 
     // 替换文件（下载完成后覆盖）
-    public static void replaceFile(File src, File dst) {
+    public static boolean replaceFile(File src, File dst) {
         if (dst.exists()) {
             dst.delete();
         }
         if (!src.renameTo(dst)) {
             String err = src + " renameTo " + dst + " failed!";
             AppLogUtils.e(TAG, err);
+            return false;
         }
+        return true;
     }
 
     public static String getTaskId(String url) {
