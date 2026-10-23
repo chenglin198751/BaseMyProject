@@ -141,6 +141,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void showLoading(String text) {
+        if (!hasActiveView()) return;
         mBaseViewHelper.setLoadingText(TextUtils.isEmpty(text) ? null : text);
         attachHelperView();
     }
@@ -158,6 +159,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public void hideLoading() {
+        if (!hasActiveView()) return;
         mBaseViewHelper.hideLoading();
     }
 
@@ -166,6 +168,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void showNoNetView(View.OnClickListener listener) {
+        if (!hasActiveView()) return;
         mBaseViewHelper.showNoNetView(getString(R.string.no_net_tips), listener);
         attachHelperView();
     }
@@ -175,6 +178,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void hideNoNetView() {
+        if (!hasActiveView()) return;
         mBaseViewHelper.hideNoNet();
     }
 
@@ -183,6 +187,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void showEmptyView(String text, View.OnClickListener listener) {
+        if (!hasActiveView()) return;
         mBaseViewHelper.showEmptyText(text, listener);
         attachHelperView();
     }
@@ -192,6 +197,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public final void hideEmptyView() {
+        if (!hasActiveView()) return;
         mBaseViewHelper.hideEmpty();
     }
 
@@ -211,6 +217,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
      */
     @Override
     public void setStateViewGravity(int position) {
+        if (!hasActiveView()) return;
         mBaseViewHelper.setStateViewGravity(position);
     }
 
@@ -230,7 +237,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
     }
 
     private void attachHelperView() {
-        if (getView() == null) return;
+        if (!hasActiveView()) return;
 
         View helperView = mBaseViewHelper.getView();
         if (helperView == null) return;
@@ -244,6 +251,10 @@ public abstract class BaseFragment extends Fragment implements IBaseView, OnEven
             mContentView.addView(helperView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
         mBaseViewHelper.startLoadingAnimation();
+    }
+
+    private boolean hasActiveView() {
+        return mBaseViewHelper != null && getView() != null;
     }
 
 }
