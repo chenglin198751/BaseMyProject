@@ -30,10 +30,14 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
 
 ### 铁律 2：颜色是语义，不是装饰
 
-只允许 **5 个色相**，每个色相必须配齐 `主色 / 浅底 / 深字` 三档。
+默认只用 **5 个语义色相**，每个色相必须配齐 `主色 / 浅底 / 深字` 三档。
 同一个概念在全页永远用同一个颜色——标题里的词、卡片顶边条、表格里的胶囊，全部对齐。
 
 读者会在潜意识里建立颜色→概念的映射，这才是"看起来专业"的真正来源。每张卡随机配色的页面更热闹，但更廉价。
+
+当内容天然有 6–8 个**并列分类**（能力主线、模块、渠道、产品线）时，五项不够分，
+可启用下方的**扩展色板**。扩展色只用于"区分并列项"，永不表达好/坏、旧/新、已确认/待确认——
+状态判断永远回到语义色。两者不混用。
 
 ### 铁律 3：改完必须渲染截图
 
@@ -62,6 +66,43 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
 
 **分配原则**：先决定内容里哪两个东西是对立的（旧/新、错/对、改前/改后），它们吃 红/绿 两色。
 剩下的颜色给结构、警示和信息，不要用来表达对立关系。
+
+---
+
+## 扩展色板（8 色，按需启用）
+
+不是必选项。**当内容有 6–8 个并列分类、五项语义色分不过来时才用。**
+
+| 名称 | 主色 | 浅底 | 深字 | 深字/浅底 |
+|---|---|---|---|---|
+| 蕉红 BANANA RED | `#D4042D` | `#F9E1E6` | `#8E0B25` | 7.6 |
+| 暖阳橙 WARM SUN ORANGE | `#DB7A0E` | `#F9EEE1` | `#8E500B` | 5.6 |
+| 矢车菊蓝 CORNFLOWER BLUE | `#5A92E5` | `#E3EBF8` | `#124187` | 8.2 |
+| 翠微 JADE GREEN | `#5E8034` | `#EEF3E7` | `#506E2B` | 5.2 |
+| 碧青 AZURE | `#41B5C2` | `#E6F3F4` | `#236D76` | 5.3 |
+| 柠檬黄 LEMON YELLOW | `#FACA2E` | `#F9F4E1` | `#84680B` | 4.8 |
+| 梅洛粉 MELO PINK | `#EB6D98` | `#F8E2EA` | `#891039` | 7.8 |
+| 皇家紫 ROYAL PURPLE | `#722169` | `#F5E5F3` | `#79206F` | 7.7 |
+
+三档的用法与语义色完全一致：主色给色条 / 圆点 / 边线，`-soft` 给胶囊底，`-deep` 给胶囊文字。
+八组深浅搭配的对比度都在 4.8 以上，达到正文可读标准。
+
+**启用规则**
+
+1. **一组并列项最多 8 个。** 超过 8 个说明该合并，不是加颜色。
+2. **同一页只在一个区段内成组使用。** 比如整页只有"能力地图"这一节用扩展色，不要每节换一套。
+3. **不要用扩展色里的蕉红 / 翠微去表达旧与新、错与对。** 那会和应用全局的语义红绿打架。
+4. **并列项有固定顺序时（A–F、1–8），按表中顺序取色，不要跳色。**
+
+> 反例：一页里既有"旧方案 / 新方案"的珊瑚红与薄荷绿，又有"能力 A–F"的蕉红、翠微。
+> 读者会分不清哪个红是"旧"、哪个红只是"第 1 项"。这种情况把能力线改用矢车菊蓝起的后半段颜色。
+
+用法：胶囊直接用 `.pal-1` 到 `.pal-8`，其他地方取主色用 `var(--p3)`。
+
+```html
+<span class="chip pal-1">A 客户端 SDK</span>
+<span class="chip pal-2">B 游戏框架</span>
+```
 
 ---
 
@@ -177,6 +218,16 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
   --c-struct:#7c3aed; --c-struct-soft:#ece6ff; --c-struct-deep:#5b21b6;
   --c-warn:#f59e0b;   --c-warn-soft:#fff0d1;   --c-warn-deep:#a86500;
   --c-info:#0ea5e9;   --c-info-soft:#dcf1fe;   --c-info-deep:#0369a1;
+
+  /* 扩展色板：仅在需要区分 6–8 个并列分类时启用，不表达状态 */
+  --p1:#D4042D; --p1-soft:#F9E1E6; --p1-deep:#8E0B25;   /* 蕉红 */
+  --p2:#DB7A0E; --p2-soft:#F9EEE1; --p2-deep:#8E500B;   /* 暖阳橙 */
+  --p3:#5A92E5; --p3-soft:#E3EBF8; --p3-deep:#124187;   /* 矢车菊蓝 */
+  --p4:#5E8034; --p4-soft:#EEF3E7; --p4-deep:#506E2B;   /* 翠微 */
+  --p5:#41B5C2; --p5-soft:#E6F3F4; --p5-deep:#236D76;   /* 碧青 */
+  --p6:#FACA2E; --p6-soft:#F9F4E1; --p6-deep:#84680B;   /* 柠檬黄 */
+  --p7:#EB6D98; --p7-soft:#F8E2EA; --p7-deep:#891039;   /* 梅洛粉 */
+  --p8:#722169; --p8-soft:#F5E5F3; --p8-deep:#79206F;   /* 皇家紫 */
 
   --radius:20px; --radius-sm:12px;
   --shadow-sm:0 1px 2px rgba(23,19,53,.05),0 4px 14px -8px rgba(23,19,53,.22);
@@ -317,6 +368,16 @@ section{padding:46px 0}
 .chip--warn{background:var(--c-warn-soft);color:var(--c-warn-deep)}
 .chip--info{background:var(--c-info-soft);color:var(--c-info-deep)}
 .chip--plain{background:#eceaf3;color:var(--ink-2)}
+
+/* 扩展色板胶囊：并列分类专用，语义与 .chip--* 相同 */
+.pal-1{background:var(--p1-soft);color:var(--p1-deep)}
+.pal-2{background:var(--p2-soft);color:var(--p2-deep)}
+.pal-3{background:var(--p3-soft);color:var(--p3-deep)}
+.pal-4{background:var(--p4-soft);color:var(--p4-deep)}
+.pal-5{background:var(--p5-soft);color:var(--p5-deep)}
+.pal-6{background:var(--p6-soft);color:var(--p6-deep)}
+.pal-7{background:var(--p7-soft);color:var(--p7-deep)}
+.pal-8{background:var(--p8-soft);color:var(--p8-deep)}
 
 /* ---- 表格：必须做成设计过的样子 ---- */
 .table-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
@@ -872,6 +933,8 @@ window.addEventListener('load', function () {
 | 多处滚动动画 / 视差 | 多一处掉一档 |
 | `max-width: 60ch` / `74ch` 的正文或标题 | 大屏上提前折行，右边空一片，最容易被指出来 |
 | 标题里用 `<br>` 强制断行 | 换屏宽就变成两行都短的怪样子 |
+| 用扩展色表达"旧/新、错/对" | 和全局语义红绿打架，读者分不清哪个红是状态 |
+| 一页里出现 9 个以上并列颜色 | 说明该合并分类，不是继续加色 |
 | 网格里留孤立卡片 | 看起来像排版事故 |
 | 用 emoji 当图标 | 跨平台渲染不一致，且廉价 |
 | 导航锚点超过 6 个 | 手机上挤成一条，且说明页面结构没收敛 |
