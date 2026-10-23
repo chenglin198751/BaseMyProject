@@ -39,7 +39,7 @@ public class BigStringFile implements IBigString {
         mCachedPath = new File(externalPath, dir_name).getAbsolutePath();
 
         File folder = new File(mCachedPath);
-        if (!folder.exists() && !folder.mkdirs()) {
+        if ((!folder.exists() && !folder.mkdirs()) || !folder.isDirectory()) {
             throw new IllegalStateException("Failed to create directory: " + mCachedPath);
         }
     }
@@ -54,7 +54,9 @@ public class BigStringFile implements IBigString {
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                keys.add(file.getName());
+                if (file.isFile()) {
+                    keys.add(file.getName());
+                }
             }
         }
         return keys;
@@ -62,7 +64,8 @@ public class BigStringFile implements IBigString {
 
     @Override
     public boolean put(String key, String value) {
-        if (TextUtils.isEmpty(key)) {
+        File file = getFileForKey(key);
+        if (file == null || value == null) {
             return false;
         }
 
@@ -71,19 +74,17 @@ public class BigStringFile implements IBigString {
             return false;
         }
 
-        String filePath = new File(mCachedPath, key).getAbsolutePath();
-        writeFile(filePath, value);
-        return true;
+        return writeFile(file, value);
     }
 
     @Override
     public String get(String key) {
-        if (TextUtils.isEmpty(key)) {
+        File file = getFileForKey(key);
+        if (file == null) {
             return null;
         }
 
-        String file_path = new File(mCachedPath, key).getAbsolutePath();
-        return readFileString(file_path);
+        return readFileString(file.getAbsolutePath());
     }
 
     @Override
@@ -97,9 +98,18 @@ public class BigStringFile implements IBigString {
         }
 
         for (int i = 0; i < keys.size(); i++) {
-            put(keys.get(i), values.get(i));
+            if (getFileForKey(keys.get(i)) == null || values.get(i) == null) {
+                return false;
+            }
         }
-        return true;
+
+        boolean success = true;
+        for (int i = 0; i < keys.size(); i++) {
+            if (!put(keys.get(i), values.get(i))) {
+                success = false;
+            }
+        }
+        return success;
     }
 
     @Override
@@ -119,12 +129,12 @@ public class BigStringFile implements IBigString {
 
     @Override
     public boolean remove(String key) {
-        if (TextUtils.isEmpty(key)) {
+        File file = getFileForKey(key);
+        if (file == null) {
             return false;
         }
 
-        String file_path = new File(mCachedPath, key).getAbsolutePath();
-        return new File(file_path).delete();
+        return file.delete();
     }
 
     @Override
@@ -132,10 +142,31 @@ public class BigStringFile implements IBigString {
         if (keys == null || keys.isEmpty()) {
             return false;
         }
+
         for (String key : keys) {
-            remove(key);
+            if (getFileForKey(key) == null) {
+                return false;
+            }
         }
-        return true;
+
+        boolean success = true;
+        for (String key : keys) {
+            if (!remove(key)) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    private File getFileForKey(String key) {
+        if (TextUtils.isEmpty(key)
+                || ".".equals(key)
+                || "..".equals(key)
+                || key.indexOf('/') >= 0
+                || key.indexOf('\\') >= 0) {
+            return null;
+        }
+        return new File(mCachedPath, key);
     }
 
     private static String readFileString(String file_path) {
@@ -191,16 +222,18 @@ public class BigStringFile implements IBigString {
         return file.getAbsolutePath();
     }
 
-    private static void writeFile(String file_path, String text) {
-        File file = new File(file_path);
-        if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-            return;
+    private static boolean writeFile(File file, String text) {
+        File parent = file.getParentFile();
+        if (parent == null || (!parent.exists() && !parent.mkdirs()) || !parent.isDirectory()) {
+            return false;
         }
 
         try (FileWriter fileWriter = new FileWriter(file, false)) {
             fileWriter.write(text);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }
