@@ -3,11 +3,11 @@ package com.wcl.test.base;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.EmptyActivityLifecycleCallbacks;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
@@ -73,7 +73,15 @@ class AppHelper {
 
     // Activity 监听
     static void initActivityLifecycleObserver(Application app) {
-        app.registerActivityLifecycleCallbacks(new EmptyActivityLifecycleCallbacks() {
+        app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+
+            @Override
+            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+            }
+
+            @Override
+            public void onActivityStarted(@NonNull Activity activity) {
+            }
 
             @Override
             public void onActivityResumed(@NonNull Activity activity) {
@@ -86,6 +94,14 @@ class AppHelper {
                     sTopActivityRef.clear();
                     sTopActivityRef = null;
                 }
+            }
+
+            @Override
+            public void onActivityStopped(@NonNull Activity activity) {
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
             }
 
             @Override
