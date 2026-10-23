@@ -10,7 +10,9 @@ import com.wcl.test.base.BaseApp;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BigStringDb implements IBigString {
 
@@ -61,6 +63,11 @@ public class BigStringDb implements IBigString {
         if (keys == null || keys.isEmpty() || values == null || values.isEmpty() || keys.size() != values.size()) {
             return false;
         }
+        for (String key : keys) {
+            if (TextUtils.isEmpty(key)) {
+                return false;
+            }
+        }
 
         SQLiteDatabase db = DBHelperHolder.INSTANCE.getWritableDatabase();
         db.beginTransaction();
@@ -93,24 +100,29 @@ public class BigStringDb implements IBigString {
             return null;
         }
 
-        List<String> values = new ArrayList<>();
+        List<String> values = new ArrayList<>(keys.size());
         SQLiteDatabase db = DBHelperHolder.INSTANCE.getReadableDatabase();
 
         String[] selectionArgs = keys.toArray(new String[0]);
         String selection = TextUtils.join(",", Collections.nCopies(keys.size(), "?"));
+        Map<String, String> valueByKey = new HashMap<>(keys.size());
 
         try (Cursor cursor = db.query(
                 BigDbSQLite.TABLE_NAME,
-                new String[]{BigDbSQLite.T_VALUE},
+                new String[]{BigDbSQLite.T_KEY, BigDbSQLite.T_VALUE},
                 BigDbSQLite.T_KEY + " IN (" + selection + ")",
                 selectionArgs,
                 null, null, null)) {
 
             while (cursor.moveToNext()) {
-                values.add(cursor.getString(0));
+                valueByKey.put(cursor.getString(0), cursor.getString(1));
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        for (String key : keys) {
+            values.add(valueByKey.get(key));
         }
 
         return values;
@@ -155,7 +167,7 @@ public class BigStringDb implements IBigString {
         public static final String TABLE_NAME = "common_app_setting";
         public static final String T_KEY = "t_key";
         public static final String T_VALUE = "t_value";
-        public static final int TABLE_VERSION = 1;
+        public static final int TABLE_VERSION = 2;
 
         public BigDbSQLite() {
             super(BaseApp.getApp(), "app_common.db", null, TABLE_VERSION);
@@ -163,13 +175,24 @@ public class BigStringDb implements IBigString {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            final String sql = String.format("CREATE TABLE %s(%s TEXT PRIMARY KEY, %s TEXT)", TABLE_NAME, T_KEY, T_VALUE);
+            final String sql = String.format("CREATE TABLE %s(%s TEXT NOT NULL PRIMARY KEY, %s TEXT)", TABLE_NAME, T_KEY, T_VALUE);
             db.execSQL(sql);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // 数据库升级逻辑（可根据需要实现）
+            if (oldVersion < 2) {
+                final String newTableName = TABLE_NAME + "_new";
+                db.execSQL("DROP TABLE IF EXISTS " + newTableName);
+                db.execSQL(String.format(
+                        "CREATE TABLE %s(%s TEXT NOT NULL PRIMARY KEY, %s TEXT)",
+                        newTableName, T_KEY, T_VALUE));
+                db.execSQL(String.format(
+                        "INSERT OR REPLACE INTO %s(%s, %s) SELECT %s, %s FROM %s WHERE %s IS NOT NULL",
+                        newTableName, T_KEY, T_VALUE, T_KEY, T_VALUE, TABLE_NAME, T_KEY));
+                db.execSQL("DROP TABLE " + TABLE_NAME);
+                db.execSQL(String.format("ALTER TABLE %s RENAME TO %s", newTableName, TABLE_NAME));
+            }
         }
     }
 }
