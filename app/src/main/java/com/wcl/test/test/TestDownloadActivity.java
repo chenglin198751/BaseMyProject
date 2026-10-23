@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,7 +40,7 @@ public class TestDownloadActivity extends BaseActivity {
 //        recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
         recyclerView.setAdapter(adapter);
 
-        recyclerView.addItemDecoration(new RecyclerDivider(Color.BLUE, AppUtils.dp2px(5), false));
+        recyclerView.addItemDecoration(new RecyclerDivider(Color.BLUE, AppUtils.dp2px(2), false));
     }
 
     @Override
@@ -66,7 +67,7 @@ public class TestDownloadActivity extends BaseActivity {
 
         private static class ListHolder extends BaseRecyclerViewHolder<String> {
             DownloadButton downloadButton;
-            Button delete;
+            TextView delete;
 
             public ListHolder(View itemView) {
                 super(itemView);
