@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+import os
+import sys
+import subprocess
+
+def ensure_repo_exists():
+    """确保 guru_config 仓库存在"""
+    if os.environ.get("GURU_CONFIG_LOCAL"):
+        return os.environ.get("GURU_CONFIG_LOCAL")
+    
+    guru_home = os.path.expanduser('~/.guru')
+    guru_config_dir = f'{guru_home}/guru_config'
+    gcm_script = f'{guru_config_dir}/buildtools/gcm.py'
+    
+    # 只检查实际脚本文件是否存在，而不是整个目录
+    if not os.path.exists(gcm_script):
+        print("[🔄] 初始化 guru_config...")
+        current_path = os.getcwd()
+        
+        if not os.path.exists(guru_home):
+            os.makedirs(guru_home)
+            
+        if not os.path.exists(guru_config_dir):
+            os.chdir(guru_home)
+            clone_result = os.system("git clone git@github.com:castbox/guru_config.git")
+            if clone_result != 0:
+                print("[✘] 克隆仓库失败，请检查网络连接和 SSH 密钥配置")
+                sys.exit(1)
+        else:
+            # 目录存在但脚本不存在，可能是不完整的仓库
+            os.chdir(guru_config_dir)
+            os.system("git pull --rebase")
+            
+        os.chdir(current_path)
+        print("[✓] 初始化完成")
+    
+    return guru_config_dir
+
+def upgrade_repo():
+    """升级 guru_config 仓库"""
+    if os.environ.get("GURU_CONFIG_LOCAL"):
+        guru_config_dir = os.environ.get("GURU_CONFIG_LOCAL")
+    else:
+        guru_home = os.path.expanduser('~/.guru')
+        guru_config_dir = f'{guru_home}/guru_config'
+    
+    if not os.path.exists(guru_config_dir):
+        print("[✘] guru_config 目录不存在，无法升级")
+        return False
+    
+    print("[🔄] 正在更新 guru_config...")
+    current_path = os.getcwd()
+    os.chdir(guru_config_dir)
+    result = os.system("git pull --rebase")
+    os.chdir(current_path)
+    
+    if result == 0:
+        print("[✓] 更新成功")
+        return True
+    else:
+        print("[✘] 更新失败，请检查网络连接和仓库状态")
+        return False
+
+# 主程序逻辑
+args = sys.argv[1:]
+
+# 处理 upgrade 命令
+if len(args) > 0 and args[0] == "upgrade":
+    if upgrade_repo():
+        print("[✓] gcm 工具已更新到最新版本")
+    else:
+        print("[✘] gcm 工具更新失败")
+    sys.exit(0)
+
+# 确保仓库存在
+guru_config_dir = ensure_repo_exists()
+
+# 执行命令
+script_path = f'{guru_config_dir}/buildtools/gcm.py'
+if not os.path.exists(script_path):
+    print(f"[✘] 找不到脚本文件: {script_path}")
+    sys.exit(1)
+    
+subprocess.call([script_path] + args)

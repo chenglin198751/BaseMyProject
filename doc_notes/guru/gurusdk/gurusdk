@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import os
+import sys
+import subprocess
+
+if os.environ.get("GURU_CONFIG_LOCAL"):
+    guru_config_dir = os.environ.get("GURU_CONFIG_LOCAL")
+else:
+    guru_home = os.path.expanduser('~/.guru')
+    guru_config_dir = f'{guru_home}/guru_config'
+    print(guru_home, guru_config_dir)
+    current_path = os.getcwd()
+    if (os.path.exists(guru_config_dir) != True):
+        print("init guru_config...")
+        if (os.path.exists(guru_home) != True):
+            os.makedirs(guru_home)
+        os.chdir(guru_home)
+        os.system("git clone git@github.com:castbox/guru_config.git")
+        os.chdir(current_path)
+    else:
+        os.chdir(guru_config_dir)
+        os.system("git pull --rebase")
+        os.chdir(current_path)
+
+args = sys.argv[1:]  #
+subprocess.call([f'{guru_config_dir}/buildtools/gurusdk_cli.py'] + args)
