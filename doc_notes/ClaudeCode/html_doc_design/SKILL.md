@@ -126,7 +126,7 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 
 | 内容特征 | 用哪个组件 | 约束 |
 |---|---|---|
-| 开篇标题 + 核心结论 | Hero（大标题 + 统计卡） | 统计数量按内容取舍 |
+| 开篇标题 + 核心结论 | Hero（大标题 + 引导语） | 重点放在标题和结论 |
 | 全文浓缩成一句 | 深色 Callout | 作为主要视觉重点 |
 | 有 before / after | 左右对照卡 + 中间箭头 | 两侧字段尽量对应 |
 | 多字段映射 | 速查表 | 表头染色，隔行染色，hover 高亮 |
@@ -150,11 +150,15 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 
 网格可以根据内容调整。出现不对称时，优先让重要内容获得更多空间，不必为了填满网格硬凑内容。
 
-**数字放大**。凡是能变成数字的结论（删除多少行、改了几次、几个文件），都做成大号统计卡，比写在句子里强十倍。
+**数字适度突出**。重要数字可以放进标题、结论、表格或步骤卡中；不需要专门添加统计卡。
 
 ### 标题和引导语
 
 标题和引导语保持简洁，让浏览器自然换行。桌面端可以尽量避免尴尬的孤行，移动端优先保证可读性，不要求所有文字单行或撑满容器。
+
+### 章节编号
+
+章节编号是章节标题的一部分，字号与章节标题保持同级，不要缩成小号角标。可以使用同一组响应式字号和字重，再用语义色区分编号与标题。
 
 ---
 
@@ -273,17 +277,6 @@ h1{font-family:var(--display);font-size:clamp(38px,6.2vw,68px);line-height:1.06;
   max-width:100%;              /* 绝不设 ch 上限，否则大屏上提前折行 */
   text-wrap:pretty}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:38px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
-  padding:18px 18px 16px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
-.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
-.stat:nth-child(1)::before{background:var(--c-old)}
-.stat:nth-child(2)::before{background:var(--c-struct)}
-.stat:nth-child(3)::before{background:var(--c-new)}
-.stat:nth-child(4)::before{background:var(--c-warn)}
-.stat b{display:block;font:700 30px/1.1 var(--display);letter-spacing:-.02em}
-.stat span{display:block;margin-top:6px;font-size:13px;color:var(--ink-3)}
-
 /* ---- 章节 ---- */
 section{padding:46px 0}
 .sec-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px}
@@ -363,9 +356,9 @@ section{padding:46px 0}
   box-shadow:var(--shadow-sm);background:var(--surface)}
 .scroll-x{overflow-x:auto}
 table{border-collapse:separate;border-spacing:0;width:100%;min-width:600px;font-size:14px}
-thead th{text-align:left;font:600 12px/1 var(--sans);letter-spacing:.04em;
-  padding:14px 18px;background:#f0edf9;color:var(--ink-2);
-  border-bottom:1px solid var(--line);white-space:nowrap}
+thead th{text-align:left;font:700 12px/1.35 var(--sans);letter-spacing:.03em;
+  padding:14px 18px;background:#dfe6ef;color:#334155;
+  border-bottom:1px solid #b8c6d8;white-space:nowrap}
 thead th:first-child{border-top-left-radius:var(--radius)}
 tbody td{padding:13px 18px;border-bottom:1px solid var(--line);
   vertical-align:top;color:var(--ink-2)}
@@ -475,7 +468,6 @@ footer code{font-family:var(--mono);font-size:12px}
   .step:nth-child(3){grid-column:1 / -1}
 }
 @media (max-width:900px){
-  .stats{grid-template-columns:repeat(2,1fr)}
   .compare{grid-template-columns:1fr;gap:14px}
   .arrow-mid{height:28px}
   .arrow-mid svg{transform:rotate(90deg)}
@@ -488,8 +480,6 @@ footer code{font-family:var(--mono);font-size:12px}
   .nav-links{display:none}
   .hero{padding:40px 0 10px}
   .lede{font-size:16px}
-  .stats{gap:10px}
-  .stat b{font-size:24px}
   .callout{padding:26px 22px;border-radius:18px}
   .callout code{white-space:normal;overflow-wrap:anywhere}  /* 长文本在小屏可以换行 */
   .cmp{padding:22px 20px 18px}
@@ -540,13 +530,7 @@ footer code{font-family:var(--mono);font-size:12px}
     <span class="eyebrow">[[领域]] · [[文档类型]]</span>
     <!-- 标题通常让它按容器宽度自然流动 -->
     <h1>把 <span class="hl hl-old">[[旧方案]]</span> 换成 <span class="hl hl-new">[[新方案]]</span></h1>
-    <p class="lede">[[一句话说清问题、结论、读者该知道什么。控制在 47 字以内。]]</p>
-    <div class="stats">
-      <div class="stat"><b>[[N]]</b><span>[[统计项]]</span></div>
-      <div class="stat"><b>[[−N]]</b><span>[[统计项]]</span></div>
-      <div class="stat"><b>[[+N]]</b><span>[[统计项]]</span></div>
-      <div class="stat"><b>[[N]]</b><span>[[统计项]]</span></div>
-    </div>
+    <p class="lede">[[一句话说清问题、结论、读者该知道什么。]]</p>
   </div>
 </header>
 
@@ -815,7 +799,6 @@ footer code{font-family:var(--mono);font-size:12px}
 | 为了填满网格硬凑内容 | 页面会显得拥挤 |
 | 用 emoji 当图标 | 跨平台渲染不一致，且廉价 |
 | 导航锚点超过 6 个 | 手机上挤成一条，且说明页面结构没收敛 |
-| 统计卡放 5 个以上 | 超过 4 个就没人看了 |
 | 为了填满网格硬凑内容 | 宁可合并 section |
 
 ---
