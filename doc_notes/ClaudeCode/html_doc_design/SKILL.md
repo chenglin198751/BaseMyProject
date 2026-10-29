@@ -1,56 +1,51 @@
 ---
 name: html_doc_design
-description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配色、卡片与表格驱动、适合讲给同事或投屏演示。用于迁移手册、方案对比、技术分析、复盘报告等需要"好看"的网页文档。
+description: 把技术内容做成好看、清晰、可直接打开的单页 HTML。适合迁移手册、方案对比、技术分析和复盘报告等演示型文档。
 ---
 
 # 明快卡片式文档设计
 
-一套已验证的设计系统：把 Markdown 里的技术内容，重排成一个可以在浏览器里讲给别人看的单页 HTML。
-本文档自包含：样式和骨架都在文末，复制即可用。
+一套实用的页面设计指南：把 Markdown 里的技术内容，重排成一个适合阅读、分享和投屏讲解的单页 HTML。
+文档自包含：样式和页面骨架在文末，可直接复制后按内容调整。
 
 ## 什么时候用
 
 **用**：要给同事讲的技术文档、迁移/升级手册、方案对比、事故复盘、架构说明。
 **不用**：长篇阅读型文档（Markdown 更好）、需要严格印制的正式文件、真正的数据仪表盘。
 
-判断标准：**这份东西会不会被人投影或投屏讲一遍？** 会 → 用这套。只是自己查 → Markdown。
+判断标准：内容是否需要更清晰的层次、对照和视觉重点。需要时使用这套；简单记录仍然适合 Markdown。
 
 ---
 
-## 三条铁律
+## 设计建议
 
-违反任何一条，成品就会从"有设计感"掉成"花里胡哨"。
+下面的规则用于保持页面清晰和统一，可以根据内容灵活取舍。
 
-### 铁律 1：全页只有一个深色块
+### 重点要集中
 
-整页 90% 是浅底白卡，只允许**一个**深色大色块当视觉锚点，通常放在开篇的"一句话结论"。
+页面大部分使用浅底和白卡，选择一处主要的深色区域作为视觉锚点，通常放在开篇结论处。
 
 颜色密集 ≠ 颜色分散。明艳感来自"一个很重的色块 + 周围大量留白 + 少量高饱和点缀"。
-如果每个区块都想抢戏，结果是每块都记不住。
+如果每个区块都使用强烈颜色，重点会变得不明显。
 
-### 铁律 2：颜色是语义，不是装饰
+### 颜色保持一致
 
-默认只用 **5 个语义色相**，每个色相必须配齐 `主色 / 浅底 / 深字` 三档。
-同一个概念在全页永远用同一个颜色——标题里的词、卡片顶边条、表格里的胶囊，全部对齐。
+默认使用少量语义色，每种颜色可以准备主色、浅底和深字三档。
+同一个概念尽量使用同一种颜色，避免每张卡片随机换色。
 
 读者会在潜意识里建立颜色→概念的映射，这才是"看起来专业"的真正来源。每张卡随机配色的页面更热闹，但更廉价。
 
-当内容天然有 6–8 个**并列分类**（能力主线、模块、渠道、产品线）时，五项不够分，
-可启用下方的**扩展色板**。扩展色只用于"区分并列项"，永不表达好/坏、旧/新、已确认/待确认——
-状态判断永远回到语义色。两者不混用。
+当内容有多个并列分类时，可以启用下方的扩展色板。扩展色主要用于区分分类，状态信息仍优先使用文字和稳定的语义色。
 
-### 铁律 3：改完必须渲染截图
+### 完成后预览一次
 
-**没有截图检查过的页面 = 没做完。**
-
-用无头 Chrome 渲染、切片、逐段看。这一步能抓到纯读代码绝对发现不了的问题（对比度、溢出、孤立卡片）。
-"看起来还行"和"确实好看"之间的差距，就是这一轮。
+用浏览器打开或截图预览一次，确认内容完整、布局没有明显错位或溢出即可。不要求固定浏览器、截图工具或严格的像素标准。
 
 ---
 
 ## 色彩系统
 
-**具体色值只在文末 CSS 的 `:root` 里写一份**，本节只规定"哪个颜色表达什么"。换主题只改那一处。
+建议把主要色值集中放在 CSS 的 `:root` 中，方便换主题；少量组件专用颜色可以按实际需要补充。
 
 | 语义 | 变量 | 典型用途 |
 |---|---|---|
@@ -60,7 +55,7 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
 | 警示 | `--c-warn` | 易漏步骤、未验证、风险 |
 | 信息 | `--c-info` | 时间线、证据、序号 |
 
-每个色相必须配齐主色、`-soft`（浅底）、`-deep`（深字）三档，否则组件里会被迫写死颜色。
+常用色相可以配齐主色、`-soft`（浅底）、`-deep`（深字）三档，便于组件复用。
 
 中性色同理：`--ink`（正文）、`--ink-2`（次要）、`--ink-3`（弱化）、`--bg`、`--surface`、`--line`。
 
@@ -127,19 +122,19 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
 
 ## 组件选择表
 
-先出内容大纲，再给每个 section 指定组件类型。**不允许临场发明新样式。**
+先列内容大纲，再为每个 section 选择合适的组件。优先复用下表；遇到特殊内容时可以扩展样式，但要保持整体间距、颜色和圆角一致。
 
 | 内容特征 | 用哪个组件 | 约束 |
 |---|---|---|
-| 开篇标题 + 核心结论 | Hero（大标题 + 4 个统计卡） | 统计卡 4 个，多了就削 |
-| 全文浓缩成一句 | 深色 Callout | 全页唯一深色块 |
-| 有 before / after | 左右对照卡 + 中间箭头 | 两侧字段必须一一对应 |
+| 开篇标题 + 核心结论 | Hero（大标题 + 统计卡） | 统计数量按内容取舍 |
+| 全文浓缩成一句 | 深色 Callout | 作为主要视觉重点 |
+| 有 before / after | 左右对照卡 + 中间箭头 | 两侧字段尽量对应 |
 | 多字段映射 | 速查表 | 表头染色，隔行染色，hover 高亮 |
 | 3–5 个先后事件 | 时间线卡 | 每张配渐变色数字块 + hash 黑底 |
-| 3–6 步流程 | 步骤卡网格 | 必须有一个通栏强调项（见"版式规则"） |
+| 3–6 步流程 | 步骤卡网格 | 最重要的一步可以通栏强调 |
 | 3 条并列注意事项 | 提示卡三列 | 顶部小圆点编号 |
-| 禁止 / 红线 | 红线卡（双列菱形 bullet） | 粉色描边，全页最多一处 |
-| 症状 → 处理 | 问题表 | 必须有"症状"列，否则没法对号入座 |
+| 禁止 / 红线 | 红线卡（双列菱形 bullet） | 控制数量，避免页面过重 |
+| 症状 → 处理 | 问题表 | 建议保留"症状"列，方便定位 |
 | 结论 + 可信度 | 状态表 + 彩色胶囊 | 胶囊只有"已验证/未验证"两类 |
 | 一分钟口播稿 | 渐变底大卡 | 口语，不是书面语 |
 
@@ -147,34 +142,19 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
 
 ## 版式规则
 
-**卡片三件套**：所有卡片共用 `顶部渐变条（5px） + 1px 极浅描边 + 几乎看不见的投影`。
-一致性比单个精致更重要——成套的组件本身就产生高级感。
+**卡片三件套**：卡片可以使用顶部色条、浅描边和轻微投影。保持组件风格统一，比单个卡片复杂更重要。
 
-**表格当主角做**，不能是浏览器默认样式：
+表格应有基本的视觉层次，不要直接使用浏览器默认样式：
 表头用浅紫底的中等字重小字，隔行微微染色，hover 时整行提亮；
 状态用彩色胶囊不用纯文字；外层圆角容器 + `overflow-x:auto`。
 
-**打破网格必须有理由**。五步流程在两列网格里会剩一个孤立空位，处理方式不是缩小卡片，
-而是把**语义最重要的那一步**拉成通栏并换色。没有理由的不对称，看起来就是排版事故。
+网格可以根据内容调整。出现不对称时，优先让重要内容获得更多空间，不必为了填满网格硬凑内容。
 
 **数字放大**。凡是能变成数字的结论（删除多少行、改了几次、几个文件），都做成大号统计卡，比写在句子里强十倍。
 
-### 标题和引导语必须撑满容器，不许折行
+### 标题和引导语
 
-这是最容易翻车、也最容易被指出来的一条，三件事要一起做：
-
-1. **不设宽度上限**。`h1`、`.lede`、`.sec-head p` 一律 `max-width:100%`。
-   写成 `60ch` / `74ch` 会把文字锁死在窄列里——容器明明有 1092px，文字只占了 740px，
-   右边空一大片，看起来就是"折行了"。**`ch` 单位在中文排版下尤其坑**：它按字符 `0` 的宽度算，
-   18px 字号下 `1ch ≈ 10px`，而 1 个汉字是 18px，所以 `74ch` 只能装 41 个汉字，不是 74 个。
-2. **标题里不用 `<br>` 强制断行**。固定在某个词后断开会随着屏幕宽度变化，
-   变成"两行都短、中间空一大块"的怪样子。让它自然流动。
-3. **引导语的字数要按实测宽度砍**。不折行不是写了就自动成立——超宽的字数照样折。
-   先渲染量一次，超了就删字，不要靠缩小字号或留着让它折。
-
-> 经验值：容器 `max-width:1140px`、正文字号 18px 时，
-> 中文引导语控制在 **47 个中文字符以内**（英文单词按 2 个字算）基本就是一行。
-> 但这只是估算，**以实测为准**，见"强制验证 · 5. 不折行检查"。
+标题和引导语保持简洁，让浏览器自然换行。桌面端可以尽量避免尴尬的孤行，移动端优先保证可读性，不要求所有文字单行或撑满容器。
 
 ---
 
@@ -185,8 +165,7 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
 1. 滚动淡入（`IntersectionObserver` + `opacity/translateY`）
 2. 顶部导航随滚动高亮当前章节
 
-两处都必须尊重 `prefers-reduced-motion: reduce`。
-不要加悬停形变、视差、打字机效果——多一处就掉一档。
+动效应克制，并在条件允许时尊重 `prefers-reduced-motion: reduce`。不要为了装饰加入过多视差或打字机效果。
 
 ---
 
@@ -197,7 +176,7 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
 3. 定语义色分配：谁=旧、谁=新、谁=警告、谁=结构
 4. 复制文末的 CSS 与骨架作为起点，**不要从空白写**
 5. 填内容；长度不够的卡片不要硬凑，合并到相邻 section
-6. 按"强制验证"渲染检查，修问题 → 再渲染，直到干净
+6. 在浏览器中预览，修正明显的错位、溢出和内容缺失
 
 ---
 
@@ -212,7 +191,7 @@ description: 把技术内容做成"明快卡片式"单页 HTML——高饱和配
   --ink:#171335; --ink-2:#4b4468; --ink-3:#837b9e;
   --bg:#f5f3fa; --surface:#fff; --line:rgba(23,19,53,.11);
 
-  /* 五个语义色：每个都必须配齐 主 / 浅底 / 深字 */
+  /* 语义色：按页面需要使用主色、浅底和深字 */
   --c-old:#ff4d6d;    --c-old-soft:#ffe4ea;    --c-old-deep:#c81f47;
   --c-new:#00b894;    --c-new-soft:#d3f8ed;    --c-new-deep:#00795f;
   --c-struct:#7c3aed; --c-struct-soft:#ece6ff; --c-struct-deep:#5b21b6;
@@ -319,7 +298,7 @@ section{padding:46px 0}
 .card{background:var(--surface);border:1px solid var(--line);
   border-radius:var(--radius);box-shadow:var(--shadow-sm)}
 
-/* ---- 深色 Callout：全页唯一深色块 ---- */
+/* ---- 深色 Callout：页面的主要视觉重点 ---- */
 .callout{position:relative;padding:34px 36px;border-radius:24px;color:#fff;overflow:hidden;
   background:linear-gradient(122deg,#241a52 0%,#3d1f6e 48%,#6d2160 100%);
   box-shadow:0 26px 60px -34px rgba(61,31,110,.9)}
@@ -332,7 +311,7 @@ section{padding:46px 0}
 .callout p{position:relative;z-index:1;margin:0;font-size:clamp(18px,2.3vw,23px);
   line-height:1.62;font-weight:500}
 .callout code{font-family:var(--mono);font-size:.88em;background:rgba(255,255,255,.2);
-  border:1px solid rgba(255,255,255,.28);color:#fff;   /* 必须显式写，否则继承深色紫字 */
+  border:1px solid rgba(255,255,255,.28);color:#fff;   /* 深色背景上保持清晰对比 */
   padding:2px 7px;border-radius:6px;white-space:nowrap}
 
 /* ---- 左右对照 ---- */
@@ -379,7 +358,7 @@ section{padding:46px 0}
 .pal-7{background:var(--p7-soft);color:var(--p7-deep)}
 .pal-8{background:var(--p8-soft);color:var(--p8-deep)}
 
-/* ---- 表格：必须做成设计过的样子 ---- */
+/* ---- 表格：保持清晰的视觉层次 ---- */
 .table-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
   box-shadow:var(--shadow-sm);background:var(--surface)}
 .scroll-x{overflow-x:auto}
@@ -481,7 +460,7 @@ footer{padding:46px 0 60px;color:var(--ink-3);font-size:13px;
 footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer code{font-family:var(--mono);font-size:12px}
 
-/* ---- 动效：两处，且必须尊重 reduced-motion ---- */
+/* ---- 动效：保持克制，并兼容 reduced-motion ---- */
 .rv{opacity:0;transform:translateY(16px);
   transition:opacity .55s ease,transform .55s ease}
 .rv.in{opacity:1;transform:none}
@@ -512,7 +491,7 @@ footer code{font-family:var(--mono);font-size:12px}
   .stats{gap:10px}
   .stat b{font-size:24px}
   .callout{padding:26px 22px;border-radius:18px}
-  .callout code{white-space:normal;overflow-wrap:anywhere}  /* 长依赖坐标必须能换行 */
+  .callout code{white-space:normal;overflow-wrap:anywhere}  /* 长文本在小屏可以换行 */
   .cmp{padding:22px 20px 18px}
   .step{flex-direction:column;gap:12px}
   .kv li{flex-direction:column;gap:2px}
@@ -559,7 +538,7 @@ footer code{font-family:var(--mono);font-size:12px}
 <header class="hero">
   <div class="wrap">
     <span class="eyebrow">[[领域]] · [[文档类型]]</span>
-    <!-- 不要在标题里用 <br> 强制断行，让它按容器宽度自然流动 -->
+    <!-- 标题通常让它按容器宽度自然流动 -->
     <h1>把 <span class="hl hl-old">[[旧方案]]</span> 换成 <span class="hl hl-new">[[新方案]]</span></h1>
     <p class="lede">[[一句话说清问题、结论、读者该知道什么。控制在 47 字以内。]]</p>
     <div class="stats">
@@ -573,7 +552,7 @@ footer code{font-family:var(--mono);font-size:12px}
 
 <main class="wrap">
 
-  <!-- 深色 Callout：全页唯一深色块，放核心结论 -->
+  <!-- 深色 Callout：放核心结论，作为主要视觉重点 -->
   <section>
     <div class="callout rv">
       <div class="callout-label">一句话说清楚</div>
@@ -581,7 +560,7 @@ footer code{font-family:var(--mono);font-size:12px}
     </div>
   </section>
 
-  <!-- 左右对照：两侧字段必须一一对应 -->
+  <!-- 左右对照：两侧字段尽量对应 -->
   <section id="compare">
     <div class="sec-head rv">
       <div class="sec-bar c-old"></div>
@@ -655,7 +634,7 @@ footer code{font-family:var(--mono);font-size:12px}
     </div>
   </section>
 
-  <!-- 步骤卡：必须有一个通栏强调项 -->
+  <!-- 步骤卡：重要步骤可以通栏强调 -->
   <section id="steps">
     <div class="sec-head rv">
       <div class="sec-bar c-new"></div>
@@ -810,116 +789,16 @@ footer code{font-family:var(--mono);font-size:12px}
 
 ---
 
-## 强制验证
+## 基本预览
 
-### 1. 结构校验
+完成页面后，用浏览器打开或使用任意可用的截图工具快速预览一次。重点确认：
 
-```bash
-python3 - <<'PY'
-from html.parser import HTMLParser
-import re, sys
-VOID={'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
-class P(HTMLParser):
-    def __init__(s):
-        super().__init__(convert_charrefs=True); s.stack=[]; s.errors=[]
-    def handle_starttag(s,t,a):
-        if t not in VOID: s.stack.append((t,s.getpos()))
-    def handle_endtag(s,t):
-        if t in VOID: return
-        if not s.stack: s.errors.append(f"stray </{t}> {s.getpos()}"); return
-        o,p=s.stack.pop()
-        if o!=t: s.errors.append(f"<{o}> {p} closed by </{t}> {s.getpos()}")
-src=open(sys.argv[1] if len(sys.argv)>1 else 'page.html',encoding='utf-8').read()
-p=P(); p.feed(src)
-print("errors:",p.errors or "none"); print("unclosed:",p.stack or "none")
-print("raw &:",[m.group(0) for m in re.finditer(r'&(?![a-zA-Z][a-zA-Z0-9]*;|#\d+;|#x[0-9a-fA-F]+;)',src)] or "none")
-PY
-```
+- 内容是否完整，标题层级是否清楚；
+- 卡片、表格和代码是否有明显错位或溢出；
+- 窄屏下页面是否仍然基本可读；
+- 动效没有遮住内容，长文本可以自然换行。
 
-### 2. 整页截图
-
-```bash
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless=new --disable-gpu --hide-scrollbars \
-  --window-size=1400,7200 --screenshot=/tmp/shot/all.png \
-  --virtual-time-budget=6000 "file:///绝对路径/page.html"
-```
-
-窗口高度给足（7000+），这样滚动淡入的元素在截图时都已经触发，不会拍到空白。
-
-如果截到的是"内容若隐若现、半透明"的画面，说明拍到了淡入动画的中间帧。
-在**验证用的临时副本**里把过渡关掉再截：
-
-```css
-.rv{opacity:1!important;transform:none!important;transition:none!important}
-```
-
-### 3. 切片细看
-
-整页缩略图只能看结构，看不清细节，必须切片：
-
-```bash
-sips -c 1400 1400 --cropOffset 0 0 /tmp/shot/all.png --out /tmp/shot/p0.png
-# cropOffset 的 y 每次 +1400，依次生成 p1/p2/p3...
-```
-
-每片都看一遍。
-
-### 4. 移动端验证
-
-**无头 Chrome 在 macOS 上有最小窗口宽度（约 500px），直接设 `--window-size=375` 会得到错误的裁剪结果——看起来像布局溢出，其实不是。**
-
-正确做法是用 iframe 套一层：
-
-```html
-<!doctype html><html><body style="margin:0">
-<iframe src="file:///绝对路径/page.html" style="width:375px;height:4200px;border:0"></iframe>
-</body></html>
-```
-
-然后用 `--window-size=420,4200` 截这个包装页。
-
-### 5. 不折行检查
-
-把这段注入到页面临时副本的 `</body>` 前面，用 `--dump-dom` 读 `title`：
-
-```js
-window.addEventListener('load', function () {
-  var h = document.querySelector('h1');
-  var l = document.querySelector('.lede');
-  var lh = parseFloat(getComputedStyle(l).lineHeight);
-  document.title =
-    'H1核数=' + h.getClientRects().length +
-    ' 引导语行数=' + Math.round(l.getBoundingClientRect().height / lh) +
-    ' 文字宽=' + Math.round(l.getBoundingClientRect().width) +
-    ' 容器宽=' + Math.round(l.scrollWidth);
-});
-```
-
-```bash
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless=new --disable-gpu --window-size=1400,900 --dump-dom \
-  --virtual-time-budget=3000 "file:///tmp/probe.html" 2>/dev/null \
-  | grep -o '<title>[^<]*</title>'
-```
-
-判定标准：
-
-- **H1 核数 = 1**（1400px 与 1200px 宽都要是 1）
-- **引导语行数 = 1**
-- **文字宽 ≈ 容器宽**（差几 px 内算撑满；文字宽明显小于容器宽，说明还有残留 `max-width`）
-
-不达标就改文案长度，不要靠缩字号糊过去。1200px 达不到，1000px 就更达不到。
-
-### 必须逐项确认的清单
-
-- [ ] 深色块里的行内代码对比度够（紫字压紫底是最常见翻车点）
-- [ ] 长包名 / 长 class 名在窄卡片里没有顶到边缘（`overflow-wrap:anywhere`）
-- [ ] 网格没有孤立空位
-- [ ] 表格在窄屏是横向滚动而不是撑破页面
-- [ ] 375px 下没有任何横向溢出
-- [ ] 深色块里的长 token 在小屏能换行
-- [ ] H1 与引导语在 1400px / 1200px 下都是单行，且宽度撑满容器
+如果项目环境提供 HTML 校验或截图工具，可以顺手使用；没有也不影响交付。预览发现问题就直接调整，再看一眼即可。
 
 ---
 
@@ -930,12 +809,10 @@ window.addEventListener('load', function () {
 | 全页低饱和灰紫 | 读者抓不到重点 |
 | 每个卡片一个颜色 | 热闹但廉价，破坏语义映射 |
 | 浏览器默认表格样式 | 一眼看出是"不得不放的表" |
-| 多处滚动动画 / 视差 | 多一处掉一档 |
-| `max-width: 60ch` / `74ch` 的正文或标题 | 大屏上提前折行，右边空一片，最容易被指出来 |
-| 标题里用 `<br>` 强制断行 | 换屏宽就变成两行都短的怪样子 |
-| 用扩展色表达"旧/新、错/对" | 和全局语义红绿打架，读者分不清哪个红是状态 |
-| 一页里出现 9 个以上并列颜色 | 说明该合并分类，不是继续加色 |
-| 网格里留孤立卡片 | 看起来像排版事故 |
+| 多处滚动动画 / 视差 | 容易分散注意力 |
+| 用 `<br>` 把标题切成固定两行 | 换屏宽后可能显得生硬 |
+| 同一个概念在不同位置频繁换色 | 读者不容易建立视觉联系 |
+| 为了填满网格硬凑内容 | 页面会显得拥挤 |
 | 用 emoji 当图标 | 跨平台渲染不一致，且廉价 |
 | 导航锚点超过 6 个 | 手机上挤成一条，且说明页面结构没收敛 |
 | 统计卡放 5 个以上 | 超过 4 个就没人看了 |
@@ -945,5 +822,4 @@ window.addEventListener('load', function () {
 
 ## 交付
 
-产物是单个自包含 `.html` 文件，双击即可打开，不依赖本地服务器，**也不依赖任何外部字体或 CDN**。
-断网、内网、离线都能正常显示。
+默认交付单个自包含 `.html` 文件，双击即可打开，不依赖外部字体或 CDN。若内容确实需要图片、字体或其他资源，也可以按项目需要使用本地资源，并确保打开页面时路径有效。
