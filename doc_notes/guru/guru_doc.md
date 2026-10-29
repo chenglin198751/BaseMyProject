@@ -1,174 +1,25 @@
-# ConstraintLayout学习：
+# 1. guru / gurusdk 使用笔记
 
-**1、ConstraintLayout使用说明：** 
+- `guru`：面向 Git / GitHub 的协作编排（gcm）
+- `gurusdk`：面向 GuruSDK 依赖的集成交付
 
-    https://mp.weixin.qq.com/s/Z_TnoyMRYZEQXvlqiKX8Uw
-    官方不推荐在ConstraintLayout中使用match_parent，可以设置 0dp 配合约束代替match_parent
+## 怎么选
 
-**2、当设置一个view和另一个view上下对齐时，如果不指定强制约束宽高，那么宽高都会自适应；如果指定了约束宽高，那么宽高会和上顶部和下顶部对齐：**
+| 你在做什么                                    | 用哪个    |
+|-----------------------------------------------|-----------|
+| 在业务仓库里 commit、开 PR                    | `guru`    |
+| 查 issue、看 project 任务、建任务             | `guru`    |
+| 生成 Release Notes、准备发版标签              | `guru`    |
+| SdkVersion 的创建 / 归档 / 迁移               | `guru`    |
+| 项目接入或升级 GuruSDK（需要 `gurusdk.yaml`） | `gurusdk` |
+| 下载指定 SDK 版本、发布模块                   | `gurusdk` |
+| SDK 项目校验、混淆、生成 BI Events 制品       | `gurusdk` |
 
-    约束宽高代码：
-    app:layout_constrainedWidth="true"
-    app:layout_constrainedHeight="true"
+# 2. 初始化 local maven
 
-**3、设置一个view相对另一个view居中，或者水平or竖直偏移：**
+- gurusdk get --local /Users/bjit204/code/gurusdk-unity
 
-    若现在要实现水平偏移，给TextView1的layout_constraintHorizontal_bias赋一个范围为 0-1 的值，
-    赋值为0，则TextView1在布局的最左侧；
-    赋值为1，则TextView1在布局的最右侧；
-    赋值为0.5，则水平居中；
-    赋值为0.3，则更倾向于左侧。
-    垂直偏移同理。
+# 3. 新建feedback 和 Requirements
 
-    app:layout_constraintHorizontal_bias="0.3"
-    app:layout_constraintVertical_bias="0.3"
-    app:layout_constraintEnd_toEndOf="@+id/view_bottom"
-    app:layout_constraintStart_toStartOf="@+id/view_bottom"
-    app:layout_constraintTop_toBottomOf="@+id/view_bottom"
-
-**4、设置view的宽高比：**
-
-    app:layout_constraintDimensionRatio="1:1"
-    app:layout_constraintDimensionRatio="H,2:3"指的是 高:宽=2:3
-    app:layout_constraintDimensionRatio="W,2:3"指的是 宽:高=2:3
-    app:layout_constrainedWidth="true"
-    app:layout_constrainedHeight="true
-
-**5、Barrier，设置栅栏，非常有用，某个view需要对齐另外一组view时用到：**
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="TextView1,TextView2,TextView2" />
-
-**6、Group，把一些view设置为一组，一般用来隐藏显示一组view**
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/count_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:constraint_referenced_ids="TextView1,TextView2,TextView2" />
-
-**7、等分布局的两种方式：**
-
-    第1种：这种方式是把当前屏幕宽度设置为1，然后每个view占据百分比：
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.3"
-
-    第2种：这种方式是把当前屏幕宽度按照比重分配：
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintHorizontal_weight="1"
-
-**8、放置在id为grid_layout的视图下方，并且占据grid_layout下方所有剩余空间：**
-
-    <RelativeLayout
-        android:id="@+id/relative_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grid_layout">
-        
-    </RelativeLayout>
-
-**10、角度定位（textView2设置在textView1的右下角120°距离80dp的位置）：**
-
-    layout_constraintCircle : 引用另一个小部件 id
-    layout_constraintCircleRadius : 到另一个小部件中心的距离
-    layout_constraintCircleAngle : 小部件应该在哪个角度（以度为单位，从 0 到 360）
-
-    // xml代码示例：
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:background="@android:color/holo_red_light"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grid_layout" />
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:background="@android:color/holo_blue_dark"
-        app:layout_constraintCircle="@+id/textView1"
-        app:layout_constraintCircleAngle="120"
-        app:layout_constraintCircleRadius="80dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-**11、比如textView2的锚点是textView1，那么设置以下属性可以解决锚点textView1被gone的边距问题：**
-
-    layout_goneMarginStart
-    layout_goneMarginEnd  
-    layout_goneMarginLeft
-    layout_goneMarginTop
-    layout_goneMarginRight
-    layout_goneMarginBottom
-
-**12、居中设置：**
-
-    // 垂直水平居中：
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-
-    // 垂直居中
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-
-    // 水平居中
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
-
-**13、Placeholder占位符。可以让@+id/textView1直接移动到@+id/placeholder的位置：**
-
-    <androidx.constraintlayout.widget.Placeholder
-        android:id="@+id/placeholder"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginLeft="100dp"
-        app:content="@+id/textView1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="TextView1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-**14、Guideline 辅佐线：**
-
-    <!-- 垂直方向的Guideline，距离左侧20% -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/vertical_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.2" />
-
-    <!-- 水平方向的Guideline，距离顶部100dp -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontal_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="100dp" />
-
-    <TextView
-        android:id="@+id/text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:text="示例文本"
-        app:layout_constraintLeft_toLeftOf="@id/vertical_guideline"
-        app:layout_constraintTop_toTopOf="@id/horizontal_guideline" />
+1. 在codex 桌面版 安装此插件：https://github.com/castbox/guru-jarvis
+2，在codex桌面版切到 knowledge(git仓库)， 执行 $feedback 后面跟要添加的feedback内容
