@@ -18,8 +18,14 @@
 # 2. 初始化 local maven
 
 - gurusdk get --local /Users/bjit204/code/gurusdk-unity
+- gurusdk get --local /Users/bjit204/code/gurusdk-unity --retag
 
 # 3. 新建feedback 和 Requirements
 
 1. 在codex 桌面版 安装此插件：https://github.com/castbox/guru-jarvis
 2，在codex桌面版切到 knowledge(git仓库)， 执行 $feedback 后面跟要添加的feedback内容
+
+# 4. 先新建PR分支，再开发新功能
+
+    在ChatGPT桌面版，添加项目后，执行：
+    [@Guru Jarvis Nexus](plugin://guru-jarvis-nexus@personal)  https://github.com/castbox/gurusdk-framework/issues/857

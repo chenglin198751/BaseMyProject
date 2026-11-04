@@ -7,7 +7,7 @@
 ### 1. 准备两个 SDK 仓库
 
 - Unity SDK：[/Users/bjit204/code/gurusdk-unikit](/Users/bjit204/code/gurusdk-unikit)
-- Android SDK：[/Users/bjit204/code/GuruSdk-Android](/Users/bjit204/code/GuruSdk-Android)
+- Android SDK：[/Users/bjit204/code/guru_android2/GuruSdk-Android](/Users/bjit204/code/guru_android2/GuruSdk-Android)
 - Unity 测试工程：[/Users/bjit204/unity_code/Parking3D](/Users/bjit204/unity_code/Parking3D)
 
 先确认 Unity SDK 的本地包：
@@ -28,7 +28,7 @@ Unity 刷新后，在 Package Manager 中确认加载的是本地包。
 ### 2. 发布 Android SDK 到本地 Maven
 
 ```bash
-cd /Users/bjit204/code/GuruSdk-Android
+cd /Users/bjit204/code/guru_android2/GuruSdk-Android
 
 ./gradlew \
   :gurusdk-offlinelog:publishReleasePublicationToMavenLocal \
@@ -148,7 +148,7 @@ gurusdk-offlinelog-channel
 优先使用发布任务：
 
 ```bash
-cd /Users/bjit204/code/GuruSdk-Android
+cd /Users/bjit204/code/guru_android2/GuruSdk-Android
 ./gradlew \
   :gurusdk-offlinelog:publishReleasePublicationToMavenLocal \
   :gurusdk-offlinelog-channel:publishReleasePublicationToMavenLocal \
