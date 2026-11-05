@@ -4,23 +4,25 @@
 
 ## 一、给人看的快速流程
 
+当前 OfflineLog Channel 联动的核心验证是：本地 Unity 包正确加载、Android AAR 解析到目标版本、APK 中存在两侧代码、真机运行日志出现 Channel 调用。压力测试属于可选项，只有工程里当前存在 Runner 时才执行。
+
 ### 1. 准备两个 SDK 仓库
 
-- Unity SDK：[/Users/bjit204/code/gurusdk-unikit](/Users/bjit204/code/gurusdk-unikit)
-- Android SDK：[/Users/bjit204/code/guru_android2/GuruSdk-Android](/Users/bjit204/code/guru_android2/GuruSdk-Android)
+- Unity SDK：[/Users/bjit204/code/gurusdk-unity/gurusdk-unikit](/Users/bjit204/code/gurusdk-unity/gurusdk-unikit)
+- Android SDK：[/Users/bjit204/code/GuruSdk-Android](/Users/bjit204/code/GuruSdk-Android)
 - Unity 测试工程：[/Users/bjit204/unity_code/Parking3D](/Users/bjit204/unity_code/Parking3D)
 
 先确认 Unity SDK 的本地包：
 
 ```text
-/Users/bjit204/code/gurusdk-unikit/com.guru.unikit.offlinelog
+/Users/bjit204/code/gurusdk-unity/gurusdk-unikit/com.guru.unikit.offlinelog
 ```
 
 Parking3D 的包链接应指向这个目录：
 
 ```text
 Packages/com.guru.unikit.offlinelog
- -> /Users/bjit204/code/gurusdk-unikit/com.guru.unikit.offlinelog
+ -> /Users/bjit204/code/gurusdk-unity/gurusdk-unikit/com.guru.unikit.offlinelog
 ```
 
 Unity 刷新后，在 Package Manager 中确认加载的是本地包。
@@ -28,15 +30,14 @@ Unity 刷新后，在 Package Manager 中确认加载的是本地包。
 ### 2. 发布 Android SDK 到本地 Maven
 
 ```bash
-cd /Users/bjit204/code/guru_android2/GuruSdk-Android
+cd /Users/bjit204/code/GuruSdk-Android
 
 ./gradlew \
   :gurusdk-offlinelog:publishReleasePublicationToMavenLocal \
-  :gurusdk-offlinelog-channel:publishReleasePublicationToMavenLocal \
   -PguruSdkVersion=版本号
 ```
 
-两个模块都要发布：新版 Channel 对 `gurusdk-offlinelog` 有运行时依赖。Parking3D 的 `settingsTemplate.gradle` 已有 `mavenLocal()`，通常不需要再改仓库配置。
+当前 Android SDK 已将 OfflineLog 与新版 Channel 放在 `gurusdk-offlinelog` 模块中，因此发布该模块即可。Parking3D 的 `settingsTemplate.gradle` 已有 `mavenLocal()`，通常不需要再改仓库配置。
 
 ### 3. 刷新 Unity 并构建 APK
 
@@ -61,7 +62,7 @@ adb logcat -c
 com.google.firebase.MessagingUnityPlayerActivity
 ```
 
-40 万条新版通道测试：
+如果已确认当前工程存在对应压力测试 Runner，再使用其实际支持的参数，例如：
 
 ```bash
 adb shell am start \
@@ -71,13 +72,13 @@ adb shell am start \
   --es offlineLogMode channel
 ```
 
-旧版通道测试只需改为：
+如果确认 Runner 支持旧版/新版模式，旧版通道测试才可改为：
 
 ```text
 --es offlineLogMode legacy
 ```
 
-测试由 Runner 自动执行，不需要手动点击。
+测试由 Runner 自动执行，不需要手动点击。若搜索不到 Runner 或这些参数，跳过本段，先完成普通启动和运行时 Channel 验证。
 
 ### 5. 抓取结果并判断是否通过
 
@@ -111,23 +112,28 @@ adb logcat -d | rg \
 
 ## 二、给 AI 看的详细执行规范
 
+> 当前状态：Parking3D 的 OfflineLog 包链接指向 `gurusdk-unity/gurusdk-unikit`，Android SDK 实际仓库是 `/Users/bjit204/code/GuruSdk-Android`。不要使用已废弃的 `guru_android2` 或独立的旧 `gurusdk-unikit` 路径。
+
+
 ### 目标与仓库角色
 
 - `gurusdk-unikit`：Unity/C# 包，负责 Unity API、Channel 调用、组批和依赖声明。
 - `GuruSdk-Android`：Android Kotlin 模块，负责 Channel bridge、Android 日志模块和文件落盘。
 - `Parking3D`：集成宿主，负责 Unity Package 链接、Android Resolver、APK 构建、真机启动和结果核验。
 
-除非用户明确要求，不要把 Parking3D 的测试 Runner 代码误当作 SDK 业务代码；Runner 位于：
+除非用户明确要求，不要把 Parking3D 的测试 Runner 代码误当作 SDK 业务代码；Runner 路径必须以当前工程搜索结果为准；先执行：
 
-```text
-/Users/bjit204/unity_code/Parking3D/Assets/Scripts/Diagnostics/OfflineLogAbStressRunner.cs
+```bash
+rg -n "OFFLINE_AB|offlineStress|400000|offlineLogMode|OfflineLog.*Runner" /Users/bjit204/unity_code/Parking3D/Assets
 ```
+
+找不到对应脚本时，不得直接使用压力测试启动参数。
 
 ### Unity SDK 接入规则
 
 1. 先检查本地包版本、工作区改动和 `Editor/Dependencies.xml`。
 2. OfflineLog 包路径必须是：
-   `/Users/bjit204/code/gurusdk-unikit/com.guru.unikit.offlinelog`
+   `/Users/bjit204/code/gurusdk-unity/gurusdk-unikit/com.guru.unikit.offlinelog`
 3. 检查软链接：
    `Parking3D/Packages/com.guru.unikit.offlinelog`
 4. `Dependencies.xml` 中声明的 Android Maven 坐标必须与本次发布的 `guruSdkVersion` 完全一致。
@@ -140,18 +146,16 @@ adb logcat -d | rg \
 
 ```text
 gurusdk-offlinelog
-gurusdk-offlinelog-channel
 ```
 
-原因：`gurusdk-offlinelog-channel` 对 `gurusdk-offlinelog` 使用 `implementation` 依赖，POM 会以 runtime 依赖表达，缺少任一模块都可能导致 Unity Android 构建解析不完整。
+当前 checkout 的 `settings.gradle.kts` 只包含 `:gurusdk-offlinelog`；该模块同时承载 OfflineLog 与新版 Channel 实现。不要根据旧 checkout 的模块拆分方式执行发布。
 
 优先使用发布任务：
 
 ```bash
-cd /Users/bjit204/code/guru_android2/GuruSdk-Android
+cd /Users/bjit204/code/GuruSdk-Android
 ./gradlew \
   :gurusdk-offlinelog:publishReleasePublicationToMavenLocal \
-  :gurusdk-offlinelog-channel:publishReleasePublicationToMavenLocal \
   -PguruSdkVersion=<version>
 ```
 
@@ -160,7 +164,6 @@ cd /Users/bjit204/code/guru_android2/GuruSdk-Android
 ```bash
 ./gradlew \
   :gurusdk-offlinelog:assembleRelease \
-  :gurusdk-offlinelog-channel:assembleRelease \
   -PguruSdkVersion=<version>
 ```
 
@@ -185,28 +188,13 @@ cd /Users/bjit204/code/guru_android2/GuruSdk-Android
 adb shell dumpsys package parking.jam3d.traffic.jam.games.car.puzzle
 ```
 
-本项目当前常见入口：
+本项目曾使用过以下入口，执行前仍应以 `dumpsys package` 查询结果为准：
 
 ```text
 parking.jam3d.traffic.jam.games.car.puzzle/com.google.firebase.MessagingUnityPlayerActivity
 ```
 
-启动参数含义：
-
-- `offlineStressTest=true`：启用 `OfflineLogAbStressRunner`。
-- `offlineStress400k=true`：执行连续 400,000 条测试；否则执行分档速率测试。
-- `offlineLogMode=channel`：新版通道。
-- `offlineLogMode=legacy`：旧版通道。
-
-Runner 会先创建专用 logger，然后自动执行测试并输出：
-
-```text
-[OFFLINE_AB_400K_START]
-[OFFLINE_AB_400K_WRITES_DONE]
-[OFFLINE_AB_400K_DONE]
-```
-
-当前 40 万条 Runner 已移除每 8,192 条 `yield return null` 的 Unity 帧让出。若后续会话修改了这一点，必须在报告和 A/B 结论中明确标注测试条件。
+启动参数、数据量、完成标记、帧让出策略和诊断日志行为都必须以当前 Runner 源码为准。只有搜索确认参数和标记存在，才能启动压力测试；不能凭旧文档推断它们仍然有效。
 
 ### 结果采集与核验
 
@@ -243,7 +231,22 @@ adb exec-out run-as \
 - Android 侧虽已改为每个 batch 一个写入任务，但任务内部仍逐条写入文件。
 - C# 每批 `Debug.Log` 和 Android 每批 `Log.i` 诊断日志；40 万条约 6,250 批，可能增加额外负载。
 
-不要再描述为“新版每条日志启动一个 Android 协程”，那是批量提交优化前的实现。以上因素是待量化的可能原因，不等于已被单独证明。要量化，需在同一 APK 和同一 Runner 下交替运行，并设置带/不带逐批诊断日志的对照组。
+这些性能开销是可能因素，不等于已被单独证明。性能结论必须来自条件一致的实测；不要把历史实现细节当成当前代码事实。
+
+### APK 进入证据（Android 与 Unity C#）
+
+构建后必须同时检查依赖、Android DEX、Unity IL2CPP 和运行时日志。Android DEX 应包含 `com/guru/sdk/offlinelog/OfflineLog`、`OfflineLogPlugin`、`ChannelRouter` 等类。当前 Parking3D 使用 IL2CPP，Unity C# 应从 APK 的 `lib/arm64-v8a/libil2cpp.so` 和 `assets/bin/Data/Managed/Metadata/global-metadata.dat` 检查 `Guru.UniKit.OfflineLog`、`AndroidChannelOfflineLogger`、`offlinelog.invoke`。静态字符串只能证明代码进入产物；运行时看到 `invoke method=log, class=com.guru.sdk.offlinelog.OfflineLogPlugin` 才能证明实际走通。
+
+```bash
+APK=/Users/bjit204/unity_code/Parking3D/BuildOutput/Parking3D-v26.11.0-rc.1.apk
+shasum -a 256 "$APK"
+rg -n 'com\.guru\.sdk:(offlinelog|unity-channel|connectivity):26\.11\.0-rc\.1' /Users/bjit204/unity_code/Parking3D/Library/Bee/Android/Prj
+adb install -r "$APK"
+adb logcat -c
+adb shell monkey -p parking.jam3d.traffic.jam.games.car.puzzle 1
+sleep 8
+adb logcat -d -v threadtime | rg -i 'OfflineLog|OfflineLogPlugin|OfflineLogChannel|offlinelog\.invoke|GuruPlugin|ChannelRouter|FATAL EXCEPTION|Fatal signal|ANR'
+```
 
 ### 跨会话执行清单
 
@@ -252,12 +255,12 @@ AI 接手任务时按此顺序执行：
 1. 读取本文件，确认三个绝对路径和当前 Runner 条件。
 2. 检查两个 SDK 仓库 `git status`、版本和目标 diff；不要覆盖用户未提交改动。
 3. 检查 Unity 包软链接和 `Dependencies.xml` 版本。
-4. 在 GuruSdk-Android 发布两个 Maven 模块到本地。
+4. 在 GuruSdk-Android 发布 `gurusdk-offlinelog` 模块到本地。
 5. 刷新 Unity，确认 Package Manager、C# 编译和 Android Resolver 状态。
 6. 构建 APK；若签名失败，检查本地 keystore 配置。
 7. `adb devices` 确认只有目标真机在线，安装 APK。
 8. 清空 logcat，强停并用正确 Activity 携带启动参数冷启动。
-9. 等待 `[OFFLINE_AB_400K_DONE]`，抓取 logcat 和应用日志文件。
+9. 如果当前工程确实存在对应 Runner，再等待完成标记并抓取 logcat 和应用日志文件；否则只执行普通运行时链路验证。
 10. 逐项核验接受数、拒绝数、落盘行数、序号完整性和崩溃标记。
 11. 将原始证据保存在 `Parking3D/BuildArtifacts/OfflineLogAB/<run>/`，报告只写结论、条件和证据路径。
 12. 最终明确说明：本轮是否同条件、是否可用于严格新旧版性能结论。
