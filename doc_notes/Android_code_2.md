@@ -365,3 +365,10 @@
             }
         }
     }
+
+**55、@AutoService(MessageProvider.class) ：**
+
+    通常用于 自动生成 Java SPI（Service Provider Interface）所需的注册文件，让框架能够自动发现 MessageProvider 的实现类，而不需要手动维护配置文件
+
+**56、implementation 'androidx.startup:startup-runtime:1.2.0' ：** 官方启动库
+
