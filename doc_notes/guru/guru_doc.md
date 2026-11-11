@@ -33,13 +33,12 @@ cd /Users/bjit204/code/GuruSdk-Android
 ./gradlew :gurusdk-offlinelog:publishToMavenLocal
 ./gradlew publishToMavenLocal
 
-## 6. Parking3D 与 Guru SDK 的调用关系
+# 6. Parking3D 与 Guru SDK 的调用关系
 1. **加载 Unity SDK**：Parking3D 通过本地 Package 链接加载 `gurusdk-unity/gurusdk-unikit` 中的 Unity C# 包。
 2. **声明原生依赖**：Unity SDK 包通过 `Editor/Dependencies.xml` 声明所需的 Android Maven 依赖，供 Parking3D 构建 APK 时引入AAR。
 3. **调用 SDK 接口**：Parking3D 的业务代码调用 Unity C# SDK 提供的接口；SDK 再通过对应的桥接层与 Android 原生依赖通信。
-
-具体用 OfflineLog 示例Parking3D 如何调用 `GuruSdk-Android` 和 `gurusdk-unity/gurusdk-unikit` ：
+- 具体用 OfflineLog 示例Parking3D 如何调用 `GuruSdk-Android` 和 `gurusdk-unity/gurusdk-unikit` ：
 1. 先通过 /Users/bjit204/unity_code/Parking3D/Packages/com.guru.unikit.offlinelog/Editor/Dependencies.xml 中定义 androidPackage 引入 原生android offlinelog.aar
 2. 再通过 Runtime 目录下的/Users/bjit204/unity_code/Parking3D/Packages/com.guru.unikit.offlinelog/Runtime/AndroidChannelOfflineLogger.cs 调用原生android offlinelog.aar
 
-
+# 7. 一个新需求开发流程：【$guru-jarvis-nexus:Guru】先用 proposal 技能，再用 impl 技能，再用 PR 技能
