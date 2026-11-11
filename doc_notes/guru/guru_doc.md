@@ -30,7 +30,8 @@
 
 # 5. 发布到本地maven
 cd /Users/bjit204/code/GuruSdk-Android
-./gradlew :gurusdk-offlinelog:publishReleasePublicationToMavenLocal
+./gradlew :gurusdk-offlinelog:publishToMavenLocal
+./gradlew publishToMavenLocal
 
 ## 6. Parking3D 与 Guru SDK 的调用关系
 1. **加载 Unity SDK**：Parking3D 通过本地 Package 链接加载 `gurusdk-unity/gurusdk-unikit` 中的 Unity C# 包。

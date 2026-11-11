@@ -1,5 +1,5 @@
 ---
-name: html_doc_design
+name: html_design
 description: 把技术内容做成好看、清晰、可直接打开的单页 HTML。适合迁移手册、方案对比、技术分析和复盘报告等演示型文档。
 ---
 
@@ -23,9 +23,9 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 
 ### 重点要集中
 
-页面大部分使用浅底和白卡，选择一处主要的深色区域作为视觉锚点，通常放在开篇结论处。
+页面大部分使用浅底和白卡，选择一处色彩稍浓的区域作为视觉锚点，通常放在开篇结论处。
 
-颜色密集 ≠ 颜色分散。明艳感来自"一个很重的色块 + 周围大量留白 + 少量高饱和点缀"。
+颜色密集 ≠ 颜色分散。视觉重点来自色块、周围留白和少量色彩点缀的配合。
 如果每个区块都使用强烈颜色，重点会变得不明显。
 
 ### 颜色保持一致
@@ -291,16 +291,12 @@ section{padding:46px 0}
 .card{background:var(--surface);border:1px solid var(--line);
   border-radius:var(--radius);box-shadow:var(--shadow-sm)}
 
-/* ---- 深色 Callout：页面的主要视觉重点 ---- */
+/* ---- Callout：页面的主要视觉重点 ---- */
 .callout{position:relative;padding:34px 36px;border-radius:24px;color:#fff;overflow:hidden;
-  background:linear-gradient(122deg,#241a52 0%,#3d1f6e 48%,#6d2160 100%);
-  box-shadow:0 26px 60px -34px rgba(61,31,110,.9)}
-.callout::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:
-    radial-gradient(420px 240px at 88% 12%, rgba(255,77,109,.45), transparent 68%),
-    radial-gradient(380px 220px at 6% 100%, rgba(0,184,148,.34), transparent 66%)}
+  background:linear-gradient(122deg,#4b3b7d,#66508d 48%,#8b4e80);
+  box-shadow:0 20px 45px -32px rgba(75,59,125,.6)}
 .callout-label{position:relative;z-index:1;font:600 12px/1 var(--mono);letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:14px}
+  text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:14px}
 .callout p{position:relative;z-index:1;margin:0;font-size:clamp(18px,2.3vw,23px);
   line-height:1.62;font-weight:500}
 .callout code{font-family:var(--mono);font-size:.88em;background:rgba(255,255,255,.2);
