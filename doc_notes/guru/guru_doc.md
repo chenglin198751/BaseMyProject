@@ -41,4 +41,14 @@ cd /Users/bjit204/code/GuruSdk-Android
 1. 先通过 /Users/bjit204/unity_code/Parking3D/Packages/com.guru.unikit.offlinelog/Editor/Dependencies.xml 中定义 androidPackage 引入 原生android offlinelog.aar
 2. 再通过 Runtime 目录下的/Users/bjit204/unity_code/Parking3D/Packages/com.guru.unikit.offlinelog/Runtime/AndroidChannelOfflineLogger.cs 调用原生android offlinelog.aar
 
-# 7. 一个新需求开发流程：【$guru-jarvis-nexus:Guru】先用 proposal 技能，再用 impl 技能，再用 PR 技能
+# 7. 一个新需求开发流程：
+- 【$guru-jarvis-nexus:Guru】先用 proposal 技能，再用 impl 技能，再用 PR 技能
+
+# 8. Parking3D 开启debug模式：
+- 设置 -> 快速点击版本号 -> 输入密码 112358
+
+# 9. local maven 所在位置：
+- /Users/bjit204/.m2/repository
+
+# 10. Jenkins 账号密码：
+- 用户名：weichenglin 密码：wcl1148
