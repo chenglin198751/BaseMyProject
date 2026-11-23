@@ -66,7 +66,7 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 
 ## 扩展色板（8 色，按需启用）
 
-不是必选项。**当内容有 6–8 个并列分类、五项语义色分不过来时才用。**
+不是必选项。需要区分多个并列分类时，可以按内容选用。
 
 | 名称 | 主色 | 浅底 | 深字 | 深字/浅底 |
 |---|---|---|---|---|
@@ -82,12 +82,9 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 三档的用法与语义色完全一致：主色给色条 / 圆点 / 边线，`-soft` 给胶囊底，`-deep` 给胶囊文字。
 八组深浅搭配的对比度都在 4.8 以上，达到正文可读标准。
 
-**启用规则**
+**使用建议**
 
-1. **一组并列项最多 8 个。** 超过 8 个说明该合并，不是加颜色。
-2. **同一页只在一个区段内成组使用。** 比如整页只有"能力地图"这一节用扩展色，不要每节换一套。
-3. **不要用扩展色里的蕉红 / 翠微去表达旧与新、错与对。** 那会和应用全局的语义红绿打架。
-4. **并列项有固定顺序时（A–F、1–8），按表中顺序取色，不要跳色。**
+根据内容选择颜色，控制同一区域的颜色数量；不同区段尽量保持相同分类使用相同颜色。避免分类色与旧/新、错/对等状态色产生歧义。
 
 > 反例：一页里既有"旧方案 / 新方案"的珊瑚红与薄荷绿，又有"能力 A–F"的蕉红、翠微。
 > 读者会分不清哪个红是"旧"、哪个红只是"第 1 项"。这种情况把能力线改用矢车菊蓝起的后半段颜色。
@@ -145,12 +142,12 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 **卡片三件套**：卡片可以使用顶部色条、浅描边和轻微投影。保持组件风格统一，比单个卡片复杂更重要。
 
 表格应有基本的视觉层次，不要直接使用浏览器默认样式：
-表头用浅紫底的中等字重小字，隔行微微染色，hover 时整行提亮；
+表头使用鼠尾草绿纯色底 `#e3ede8` 和深绿色文字，隔行微微染色，hover 时整行提亮；
 状态用彩色胶囊不用纯文字；外层圆角容器 + `overflow-x:auto`。
 
 网格可以根据内容调整。出现不对称时，优先让重要内容获得更多空间，不必为了填满网格硬凑内容。
 
-**数字适度突出**。重要数字可以放进标题、结论、表格或步骤卡中；不需要专门添加统计卡。
+**数字适度突出**。重要数字可以放进标题、结论、表格或步骤卡中；不要生成统计卡。
 
 ### 标题和引导语
 
@@ -164,12 +161,7 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 
 ## 动效
 
-只保留两处：
-
-1. 滚动淡入（`IntersectionObserver` + `opacity/translateY`）
-2. 顶部导航随滚动高亮当前章节
-
-动效应克制，并在条件允许时尊重 `prefers-reduced-motion: reduce`。不要为了装饰加入过多视差或打字机效果。
+动效可按需要使用，例如滚动淡入或导航高亮。页面内容默认可见，即使脚本没有运行也能阅读；使用动效时应尊重 `prefers-reduced-motion: reduce`。
 
 ---
 
@@ -178,7 +170,7 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 1. **读源内容**，先写成大纲（只有标题层级，不写 HTML）
 2. 给每个 section 从组件选择表指派类型
 3. 定语义色分配：谁=旧、谁=新、谁=警告、谁=结构
-4. 复制文末的 CSS 与骨架作为起点，**不要从空白写**
+4. 可参考文末的 CSS 与骨架，也可按内容调整或自行设计
 5. 填内容；长度不够的卡片不要硬凑，合并到相邻 section
 6. 在浏览器中预览，修正明显的错位、溢出和内容缺失
 
@@ -188,7 +180,7 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
 
 ### 1. 设计令牌与组件样式
 
-整段复制进 `<style>`。换主题只改 `:root` 里的五个 `--c-*` 色相，不要在组件里写死颜色。
+可将以下样式复制进 `<style>`，并按内容和主题调整。
 
 ```css
 :root{
@@ -202,7 +194,7 @@ description: 把技术内容做成好看、清晰、可直接打开的单页 HTM
   --c-warn:#f59e0b;   --c-warn-soft:#fff0d1;   --c-warn-deep:#a86500;
   --c-info:#0ea5e9;   --c-info-soft:#dcf1fe;   --c-info-deep:#0369a1;
 
-  /* 扩展色板：仅在需要区分 6–8 个并列分类时启用，不表达状态 */
+  /* 扩展色板：按需要区分并列分类 */
   --p1:#D4042D; --p1-soft:#F9E1E6; --p1-deep:#8E0B25;   /* 蕉红 */
   --p2:#DB7A0E; --p2-soft:#F9EEE1; --p2-deep:#8E500B;   /* 暖阳橙 */
   --p3:#5A92E5; --p3-soft:#E3EBF8; --p3-deep:#124187;   /* 矢车菊蓝 */
@@ -283,6 +275,8 @@ section{padding:46px 0}
 .sec-bar{width:5px;align-self:stretch;min-height:44px;border-radius:99px;margin-top:3px;flex:none}
 .sec-head h2{margin:0;font-family:var(--display);font-size:clamp(22px,2.6vw,29px);
   letter-spacing:-.02em;line-height:1.25}
+.sec-no{flex:none;font:700 clamp(22px,2.6vw,29px)/1.25 var(--display);
+  letter-spacing:-.02em;color:var(--c-struct-deep)}
 .sec-head p{margin:5px 0 0;color:var(--ink-3);font-size:14px}
 .c-old{background:var(--c-old)} .c-new{background:var(--c-new)}
 .c-struct{background:var(--c-struct)} .c-warn{background:var(--c-warn)}
@@ -353,8 +347,8 @@ section{padding:46px 0}
 .scroll-x{overflow-x:auto}
 table{border-collapse:separate;border-spacing:0;width:100%;min-width:600px;font-size:14px}
 thead th{text-align:left;font:700 12px/1.35 var(--sans);letter-spacing:.03em;
-  padding:14px 18px;background:#dfe6ef;color:#334155;
-  border-bottom:1px solid #b8c6d8;white-space:nowrap}
+  padding:14px 18px;background:#e3ede8;color:#365448;
+  border-bottom:1px solid #c3d5cb;white-space:nowrap}
 thead th:first-child{border-top-left-radius:var(--radius)}
 tbody td{padding:13px 18px;border-bottom:1px solid var(--line);
   vertical-align:top;color:var(--ink-2)}
@@ -450,11 +444,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer code{font-family:var(--mono);font-size:12px}
 
 /* ---- 动效：保持克制，并兼容 reduced-motion ---- */
-.rv{opacity:0;transform:translateY(16px);
-  transition:opacity .55s ease,transform .55s ease}
-.rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
-  .rv{opacity:1;transform:none;transition:none}
   html{scroll-behavior:auto}
 }
 
@@ -544,6 +534,7 @@ footer code{font-family:var(--mono);font-size:12px}
   <section id="compare">
     <div class="sec-head rv">
       <div class="sec-bar c-old"></div>
+      <span class="sec-no">01</span>
       <div><h2>迁移前 / 迁移后</h2><p>[[一句话说明两侧本质差异。]]</p></div>
     </div>
     <div class="compare rv">
@@ -728,20 +719,6 @@ footer code{font-family:var(--mono);font-size:12px}
 </footer>
 
 <script>
-/* 滚动淡入 */
-(function(){
-  var items = document.querySelectorAll('.rv');
-  if (!('IntersectionObserver' in window)) {
-    items.forEach(function(el){ el.classList.add('in'); }); return;
-  }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-  items.forEach(function(el){ io.observe(el); });
-})();
-
 /* 导航随滚动高亮当前章节 */
 (function(){
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
