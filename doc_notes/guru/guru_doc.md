@@ -31,6 +31,7 @@
 # 5. 发布到本地maven
 cd /Users/bjit204/code/GuruSdk-Android
 ./gradlew :gurusdk-offlinelog:publishToMavenLocal
+./gradlew :gurusdk-tiktok:publishToMavenLocal
 ./gradlew publishToMavenLocal
 
 # 6. Parking3D 与 Guru SDK 的调用关系
@@ -52,3 +53,11 @@ cd /Users/bjit204/code/GuruSdk-Android
 
 # 10. Jenkins 账号密码：
 - 用户名：weichenglin 密码：wcl1148
+
+# 11. unity_sdk 类：
+1. IGuruSdkProtocol.cs：聚合 Guru SDK 运行期所需的各业务协议委托
+2. Transmitter.cs：定义事件发送回调委托
+3. IAnalyticsDelegate：
+4. AnalyticsTransmitter：
+5. AnalyticsCapabilities：可以理解成一组埋点渠道标记，用于告诉 Framework：一个事件当前关联了哪些渠道，例如 Firebase、Facebook、Guru、Adjust 等，就是拼接类似 FlagStr="F-G---K"
+6. Parking3D ParkingGameAnalytics.cs：注册 TikTok等各个打点平台，并配置需要转发的事件列表
