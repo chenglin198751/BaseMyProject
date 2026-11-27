@@ -61,3 +61,4 @@ cd /Users/bjit204/code/GuruSdk-Android
 4. AnalyticsTransmitter：
 5. AnalyticsCapabilities：可以理解成一组埋点渠道标记，用于告诉 Framework：一个事件当前关联了哪些渠道，例如 Firebase、Facebook、Guru、Adjust 等，就是拼接类似 FlagStr="F-G---K"
 6. Parking3D ParkingGameAnalytics.cs：注册 TikTok等各个打点平台，并配置需要转发的事件列表
+7. Parking3D 项目生成 /Users/bjit204/unity_code/Parking3D/Assets/Guru/Gen/GuruAnalytics.Project.dll 的命令：gurusdk build-events
